@@ -6349,7 +6349,8 @@
                 </div>
                 <div class="form-group">
                   <label>EPS</label>
-                  <select id="col_AQ" class="form-input"><option value="">Seleccione...</option><option value="Nueva EPS">Nueva EPS</option><option value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option value="Colsanitas">Colsanitas</option><option value="Axa Colpatria">Axa Colpatria</option><option value="Coomeva">Coomeva</option><option value="Salud Total">Salud Total</option></select>
+                  <select id="col_AQ" class="form-input"><option value="">Seleccione...</option><option value="Nueva EPS">Nueva EPS</option><o
+ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option value="Colsanitas">Colsanitas</option><option value="Axa Colpatria">Axa Colpatria</option><option value="Coomeva">Coomeva</option><option value="Salud Total">Salud Total</option></select>
                 </div>
               </div>
             </div>
@@ -9233,6 +9234,12 @@
             showToast("Error cargando datos: " + data.message);
           }
         })
+        .catch(function(err) {
+          showLoading(false);
+          showToast("Error: " + err);
+        });
+    }
+
     function setVal(id, val) {
       const el = document.getElementById(id);
       if (el) el.value = val || "";
@@ -9476,6 +9483,7 @@
             }
           })
           .catch(function(err) { showLoading(false); showToast("Error: "+err); });
+      }
     }
 
     function toggleDateInput() {
@@ -11031,7 +11039,7 @@
             resultBox.innerHTML = `<i class="bi bi-x-circle-fill"></i> La guía <strong>${guia}</strong> NO está en recuentos.`;
           }
         })
-          .catch(function(err) {err => { showLoading(false); showToast("Error: " + err); });
+          .catch(function(err) { showLoading(false); showToast("Error: " + err); });
     }
 
 
@@ -13633,7 +13641,7 @@
           mostrarResultadoRo(res);
           document.getElementById("inputGuiasRo").value = ""; // Limpiar campo
         })
-          .catch(function(err) {err => {
+          .catch(function(err) {
           showLoading(false); 
           resultadoDiv.innerHTML = `<p class="error">❌ Error de conexión: ${err.message}</p>`;
         });
@@ -14717,7 +14725,7 @@
       stats.innerText = "Buscando...";
 
       callBackend('buscarMultiplesGuias', texto)
-          .then(function(result) {res => {
+          .then(function(res) {
           // 🚨 MANEJO DE ERROR LÓGICO (Try/Catch del backend)
           if (res.error) {
             container.style.display = "none";
@@ -14751,7 +14759,7 @@
           pintarResumenAnulacion(res.data.length, noEncontradasAnulacion.length);
 
         })
-          .catch(function(err) {err => {
+          .catch(function(err) {
           container.style.display = "none";
           console.error("Error crítico:", err);
           mostrarAlerta("Error Crítico", "Ocurrió un error inesperado al contactar al servidor. Revisa la consola (F12) para más detalles.", "error");
@@ -14927,27 +14935,18 @@
         `Esta acción cambiará el estado a: ${estadoSeleccionado}. ¿Deseas continuar?`,
         `Sí, ${accion.verbo}`, // Texto botón dinámico
         () => {
-          callBackend('buscarPagosPorRango', [fi, ff])
-          .then(function(result) {msg => {
+          callBackend('actualizarGuiaCompleta', [fullPath, estadoSeleccionado])
+            .then(function(msg) {
               mostrarAlerta("Éxito", msg, "success");
               cerrarModalAnulacion(); 
               resultadosAnulacionActual = resultadosAnulacionActual.filter(d => d.fullPath !== fullPath);
               pintarResumenAnulacion(resultadosAnulacionActual.length, noEncontradasAnulacion.length);
             })
-          .catch(function(err) {
-          showLoading(false);
-          showToast("Error al cargar P1: " + err);
-        });
-
-      callBackend('obtenerDatosP2', [fi, ff])
-          .then(function(dataP2) {
-          renderBVP_P2(dataP2);
-          checkBVPLoading();
-        })
-          .catch(function(err) {
-          showLoading(false);
-          showToast("Error al cargar P2: " + err);
-        });
+            .catch(function(err) {
+              showToast("Error: " + err);
+            });
+        }
+      );
     }
 
     function checkBVPLoading() {
@@ -18459,7 +18458,7 @@
 
           if (callback) callback();
         })
-          .catch(function(err) {err => {
+          .catch(function(err) {
            showToast("❌ Error de conexión: " + err);
         });
     }
@@ -18673,7 +18672,7 @@
              showToast("❌ " + res.message);
            }
         })
-          .catch(function(err) {err => {
+          .catch(function(err) {
            showLoading(false);
            showToast("❌ Error de conexión: " + err);
         });
@@ -18726,7 +18725,8 @@
         return;
       }
 
-      lista.forEach(item => {
+      lista.forEach(item
+ => {
         // --- NUEVA LÓGICA DE FILTRADO ---
         let itemsFiltrados = item.items;
 
@@ -19206,11 +19206,6 @@
           showLoading(false);
           showToast("❌ Error: " + err);
         });
-          tipo: tipo,
-          guiaMadre: guiaMadre,
-          valorMadre: valorFlota,
-          guiasHeka: guiasHeka
-        });
     }
 
     // --- FUNCIÓN CALCULAR VALOR DE HIJAS ---
@@ -19311,13 +19306,13 @@
       showLoading(true);
 
       callBackend('guardarGuiasMadres', { madre, guias })
-          .then(function(result) {res => {
+          .then(function(res) {
           showLoading(false);
           showToast("✅ Guardado correctamente");
           closeModal('modal-guias-madres');
           cargarGuiasMadres(); // Recargar tabla
         })
-          .catch(function(err) {err => {
+          .catch(function(err) {
           showLoading(false);
           showToast("❌ Error al guardar");
         });
@@ -19342,7 +19337,7 @@
         .filter(g => g);
 
       callBackend('getGuiasMadres')
-          .then(function(result) {res => {
+          .then(function(res) {
           document.getElementById('gm_resultado').innerText =
             res.count + " guías - $ " + res.total.toLocaleString('es-CO');
         })
@@ -19616,9 +19611,6 @@
           showLoading(false);
           showToast("❌ Error al guardar");
         });
-          recibir: hijasARecibir, 
-          desvincular: noRecibir
-        });
     }
 
     /* ==========================================
@@ -19684,9 +19676,6 @@
           .catch(function() {
           showLoading(false);
           showToast("❌ Error al vincular");
-        });
-          guiaHija: hijaParaVincular,
-          nuevaMadre: nuevaMadre
         });
     }
 
@@ -21179,11 +21168,6 @@
           errorModalProgreso('❌ Error hoja: ' + e.message);
           btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
         });
-          madre: madre,
-          tipo: tipoMadreSeleccionado,
-          costoMadreManual: costoFlota,
-          hijas: hijas
-        });
     }
 
     // PASO 2: Recibir en Firestore
@@ -21588,9 +21572,6 @@
           appendLogLmensajero('\n\u26A0\uFE0F Paso 1 completado. Fall\u00F3 el paso 2 (hoja).');
           errorModalProgreso('Error actualizando hoja. ' + e.message);
           finalizarProcesoMensajero(btn);
-        });
-          recibir: chuleadas.seleccionadas,
-          desvincular: []
         });
     }
 
@@ -22087,4 +22068,4 @@
   </div>
 
 </body>
-</html>
+</html> 
