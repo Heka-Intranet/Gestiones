@@ -8964,7 +8964,7 @@
     // =====================================================
     // ⚠️ CAMBIA ESTA URL por la URL de tu Apps Script desplegado como Web App
     // Ejemplo: https://script.google.com/macros/s/TU_ID_AQUI/exec
-    const APP_URL = 'https://script.google.com/macros/s/AKfycbxqiv-ckvSwgEHPDh3mezEyDfIhRPteh0ib8aBYJ9TIIN0gBN93bl03wxoDZmwF7ak/exec';
+    const APP_URL = 'PON_AQUI_TU_URL_DE_APPS_SCRIPT';
 
     // =====================================================
     // HELPER: callBackend - Reemplaza google.script.run
@@ -10461,11 +10461,6 @@
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
-        .guardarAnulacion(){
-          guias: guias,
-          plataforma: plataforma,
-          asesor: asesor
         });
     }
 
@@ -18598,7 +18593,6 @@
            alert("Error cargando mensajeros: " + err);
            closeModal('modal-recogida');
         });
-        .getMensajerosUnicos(); // Reutilizamos tu función existente del backend
     }
 
     // 2. Procesar y Enviar (Ahora incluye mensajero)
@@ -19212,7 +19206,6 @@
           showLoading(false);
           showToast("❌ Error: " + err);
         });
-        .registrarDevolucionBackend({
           tipo: tipo,
           guiaMadre: guiaMadre,
           valorMadre: valorFlota,
@@ -19623,7 +19616,6 @@
           showLoading(false);
           showToast("❌ Error al guardar");
         });
-        .recibirGuiasHijas({
           recibir: hijasARecibir, 
           desvincular: noRecibir
         });
@@ -19693,7 +19685,6 @@
           showLoading(false);
           showToast("❌ Error al vincular");
         });
-        .vincularGuiaPendiente({
           guiaHija: hijaParaVincular,
           nuevaMadre: nuevaMadre
         });
@@ -21188,7 +21179,6 @@
           errorModalProgreso('❌ Error hoja: ' + e.message);
           btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
         });
-        .registrarGuiaMadreDesdeIngresoLpropia({
           madre: madre,
           tipo: tipoMadreSeleccionado,
           costoMadreManual: costoFlota,
@@ -21599,7 +21589,6 @@
           errorModalProgreso('Error actualizando hoja. ' + e.message);
           finalizarProcesoMensajero(btn);
         });
-        .recibirGuiasHijas({
           recibir: chuleadas.seleccionadas,
           desvincular: []
         });
