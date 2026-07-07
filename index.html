@@ -8964,7 +8964,7 @@
     // =====================================================
     // ⚠️ CAMBIA ESTA URL por la URL de tu Apps Script desplegado como Web App
     // Ejemplo: https://script.google.com/macros/s/TU_ID_AQUI/exec
-    const APP_URL = 'PON_AQUI_TU_URL_DE_APPS_SCRIPT';
+    const APP_URL = 'https://script.google.com/macros/s/AKfycbxqiv-ckvSwgEHPDh3mezEyDfIhRPteh0ib8aBYJ9TIIN0gBN93bl03wxoDZmwF7ak/exec';
 
     // =====================================================
     // HELPER: callBackend - Reemplaza google.script.run
@@ -9339,7 +9339,7 @@
           showLoading(false);
           showToast(res.message);
           if(res.status === "success") closeModal('modal-mis-datos');
-        }})
+        })
           .catch(function(err) { showLoading(false); showToast("Error: "+err); });
         // Enviamos editingCedula (que puede ser tuyo o del colaborador)
     }
@@ -9411,7 +9411,7 @@
           } else {
             showToast("Error: " + data.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error: " + err);
@@ -9455,7 +9455,7 @@
             } else {
               showToast("Error: " + data.message);
             }
-          }})
+          })
           .catch(function(err) {
             showLoading(false);
             showToast("Error: " + err);
@@ -9474,7 +9474,7 @@
               showLoading(false);
               showToast("Error generando certificado: " + data.message);
             }
-          }})
+          })
           .catch(function(err) { showLoading(false); showToast("Error: "+err); });
     }
 
@@ -9501,7 +9501,7 @@
             document.getElementById('adminEditControls').classList.remove('show');
             document.getElementById('adminMessage').style.display = 'block';
           } else { showToast(data.message); }
-        }})
+        })
           .catch(function(err) { showLoading(false); showToast("Error: "+err); });
     }
 
@@ -9542,7 +9542,7 @@
             };
             loginSuccess();
           } else { showToast(data.message); }
-        }})
+        })
           .catch(function(err) { showLoading(false); showToast("Error: " + err); });
     }
 
@@ -9740,7 +9740,7 @@
           showLoading(false);
           if(data.status==="success") { showToast(data.message); tempRecoveryUser = user; goToStep('step-change-pass'); }
           else { showToast(data.message); }
-        }})
+        })
           .catch(function(err) { showLoading(false); showToast("Error: "+err); });
     }
     function handleChangePassword(e) {
@@ -9754,7 +9754,7 @@
           showLoading(false);
           if(data.status==="success") { showToast(data.message); goToStep('step-login'); tempRecoveryUser = null; }
           else { showToast(data.message); }
-        }})
+        })
           .catch(function(err) { showLoading(false); showToast("Error: "+err); });
     }
 
@@ -10207,7 +10207,7 @@
           } else {
             noResults.style.display = 'block';
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           noResults.style.display = 'block';
@@ -10258,7 +10258,7 @@
             } else {
               showToast("Error: " + res.message);
             }
-          }})
+          })
           .catch(function(err) {
             showLoading(false);
             showToast("Error de conexión: " + err);
@@ -10393,7 +10393,7 @@
           } else {
             noResults.style.display = 'block';
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           noResults.style.display = 'block';
@@ -10457,7 +10457,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
@@ -10534,7 +10534,7 @@
           } else {
             noResults.style.display = 'block';
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           noResults.style.display = 'block';
@@ -10818,7 +10818,7 @@
           } else if (res.status === "error") {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
@@ -10882,7 +10882,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
@@ -10920,7 +10920,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
@@ -11003,7 +11003,7 @@
             finishSuccess(false); // Oculta el modal porque hubo error
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           finishSuccess(false); // Oculta modal porque hubo error de conexión
           showToast("Error de conexión: " + err);
@@ -11035,7 +11035,7 @@
             resultBox.className = 'recuento-result not-found';
             resultBox.innerHTML = `<i class="bi bi-x-circle-fill"></i> La guía <strong>${guia}</strong> NO está en recuentos.`;
           }
-        }})
+        })
           .catch(function(err) {err => { showLoading(false); showToast("Error: " + err); });
     }
 
@@ -11254,7 +11254,7 @@
           else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
@@ -11344,7 +11344,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
@@ -11566,7 +11566,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
@@ -11745,7 +11745,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           loadingEl.style.display = 'none';
           showToast("Error: " + err);
@@ -11962,7 +11962,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error: " + err);
@@ -12001,7 +12001,7 @@
             closeModal('modal-descargar-excel');
             showToast("Archivo generado correctamente.");
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error: " + err);
@@ -12054,7 +12054,7 @@
           } else {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red; padding:20px;">Error: ' + res.message + '</td></tr>';
           }
-        }})
+        })
           .catch(function(err) {
           loading.style.display = 'none';
           tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red; padding:20px;">Error de conexión</td></tr>';
@@ -12192,7 +12192,7 @@
           } else {
             showToast("Error cargando datos: " + data.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error: " + err);
@@ -12380,7 +12380,7 @@
           } else {
             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red; padding:20px;">Error: ' + res.message + '</td></tr>';
           }
-        }})
+        })
           .catch(function(err) {
           loading.style.display = 'none';
           tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red; padding:20px;">Error de conexión</td></tr>';
@@ -12466,7 +12466,7 @@
             container.innerHTML = '<div style="text-align:center; color:red; padding:20px;">Error: ' + res.message + '</div>';
             document.getElementById('modal-auditoria').classList.add('active');
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           container.innerHTML = '<div style="text-align:center; color:red; padding:20px;">Error de conexión: ' + err + '</div>';
@@ -12579,7 +12579,7 @@
             // Si hay error, mostramos un Toast (no alert)
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
@@ -12697,7 +12697,7 @@
             if (textoLoadingEl) textoLoadingEl.innerText = "Cargando Asignaciones...";
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           loadingEl.style.display = 'none';
           if (textoLoadingEl) textoLoadingEl.innerText = "Cargando Asignaciones...";
@@ -13005,7 +13005,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error: " + err);
@@ -13218,7 +13218,7 @@
           } else {
             document.getElementById('tablaReferenciaBody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error: ' + res.message + '</td></tr>';
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           document.getElementById('tablaReferenciaBody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error de conexión</td></tr>';
@@ -13333,7 +13333,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           loadingEl.style.display = 'none';
           showToast("Error de conexión: " + err);
@@ -13465,7 +13465,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
@@ -13561,7 +13561,7 @@
             } else {
               showToast("Error: " + res.message);
             }
-          }})
+          })
           .catch(function(err) {
             showLoading(false);
             showToast("Error de conexión: " + err);
@@ -13579,7 +13579,7 @@
             } else {
               showToast("Error: " + res.message);
             }
-          }})
+          })
           .catch(function(err) {
             showLoading(false);
             showToast("Error de conexión: " + err);
@@ -13637,7 +13637,7 @@
           showLoading(false); 
           mostrarResultadoRo(res);
           document.getElementById("inputGuiasRo").value = ""; // Limpiar campo
-        }})
+        })
           .catch(function(err) {err => {
           showLoading(false); 
           resultadoDiv.innerHTML = `<p class="error">❌ Error de conexión: ${err.message}</p>`;
@@ -13779,7 +13779,7 @@
           } else {
             console.error("Error cargando asesores:", list.message);
           }
-        }})
+        })
           .catch(function(err) {
           console.error("Error de conexión cargando asesores:", err);
           showToast("Error cargando lista de asesores.");
@@ -13820,7 +13820,7 @@
             // Aseguramos de volver a mostrar el botón si falla la búsqueda
             document.getElementById('btn-upd-search').style.display = 'inline-flex';
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error: " + err);
@@ -13877,7 +13877,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
@@ -13910,7 +13910,7 @@
           } else {
             tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:red;">Error: ' + res.message + '</td></tr>';
           }
-        }})
+        })
           .catch(function(err) {
           loadingEl.style.display = 'none';
           tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:red;">Error de conexión</td></tr>';
@@ -14142,7 +14142,7 @@
           } else {
             showToast("Error: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error: " + err);
@@ -14374,7 +14374,7 @@
           } else {
             tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Error: ' + res.message + '</td></tr>';
           }
-        }})
+        })
           .catch(function(err) {
           loadingEl.style.display = 'none';
           tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Error de conexión</td></tr>';
@@ -14503,7 +14503,7 @@
             closeModal('modal-descargar-asignaciones');
             showToast("Archivo generado correctamente.");
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
@@ -14755,7 +14755,7 @@
           stats.innerText = `Encontradas: ${res.encontradas} | Total: ${res.totalIngresadas}`;
           pintarResumenAnulacion(res.data.length, noEncontradasAnulacion.length);
 
-        }})
+        })
           .catch(function(err) {err => {
           container.style.display = "none";
           console.error("Error crítico:", err);
@@ -14938,7 +14938,7 @@
               cerrarModalAnulacion(); 
               resultadosAnulacionActual = resultadosAnulacionActual.filter(d => d.fullPath !== fullPath);
               pintarResumenAnulacion(resultadosAnulacionActual.length, noEncontradasAnulacion.length);
-            }})
+            })
           .catch(function(err) {
           showLoading(false);
           showToast("Error al cargar P1: " + err);
@@ -14948,7 +14948,7 @@
           .then(function(dataP2) {
           renderBVP_P2(dataP2);
           checkBVPLoading();
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error al cargar P2: " + err);
@@ -14978,7 +14978,7 @@
           .then(function(url) {
           showLoading(false);
           window.open(url, '_blank');
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("Error: " + err);
@@ -15230,7 +15230,7 @@
           .then(function(mapa) {
                     homologacionesCache = mapa;
                     leerArchivoCSV(file, mapa);
-                }})
+                })
           .catch(function(err) {
                     showLoading(false);
                     showToast("Error al cargar homologaciones");
@@ -15536,7 +15536,7 @@
                     showLoading(false);
                     showToast(res);
                     document.getElementById('modal-banco-csv').classList.add('active');
-                  }})
+                  })
           .catch(function(err) {
                     showLoading(false);
                     showToast("Error al guardar: " + err);
@@ -15792,7 +15792,7 @@
             } else {
               showToast("Error: El servidor no devolvió una URL válida");
             }
-          }})
+          })
           .catch(function(error) {
             showLoading(false);
             showToast("Error de conexión: " + (error.message || error.toString()));
@@ -15948,7 +15948,7 @@
                     clearAndUnlock(inputComHeka);
                     clearAndUnlock(inputComHekaAdic);
                 }
-            }})
+            })
           .catch(function(err) {
                 console.error(err);
                 // En caso de error de conexión, también desbloqueamos por si acaso
@@ -16225,7 +16225,7 @@
                 else {
                     showToast("Error: " + res.message);
                 }
-            }})
+            })
           .catch(function(err) {
                 showLoading(false);
                 showToast("Error de conexión: " + err);
@@ -16256,7 +16256,7 @@
                 } else {
                     showToast("Error: " + res.message);
                 }
-            }})
+            })
           .catch(function(err) {
                 showLoading(false);
                 showToast("Error de conexión: " + err);
@@ -16287,7 +16287,7 @@
                 } else {
                     showToast("Error: " + res.message);
                 }
-            }})
+            })
           .catch(function(err) {
                 showLoading(false);
                 showToast("Error de conexión: " + err);
@@ -16378,7 +16378,7 @@
                     } else {
                         showToast("Error: " + res.message);
                     }
-                }})
+                })
           .catch(function(err) {
                     showLoading(false);
                     showToast("Error de conexión: " + err);
@@ -16465,7 +16465,7 @@
                             aplicarFiltrosIndemnizaciones();
                         }
                     } else { showToast("Error: " + res.message); }
-                }})
+                })
           .catch(function(err) { showLoading(false); showToast("Error: " + err); });
             return;
         }
@@ -16480,7 +16480,7 @@
                 } else {
                     showToast("Error: " + res.message);
                 }
-            }})
+            })
           .catch(function(err) {
                 showLoading(false);
                 showToast("Error de conexión: " + err);
@@ -16544,7 +16544,7 @@
                             aplicarFiltrosIndemnizaciones();
                         }
                     } else { showToast("Error: " + res.message); }
-                }})
+                })
           .catch(function(err) { showLoading(false); showToast("Error: " + err); });
             return;
         }
@@ -16928,7 +16928,7 @@
           } else {
             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Error: ${res.message}</td></tr>`;
           }
-        }})
+        })
           .catch(function(err) {
           loading.style.display = 'none';
           tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Error de conexión: ${err}</td></tr>`;
@@ -18186,7 +18186,7 @@
                 } else {
                     showToast("Error Resumen: " + (res ? res.message : "Desconocido"));
                 }
-            }})
+            })
           .catch(function(err) {
                 if(btnActualizar) btnActualizar.disabled = false;
                 if(tbodyGuias) tbodyGuias.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error de conexión</td></tr>';
@@ -18351,7 +18351,7 @@
               tbody.innerHTML = `<tr><td colspan="6">Error: ${res.message}</td></tr>`;
             }
 
-          }})
+          })
           .catch(function(err) {
             loading.style.display = 'none';
             tbody.innerHTML = `<tr><td colspan="6">Error: ${err}</td></tr>`;
@@ -18463,7 +18463,7 @@
           });
 
           if (callback) callback();
-        }})
+        })
           .catch(function(err) {err => {
            showToast("❌ Error de conexión: " + err);
         });
@@ -18593,7 +18593,7 @@
             option.textContent = m;
             select.appendChild(option);
           });
-        }})
+        })
           .catch(function(err) {
            alert("Error cargando mensajeros: " + err);
            closeModal('modal-recogida');
@@ -18678,7 +18678,7 @@
            } else {
              showToast("❌ " + res.message);
            }
-        }})
+        })
           .catch(function(err) {err => {
            showLoading(false);
            showToast("❌ Error de conexión: " + err);
@@ -18699,7 +18699,7 @@
            showToast("✅ " + res.message);
            closeModal('modal-recogida');
            cargarSeguimiento();
-        }})
+        })
           .catch(function(err) {
           loading.style.display = 'none';
           container.innerHTML = `<p style="color:red; text-align:center; width:100%;">Error de conexión: ${err}</p>`;
@@ -19207,7 +19207,7 @@
           } else {
             showToast("❌ " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("❌ Error: " + err);
@@ -19263,7 +19263,7 @@
           } else {
             showToast("❌ Error al calcular: " + res.message);
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           showToast("❌ Error de conexión: " + err);
@@ -19323,7 +19323,7 @@
           showToast("✅ Guardado correctamente");
           closeModal('modal-guias-madres');
           cargarGuiasMadres(); // Recargar tabla
-        }})
+        })
           .catch(function(err) {err => {
           showLoading(false);
           showToast("❌ Error al guardar");
@@ -19352,7 +19352,7 @@
           .then(function(result) {res => {
           document.getElementById('gm_resultado').innerText =
             res.count + " guías - $ " + res.total.toLocaleString('es-CO');
-        }})
+        })
           .catch(function(err) {
           loader.style.display = "none";
           tbody.innerHTML = "<tr><td colspan='7' style='color:red; text-align:center;'>Error de conexión</td></tr>";
@@ -19513,7 +19513,7 @@
           } else {
             showToast("❌ Error al buscar");
           }
-        }})
+        })
           .catch(function() {
           showLoading(false);
           showToast("❌ Error de conexión");
@@ -19618,7 +19618,7 @@
           showToast("✅ " + res.message);
           closeModal('modal-recibir-hijas');
           cargarGuiasMadres(); // Recargar todo
-        }})
+        })
           .catch(function() {
           showLoading(false);
           showToast("❌ Error al guardar");
@@ -19688,7 +19688,7 @@
           showToast("✅ " + res.message);
           closeModal('modal-vincular-pendiente');
           cargarGuiasMadres(); // Recargar tabla para ver el cambio
-        }})
+        })
           .catch(function() {
           showLoading(false);
           showToast("❌ Error al vincular");
@@ -19728,7 +19728,7 @@
                 } else {
                     container.innerHTML = `<p style="color:red; text-align:center;">Error: ${response.error}</p>`;
                 }
-            }})
+            })
           .catch(function(err) {
                 loading.style.display = 'none';
                 container.innerHTML = `<p style="color:red; text-align:center;">Error de comunicación: ${err.message}</p>`;
@@ -19871,7 +19871,7 @@
                     }
                     currentIndex++;
                     llamarSiguienteSeller();
-                }})
+                })
           .catch(function(err) {
                     currentIndex++;
                     console.error("Error con ID " + idActual + ": " + err);
@@ -20243,7 +20243,7 @@
           } else {
             tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:red; padding:20px;">Error: ${res.message}</td></tr>`;
           }
-        }})
+        })
           .catch(function(err) {
           loading.style.display = 'none';
           tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:red; padding:20px;">Error de conexión: ${err}</td></tr>`;
@@ -20716,7 +20716,7 @@
           } else {
             showToast("Error: " + res.message, 4000);
           }
-        }})
+        })
           .catch(function(err) {
           if(modalRef) modalRef.remove(); // Cerrar modal también si falla
           showToast("Error de conexión: " + err.message, 4000);
@@ -20833,7 +20833,7 @@
             statusBox.className = 'comisiones-status-box error';
             statusBox.innerText = '❌ Error: ' + (res.message || 'Ocurrió un problema desconocido.');
           }
-        }})
+        })
           .catch(function(err) {
           showLoading(false);
           statusBox.className = 'comisiones-status-box error';
@@ -21047,7 +21047,7 @@
             document.getElementById('userStatusTextLpropia').innerHTML = '<span style="color:#dc3545;">' + res.error + '</span>';
             appendLogLpropia('❌ ' + res.error);
           }
-        }})
+        })
           .catch(function(e) {
           document.getElementById('userStatusIconLpropia').textContent = '❌';
           document.getElementById('userStatusTextLpropia').innerHTML = '<span style="color:#dc3545;">Error de conexión</span>';
@@ -21067,7 +21067,7 @@
             }
             if (estadoEnRutaNacional) appendLogLpropia('✅ Estado "En Ruta Nacional" listo.');
           }
-        }})
+        })
           .catch(function(e) {
           btn.disabled = false; btn.textContent = 'Buscar Guías en Sistema';
           appendLogLpropia('ERROR: ' + e.message);
@@ -21144,7 +21144,7 @@
           }
           // Sin bloqueos, ejecutar el proceso
           ejecutarProcesoIngresoOrigen(madre, hijas, costoFlota);
-        }})
+        })
           .catch(function(e) {
           cerrarModalProgreso();
           alert('Error de conexion verificando historial: ' + e.message);
@@ -21182,7 +21182,7 @@
             errorModalProgreso('❌ Error en hoja: ' + res.message);
             btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
           }
-        }})
+        })
           .catch(function(e) {
           appendLogLpropia('❌ Error hoja: ' + e.message);
           errorModalProgreso('❌ Error hoja: ' + e.message);
@@ -21207,7 +21207,7 @@
           if (res.error) appendLogLpropia('⚠️ ' + res.error);
           if (res.logs && res.logs.length > 0) res.logs.forEach(function(l) { appendLogLpropia('⚠️ ' + l); });
           ejecutarPaso3RutaNacional(madre, hijas, btn);
-        }})
+        })
           .catch(function(e) {
           appendLogLpropia('❌ Error recibiendo: ' + e.message);
           errorModalProgreso('❌ Error recibiendo: ' + e.message);
@@ -21248,7 +21248,7 @@
           completarModalProgreso('🎉 PROCESO COMPLETO.');
           mostrarOkModalProgreso();
           btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
-        }})
+        })
           .catch(function(e) {
           appendLogLpropia('❌ Error En Ruta Nacional: ' + e.message);
           appendLogLpropia('\n⚠️ Pasos 1 y 2 completados. Solo falló el paso 3.');
@@ -21347,7 +21347,7 @@
             document.getElementById('userStatusTextLmensajero').innerHTML = '<span style="color:#dc3545;">' + res.error + '</span>';
             appendLogLmensajero('\u274C ' + res.error);
           }
-        }})
+        })
           .catch(function(e) {
           document.getElementById('userStatusIconLmensajero').textContent = '\u274C';
           document.getElementById('userStatusTextLmensajero').innerHTML = '<span style="color:#dc3545;">Error de conexi\u00F3n</span>';
@@ -21385,7 +21385,7 @@
             document.getElementById('errorEstadosActualizarEstado').textContent = 'Error: ' + res.error;
             appendLogLmensajero('\u274C Error estados: ' + res.error);
           }
-        }})
+        })
           .catch(function(e) {
           appendLogLmensajero('\u274C Error estados: ' + e.message);
         });
@@ -21425,7 +21425,7 @@
             document.getElementById('hijasCardLmensajero').style.display = 'block';
             document.getElementById('hijasCountLmensajero').innerHTML = '';
           }
-        }})
+        })
           .catch(function(e) {
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-search"></i> Buscar Hijas';
           appendLogLmensajero('\u274C Error buscando hijas: ' + e.message);
@@ -21522,7 +21522,7 @@
           } else {
             appendLogLmensajero('\u274C Ninguna gu\u00EDa encontrada en el sistema.');
           }
-        }})
+        })
           .catch(function(e) {
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-arrow-right-circle"></i> Buscar Gu\u00EDas Seleccionadas en Sistema';
           appendLogLmensajero('ERROR: ' + e.message);
@@ -21566,7 +21566,7 @@
           }
           // PASO 2: Actualizar hoja (Despachado → Recibida)
           ejecutarPaso2HojaMensajero(chuleadas, btn);
-        }})
+        })
           .catch(function(e) {
           appendLogLmensajero('\u274C Error cambiando estado: ' + e.message);
           errorModalProgreso('Error cambiando estado: ' + e.message);
@@ -21592,7 +21592,7 @@
           .then(function(res) {
           appendLogLmensajero('\u2705 Hoja actualizada correctamente.');
           finalizarProcesoMensajero(btn);
-        }})
+        })
           .catch(function(e) {
           appendLogLmensajero('\u274C Error actualizando hoja: ' + e.message);
           appendLogLmensajero('\n\u26A0\uFE0F Paso 1 completado. Fall\u00F3 el paso 2 (hoja).');
@@ -21626,7 +21626,7 @@
             }
             mostrarOkModalProgreso();
             enviarRecogidaWhatsApp();
-          }})
+          })
           .catch(function() {
             mostrarOkModalProgreso();
             enviarRecogidaWhatsApp();
@@ -21737,7 +21737,7 @@
           } else {
             appendLogLmensajero('\u274C Ninguna gu\u00EDa encontrada en el sistema.');
           }
-        }})
+        })
           .catch(function(e) {
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-search"></i> Buscar Gu\u00EDas en Sistema';
           appendLogLmensajero('ERROR: ' + e.message);
@@ -21951,7 +21951,7 @@
           btn.disabled = false;
           btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado';
           btn.style.background = '#dc3545';
-        }})
+        })
           .catch(function(e) {
           appendLogLmensajero('\u274C Error cambiando estado: ' + e.message);
           errorModalProgreso('Error cambiando estado: ' + e.message);
