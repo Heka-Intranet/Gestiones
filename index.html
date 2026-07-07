@@ -5595,8 +5595,9 @@
                   <i class="bi bi-check-circle" style="color: #28a745;"></i> Procesar Recogida
                 </h3>
                 <div style="background: #d4edda; border: 1px solid #28a745; border-radius: 5px; padding: 10px 14px; margin-bottom: 12px; font-size: 13px; color: #155724;">
-                  <strong>Estado:</strong> En Bodega<br>
-                  <strong>Descripción:</strong> Ingreso a Bodega, próximo a salir a reparto
+                  <strong>Paso 1:</strong> En Bodega — Ingreso a Bodega, próximo a salir a reparto<br>
+                  <strong>Paso 2:</strong> En Reparto — En zona de distribución<br>
+                  <span style="font-size:11px; color:#6c757d;">(ambos estados se aplican automáticamente en secuencia)</span>
                 </div>
                 <button id="btnProcesarRecogidaLmensajero" onclick="procesarRecogidaMensajero()" disabled style="background: #28a745; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 700; transition: 0.2s;" onmouseover="this.style.background='#218838'" onmouseout="this.style.background='#28a745'">
                   <i class="bi bi-check2-all"></i> Procesar Guías Seleccionadas
@@ -22441,9 +22442,9 @@
         .buscarMultiplesGuiasLpropia(texto);
     }
 
-    // ========== PROCESAR RECOGIDA (TAB RECOGIDA - estado fijo: En Bodega) ==========
+    // ========== PROCESAR RECOGIDA (TAB RECOGIDA - 3 pasos: En Bodega → En Reparto → Hoja) ==========
     function procesarRecogidaMensajero() {
-      var estadoFijo = {
+      var estadoBodega = {
         estado: 'En Bodega',
         tipo: '',
         descripcion: 'Ingreso a Bodega, pr\u00F3ximo a salir a reparto',
@@ -22465,37 +22466,68 @@
       appendLogLmensajero('Hijas chuleadas: ' + chuleadas.seleccionadas.length);
       appendLogLmensajero('========================================');
 
-      // PASO 1: Cambiar estado a "En Bodega" en Firestore
-      appendLogLmensajero('\n\ud83d\udccc PASO 1/2: Cambiando estado a [En Bodega] Ingreso a Bodega, pr\u00F3ximo a salir a reparto...');
-      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Paso 1/2: Cambiando estado...';
+      // PASO 1/3: Cambiar estado a "En Bodega"
+      appendLogLmensajero('\n\ud83d\udccc PASO 1/3: Cambiando estado a [En Bodega] Ingreso a Bodega, pr\u00F3ximo a salir a reparto...');
+      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Paso 1/3: En Bodega...';
 
       google.script.run
         .withSuccessHandler(function(res) {
-          appendLogLmensajero('\u2705 Estado actualizado: ' + res.procesadas + ' de ' + res.total + '.');
+          appendLogLmensajero('\u2705 Paso 1 OK: ' + res.procesadas + ' de ' + res.total + '.');
           if (res.error) appendLogLmensajero('\u26A0\uFE0F ' + res.error);
           if (res.logs && res.logs.length > 0) {
             res.logs.forEach(function(l) { appendLogLmensajero('\u26A0\uFE0F ' + l); });
           }
-          // PASO 2: Actualizar hoja (Despachado → Recibida)
-          ejecutarPaso2HojaMensajero(chuleadas, btn);
+          // PASO 2/3: Cambiar a "En Reparto"
+          ejecutarPaso2EnRepartoMensajero(chuleadas, btn);
         })
         .withFailureHandler(function(e) {
-          appendLogLmensajero('\u274C Error cambiando estado: ' + e.message);
+          appendLogLmensajero('\u274C Error en paso 1 (En Bodega): ' + e.message);
           errorModalProgreso('Error cambiando estado: ' + e.message);
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Procesar Gu\u00EDas Seleccionadas'; btn.style.background = '#28a745';
         })
-        .actualizarMultiplesEstadosLpropia(enviosActualesLmensajero, estadoFijo, idPuntoActualLmensajero);
+        .actualizarMultiplesEstadosLpropia(enviosActualesLmensajero, estadoBodega, idPuntoActualLmensajero);
     }
 
-    // ========== PASO 2: ACTUALIZAR HOJA GUIAS MADRE (Despachado → Recibida) ==========
-    function ejecutarPaso2HojaMensajero(chuleadas, btn) {
+    // ========== PASO 2/3: EN REPARTO (nuevo paso intermedio en Recogida) ==========
+    function ejecutarPaso2EnRepartoMensajero(chuleadas, btn) {
+      var estadoReparto = {
+        estado: 'En Reparto',
+        tipo: '',
+        descripcion: 'En zona de distribuci\u00F3n',
+        esNovedad: false,
+        observaciones: ''
+      };
+
+      appendLogLmensajero('\n\ud83d\udccc PASO 2/3: Cambiando estado a [En Reparto] En zona de distribuci\u00F3n...');
+      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Paso 2/3: En Reparto...';
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          appendLogLmensajero('\u2705 Paso 2 OK: ' + res.procesadas + ' de ' + res.total + '.');
+          if (res.error) appendLogLmensajero('\u26A0\uFE0F ' + res.error);
+          if (res.logs && res.logs.length > 0) {
+            res.logs.forEach(function(l) { appendLogLmensajero('\u26A0\uFE0F ' + l); });
+          }
+          // PASO 3/3: Actualizar hoja (Despachado → Recibida)
+          ejecutarPaso3HojaMensajero(chuleadas, btn);
+        })
+        .withFailureHandler(function(e) {
+          appendLogLmensajero('\u274C Error en paso 2 (En Reparto): ' + e.message);
+          errorModalProgreso('Error en paso 2: ' + e.message);
+          btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Procesar Gu\u00EDas Seleccionadas'; btn.style.background = '#28a745';
+        })
+        .actualizarMultiplesEstadosLpropia(enviosActualesLmensajero, estadoReparto, idPuntoActualLmensajero);
+    }
+
+    // ========== PASO 3/3: ACTUALIZAR HOJA GUIAS MADRE (Despachado → Recibida) ==========
+    function ejecutarPaso3HojaMensajero(chuleadas, btn) {
       if (chuleadas.seleccionadas.length === 0) {
         appendLogLmensajero('\n\u26A0\uFE0F No hay gu\u00EDas seleccionadas para actualizar en hoja.');
         finalizarProcesoMensajero(btn);
         return;
       }
 
-      appendLogLmensajero('\n\ud83d\udcdd PASO 2/2: Actualizando hoja Gu\u00EDas Madres (Despachado \u2192 Recibida)...');
+      appendLogLmensajero('\n\ud83d\udcdd PASO 3/3: Actualizando hoja Gu\u00EDas Madres (Despachado \u2192 Recibida)...');
       btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Paso 2/2: Actualizando hoja...';
 
       google.script.run
@@ -22505,7 +22537,7 @@
         })
         .withFailureHandler(function(e) {
           appendLogLmensajero('\u274C Error actualizando hoja: ' + e.message);
-          appendLogLmensajero('\n\u26A0\uFE0F Paso 1 completado. Fall\u00F3 el paso 2 (hoja).');
+          appendLogLmensajero('\n\u26A0\uFE0F Paso 1 y 2 completados. Fall\u00F3 el paso 3 (hoja).');
           errorModalProgreso('Error actualizando hoja. ' + e.message);
           finalizarProcesoMensajero(btn);
         })
@@ -22847,12 +22879,91 @@
       appendLogLmensajero('Gu\u00EDas a actualizar: ' + enviosActualesActualizarEstado.length);
       appendLogLmensajero('========================================');
 
-      appendLogLmensajero('\n\ud83d\udccc Cambiando estado a [' + estadoData.estado + '] ' + estadoData.descripcion + '...');
+      // ----- DETECTAR SI HAY QUE APLICAR ESTADO INTERMEDIO -----
+      var necesitaBodegaAntes = false;   // Si es novedad → primero En Bodega
+      var necesitaRepartoAntes = false;  // Si está en En Bodega → primero En Reparto
+
+      // 1) Si el estado elegido ES una novedad, primero poner En Bodega
+      if (estadoData.esNovedad) {
+        necesitaBodegaAntes = true;
+        appendLogLmensajero('\n\u26A0\uFE0F Estado elegido es NOVEDAD. Se aplicar\u00E1 primero [En Bodega] autom\u00E1ticamente.');
+      }
+
+      // 2) Si NO es novedad, verificar si alguno est\u00E1 en En Bodega → primero En Reparto
+      if (!necesitaBodegaAntes) {
+        enviosActualesActualizarEstado.forEach(function(env) {
+          var estadoActual = (env.data.estado || '').toUpperCase().trim();
+          if (estadoActual === 'EN BODEGA') {
+            necesitaRepartoAntes = true;
+          }
+        });
+        if (necesitaRepartoAntes) {
+          appendLogLmensajero('\n\u26A0\uFE0F Uno o m\u00E1s env\u00EDos est\u00E1n en [En Bodega]. Se aplicar\u00E1 primero [En Reparto] autom\u00E1ticamente.');
+        }
+      }
+
+      // ----- EJECUTAR CON ESTADOS INTERMEDIOS SI APLICA -----
+      if (necesitaBodegaAntes) {
+        // PASO A: En Bodega
+        ejecutarEstadoIntermedio({
+          estado: 'En Bodega',
+          tipo: '',
+          descripcion: 'Ingreso a Bodega, pr\u00F3ximo a salir a reparto',
+          esNovedad: false,
+          observaciones: ''
+        }, btn, function() {
+          // PASO B: El estado que pidi\u00F3 el usuario
+          ejecutarEstadoFinal(estadoData, btn);
+        });
+      } else if (necesitaRepartoAntes) {
+        // PASO A: En Reparto
+        ejecutarEstadoIntermedio({
+          estado: 'En Reparto',
+          tipo: '',
+          descripcion: 'En zona de distribuci\u00F3n',
+          esNovedad: false,
+          observaciones: ''
+        }, btn, function() {
+          // PASO B: El estado que pidi\u00F3 el usuario
+          ejecutarEstadoFinal(estadoData, btn);
+        });
+      } else {
+        // Sin estado intermedio, ejecutar directamente
+        ejecutarEstadoFinal(estadoData, btn);
+      }
+    }
+
+    // ========== ESTADO INTERMEDIO (En Bodega o En Reparto antes del estado final) ==========
+    function ejecutarEstadoIntermedio(estadoIntermedio, btn, callbackFinal) {
+      appendLogLmensajero('\n\ud83d\udccc PASO INTERMEDIO: Cambiando a [' + estadoIntermedio.estado + '] ' + estadoIntermedio.descripcion + '...');
+      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Estado intermedio...';
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          appendLogLmensajero('\u2705 Estado intermedio aplicado: ' + res.procesadas + ' de ' + res.total + '.');
+          if (res.error) appendLogLmensajero('\u26A0\uFE0F ' + res.error);
+          if (res.logs && res.logs.length > 0) {
+            res.logs.forEach(function(l) { appendLogLmensajero('\u26A0\uFE0F ' + l); });
+          }
+          // Ahora ejecutar el estado final
+          callbackFinal();
+        })
+        .withFailureHandler(function(e) {
+          appendLogLmensajero('\u274C Error en estado intermedio: ' + e.message);
+          errorModalProgreso('Error en estado intermedio: ' + e.message);
+          btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado'; btn.style.background = '#dc3545';
+        })
+        .actualizarMultiplesEstadosLpropia(enviosActualesActualizarEstado, estadoIntermedio, idPuntoActualLmensajero);
+    }
+
+    // ========== ESTADO FINAL (el que el usuario eligi\u00F3) ==========
+    function ejecutarEstadoFinal(estadoData, btn) {
+      appendLogLmensajero('\n\ud83d\udccc PASO FINAL: Cambiando a [' + estadoData.estado + '] ' + estadoData.descripcion + '...');
       btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...';
 
       google.script.run
         .withSuccessHandler(function(res) {
-          appendLogLmensajero('\u2705 Estado actualizado: ' + res.procesadas + ' de ' + res.total + '.');
+          appendLogLmensajero('\u2705 Estado final aplicado: ' + res.procesadas + ' de ' + res.total + '.');
           if (res.error) appendLogLmensajero('\u26A0\uFE0F ' + res.error);
           if (res.logs && res.logs.length > 0) {
             res.logs.forEach(function(l) { appendLogLmensajero('\u26A0\uFE0F ' + l); });
@@ -22866,7 +22977,7 @@
           btn.style.background = '#dc3545';
         })
         .withFailureHandler(function(e) {
-          appendLogLmensajero('\u274C Error cambiando estado: ' + e.message);
+          appendLogLmensajero('\u274C Error en estado final: ' + e.message);
           errorModalProgreso('Error cambiando estado: ' + e.message);
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado'; btn.style.background = '#dc3545';
         })
