@@ -5642,7 +5642,7 @@
                   </div>
                   <div style="flex: 1;">
                     <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: #495057;">Descripción del Estado:</label>
-                    <select id="selectDescActualizarEstado" disabled style="width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px; box-sizing: border-box; outline: none; background: #fff;">
+                    <select id="selectDescActualizarEstado" onchange="onDescChangeActualizarEstado()" disabled style="width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px; box-sizing: border-box; outline: none; background: #fff;">
                       <option value="">-- Primero seleccione Estado --</option>
                     </select>
                   </div>
@@ -5651,6 +5651,15 @@
                 <div style="margin-bottom: 12px;">
                   <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: #495057;">Observaciones Adicionales (Opcional):</label>
                   <input type="text" id="updObservacionesActualizarEstado" placeholder="Ej: Se contactó al cliente" style="width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px; box-sizing: border-box; outline: none;" onfocus="this.style.borderColor='#FDB813'" onblur="this.style.borderColor='#ced4da'">
+                </div>
+
+                <!-- FECHA PROGRAMADA (solo para SE PROGRAMA CITA) -->
+                <div id="fechaProgramadaContainer" style="display:none; margin-bottom: 12px; padding: 12px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px;">
+                  <label style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-weight: 600; font-size: 13px; color: #856404;">
+                    <i class="bi bi-calendar-event" style="font-size: 16px;"></i> Fecha Programada para Entrega:
+                  </label>
+                  <input type="date" id="fechaProgramadaInput" style="width: 100%; padding: 10px 12px; border: 1px solid #ffc107; border-radius: 5px; font-size: 14px; box-sizing: border-box; outline: none; background: #fff;">
+                  <div style="font-size: 11px; color: #856404; margin-top: 4px;">La gu\u00EDa quedar\u00E1 en Bodega hasta esta fecha. Ese d\u00EDa pasar\u00E1 a Reparto autom\u00E1ticamente a las 7:00 AM.</div>
                 </div>
 
                 <!-- EVIDENCIA FOTOGRAFICA -->
@@ -22180,6 +22189,16 @@
     var enviosActualesActualizarEstado = [];
     var estadosFiltradosActualizarEstado = [];
 
+    // ========== CONSTANTES NOVEDADES ESPECIALES ==========
+    var NOVEDADES_CAMBIO_DIA_SIGUIENTE = [
+      'RESIDENTE AUSENTE',
+      'NO SE LOGRA COMUNICACION CON EL DESTINATARIO',
+      'NO HAY QUIEN RECIBA',
+      'SIN MEDIO DE PAGO'
+    ];
+    var NOVEDAD_CITA_PROGRAMADA = 'SE PROGRAMA CITA PARA ENTREGA A PETICION DEL DESTINATARIO';
+    var SPREADSHEET_CAMBIO_AUTO = '13vxTQRS75rpC3cYbrwih5Xb8qLf0Eh0LPs-KIAN_SBc';
+
     function appendLogLmensajero(msg) { appendModalProgreso(msg); }
     function clearLogLmensajero() { clearModalProgreso(); }
 
@@ -22694,6 +22713,7 @@
       var estadoSeleccionado = document.getElementById('selectEstadoActualizarEstado').value;
       var selectDesc = document.getElementById('selectDescActualizarEstado');
       estadosFiltradosActualizarEstado = [];
+      document.getElementById('fechaProgramadaContainer').style.display = 'none';
 
       // Actualizar etiqueta de evidencia (obligatorio/opcional)
       actualizarEtiquetaEvidencia();
@@ -22719,6 +22739,8 @@
         selectDesc.appendChild(opt);
         selectDesc.disabled = false;
         appendLogLmensajero('\ud83d\udccb ' + estadoSeleccionado + ' \u2192 ' + est.descripcion + ' (auto-seleccionado)');
+        // Auto-detectar si es CITA PROGRAMADA
+        checkFechaProgramada(est);
       } else {
         estadosFiltradosActualizarEstado.forEach(function(est, idx) {
           var opt = document.createElement('option');
@@ -22729,6 +22751,37 @@
         selectDesc.disabled = false;
         appendLogLmensajero('\ud83d\udccb ' + estadoSeleccionado + ': ' + estadosFiltradosActualizarEstado.length + ' descripciones disponibles.');
       }
+    }
+
+    // Detectar si la descripci\u00F3n seleccionada es CITA PROGRAMADA
+    function checkFechaProgramada(estadoHeka) {
+      var desc = (estadoHeka.descripcion || '').toUpperCase().trim();
+      if (desc.indexOf('SE PROGRAMA CITA') !== -1) {
+        // Setear fecha m\u00EDnima = ma\u00F1ana (Bogot\u00E1)
+        var manana = new Date();
+        manana.setDate(manana.getDate() + 1);
+        var y = manana.getFullYear();
+        var m = String(manana.getMonth() + 1).padStart(2, '0');
+        var d = String(manana.getDate()).padStart(2, '0');
+        document.getElementById('fechaProgramadaInput').min = y + '-' + m + '-' + d;
+        document.getElementById('fechaProgramadaInput').value = '';
+        document.getElementById('fechaProgramadaContainer').style.display = 'block';
+        appendLogLmensajero('\ud83d\udcc5 Cita programada detectada. Seleccione la fecha de entrega.');
+      } else {
+        document.getElementById('fechaProgramadaContainer').style.display = 'none';
+      }
+    }
+
+    // Se llama al cambiar la descripci\u00F3n (cuando hay m\u00FAltiples opciones)
+    function onDescChangeActualizarEstado() {
+      var idx = document.getElementById('selectDescActualizarEstado').value;
+      if (idx === '' || idx === undefined || idx === null) {
+        document.getElementById('fechaProgramadaContainer').style.display = 'none';
+        return;
+      }
+      var estadoHeka = estadosFiltradosActualizarEstado[parseInt(idx)];
+      if (estadoHeka) checkFechaProgramada(estadoHeka);
+      actualizarEtiquetaEvidencia();
     }
 
     // ========== FUNCIONES EVIDENCIA FOTOGRÁFICA ==========
@@ -22809,49 +22862,92 @@
       var estadoHeka = estadosFiltradosActualizarEstado[parseInt(descIndex)];
       if (!estadoHeka) return alert("Estado no v\u00E1lido.");
 
-      // ========== VALIDACIÓN NOVEDAD ==========
-      var guiasEnNovedad = [];
-      var esDestinoEnBodega = (estadoHeka.estado === 'En Bodega' && estadoHeka.descripcion === 'Ingreso a Bodega, pr\u00F3ximo a salir a reparto');
-      if (!esDestinoEnBodega) {
-        enviosActualesActualizarEstado.forEach(function(env) {
-          var estadoActual = (env.data.estado || '').toUpperCase().trim();
-          if (estadoActual === 'NOVEDAD') {
-            guiasEnNovedad.push(env.data.numeroGuia);
-          }
-        });
-        if (guiasEnNovedad.length > 0) {
-          mostrarModalNovedad(guiasEnNovedad);
-          return;
-        }
-      }
-
-      // ========== VALIDACIÓN EN BODEGA ==========
-      var guiasEnBodega = [];
-      var esDestinoReparto = (estadoHeka.estado || '').toUpperCase().indexOf('REPARTO') !== -1;
-      if (!esDestinoReparto) {
-        enviosActualesActualizarEstado.forEach(function(env) {
-          var estadoActual = (env.data.estado || '').toUpperCase().trim();
-          if (estadoActual === 'EN BODEGA') {
-            guiasEnBodega.push(env.data.numeroGuia);
-          }
-        });
-        if (guiasEnBodega.length > 0) {
-          document.getElementById('modalBodegaLista').innerHTML = guiasEnBodega.map(function(g) { return '\u2022 ' + g; }).join('<br>');
-          document.getElementById('modalValidacionBodega').style.display = 'flex';
-          return;
-        }
-      }
-
       // ========== VALIDACIÓN IMAGEN OBLIGATORIA ==========
+      var descUpper = (estadoHeka.descripcion || '').toUpperCase().trim();
       var estadoUpper = (estadoHeka.estado || '').toUpperCase().trim();
       var imagenObligatoria = (estadoUpper.indexOf('NOVEDAD') !== -1 || estadoUpper.indexOf('ENTREGA') !== -1);
       if (imagenObligatoria && !evidenciaBase64ActualizarEstado) {
         return alert('Para el estado [' + estadoHeka.estado + '] es OBLIGATORIO subir una imagen de evidencia.');
       }
 
+      // ========== DETECTAR NOVEDADES ESPECIALES ==========
+      var esCitaProgramada = (descUpper.indexOf('SE PROGRAMA CITA') !== -1);
+      var esCambioDiaSiguiente = NOVEDADES_CAMBIO_DIA_SIGUIENTE.some(function(n) { return descUpper.indexOf(n) !== -1; });
+      var tipoRegistroAuto = ''; // '', 'DIA_SIGUIENTE', o 'CITA_PROGRAMADA'
+      var fechaCita = '';
+
+      if (esCitaProgramada) {
+        fechaCita = document.getElementById('fechaProgramadaInput').value;
+        if (!fechaCita) return alert('Para "Se programa cita" debe seleccionar la fecha programada de entrega.');
+        tipoRegistroAuto = 'CITA_PROGRAMADA';
+      } else if (esCambioDiaSiguiente) {
+        tipoRegistroAuto = 'DIA_SIGUIENTE';
+      }
+
       // Construir observaciones base
       var obsBase = document.getElementById('updObservacionesActualizarEstado').value || '';
 
+      // Construir estadoData (con overrides para CITA PROGRAMADA)
+      var estadoDataFinal;
+      if (esCitaProgramada) {
+        // Para CITA: override a En Bodega, no es novedad
+        estadoDataFinal = {
+          estado: 'En Bodega',
+          tipo: '',
+          descripcion: 'Ingreso a Bodega, cita programada para entrega',
+          esNovedad: false,
+          observaciones: 'Cita programada: ' + fechaCita + (obsBase ? '. ' + obsBase : ''),
+          _tipoRegistro: tipoRegistroAuto,
+          _fechaCita: fechaCita
+        };
+      } else {
+        estadoDataFinal = {
+          estado: estadoHeka.estado,
+          tipo: estadoHeka.tipo,
+          descripcion: estadoHeka.descripcion,
+          esNovedad: estadoHeka.esNovedad,
+          observaciones: obsBase,
+          _tipoRegistro: tipoRegistroAuto
+        };
+      }
+
+      // Skip validaci\u00F3n de novedad/bodega si es CITA (va a En Bodega directo)
+      if (!esCitaProgramada) {
+        // ========== VALIDACIÓN NOVEDAD ==========
+        var guiasEnNovedad = [];
+        var esDestinoEnBodega = (estadoHeka.estado === 'En Bodega' && estadoHeka.descripcion === 'Ingreso a Bodega, pr\u00F3ximo a salir a reparto');
+        if (!esDestinoEnBodega) {
+          enviosActualesActualizarEstado.forEach(function(env) {
+            var estadoActual = (env.data.estado || '').toUpperCase().trim();
+            if (estadoActual === 'NOVEDAD') {
+              guiasEnNovedad.push(env.data.numeroGuia);
+            }
+          });
+          if (guiasEnNovedad.length > 0) {
+            mostrarModalNovedad(guiasEnNovedad);
+            return;
+          }
+        }
+      }
+
+      if (!esCitaProgramada) {
+        // ========== VALIDACIÓN EN BODEGA ==========
+        var guiasEnBodega = [];
+        var esDestinoReparto = (estadoDataFinal.estado || '').toUpperCase().indexOf('REPARTO') !== -1;
+        if (!esDestinoReparto) {
+          enviosActualesActualizarEstado.forEach(function(env) {
+            var estadoActual = (env.data.estado || '').toUpperCase().trim();
+            if (estadoActual === 'EN BODEGA') {
+              guiasEnBodega.push(env.data.numeroGuia);
+            }
+          });
+          if (guiasEnBodega.length > 0) {
+            document.getElementById('modalBodegaLista').innerHTML = guiasEnBodega.map(function(g) { return '\u2022 ' + g; }).join('<br>');
+            document.getElementById('modalValidacionBodega').style.display = 'flex';
+            return;
+          }
+        }
+      }
 
       var btn = document.getElementById('btnActualizarEstadoManual');
       btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Subiendo evidencia...'; btn.style.background = '#a71d2a';
@@ -22873,14 +22969,8 @@
             }
             appendLogLmensajero('\u2705 Imagen subida: ' + res.url);
             var soporteText = 'Soporte: ' + res.url;
-            var obsFinal = obsBase ? obsBase + ' ' + soporteText : soporteText;
-            ejecutarActualizacionEstado({
-              estado: estadoHeka.estado,
-              tipo: estadoHeka.tipo,
-              descripcion: estadoHeka.descripcion,
-              esNovedad: estadoHeka.esNovedad,
-              observaciones: obsFinal
-            }, btn);
+            estadoDataFinal.observaciones = estadoDataFinal.observaciones ? estadoDataFinal.observaciones + ' ' + soporteText : soporteText;
+            ejecutarActualizacionEstado(estadoDataFinal, btn);
           },
           function(e) {
             // FAILURE
@@ -22891,13 +22981,7 @@
         );
       } else {
         // Sin imagen, ejecutar directamente
-        ejecutarActualizacionEstado({
-          estado: estadoHeka.estado,
-          tipo: estadoHeka.tipo,
-          descripcion: estadoHeka.descripcion,
-          esNovedad: estadoHeka.esNovedad,
-          observaciones: obsBase
-        }, btn);
+        ejecutarActualizacionEstado(estadoDataFinal, btn);
       }
     }
 
@@ -22978,17 +23062,13 @@
       appendLogLmensajero('========================================');
 
       // ----- DETECTAR SI HAY QUE APLICAR ESTADO INTERMEDIO -----
-      var necesitaBodegaAntes = false;   // Si es novedad → primero En Bodega
-      var necesitaRepartoAntes = false;  // Si está en En Bodega → primero En Reparto
+      // Solo: si est\u00E1n en En Bodega y el destino NO es En Reparto \u2192 primero En Reparto
+      // Las novedades se aplican DIRECTAMENTE (sin En Bodega intermedio)
+      var necesitaRepartoAntes = false;
+      var destinoEsReparto = (estadoData.estado || '').toUpperCase().indexOf('REPARTO') !== -1;
+      var destinoEsBodega = (estadoData.estado || '').toUpperCase().indexOf('BODEGA') !== -1;
 
-      // 1) Si el estado elegido ES una novedad, primero poner En Bodega
-      if (estadoData.esNovedad) {
-        necesitaBodegaAntes = true;
-        appendLogLmensajero('\n\u26A0\uFE0F Estado elegido es NOVEDAD. Se aplicar\u00E1 primero [En Bodega] autom\u00E1ticamente.');
-      }
-
-      // 2) Si NO es novedad, verificar si alguno est\u00E1 en En Bodega → primero En Reparto
-      if (!necesitaBodegaAntes) {
+      if (!destinoEsReparto && !destinoEsBodega) {
         enviosActualesActualizarEstado.forEach(function(env) {
           var estadoActual = (env.data.estado || '').toUpperCase().trim();
           if (estadoActual === 'EN BODEGA') {
@@ -22996,25 +23076,12 @@
           }
         });
         if (necesitaRepartoAntes) {
-          appendLogLmensajero('\n\u26A0\uFE0F Uno o m\u00E1s env\u00EDos est\u00E1n en [En Bodega]. Se aplicar\u00E1 primero [En Reparto] autom\u00E1ticamente.');
+          appendLogLmensajero('\n\u26A0\uFE0F Gu\u00EDas en [En Bodega]. Se aplicar\u00E1 primero [En Reparto] autom\u00E1ticamente.');
         }
       }
 
-      // ----- EJECUTAR CON ESTADOS INTERMEDIOS SI APLICA -----
-      if (necesitaBodegaAntes) {
-        // PASO A: En Bodega
-        ejecutarEstadoIntermedio({
-          estado: 'En Bodega',
-          tipo: '',
-          descripcion: 'Ingreso a Bodega, pr\u00F3ximo a salir a reparto',
-          esNovedad: false,
-          observaciones: ''
-        }, btn, function() {
-          // PASO B: El estado que pidi\u00F3 el usuario
-          ejecutarEstadoFinal(estadoData, btn);
-        });
-      } else if (necesitaRepartoAntes) {
-        // PASO A: En Reparto
+      // ----- EJECUTAR CON ESTADO INTERMEDIO SI APLICA -----
+      if (necesitaRepartoAntes) {
         ejecutarEstadoIntermedio({
           estado: 'En Reparto',
           tipo: '',
@@ -23022,16 +23089,14 @@
           esNovedad: false,
           observaciones: ''
         }, btn, function() {
-          // PASO B: El estado que pidi\u00F3 el usuario
           ejecutarEstadoFinal(estadoData, btn);
         });
       } else {
-        // Sin estado intermedio, ejecutar directamente
         ejecutarEstadoFinal(estadoData, btn);
       }
     }
 
-    // ========== ESTADO INTERMEDIO (En Bodega o En Reparto antes del estado final) ==========
+    // ========== ESTADO INTERMEDIO (En Reparto antes del estado final) ==========
     function ejecutarEstadoIntermedio(estadoIntermedio, btn, callbackFinal) {
       appendLogLmensajero('\n\ud83d\udccc PASO INTERMEDIO: Cambiando a [' + estadoIntermedio.estado + '] ' + estadoIntermedio.descripcion + '...');
       btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Estado intermedio...';
@@ -23043,7 +23108,6 @@
           if (res.logs && res.logs.length > 0) {
             res.logs.forEach(function(l) { appendLogLmensajero('\u26A0\uFE0F ' + l); });
           }
-          // Ahora ejecutar el estado final
           callbackFinal();
         })
         .withFailureHandler(function(e) {
@@ -23061,12 +23125,24 @@
 
       google.script.run
         .withSuccessHandler(function(res) {
-          appendLogLmensajero('\u2705 Estado final aplicado: ' + res.procesadas + ' de ' + res.total + '.');
+          appendLogLmensajero('\u2705 Estado aplicado: ' + res.procesadas + ' de ' + res.total + '.');
           if (res.error) appendLogLmensajero('\u26A0\uFE0F ' + res.error);
           if (res.logs && res.logs.length > 0) {
             res.logs.forEach(function(l) { appendLogLmensajero('\u26A0\uFE0F ' + l); });
           }
-          appendLogLmensajero('\n\ud83c\udf89 PROCESO COMPLETO: Estado actualizado (sin modificar hoja Gu\u00EDas Madres).');
+
+          // ----- REGISTRAR CAMBIO AUTOM\u00C1TICO SI APLICA -----
+          var tipoReg = estadoData._tipoRegistro;
+          if (tipoReg) {
+            appendLogLmensajero('\n\ud83d\udd04 Registrando para cambio autom\u00E1tico (' + tipoReg + ')...');
+            var guiasParaRegistro = enviosActualesActualizarEstado.map(function(env) {
+              return { numeroGuia: env.data.numeroGuia, id_user: env.data.id_user };
+            });
+            registrarCambioAutomatico(guiasParaRegistro, tipoReg, estadoData._fechaCita || '');
+          } else {
+            appendLogLmensajero('\n\ud83c\udf89 PROCESO COMPLETO: Estado actualizado.');
+          }
+
           _onModalOkCallback = function() { initPanelGestionMensajero(); };
           completarModalProgreso('\ud83c\udf89 Estado actualizado correctamente.');
           mostrarOkModalProgreso();
@@ -23080,6 +23156,27 @@
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado'; btn.style.background = '#dc3545';
         })
         .actualizarMultiplesEstadosLpropia(enviosActualesActualizarEstado, estadoData, idPuntoActualLmensajero);
+    }
+
+    // ========== REGISTRAR EN SPREADSHEET PARA CAMBIO AUTOM\u00C1TICO ==========
+    function registrarCambioAutomatico(guias, tipo, fechaCita) {
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (res.ok) {
+            appendLogLmensajero('\u2705 Registradas ' + res.registradas + ' gu\u00EDas para cambio autom\u00E1tico.');
+            if (tipo === 'CITA_PROGRAMADA') {
+              appendLogLmensajero('\ud83d\udcc5 Las gu\u00EDas pasar\u00E1n a Reparto el ' + fechaCita + ' a las 7:00 AM.');
+            } else {
+              appendLogLmensajero('\ud83d\udd04 Las gu\u00EDas pasar\u00E1n a Reparto ma\u00F1ana a las 7:00 AM.');
+            }
+          } else {
+            appendLogLmensajero('\u26A0\uFE0F Error registrando cambio autom\u00E1tico: ' + (res.error || 'Desconocido'));
+          }
+        })
+        .withFailureHandler(function(e) {
+          appendLogLmensajero('\u26A0\uFE0F Error registrando cambio autom\u00E1tico: ' + (e.message || e));
+        })
+        .registrarGuiasCambioAutomatico(guias, tipo, fechaCita);
     }
 
 
