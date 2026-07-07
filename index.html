@@ -9039,8 +9039,9 @@
                 if (successCb) successCb(data);
               })
               .catch(function(err) {
-                if (failureCb) failureCb(err.message || String(err));
-                else if (successCb) successCb({ status: 'error', message: String(err) });
+                var errMsg = err.message || String(err);
+                if (failureCb) failureCb({ message: errMsg });
+                else if (successCb) successCb({ status: 'error', message: errMsg });
               });
             };
           }
@@ -22827,23 +22828,24 @@
       var btn = document.getElementById('btnActualizarEstadoManual');
       btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Subiendo evidencia...'; btn.style.background = '#a71d2a';
 
-      // Si hay imagen, subirla a GitHub primero
+      // Si hay imagen, subirla a GitHub (con chunks si es grande)
       if (evidenciaBase64ActualizarEstado) {
         mostrarModalProgreso('Actualizar Estado - Subiendo imagen a GitHub...');
         appendLogLmensajero('Subiendo imagen de evidencia a GitHub...');
-        google.script.run
-          .withSuccessHandler(function(res) {
+        subirImagenConChunks(
+          evidenciaNombreActualizarEstado,
+          evidenciaBase64ActualizarEstado,
+          function(res) {
+            // SUCCESS
             if (!res.ok) {
               appendLogLmensajero('Error subiendo imagen: ' + res.error);
               errorModalProgreso('Error subiendo imagen: ' + res.error);
               btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado'; btn.style.background = '#dc3545';
               return;
             }
-            appendLogLmensajero('Imagen subida: ' + res.url);
-            // Construir observaciones con Soporte: URL
+            appendLogLmensajero('\u2705 Imagen subida: ' + res.url);
             var soporteText = 'Soporte: ' + res.url;
             var obsFinal = obsBase ? obsBase + ' ' + soporteText : soporteText;
-            // Ejecutar actualizacion con la URL
             ejecutarActualizacionEstado({
               estado: estadoHeka.estado,
               tipo: estadoHeka.tipo,
@@ -22851,13 +22853,14 @@
               esNovedad: estadoHeka.esNovedad,
               observaciones: obsFinal
             }, btn);
-          })
-          .withFailureHandler(function(e) {
-            appendLogLmensajero('Error subiendo imagen: ' + e.message);
-            errorModalProgreso('Error subiendo imagen: ' + e.message);
+          },
+          function(e) {
+            // FAILURE
+            appendLogLmensajero('\u274C Error subiendo imagen: ' + (e.message || e));
+            errorModalProgreso('Error subiendo imagen: ' + (e.message || e));
             btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado'; btn.style.background = '#dc3545';
-          })
-          .subirImagenAGithub(evidenciaNombreActualizarEstado, evidenciaBase64ActualizarEstado);
+          }
+        );
       } else {
         // Sin imagen, ejecutar directamente
         ejecutarActualizacionEstado({
@@ -22868,6 +22871,72 @@
           observaciones: obsBase
         }, btn);
       }
+    }
+
+
+    // ========== SUBIDA DE IMAGEN POR CHUNKS (evita limite de URL en GET) ==========
+    // Si la imagen es peque\u00F1a (<100KB base64), la env\u00EDa directo.
+    // Si es grande, la divide en chunks de 80KB, los env\u00EDa uno por uno,
+    // y el servidor los reensambla con CacheService antes de subir a GitHub.
+    function subirImagenConChunks(nombreArchivo, base64Data, onSuccess, onFailure) {
+      var CHUNK_SIZE = 80000; // 80KB por chunk (safe para URL + CacheService 100KB limit)
+
+      if (base64Data.length <= CHUNK_SIZE) {
+        // Archivo peque\u00F1o: env\u00EDo directo
+        appendLogLmensajero('Imagen peque\u00F1a (' + (base64Data.length / 1024).toFixed(1) + 'KB), env\u00EDo directo...');
+        google.script.run
+          .withSuccessHandler(onSuccess)
+          .withFailureHandler(onFailure)
+          .subirImagenAGithub(nombreArchivo, base64Data);
+        return;
+      }
+
+      // Archivo grande: subida por chunks
+      var totalChunks = Math.ceil(base64Data.length / CHUNK_SIZE);
+      appendLogLmensajero('Imagen grande (' + (base64Data.length / 1024).toFixed(1) + 'KB). Dividiendo en ' + totalChunks + ' chunks...');
+
+      // PASO 1: Iniciar sesi\u00F3n de subida en el servidor
+      google.script.run
+        .withSuccessHandler(function(res) {
+          appendLogLmensajero('\u2705 Sesi\u00F3n iniciada: ' + res.uploadId);
+          enviarSiguienteChunk(nombreArchivo, res.uploadId, base64Data, CHUNK_SIZE, totalChunks, 0, onSuccess, onFailure);
+        })
+        .withFailureHandler(function(e) {
+          appendLogLmensajero('\u274C Error iniciando subida: ' + (e.message || e));
+          onFailure(e);
+        })
+        .iniciarSubidaImagen(nombreArchivo, totalChunks);
+    }
+
+    function enviarSiguienteChunk(nombreArchivo, uploadId, base64Data, chunkSize, totalChunks, chunkIndex, onSuccess, onFailure) {
+      var start = chunkIndex * chunkSize;
+      var chunk = base64Data.substring(start, start + chunkSize);
+
+      appendLogLmensajero('  Enviando chunk ' + (chunkIndex + 1) + '/' + totalChunks + ' (' + (chunk.length / 1024).toFixed(1) + 'KB)...');
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          appendLogLmensajero('  \u2705 Chunk ' + (chunkIndex + 1) + '/' + totalChunks + ' recibido.');
+          if (chunkIndex + 1 < totalChunks) {
+            // Enviar siguiente chunk
+            enviarSiguienteChunk(nombreArchivo, uploadId, base64Data, chunkSize, totalChunks, chunkIndex + 1, onSuccess, onFailure);
+          } else {
+            // Todos los chunks enviados, finalizar
+            appendLogLmensajero('\n\ud83d\udccc Todos los chunks enviados. Ensamblando y subiendo a GitHub...');
+            google.script.run
+              .withSuccessHandler(onSuccess)
+              .withFailureHandler(function(e) {
+                appendLogLmensajero('\u274C Error finalizando subida: ' + (e.message || e));
+                onFailure(e);
+              })
+              .finalizarSubidaImagen(uploadId);
+          }
+        })
+        .withFailureHandler(function(e) {
+          appendLogLmensajero('\u274C Error en chunk ' + (chunkIndex + 1) + ': ' + (e.message || e));
+          onFailure(e);
+        })
+        .subirChunkImagen(uploadId, chunkIndex, chunk);
     }
 
     // Ejecutar la actualizacion de estado en Firestore (se llama despues de subir imagen si aplica)
