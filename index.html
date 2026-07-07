@@ -22887,65 +22887,48 @@
       // Construir observaciones base
       var obsBase = document.getElementById('updObservacionesActualizarEstado').value || '';
 
-      // Construir estadoData (con overrides para CITA PROGRAMADA)
-      var estadoDataFinal;
-      if (esCitaProgramada) {
-        // Para CITA: override a En Bodega, no es novedad
-        estadoDataFinal = {
-          estado: 'En Bodega',
-          tipo: '',
-          descripcion: 'Ingreso a Bodega, cita programada para entrega',
-          esNovedad: false,
-          observaciones: 'Cita programada: ' + fechaCita + (obsBase ? '. ' + obsBase : ''),
-          _tipoRegistro: tipoRegistroAuto,
-          _fechaCita: fechaCita
-        };
-      } else {
-        estadoDataFinal = {
-          estado: estadoHeka.estado,
-          tipo: estadoHeka.tipo,
-          descripcion: estadoHeka.descripcion,
-          esNovedad: estadoHeka.esNovedad,
-          observaciones: obsBase,
-          _tipoRegistro: tipoRegistroAuto
-        };
-      }
+      // Construir estadoData - SIEMPRE el estado que eligi\u00F3 el usuario
+      // (la novedad se aplica primero, luego En Bodega se aplica autom\u00E1ticamente)
+      var estadoDataFinal = {
+        estado: estadoHeka.estado,
+        tipo: estadoHeka.tipo,
+        descripcion: estadoHeka.descripcion,
+        esNovedad: estadoHeka.esNovedad,
+        observaciones: obsBase,
+        _tipoRegistro: tipoRegistroAuto,
+        _fechaCita: fechaCita
+      };
 
-      // Skip validaci\u00F3n de novedad/bodega si es CITA (va a En Bodega directo)
-      if (!esCitaProgramada) {
-        // ========== VALIDACIÓN NOVEDAD ==========
-        var guiasEnNovedad = [];
-        var esDestinoEnBodega = (estadoHeka.estado === 'En Bodega' && estadoHeka.descripcion === 'Ingreso a Bodega, pr\u00F3ximo a salir a reparto');
-        if (!esDestinoEnBodega) {
-          enviosActualesActualizarEstado.forEach(function(env) {
-            var estadoActual = (env.data.estado || '').toUpperCase().trim();
-            if (estadoActual === 'NOVEDAD') {
-              guiasEnNovedad.push(env.data.numeroGuia);
-            }
-          });
-          if (guiasEnNovedad.length > 0) {
-            mostrarModalNovedad(guiasEnNovedad);
-            return;
+      // ========== VALIDACIÓN NOVEDAD ==========
+      var guiasEnNovedad = [];
+      var esDestinoEnBodega = (estadoHeka.estado === 'En Bodega' && estadoHeka.descripcion === 'Ingreso a Bodega, pr\u00F3ximo a salir a reparto');
+      if (!esDestinoEnBodega) {
+        enviosActualesActualizarEstado.forEach(function(env) {
+          var estadoActual = (env.data.estado || '').toUpperCase().trim();
+          if (estadoActual === 'NOVEDAD') {
+            guiasEnNovedad.push(env.data.numeroGuia);
           }
+        });
+        if (guiasEnNovedad.length > 0) {
+          mostrarModalNovedad(guiasEnNovedad);
+          return;
         }
       }
 
-      if (!esCitaProgramada) {
-        // ========== VALIDACIÓN EN BODEGA ==========
-        var guiasEnBodega = [];
-        var esDestinoReparto = (estadoDataFinal.estado || '').toUpperCase().indexOf('REPARTO') !== -1;
-        if (!esDestinoReparto) {
-          enviosActualesActualizarEstado.forEach(function(env) {
-            var estadoActual = (env.data.estado || '').toUpperCase().trim();
-            if (estadoActual === 'EN BODEGA') {
-              guiasEnBodega.push(env.data.numeroGuia);
-            }
-          });
-          if (guiasEnBodega.length > 0) {
-            document.getElementById('modalBodegaLista').innerHTML = guiasEnBodega.map(function(g) { return '\u2022 ' + g; }).join('<br>');
-            document.getElementById('modalValidacionBodega').style.display = 'flex';
-            return;
+      // ========== VALIDACIÓN EN BODEGA ==========
+      var guiasEnBodega = [];
+      var esDestinoReparto = (estadoDataFinal.estado || '').toUpperCase().indexOf('REPARTO') !== -1;
+      if (!esDestinoReparto) {
+        enviosActualesActualizarEstado.forEach(function(env) {
+          var estadoActual = (env.data.estado || '').toUpperCase().trim();
+          if (estadoActual === 'EN BODEGA') {
+            guiasEnBodega.push(env.data.numeroGuia);
           }
+        });
+        if (guiasEnBodega.length > 0) {
+          document.getElementById('modalBodegaLista').innerHTML = guiasEnBodega.map(function(g) { return '\u2022 ' + g; }).join('<br>');
+          document.getElementById('modalValidacionBodega').style.display = 'flex';
+          return;
         }
       }
 
@@ -23061,49 +23044,73 @@
       appendLogLmensajero('Gu\u00EDas a actualizar: ' + enviosActualesActualizarEstado.length);
       appendLogLmensajero('========================================');
 
-      // ----- DETECTAR SI HAY QUE APLICAR ESTADO INTERMEDIO -----
-      // Solo: si est\u00E1n en En Bodega y el destino NO es En Reparto \u2192 primero En Reparto
-      // Las novedades se aplican DIRECTAMENTE (sin En Bodega intermedio)
-      var necesitaRepartoAntes = false;
-      var destinoEsReparto = (estadoData.estado || '').toUpperCase().indexOf('REPARTO') !== -1;
-      var destinoEsBodega = (estadoData.estado || '').toUpperCase().indexOf('BODEGA') !== -1;
+      // ----- LÓGICA DE ESTADOS INTERMEDIOS -----
+      // CASO 1: Es novedad → PASO A: novedad, PASO B: En Bodega
+      // CASO 2: Gu\u00EDas en En Bodega y destino no es Reparto/Bodega → PASO A: En Reparto, PASO B: destino
+      // CASO 3: Directo (sin intermedio)
 
-      if (!destinoEsReparto && !destinoEsBodega) {
-        enviosActualesActualizarEstado.forEach(function(env) {
-          var estadoActual = (env.data.estado || '').toUpperCase().trim();
-          if (estadoActual === 'EN BODEGA') {
-            necesitaRepartoAntes = true;
-          }
-        });
-        if (necesitaRepartoAntes) {
-          appendLogLmensajero('\n\u26A0\uFE0F Gu\u00EDas en [En Bodega]. Se aplicar\u00E1 primero [En Reparto] autom\u00E1ticamente.');
+      if (estadoData.esNovedad) {
+        // CUALQUIER NOVEDAD: primero la novedad, luego En Bodega
+        var obsBodega = '';
+        if (estadoData._tipoRegistro === 'CITA_PROGRAMADA' && estadoData._fechaCita) {
+          obsBodega = 'Cita programada: ' + estadoData._fechaCita;
         }
-      }
+        appendLogLmensajero('\n\u26A0\uFE0F Estado es NOVEDAD. Flujo: Novedad \u2192 En Bodega');
 
-      // ----- EJECUTAR CON ESTADO INTERMEDIO SI APLICA -----
-      if (necesitaRepartoAntes) {
-        ejecutarEstadoIntermedio({
-          estado: 'En Reparto',
-          tipo: '',
-          descripcion: 'En zona de distribuci\u00F3n',
-          esNovedad: false,
-          observaciones: ''
-        }, btn, function() {
-          ejecutarEstadoFinal(estadoData, btn);
+        // PASO A: Aplicar la novedad
+        ejecutarEstadoIntermedio(estadoData, btn, function() {
+          // PASO B: Aplicar En Bodega
+          ejecutarEstadoFinal({
+            estado: 'En Bodega',
+            tipo: '',
+            descripcion: 'Ingreso a Bodega, pr\u00F3ximo a salir a reparto',
+            esNovedad: false,
+            observaciones: obsBodega,
+            _tipoRegistro: estadoData._tipoRegistro,
+            _fechaCita: estadoData._fechaCita
+          }, btn);
         });
+
       } else {
-        ejecutarEstadoFinal(estadoData, btn);
+        // NO es novedad: verificar si necesitan En Reparto antes
+        var destinoEsReparto = (estadoData.estado || '').toUpperCase().indexOf('REPARTO') !== -1;
+        var destinoEsBodega = (estadoData.estado || '').toUpperCase().indexOf('BODEGA') !== -1;
+        var necesitaRepartoAntes = false;
+
+        if (!destinoEsReparto && !destinoEsBodega) {
+          enviosActualesActualizarEstado.forEach(function(env) {
+            var estadoActual = (env.data.estado || '').toUpperCase().trim();
+            if (estadoActual === 'EN BODEGA') {
+              necesitaRepartoAntes = true;
+            }
+          });
+        }
+
+        if (necesitaRepartoAntes) {
+          appendLogLmensajero('\n\u26A0\uFE0F Gu\u00EDas en [En Bodega]. Flujo: En Reparto \u2192 Estado elegido');
+          ejecutarEstadoIntermedio({
+            estado: 'En Reparto',
+            tipo: '',
+            descripcion: 'En zona de distribuci\u00F3n',
+            esNovedad: false,
+            observaciones: ''
+          }, btn, function() {
+            ejecutarEstadoFinal(estadoData, btn);
+          });
+        } else {
+          ejecutarEstadoFinal(estadoData, btn);
+        }
       }
     }
 
-    // ========== ESTADO INTERMEDIO (En Reparto antes del estado final) ==========
+    // ========== ESTADO INTERMEDIO (PASO A: novedad o En Reparto) ==========
     function ejecutarEstadoIntermedio(estadoIntermedio, btn, callbackFinal) {
-      appendLogLmensajero('\n\ud83d\udccc PASO INTERMEDIO: Cambiando a [' + estadoIntermedio.estado + '] ' + estadoIntermedio.descripcion + '...');
-      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Estado intermedio...';
+      appendLogLmensajero('\n\ud83d\udccc PASO 1/2: Aplicando [' + estadoIntermedio.estado + '] ' + estadoIntermedio.descripcion + '...');
+      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Paso 1/2...';
 
       google.script.run
         .withSuccessHandler(function(res) {
-          appendLogLmensajero('\u2705 Estado intermedio aplicado: ' + res.procesadas + ' de ' + res.total + '.');
+          appendLogLmensajero('\u2705 Paso 1/2 aplicado: ' + res.procesadas + ' de ' + res.total + '.');
           if (res.error) appendLogLmensajero('\u26A0\uFE0F ' + res.error);
           if (res.logs && res.logs.length > 0) {
             res.logs.forEach(function(l) { appendLogLmensajero('\u26A0\uFE0F ' + l); });
@@ -23111,21 +23118,21 @@
           callbackFinal();
         })
         .withFailureHandler(function(e) {
-          appendLogLmensajero('\u274C Error en estado intermedio: ' + e.message);
-          errorModalProgreso('Error en estado intermedio: ' + e.message);
+          appendLogLmensajero('\u274C Error en paso 1/2: ' + e.message);
+          errorModalProgreso('Error en paso 1/2: ' + e.message);
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado'; btn.style.background = '#dc3545';
         })
         .actualizarMultiplesEstadosLpropia(enviosActualesActualizarEstado, estadoIntermedio, idPuntoActualLmensajero);
     }
 
-    // ========== ESTADO FINAL (el que el usuario eligi\u00F3) ==========
+    // ========== ESTADO FINAL (PASO 2: En Bodega o el estado elegido) ==========
     function ejecutarEstadoFinal(estadoData, btn) {
-      appendLogLmensajero('\n\ud83d\udccc PASO FINAL: Cambiando a [' + estadoData.estado + '] ' + estadoData.descripcion + '...');
-      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...';
+      appendLogLmensajero('\n\ud83d\udccc PASO 2/2: Aplicando [' + estadoData.estado + '] ' + estadoData.descripcion + '...');
+      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Paso 2/2...';
 
       google.script.run
         .withSuccessHandler(function(res) {
-          appendLogLmensajero('\u2705 Estado aplicado: ' + res.procesadas + ' de ' + res.total + '.');
+          appendLogLmensajero('\u2705 Paso 2/2 aplicado: ' + res.procesadas + ' de ' + res.total + '.');
           if (res.error) appendLogLmensajero('\u26A0\uFE0F ' + res.error);
           if (res.logs && res.logs.length > 0) {
             res.logs.forEach(function(l) { appendLogLmensajero('\u26A0\uFE0F ' + l); });
@@ -23139,10 +23146,9 @@
               return { numeroGuia: env.data.numeroGuia, id_user: env.data.id_user };
             });
             registrarCambioAutomatico(guiasParaRegistro, tipoReg, estadoData._fechaCita || '');
-          } else {
-            appendLogLmensajero('\n\ud83c\udf89 PROCESO COMPLETO: Estado actualizado.');
           }
 
+          appendLogLmensajero('\n\ud83c\udf89 PROCESO COMPLETO.');
           _onModalOkCallback = function() { initPanelGestionMensajero(); };
           completarModalProgreso('\ud83c\udf89 Estado actualizado correctamente.');
           mostrarOkModalProgreso();
@@ -23151,8 +23157,8 @@
           btn.style.background = '#dc3545';
         })
         .withFailureHandler(function(e) {
-          appendLogLmensajero('\u274C Error en estado final: ' + e.message);
-          errorModalProgreso('Error cambiando estado: ' + e.message);
+          appendLogLmensajero('\u274C Error en paso 2/2: ' + e.message);
+          errorModalProgreso('Error en paso 2/2: ' + e.message);
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado'; btn.style.background = '#dc3545';
         })
         .actualizarMultiplesEstadosLpropia(enviosActualesActualizarEstado, estadoData, idPuntoActualLmensajero);
