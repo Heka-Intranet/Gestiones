@@ -4,24 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel Heka | Intranet</title>
-
-  <!-- ===== PWA: INSTALAR COMO APP EN ESCRITORIO ===== -->
-  <meta name="application-name" content="Heka Panel">
-  <meta name="apple-mobile-web-app-title" content="Heka Panel">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#FDB813">
-  <meta name="msapplication-TileColor" content="#FDB813">
-
-  <!-- Favicon y logos para PWA -->
-  <link rel="icon" type="image/png" sizes="32x32" href="https://i.imgur.com/3bxAAa2.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="https://i.imgur.com/3bxAAa2.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="https://i.imgur.com/3bxAAa2.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="https://i.imgur.com/3bxAAa2.png">
-  <link rel="apple-touch-icon" sizes="512x512" href="https://i.imgur.com/3bxAAa2.png">
-
-  <!-- Manifest PWA -->
-  <link rel="manifest" href="./manifest.json">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" 
   rel="stylesheet">
@@ -680,6 +662,7 @@
     .search-input:focus { border-color: var(--primary-yellow); }
 
 
+
     .table-container { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     th { text-align: left; padding: 12px 16px; background: var(--bg-body); font-weight: 600; color: var(--primary-dark); font-size: 14px; border-bottom: 2px solid var(--primary-dark); }
@@ -1147,6 +1130,7 @@
     }
 
 
+
     /* ---------------------------------------------------------
       ESTILOS ESPECÍFICOS TABLA SUITE LOGÍSTICA
       --------------------------------------------------------- */
@@ -1266,6 +1250,8 @@
     }
 
 
+
+
     /* --- ALINEACIÓN HACIA ABAJO PARA CELDAS CON TEXTO LARGO --- */
     #tablaRecargasBody td, #tablaRecargasBody th {
         vertical-align: top !important; /* Empuja el texto hacia arriba para que baje si crece */
@@ -1357,6 +1343,7 @@
         from { opacity: 0; transform: translateY(-5px); }
         to { opacity: 1; transform: translateY(0); }
     }
+
 
 
     /* ---------------------------------------------------------
@@ -2473,6 +2460,7 @@
     }
 
 
+
     #panel-seguimiento-logistica thead th {
         position: sticky !important;
         top: 0 !important;
@@ -3516,6 +3504,8 @@
         </div>        
 
 
+
+
         <!-- NUEVO MENU CONTABLE -->
         <div id="nav-contable-wrapper" class="nav-accordion-item">
           <div class="nav-item" onclick="toggleSubmenu('submenu-contable')">
@@ -3710,6 +3700,7 @@
       <div class="top-header">
 
 
+
         <button class="btn btn-custom-black" id="btn-header-recarga" onclick="openModalRecarga()" style="margin-left: 20px;">
           <i class="bi bi-cash-stack"></i> Recargar
         </button>
@@ -3725,6 +3716,7 @@
         <button class="btn btn-custom-black" id="btn-header-registros" onclick="openModalRegistros()" style="margin-left: 10px;">
           <i class="bi bi-clipboard-check"></i> Registros
         </button>             
+
 
 
         <div class="external-links-container">
@@ -4064,9 +4056,13 @@
               </div>
 
 
+
+
+
             </form>
           </div>
         </div>
+
 
 
         <!-- PANEL NOTIFICAR RO -->
@@ -4252,6 +4248,7 @@
         </div>
 
 
+
         <!-- PANEL ESTADO ANULACION -->
         <div id="panel-estado-anular" class="panel">
           <div class="page-header">
@@ -4292,6 +4289,9 @@
             </div>
           </div>
         </div>
+
+
+
 
 
         <!-- PANEL INDEMNIZACIONES (DISEÑO TABLERO) -->
@@ -4363,6 +4363,7 @@
               </div>
 
             </div>
+
 
 
             <!-- 2. TABLA RESUMEN (DEBAJO DE LOS LOGOS) -->
@@ -4548,6 +4549,7 @@
         </div>
 
 
+
         <!-- PANEL BANCO VS PLATAFORMA -->
         <div id="panel-banco-vs-pl" class="panel">
           <div class="page-header">
@@ -4677,6 +4679,7 @@
             </div>
 
 
+
             <!-- HERRAMIENTAS: BUSCADOR -->
             <div class="indemnizaciones-toolbar" style="margin-bottom: 15px; display: flex; gap: 15px; align-items: center; width: 100%;">
               
@@ -4794,6 +4797,8 @@
         </div>
 
 
+
+
         <!-- PANEL CHECK RECARGA (ACTUALIZADO) -->
         <!-- PANEL CHECK RECARGA (OPTIMIZADO) -->
         <div id="panel-check-recarga" class="panel">
@@ -4894,6 +4899,8 @@
         </div>
 
 
+
+
         <!-- PANEL HISTORIAL RECARGAS -->
         <div id="panel-historial-recargas" class="panel">
           <div class="page-header">
@@ -4974,6 +4981,10 @@
 
               <!-- ... resto de botones ... -->
             </div>
+
+
+
+
 
 
             <div class="search-bar">
@@ -5673,6 +5684,10 @@
         </div>
 
 
+
+
+
+
                 <!-- PANEL SEGUIMIENTO LOGÍSTICA PROPIA -->
         <div id="panel-seguimiento-logistica" class="panel">
           <div class="page-header">
@@ -6019,6 +6034,7 @@
   </div>
 
 
+
   <!-- MODAL DE AVISO/CONFIRMACIÓN (Nuevo) -->
   <div id="modal-aviso" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 99999; justify-content: center; align-items: center;">
     <div style="background: white; width: 90%; max-width: 600px; border-radius: 15px; padding: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center;">
@@ -6349,8 +6365,7 @@
                 </div>
                 <div class="form-group">
                   <label>EPS</label>
-                  <select id="col_AQ" class="form-input"><option value="">Seleccione...</option><option value="Nueva EPS">Nueva EPS</option><o
-ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option value="Colsanitas">Colsanitas</option><option value="Axa Colpatria">Axa Colpatria</option><option value="Coomeva">Coomeva</option><option value="Salud Total">Salud Total</option></select>
+                  <select id="col_AQ" class="form-input"><option value="">Seleccione...</option><option value="Nueva EPS">Nueva EPS</option><option value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option value="Colsanitas">Colsanitas</option><option value="Axa Colpatria">Axa Colpatria</option><option value="Coomeva">Coomeva</option><option value="Salud Total">Salud Total</option></select>
                 </div>
               </div>
             </div>
@@ -6905,6 +6920,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
           </div>
 
 
+
           <!-- BOTÓN GUARDAR -->
           <button class="btn btn-primary" style="margin-top: 20px;" onclick="saveUserConfig()">Guardar Cambios</button>
         </div>
@@ -7202,6 +7218,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
   </div>
 
 
+
   <!-- MODAL REGISTROS (ACTUALIZADO CON BOTÓN INTERNO) -->
   <div id="modal-registros" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'modal-registros')">
     <div class="modal-content" style="max-width: 500px;" onclick="event.stopPropagation()">
@@ -7267,6 +7284,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
   </div>
 
 
+
   <!-- MODAL ADVERTENCIA ASIGNADOS (SOLO LECTURA, 20 SEGUNDOS) -->
   <div id="modal-warning-asignados" class="modal-overlay">
     <div class="modal-content" style="border-top: 4px solid #FDB813; max-width: 500px;">
@@ -7288,6 +7306,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       </div>
     </div>
   </div>
+
 
 
   <!-- MODAL RESUMEN DE ESTADOS (DASHBOARD) -->
@@ -7466,6 +7485,9 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       </div>
     </div>
   </div>
+
+
+
 
 
   <!-- MODAL CONFIRMACIÓN DE BORRADO -->
@@ -7810,6 +7832,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       </div>
     </div>
   </div>
+
 
 
   <!-- MODAL DETALLE INDEMNIZACIONES (SERVI) -->
@@ -8248,6 +8271,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
   </div>
 
 
+
   <!-- MODAL ELIMINAR Y ASIGNAR (SIN TIMER) -->
   <div id="modal-eliminar-y-asignar" class="modal-overlay">
     <div class="modal-content" style="border-top: 4px solid #dc3545; max-width: 500px;">
@@ -8282,6 +8306,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       </div>
     </div>
   </div>  
+
 
 
   <!-- MODAL DE CONFIRMACIÓN PARA CAMBIO DE ASESOR -->
@@ -8785,6 +8810,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
   </div>
 
 
+
+
   <!-- ========================================= -->
   <!-- MODAL DETALLE PAGOS PENDIENTES            -->
   <!-- ========================================= -->
@@ -8960,45 +8987,14 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
 
   <script>
-    // =====================================================
-    // CONFIG PWA
-    // =====================================================
-    // ⚠️ CAMBIA ESTA URL por la URL de tu Apps Script desplegado como Web App
-    // Ejemplo: https://script.google.com/macros/s/TU_ID_AQUI/exec
-    const APP_URL = 'https://script.google.com/macros/s/AKfycbxqiv-ckvSwgEHPDh3mezEyDfIhRPteh0ib8aBYJ9TIIN0gBN93bl03wxoDZmwF7ak/exec';
-
-    // =====================================================
-    // HELPER: callBackend - Reemplaza google.script.run
-    // =====================================================
-    function callBackend(action) {
-      var args = Array.prototype.slice.call(arguments, 1);
-      if (args.length === 1 && Array.isArray(args[0])) {
-        args = args[0];
-      }
-      return fetch(APP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: action, args: args })
-      })
-      .then(function(response) {
-        if (!response.ok) throw new Error('Error HTTP: ' + response.status);
-        return response.json();
-      });
-    }
-
-    // Registrar Service Worker para PWA
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(function() {});
-    }
-
-    // =====================================================
-    // FIN CONFIG PWA
-    // =====================================================
-
     // ========== FUNCIONES MODAL DE PROGRESO (COMPARTIDO) ==========
     var _modalProgresoIntervalo = null;
     var _onModalOkCallback = null;
 
+    // ========== KEEP ALIVE - Mantener sesion abierta ==========
+    setInterval(function() {
+      try { google.script.run.keepAlive(); } catch(e) {}
+    }, 5 * 60 * 1000);
 
     function mostrarModalProgreso(titulo) {
       var overlay = document.getElementById('modalProgresoOverlay');
@@ -9089,6 +9085,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     let filtroEstadoActual = 'all'; // <--- AGREGA ESTA LÍNEA
 
 
+
+
     function showLoading(show) {
       document.getElementById('loading').style.display = show ? 'flex' : 'none';
     }
@@ -9155,6 +9153,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
     function closeModalOnOutsideClick(event, modalId) {
       if (event.target.id === modalId) {
         closeModal(modalId);
@@ -9177,8 +9176,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       showLoading(true);
       document.getElementById('myDataForm').reset();
       
-      callBackend('getUserFullData', currentUser.cedula)
-        .then(function(data) {
+      google.script.run
+        .withSuccessHandler(function(data) {
           showLoading(false);
           if (data.status === "success") {
             const d = data.data;
@@ -9234,11 +9233,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error cargando datos: " + data.message);
           }
         })
-        .catch(function(err) {
-          showLoading(false);
-          showToast("Error: " + err);
-        });
+        .withFailureHandler(function(err) { showLoading(false); showToast("Error: " + err); })
+        .getUserFullData(currentUser.cedula);
     }
+
+
+
 
     function setVal(id, val) {
       const el = document.getElementById(id);
@@ -9341,14 +9341,15 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       };
 
       showLoading(true);
-      callBackend('updateMyData', [editingCedula, data])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           showToast(res.message);
           if(res.status === "success") closeModal('modal-mis-datos');
         })
-          .catch(function(err) { showLoading(false); showToast("Error: "+err); });
+        .withFailureHandler(function(err) { showLoading(false); showToast("Error: "+err); })
         // Enviamos editingCedula (que puede ser tuyo o del colaborador)
+        .updateMyData(editingCedula, data);
     }
 
 
@@ -9409,8 +9410,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       if (!currentUser.cedula) return showToast("Error de usuario");
       
       showLoading(true);
-      callBackend('generarCertificado', [selectedCertType, currentUser.cedula])
-          .then(function(data) {
+      google.script.run
+        .withSuccessHandler(function(data) {
           showLoading(false);
           if (data.status === "success") {
             currentCertDocId = data.fileId;
@@ -9419,10 +9420,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + data.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error: " + err);
-        });
+        })
+        .generarCertificado(selectedCertType, currentUser.cedula);
     }
 
     function descargarCertificado() {
@@ -9453,8 +9455,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       showLoading(true);
 
       const finalAction = function(idToSend) {
-        callBackend('enviarCertificado', [idToSend, email])
-          .then(function(data) {
+        google.script.run
+          .withSuccessHandler(function(data) {
             showLoading(false);
             if (data.status === "success") {
               showToast(data.message);
@@ -9463,17 +9465,18 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
               showToast("Error: " + data.message);
             }
           })
-          .catch(function(err) {
+          .withFailureHandler(function(err) {
             showLoading(false);
             showToast("Error: " + err);
-          });
+          })
+          .enviarCertificado(idToSend, email);
       };
 
       if (currentCertDocId) {
         finalAction(currentCertDocId);
       } else {
-        callBackend('buscarColaborador', cedula)
-          .then(function(data) {
+        google.script.run
+          .withSuccessHandler(function(data) {
             if (data.status === "success") {
               currentCertDocId = data.docId;
               finalAction(data.docId);
@@ -9482,8 +9485,36 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
               showToast("Error generando certificado: " + data.message);
             }
           })
-          .catch(function(err) { showLoading(false); showToast("Error: "+err); });
+          .generarCertificado(selectedCertType, currentUser.cedula);
       }
+    }
+
+
+
+
+    function searchUser() {
+      const cedula = document.getElementById('searchCedula').value.trim();
+      if(!cedula) return showToast("Ingresa una cédula");
+      showLoading(true);
+      google.script.run
+        .withSuccessHandler(function(data) {
+          showLoading(false);
+          if (data.status === "success") {
+            document.getElementById('adminMessage').style.display = 'none';
+            document.getElementById('adminEditControls').classList.add('show');
+            document.getElementById('adminUserName').innerText = data.name + " (" + data.employmentStatus + ")";
+            const radios = document.getElementsByName('userStatus');
+            for(let r of radios) if(r.value === data.employmentStatus) r.checked = true;
+            const dateInput = document.getElementById('fechaTermino');
+            if(data.ad) dateInput.value = data.ad; else dateInput.value = "";
+            toggleDateInput();
+            const perms = data.permissions.split(",");
+            const checkboxes = document.querySelectorAll('.perm-check');
+            checkboxes.forEach(cb => cb.checked = perms.includes(cb.value));
+          } else { showToast(data.message); }
+        })
+        .withFailureHandler(function(err) { showLoading(false); showToast("Error: "+err); })
+        .buscarColaborador(cedula);
     }
 
     function toggleDateInput() {
@@ -9501,8 +9532,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       const selectedPerms = [];
       document.querySelectorAll('.perm-check:checked').forEach(cb => selectedPerms.push(cb.value));
       showLoading(true);
-      callBackend('guardarConfiguracion', [cedula, status, fechaTermino, selectedPerms])
-          .then(function(data) {
+      google.script.run
+        .withSuccessHandler(function(data) {
           showLoading(false);
           if (data.status === "success") {
             showToast(data.message);
@@ -9510,7 +9541,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             document.getElementById('adminMessage').style.display = 'block';
           } else { showToast(data.message); }
         })
-          .catch(function(err) { showLoading(false); showToast("Error: "+err); });
+        .withFailureHandler(function(err) { showLoading(false); showToast("Error: "+err); })
+        .guardarConfiguracion(cedula, status, fechaTermino, selectedPerms);
     }
 
     function logout(e) {
@@ -9535,8 +9567,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
       showLoading(true);
-      callBackend('loginBackend', [user, pass])
-          .then(function(data) {
+      google.script.run
+        .withSuccessHandler(function(data) {
           showLoading(false);
          if (data.status === "success") {
             currentUser = { 
@@ -9551,7 +9583,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             loginSuccess();
           } else { showToast(data.message); }
         })
-          .catch(function(err) { showLoading(false); showToast("Error: " + err); });
+        .withFailureHandler(function(err) { showLoading(false); showToast("Error: " + err); })
+        .loginBackend(user, pass);
     }
 
     function applyPermissions() {
@@ -9690,6 +9723,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
     function loginSuccess() {
       updateUserHeader();
       applyPermissions();
@@ -9743,13 +9777,14 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       e.preventDefault();
       const user = document.getElementById('recoverUser').value.trim();
       showLoading(true);
-      callBackend('enviarCodigo', user)
-          .then(function(data) {
+      google.script.run
+        .withSuccessHandler(function(data) {
           showLoading(false);
           if(data.status==="success") { showToast(data.message); tempRecoveryUser = user; goToStep('step-change-pass'); }
           else { showToast(data.message); }
         })
-          .catch(function(err) { showLoading(false); showToast("Error: "+err); });
+        .withFailureHandler(function(err) { showLoading(false); showToast("Error: "+err); })
+        .enviarCodigo(user);
     }
     function handleChangePassword(e) {
       e.preventDefault();
@@ -9757,14 +9792,17 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       const newPass = document.getElementById('newPassword').value.trim();
       if(!tempRecoveryUser) return;
       showLoading(true);
-      callBackend('cambiarContrasena', [tempRecoveryUser, code, newPass])
-          .then(function(data) {
+      google.script.run
+        .withSuccessHandler(function(data) {
           showLoading(false);
           if(data.status==="success") { showToast(data.message); goToStep('step-login'); tempRecoveryUser = null; }
           else { showToast(data.message); }
         })
-          .catch(function(err) { showLoading(false); showToast("Error: "+err); });
+        .withFailureHandler(function(err) { showLoading(false); showToast("Error: "+err); })
+        .cambiarContrasena(tempRecoveryUser, code, newPass);
     }
+
+
 
 
     function toggleSubmenu(id) {
@@ -9957,8 +9995,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
     function sendToBackend(data, files, functionName) {
-      callBackend(functionName, data, files)
-        .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           if (res.status === "success") {
             showToast("Solicitud enviada correctamente.");
@@ -9973,10 +10011,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-        .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
+        [functionName](data, files);
     }
 
     // --- LOGICA GESTION SERVI ---
@@ -10137,8 +10176,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       tbody.innerHTML = '';
       noResults.style.display = 'none';
 
-      callBackend('buscarGuiaBackend', inputGuia)
-          .then(function(response) {
+      google.script.run
+        .withSuccessHandler(function(response) {
           showLoading(false);
           
           if (!response) { showToast("Error de comunicación"); return; }
@@ -10216,11 +10255,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             noResults.style.display = 'block';
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           noResults.style.display = 'block';
           showToast("Error: " + err.message);
-        });
+        })
+        .buscarGuiaBackend(inputGuia);
     }
 
     /* -------------------------------------------------------------------------
@@ -10255,8 +10295,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
           data: e.target.result.split(',')[1]
         };
 
-        callBackend('agregarSoporteInter', [rowIndex, fileData, currentUser.name])
-          .then(function(res) {
+        google.script.run
+          .withSuccessHandler(function(res) {
             showLoading(false);
             if (res.status === "success") {
               showToast(res.message);
@@ -10267,10 +10307,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
               showToast("Error: " + res.message);
             }
           })
-          .catch(function(err) {
+          .withFailureHandler(function(err) {
             showLoading(false);
             showToast("Error de conexión: " + err);
-          });
+          })
+          .agregarSoporteInter(rowIndex, fileData, currentUser.name);
       };
       
       reader.readAsDataURL(file);
@@ -10332,8 +10373,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       tbody.innerHTML = '';
       noResults.style.display = 'none';
 
-      callBackend('buscarGuiaServiBackend', inputGuia)
-          .then(function(response) {
+      google.script.run
+        .withSuccessHandler(function(response) {
           showLoading(false);
           
           if (!response) { showToast("Error de comunicación"); return; }
@@ -10402,11 +10443,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             noResults.style.display = 'block';
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           noResults.style.display = 'block';
           showToast("Error: " + err.message);
-        });
+        })
+        .buscarGuiaServiBackend(inputGuia);
     }
 
     function limpiarBusquedaServi() {
@@ -10414,6 +10456,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       document.getElementById('tablaResultadosServi').innerHTML = '';
       document.getElementById('sinResultadosServi').style.display = 'block';
     }
+
 
 
     // --- LÓGICA GESTIÓN ANULAR ---
@@ -10443,12 +10486,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       showLoading(true);
 
-      callBackend('guardarAnulacion', {
-          guias: guias,
-          plataforma: plataforma,
-          asesor: asesor
-        })
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           if (res.status === "success") {
             showToast(res.message);
@@ -10466,9 +10505,14 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
+        })
+        .guardarAnulacion({
+          guias: guias,
+          plataforma: plataforma,
+          asesor: asesor
         });
     }
 
@@ -10494,8 +10538,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       tbody.innerHTML = '';
       noResults.style.display = 'none';
 
-      callBackend('buscarGuiaAnulacionBackend', inputGuia)
-          .then(function(response) {
+      google.script.run
+        .withSuccessHandler(function(response) {
           showLoading(false);
           
           if (!response) { showToast("Error de comunicación"); return; }
@@ -10538,11 +10582,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             noResults.style.display = 'block';
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           noResults.style.display = 'block';
           showToast("Error: " + err.message);
-        });
+        })
+        .buscarGuiaAnulacionBackend(inputGuia);
     }
 
     function limpiarBusquedaAnular() {
@@ -10550,6 +10595,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       document.getElementById('tablaResultadosAnular').innerHTML = '';
       document.getElementById('sinResultadosAnular').style.display = 'block';
     }    
+
+
+
+
+
 
 
     // --- LÓGICA MODAL RECARGA ---
@@ -10682,6 +10732,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
     function formatCurrencyInput(input) {
       var value = input.value.replace(/\D/g, '');
       if (value === "") {
@@ -10790,8 +10841,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       tempRecargaFiles = files;
       showLoading(true);
       
-      callBackend('guardarRecarga', [tempRecargaData, tempRecargaFiles])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           
           if (res.status === "success") {
@@ -10800,16 +10851,16 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             
             // --- AQUÍ ES DONDE SE ACTUALIZAN LAS CELDAS ---
             if (guiasParaActualizar.length > 0) {
-                callBackend('actualizarGuiasPagadas', guiasParaActualizar)
-                  .then(function(resUpdate) {
+                google.script.run
+                  .withSuccessHandler(function(resUpdate) {
                     if(resUpdate.status === "success") {
                         console.log("✅ Guias actualizadas en GESTION");
-                        cargarPagosPendientes();
+                        cargarPagosPendientes(); // Recargamos la lista para ver los cambios
                     } else {
                         showToast("⚠️ Recarga guardada, pero error actualizando guías: " + resUpdate.message);
                     }
                   })
-                  .catch(function(err) { console.log("Error actualizando guías:", err); });
+                  .actualizarGuiasPagadas(guiasParaActualizar);
             } else {
                 if (document.getElementById('panel-pagos-pendientes').classList.contains('active')) {
                     cargarPagosPendientes();
@@ -10822,10 +10873,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
+        .guardarRecarga(tempRecargaData, tempRecargaFiles);
     }
     
     // --- FUNCIONES PARA MODAL DUPLICADO ---
@@ -10876,8 +10928,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       tempRecargaData.force = true;
       showLoading(true);
       
-      callBackend('guardarRecarga', [tempRecargaData, tempRecargaFiles])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           if (res.status === "success") {
             showToast("Recarga guardada a pesar de duplicidad.");
@@ -10886,10 +10938,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
+        .guardarRecarga(tempRecargaData, tempRecargaFiles);
     }    
 
 
@@ -10908,8 +10961,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       showLoading(true);
 
-      callBackend('registrarReferido', seller)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           
           if (res.status === "success") {
@@ -10924,10 +10977,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
+        .registrarReferido(seller);
     }
     
     // --- NUEVO: LÓGICA MODAL LINKS MÓVILES ---
@@ -10983,8 +11037,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       // 4. ENVIAR NOMBRE DEL ASESOR AL BACKEND
       const asesorActual = currentUser.name;
 
-      callBackend('procesarRecuentoParaUsuario', [tipo, asesorActual])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
 
           // NUEVA LÍNEA: Si el usuario canceló, ignorar la respuesta del servidor
           if (isCancelled) return;
@@ -11007,10 +11061,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           finishSuccess(false); // Oculta modal porque hubo error de conexión
           showToast("Error de conexión: " + err);
-        });
+        })
+        .procesarRecuentoParaUsuario(tipo, asesorActual);
     }
 
     function handleEnterRecuento(event) {
@@ -11025,8 +11080,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       showLoading(true);
       const asesorActual = currentUser.name; // Tomar el nombre del usuario
 
-      callBackend('buscarGuiaRecuentoBackend', [selectedRecuentoType, guia, asesorActual])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           const resultBox = document.getElementById('recuentoResult');
           resultBox.style.display = 'block';
@@ -11039,7 +11094,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             resultBox.innerHTML = `<i class="bi bi-x-circle-fill"></i> La guía <strong>${guia}</strong> NO está en recuentos.`;
           }
         })
-          .catch(function(err) { showLoading(false); showToast("Error: " + err); });
+        .withFailureHandler(err => { showLoading(false); showToast("Error: " + err); })
+        .buscarGuiaRecuentoBackend(selectedRecuentoType, guia, asesorActual);
     }
 
 
@@ -11202,8 +11258,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       showLoading(true);
 
-      callBackend('guardarRegistro', tempRegistroData)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           
           if (res.status === "success") {
@@ -11258,11 +11314,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
         // Enviamos los datos (con force: false por ahora)
+        .guardarRegistro(tempRegistroData);
     }
 
 
@@ -11334,8 +11391,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       document.getElementById('search_guia_suite').value = "";
       currentSearchQuery = "";       
 
-      callBackend('getSuiteLogisticaData')
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           
           if (!res) { showToast("Error de conexión"); return; }
@@ -11348,11 +11405,13 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
+        .getSuiteLogisticaData();
     }
+
 
 
     /* -------------------------------------------------------------------------
@@ -11560,8 +11619,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       showLoading(true);
 
-      callBackend('updateSuiteLogisticaRow', [rowIndex, dataToSend])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           if (res.status === "success") {
             showToast("Registro actualizado correctamente.");
@@ -11570,10 +11629,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
+        .updateSuiteLogisticaRow(rowIndex, dataToSend);
     }
 
 
@@ -11674,6 +11734,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
     /* -------------------------------------------------------------------------
        CHECK RECARGA - JAVASCRIPT (CORREGIDO Y COMPLETO)
        ------------------------------------------------------------------------- */
@@ -11698,8 +11759,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       tbody.innerHTML = '';
       loadingEl.style.display = 'block'; 
 
-      callBackend('getCheckRecargaData', [filtroAEnviar, fechaIni, fechaFin])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           loadingEl.style.display = 'none';
           
           if (res.status === "success") {
@@ -11749,10 +11810,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           loadingEl.style.display = 'none';
           showToast("Error: " + err);
-        });
+        })
+        .getCheckRecargaData(filtroAEnviar, fechaIni, fechaFin); 
     }
 
     // Función auxiliar para actualizar los números (Badges)
@@ -11956,8 +12018,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     function ejecutarGuardadoBackend(updatesArray) {
       showLoading(true);
 
-      callBackend('guardarBatchRecarga', updatesArray)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           if (res.status === "success") {
             showToast(res.message);
@@ -11966,10 +12028,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error: " + err);
-        });
+        })
+        .guardarBatchRecarga(updatesArray);
     }
 
     // -------------------------------------------------------------------------
@@ -11994,8 +12057,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       showLoading(true);
 
-      callBackend('generarExcelRecarga', [fechaIni, fechaFin, soloPendientes])
-          .then(function(csvContent) {
+      google.script.run
+        .withSuccessHandler(function(csvContent) {
           showLoading(false);
           if (csvContent && csvContent.startsWith("Error")) {
             showToast(csvContent);
@@ -12005,10 +12068,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Archivo generado correctamente.");
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error: " + err);
-        });
+        })
+        .generarExcelRecarga(fechaIni, fechaFin, soloPendientes);
     }
 
     function descargarArchivoCSV(contenido, nombreArchivo) {
@@ -12030,6 +12094,9 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
+
+
     /* -------------------------------------------------------------------------
       LÓGICA TALENTO HUMANO (VERSIÓN CORREGIDA)
       ------------------------------------------------------------------------- */
@@ -12042,8 +12109,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       tbody.innerHTML = '';
       loading.style.display = 'block';
 
-      callBackend('getEmployeesList')
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           loading.style.display = 'none';
           if (res.status === "success") {
             // 1. Guardamos en caché global
@@ -12058,10 +12125,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red; padding:20px;">Error: ' + res.message + '</td></tr>';
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           loading.style.display = 'none';
           tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red; padding:20px;">Error de conexión</td></tr>';
-        });
+        })
+        .getEmployeesList();
     }
 
     // Función para actualizar los números (BADGES) de los filtros
@@ -12186,8 +12254,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     function verDetalleColaborador(cedula) {
       showLoading(true);
 
-      callBackend('getUserFullData', cedula)
-          .then(function(data) {
+      google.script.run
+        .withSuccessHandler(function(data) {
           showLoading(false);
           if (data.status === "success") {
             poblarModalColaborador(data.data);
@@ -12196,10 +12264,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error cargando datos: " + data.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error: " + err);
-        });
+        })
+        .getUserFullData(cedula);
     }
 
     // Función auxiliar para llenar los campos (Reutilizamos setVal existente)
@@ -12326,6 +12395,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     };
 
 
+
     function toggleAccordion(header) {
       // Alternar la clase 'active' en el encabezado (para girar la flecha)
       header.classList.toggle('active');
@@ -12336,6 +12406,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       // Alternar la clase 'active' en el cuerpo (para mostrar/ocultar)
       body.classList.toggle('active');
     }
+
 
 
     function formatSalaryInput(input) {
@@ -12372,8 +12443,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       tbody.innerHTML = '';
       loading.style.display = 'block';
 
-      callBackend('getCertificadoHistory')
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           loading.style.display = 'none';
           if (res.status === "success") {
             // Guardamos en caché global
@@ -12384,10 +12455,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red; padding:20px;">Error: ' + res.message + '</td></tr>';
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           loading.style.display = 'none';
           tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red; padding:20px;">Error de conexión</td></tr>';
-        });
+        })
+        .getCertificadoHistory();
     }
 
     // Función para dibujar la tabla
@@ -12435,6 +12507,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
     // Función de búsqueda (Filtro Instantáneo)
     function filtrarHistorialCertificados() {
       var query = document.getElementById('search_historial').value.toLowerCase().trim();
@@ -12459,8 +12532,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       const container = document.getElementById('lista-auditoria');
       container.innerHTML = '';
 
-      callBackend('auditarSellersDuplicados')
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           
           if (res.status === "success") {
@@ -12470,11 +12543,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             document.getElementById('modal-auditoria').classList.add('active');
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           container.innerHTML = '<div style="text-align:center; color:red; padding:20px;">Error de conexión: ' + err + '</div>';
           document.getElementById('modal-auditoria').classList.add('active');
-        });
+        })
+        .auditarSellersDuplicados();
     }
 
     function mostrarResultadosAuditoria(duplicados) {
@@ -12568,8 +12642,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       // Mostramos el loading grande
       showLoading(true);
       
-      callBackend('eliminarFilaPorSeller', [targetBorrado.fuente, targetBorrado.seller])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           
           if (res.status === "success") {
@@ -12583,11 +12657,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
         // Usamos los datos guardados en la variable global
+        .eliminarFilaPorSeller(targetBorrado.fuente, targetBorrado.seller);
         
       // Limpiamos la variable por seguridad
       targetBorrado = { fuente: '', seller: '' };
@@ -12630,8 +12705,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       }
 
       // 3. Llamada al Backend
-      callBackend('getAsignacionesData', [currentUser.name, plataformaForzada || ""])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           if (res.status === "success") {
             const datosRecibidos = res.data;
             
@@ -12701,13 +12776,15 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           loadingEl.style.display = 'none';
           if (textoLoadingEl) textoLoadingEl.innerText = "Cargando Asignaciones...";
           showToast("Error de conexión: " + err);
-        });
+        })
         // AQUÍ IMPORTANTE: Si no se fuerza plataforma, se manda vacío para que el backend traiga TODO (del usuario)
+        .getAsignacionesData(currentUser.name, plataformaForzada || "");
     }
+
 
 
     function aplicarFiltrosAsignaciones() {
@@ -12999,8 +13076,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       closeModal('modal-confirm-guardado');
       showLoading(true);
 
-      callBackend('guardarBatchAsignaciones', window.tempUpdates)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           if (res.status === "success") {
             showToast(res.message);
@@ -13009,11 +13086,14 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error: " + err);
-        });
+        })
+        .guardarBatchAsignaciones(window.tempUpdates);
     }
+
+
 
 
     function toggleEdicionFila(checkbox) {
@@ -13036,6 +13116,9 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         }
       });
     }
+
+
+
 
 
     function handleEnterAsignaciones(e) {
@@ -13135,6 +13218,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
+
     function enviarDatosColaborador(rowIndex, fileData) {
       var salarioVisual = document.getElementById('col_salario').value; 
 
@@ -13152,21 +13237,22 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         foto: "" 
       };
 
-      callBackend('saveOrUpdateEmployee', dataToSend, fileData)
-        .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           if (res.status === "success") {
             showToast(res.message);
             closeModal('modal-colaborador');
-            cargarColaboradores();
+            cargarColaboradores(); 
           } else {
             showToast("Error: " + res.message);
           }
         })
-        .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
+        .saveOrUpdateEmployee(dataToSend, fileData);
     }
 
 
@@ -13205,6 +13291,9 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     let datosRegistrosCache = []; // Variable global para caché de búsqueda
 
 
+
+
+
     // Función para abrir el modal y cargar datos
     function abrirTablaReferencia() {
       document.getElementById('modal-tabla-referencia').classList.add('active');
@@ -13212,8 +13301,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       
       showLoading(true);
 
-      callBackend('getTablaReferenciaData')
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           
           if (res.status === "success") {
@@ -13222,10 +13311,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             document.getElementById('tablaReferenciaBody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error: ' + res.message + '</td></tr>';
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           document.getElementById('tablaReferenciaBody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error de conexión</td></tr>';
-        });
+        })
+        .getTablaReferenciaData();
     }
 
 
@@ -13325,8 +13415,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         return showToast("Error: Usuario no identificado.");
       }
 
-      callBackend('getActivacionesInterData', [currentUser.name, currentFiltroActivaciones])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           loadingEl.style.display = 'none';
           
           if (res.status === "success") {
@@ -13337,10 +13427,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           loadingEl.style.display = 'none';
           showToast("Error de conexión: " + err);
-        });
+        })
+        .getActivacionesInterData(currentUser.name, currentFiltroActivaciones);
     }
 
     // 2. Renderizar Tabla
@@ -13437,6 +13528,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
     // 3. Función Guardar Fila (FRONTEND) - ACTUALIZADA
     function guardarFilaActivacionesInter(rowIndex) {
       // Buscar inputs dentro de la fila (Solo Bodegas, Gestión, Novedad)
@@ -13459,8 +13551,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       // Llamamos al Backend SIN el parámetro celular
       showLoading(true); 
 
-      callBackend('guardarFilaActivacionesInter', [rowIndex, bodegas, gestion, novedad])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           if (res.status === "success") {
             showToast(res.message);
@@ -13469,11 +13561,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
         // ENVIAMOS SOLO 4 PARÁMETROS (Quitamos celular)
+        .guardarFilaActivacionesInter(rowIndex, bodegas, gestion, novedad);
     }
 
     function actualizarContadoresActivaciones(data) {
@@ -13529,6 +13622,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
     let tempRegistroData = null; // Para guardar los datos temporalmente
 
     // Función para abrir el modal "Eliminar y Asignar"
@@ -13545,6 +13639,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
     function ejecutarEliminarYAsignar() {
       cerrarModalEliminarYAsignar();
       if (!tempRegistroData) return showToast("Error: No hay datos para procesar.");
@@ -13553,8 +13648,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       // Lógica CONDICIONAL SEGÚN LA FUENTE
       if (targetMoveSource === "Asignaciones") {
         // CASO 1: Mover de ASIGNACIONES a REGISTROS (Tu requerimiento nuevo)
-        callBackend('moverAsignacionARegistro', tempRegistroData)
-          .then(function(res) {
+        google.script.run
+          .withSuccessHandler(function(res) {
             showLoading(false);
             if (res.status === "success") {
               showToast(res.message);
@@ -13565,16 +13660,17 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
               showToast("Error: " + res.message);
             }
           })
-          .catch(function(err) {
+          .withFailureHandler(function(err) {
             showLoading(false);
             showToast("Error de conexión: " + err);
-          });
+          })
           // AQUÍ LLAMAMOS A LA FUNCIÓN NUEVA DEL BACKEND
+          .moverAsignacionARegistro(tempRegistroData); 
       } 
       else {
         // CASO 2: Mover de REGISTROS a ASIGNACIONES (Lógica antigua)
-        callBackend('moverRegistroAActivaciones', [tempRegistroData, targetMoveSource])
-          .then(function(res) {
+        google.script.run
+          .withSuccessHandler(function(res) {
             showLoading(false);
             if (res.status === "success") {
               showToast(res.message);
@@ -13583,12 +13679,14 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
               showToast("Error: " + res.message);
             }
           })
-          .catch(function(err) {
+          .withFailureHandler(function(err) {
             showLoading(false);
             showToast("Error de conexión: " + err);
-          });
+          })
+          .moverRegistroAActivaciones(tempRegistroData, targetMoveSource);
       }
     }
+
 
 
     // Asegúrate de guardar los datos en la variable global al iniciar el proceso
@@ -13635,16 +13733,17 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       resultadoDiv.innerHTML = "⏳ Procesando guías...";
       showLoading(true); 
 
-      callBackend('enviarAGuias', data)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false); 
           mostrarResultadoRo(res);
           document.getElementById("inputGuiasRo").value = ""; // Limpiar campo
         })
-          .catch(function(err) {
+        .withFailureHandler(err => {
           showLoading(false); 
           resultadoDiv.innerHTML = `<p class="error">❌ Error de conexión: ${err.message}</p>`;
-        });
+        })
+        .enviarAGuias(data);
     }
 
     // ---------------------------------------------------------
@@ -13767,8 +13866,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       }
       
       // 4. Cargar la lista de asesores desde Google Sheets (Backend)
-      callBackend('getAdvisorsList')
-          .then(function(list) {
+      google.script.run
+        .withSuccessHandler(function(list) {
           if (list.status === "success") {
             const select = document.getElementById('upd_select_advisor');
             select.innerHTML = '<option value="">Seleccione un asesor...</option>';
@@ -13783,10 +13882,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             console.error("Error cargando asesores:", list.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           console.error("Error de conexión cargando asesores:", err);
           showToast("Error cargando lista de asesores.");
-        });
+        })
+        .getAdvisorsList();
     }
 
     function searchSellerUpdate() {
@@ -13795,8 +13895,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       showLoading(true);
 
-      callBackend('searchSellerForUpdate', seller)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           
           if (res.status === "found") {
@@ -13824,12 +13924,13 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             document.getElementById('btn-upd-search').style.display = 'inline-flex';
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error: " + err);
           // Aseguramos de volver a mostrar el botón si hay error de conexión
           document.getElementById('btn-upd-search').style.display = 'inline-flex';
-        });
+        })
+        .searchSellerForUpdate(seller);
     }
 
     // MODIFICAMOS ESTA FUNCIÓN PARA QUE ABRA EL MODAL EN VEZ DE EL ALERT
@@ -13864,8 +13965,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       // 3. Mostrar Loading y llamar al Backend
       showLoading(true);
 
-      callBackend('updateAdvisorBackend', [seller, newAdvisor, source])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           if (res.status === "success") {
             showToast(res.message);
@@ -13881,10 +13982,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
+        .updateAdvisorBackend(seller, newAdvisor, source);
     }
 
     // Función auxiliar para cerrar el nuevo modal
@@ -13903,8 +14005,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       tbody.innerHTML = '';
       loadingEl.style.display = 'block';
 
-      callBackend('getHistorialRecargas')
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           loadingEl.style.display = 'none';
           
           if (res.status === "success") {
@@ -13914,10 +14016,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:red;">Error: ' + res.message + '</td></tr>';
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           loadingEl.style.display = 'none';
           tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:red;">Error de conexión</td></tr>';
-        });
+        })
+        .getHistorialRecargas();
     }
 
     // 2. Renderizar Tabla
@@ -13990,6 +14093,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       renderizarTablaHistorialreccargas(resultado); 
     }    
+
 
 
     // ---------------------------------------------------------
@@ -14129,6 +14233,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
     // ---------------------------------------------------------
     // FUNCIÓN QUE LLAMA AL BACKEND (YA EXISTE EN TU CÓDIGO, SOLO LA LLAMO AQUÍ)
     // ---------------------------------------------------------
@@ -14136,8 +14241,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       closeModal('modal-confirm-guardado');
       showLoading(true);
 
-      callBackend('guardarBatchAsignaciones', window.tempUpdates)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           if (res.status === "success") {
             showToast(res.message);
@@ -14146,11 +14251,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error: " + err);
-        });
+        })
         // Asegúrate que tu función .GS se llame así:
+        .guardarBatchAsignaciones(window.tempUpdates);
     }
 
 
@@ -14284,6 +14390,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
     // --- FUNCIONES RECUENTO CONTABLE ---
 
     // --- FUNCIONES RECUENTO CONTABLE (LISTO PARA USAR) ---
@@ -14367,8 +14474,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       tbody.innerHTML = '';
       loadingEl.style.display = 'block';
 
-      callBackend('getHistorialGlobalData')
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           loadingEl.style.display = 'none';
           
           if (res.status === "success") {
@@ -14378,10 +14485,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Error: ' + res.message + '</td></tr>';
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           loadingEl.style.display = 'none';
           tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Error de conexión</td></tr>';
-        });
+        })
+        .getHistorialGlobalData();
     }
 
     // 2. Función para renderizar la tabla
@@ -14492,8 +14600,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       // Llamamos al backend. 
       // NOTA: La función generarExcelAsignaciones ahora RETORNA el texto del CSV directamente.
-      callBackend('generarExcelAsignaciones', [filtroSeleccionado, currentUser.name])
-          .then(function(csvContent) {
+      google.script.run
+        .withSuccessHandler(function(csvContent) {
           showLoading(false);
           
           // 1. Si el backend devuelve un error (texto que empieza con "Error")
@@ -14507,11 +14615,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Archivo generado correctamente.");
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error de conexión: " + err);
-        });
+        })
         // Pasamos currentUser.name como segundo argumento
+        .generarExcelAsignaciones(filtroSeleccionado, currentUser.name);
     }
 
     function buscarSaldoSeller() {
@@ -14545,8 +14654,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       btnGuardar.disabled = true;
 
       // Llamada a la API
-      callBackend('getSellerBalanceFromApi', seller)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           // Si entra aquí, la API respondió rápido. Cancelamos el temporizador.
           clearTimeout(timeoutId);
 
@@ -14563,19 +14672,19 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             display.style.color = "#856404";
             
             // Aquí hacemos la SEGUNDA llamada
-            callBackend('verificarListaBlancaSeller', seller, currentUser.name)
-              .then(function(resWhitelist) {
+            google.script.run
+              .withSuccessHandler(function(resWhitelist) {
                 clearTimeout(timeoutId); // Cancelamos temporizador también aquí
-
+                
                 if (resWhitelist.status === "authorized") {
                   display.innerText = "✅ AUTORIZADO (Asesor Especial) - Saldo: N/A";
                   window.tempSaldoSeller = "AUTHORIZED";
                   btnGuardar.disabled = false;
-                  display.style.backgroundColor = "#d1e7dd";
+                  display.style.backgroundColor = "#d1e7dd"; 
                   display.style.color = "#0f5132";
                 } else if (resWhitelist.status === "not_authorized") {
                   display.innerText = "❌ Vendedor restringido a otro asesor.";
-                  display.style.backgroundColor = "#f8d7da";
+                  display.style.backgroundColor = "#f8d7da"; 
                   display.style.color = "#721c24";
                   btnGuardar.disabled = true;
                 } else {
@@ -14584,29 +14693,30 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                   btnGuardar.disabled = true;
                 }
               })
-              .catch(function(errWhitelist) {
+              .withFailureHandler(function(errWhitelist) {
                 clearTimeout(timeoutId);
                 display.innerText = "Error verificando lista especial.";
                 display.style.backgroundColor = "#f8d7da";
                 btnGuardar.disabled = true;
-              });
+              })
+              .verificarListaBlancaSeller(seller, currentUser.name);
           }
         })
-        .catch(function(err) {
+        .withFailureHandler(function(err) {
           clearTimeout(timeoutId);
           display.innerText = "Error de conexión con la API. Verificando lista especial...";
-          display.style.backgroundColor = "#fff3cd";
+          display.style.backgroundColor = "#fff3cd"; 
           display.style.color = "#856404";
-
+          
           // Fallback: Si la API falla, intentamos la lista blanca
-          callBackend('verificarListaBlancaSeller', seller, currentUser.name)
-            .then(function(resWhitelist) {
+          google.script.run
+            .withSuccessHandler(function(resWhitelist) {
               clearTimeout(timeoutId);
               if (resWhitelist.status === "authorized") {
                   display.innerText = "✅ AUTORIZADO (Asesor Especial) - Saldo: N/A";
                   window.tempSaldoSeller = "AUTHORIZED";
                   btnGuardar.disabled = false;
-                  display.style.backgroundColor = "#d1e7dd";
+                  display.style.backgroundColor = "#d1e7dd"; 
                   display.style.color = "#0f5132";
               } else {
                   display.innerText = "❌ No autorizado.";
@@ -14614,13 +14724,15 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                   btnGuardar.disabled = true;
               }
             })
-            .catch(function(errWhitelist) {
+            .withFailureHandler(function(errWhitelist) {
               clearTimeout(timeoutId);
               display.innerText = "Error crítico del sistema.";
               display.style.backgroundColor = "#f8d7da";
               btnGuardar.disabled = true;
-            });
-        });
+            })
+            .verificarListaBlancaSeller(seller, currentUser.name);
+        })
+        .getSellerBalanceFromApi(seller);
     }
 
 
@@ -14696,6 +14808,9 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     }
 
 
+
+
+
     // ==========================================
     // FUNCIONES ESPECÍFICAS PARA "ANULACIÓN MASIVA" (MODIFICADAS)
     // ==========================================
@@ -14724,8 +14839,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       bar.style.width = "0%"; 
       stats.innerText = "Buscando...";
 
-      callBackend('buscarMultiplesGuias', texto)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(res => {
           // 🚨 MANEJO DE ERROR LÓGICO (Try/Catch del backend)
           if (res.error) {
             container.style.display = "none";
@@ -14759,11 +14874,13 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
           pintarResumenAnulacion(res.data.length, noEncontradasAnulacion.length);
 
         })
-          .catch(function(err) {
+        // 🔥 AGREGAMOS ESTO PARA CAPTURAR EL ERROR CRÍTICO
+        .withFailureHandler(err => {
           container.style.display = "none";
           console.error("Error crítico:", err);
           mostrarAlerta("Error Crítico", "Ocurrió un error inesperado al contactar al servidor. Revisa la consola (F12) para más detalles.", "error");
-        });
+        })
+        .buscarMultiplesGuias(texto);
     }
 
     // 🔥 NUEVA FUNCIÓN: Pintar Resumen (Las 2 Cards)
@@ -14935,18 +15052,232 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         `Esta acción cambiará el estado a: ${estadoSeleccionado}. ¿Deseas continuar?`,
         `Sí, ${accion.verbo}`, // Texto botón dinámico
         () => {
-          callBackend('actualizarGuiaCompleta', [fullPath, estadoSeleccionado])
-            .then(function(msg) {
+          google.script.run
+            .withSuccessHandler(msg => {
               mostrarAlerta("Éxito", msg, "success");
               cerrarModalAnulacion(); 
               resultadosAnulacionActual = resultadosAnulacionActual.filter(d => d.fullPath !== fullPath);
               pintarResumenAnulacion(resultadosAnulacionActual.length, noEncontradasAnulacion.length);
             })
-            .catch(function(err) {
-              showToast("Error: " + err);
-            });
+            .actualizarGuiaCompleta(fullPath, estadoSeleccionado);
         }
       );
+    }
+
+    // 🔥 ANULAR TODAS (ACTUALIZADA)
+    function anularTodasAnulacion() {
+      if (resultadosAnulacionActual.length === 0) {
+        mostrarAlerta("Sin datos", "No hay resultados para procesar.", "info");
+        return;
+      }
+
+      const estadoSeleccionado = document.getElementById("estado-destino").value;
+      const accion = mapaEstados[estadoSeleccionado] || { verbo: "procesar" };
+      const verboEnMinusculas = accion.verbo.toLowerCase();
+
+      mostrarConfirmacion(
+        "¡Atención!",
+        `¿Estás seguro de ${verboEnMinusculas} TODAS las ${resultadosAnulacionActual.length} guías encontradas?`,
+        `Sí, ${accion.verbo} Todo`,
+        () => {
+          cerrarModalAnulacion(); 
+
+          const paths = resultadosAnulacionActual.map(d => d.fullPath);
+          const container = document.getElementById("progress-container-anula");
+          const bar = document.getElementById("progress-bar-anula");
+          const stats = document.getElementById("anulacion-stats");
+
+          container.style.display = "block";
+          
+          let total = paths.length;
+          let actual = 0;
+
+          function procesarSiguiente() {
+            if (actual >= total) {
+              bar.style.width = "100%";
+              stats.innerText = "100% Completado";
+              mostrarAlerta("Proceso Terminado", `¡Todas las guías fueron ${accion.verbo.toLowerCase()}s correctamente! 🚀`, "success");
+              resultadosAnulacionActual = [];
+              document.getElementById("resultado").innerHTML = `<p style='text-align:center; color:green; padding:20px;'>Lote procesado con éxito.</p>`;
+              return;
+            }
+
+            google.script.run
+              .withSuccessHandler(() => {
+                actual++;
+                let porcentaje = Math.round((actual / total) * 100);
+                bar.style.width = porcentaje + "%";
+                stats.innerText = `${porcentaje}% (${actual}/${total})`;
+                procesarSiguiente();
+              })
+              .actualizarGuiaCompleta(paths[actual], estadoSeleccionado);
+          }
+
+          procesarSiguiente();
+        }
+      );
+    }
+
+    // 🔥 PROCESAR NO ENCONTRADAS (ACTUALIZADA)
+    function procesarNoEncontradas() {
+      if (!noEncontradasAnulacion || noEncontradasAnulacion.length === 0) {
+        mostrarAlerta("Sin datos", "No hay guías en la lista de 'No encontradas'.", "info");
+        return;
+      }
+
+      const estadoSeleccionado = document.getElementById("estado-destino").value;
+      const accion = mapaEstados[estadoSeleccionado] || { verbo: "Marcar" };
+
+      mostrarConfirmacion(
+        "Procesar No Encontradas",
+        `¿Marcar ${noEncontradasAnulacion.length} guías como: ${estadoSeleccionado}?`,
+        "Procesar",
+        () => {
+          document.getElementById("modal-footer").innerHTML = "<p style='color:var(--primary-yellow);'>⏳ Procesando...</p>";
+
+          google.script.run
+            .withSuccessHandler(msg => {
+              mostrarAlerta("Éxito", msg, "success");
+              cerrarModalAnulacion();
+              noEncontradasAnulacion = [];
+              pintarResumenAnulacion(resultadosAnulacionActual.length, 0);
+            })
+            .procesarGuiasNoEncontradas(noEncontradasAnulacion, estadoSeleccionado);
+        }
+      );
+    }    
+    // ==========================================
+    // SISTEMA DE MODALES PERSONALIZADOS
+    // ==========================================
+
+    // 1. Modal de Alerta Simple (Éxito / Error)
+    function mostrarAlerta(titulo, mensaje, tipo = "info") {
+      const modal = document.getElementById("modal-aviso");
+      const header = document.getElementById("aviso-header");
+      const icono = document.getElementById("aviso-icono");
+      const tituloEl = document.getElementById("aviso-titulo");
+      const mensajeEl = document.getElementById("aviso-mensaje");
+      const botones = document.getElementById("aviso-botones");
+
+      // Reset clases
+      header.style.background = "#f8f9fa";
+      
+      if (tipo === "success") {
+        header.style.background = "#10b981"; // Verde
+        icono.innerText = "✔️";
+      } else if (tipo === "error") {
+        header.style.background = "#ef4444"; // Rojo
+        icono.innerText = "❌";
+      } else {
+        header.style.background = "#3b82f6"; // Azul
+        icono.innerText = "ℹ️";
+      }
+
+      tituloEl.innerText = titulo;
+      mensajeEl.innerText = mensaje;
+      
+      botones.innerHTML = `
+        <button onclick="cerrarAviso()" class="btn btn-primary" style="min-width: 120px;">
+          Aceptar
+        </button>
+      `;
+
+      modal.style.display = "flex";
+    }
+
+    // 2. Modal de Confirmación (Sí / No)
+    function mostrarConfirmacion(titulo, mensaje, textoBoton, callbackOnConfirm) {
+      const modal = document.getElementById("modal-aviso");
+      const header = document.getElementById("aviso-header");
+      const icono = document.getElementById("aviso-icono");
+      const tituloEl = document.getElementById("aviso-titulo");
+      const mensajeEl = document.getElementById("aviso-mensaje");
+      const botones = document.getElementById("aviso-botones");
+
+      header.style.background = "#f59e0b"; // Naranja advertencia
+      icono.innerText = "⚠️";
+      tituloEl.innerText = titulo;
+      mensajeEl.innerText = mensaje;
+
+      botones.innerHTML = `
+        <button onclick="cerrarAviso()" class="btn btn-secondary" style="min-width: 100px; background: #ccc;">
+          Cancelar
+        </button>
+        <button id="btn-confirmar-accion" class="btn btn-danger-custom" style="min-width: 100px;">
+          ${textoBoton}
+        </button>
+      `;
+
+      // Asignar evento al botón de confirmar
+      document.getElementById("btn-confirmar-accion").onclick = () => {
+        cerrarAviso();
+        callbackOnConfirm(); // Ejecutamos la función que pasaste
+      };
+
+      modal.style.display = "flex";
+    }
+
+    function cerrarAviso() {
+      document.getElementById("modal-aviso").style.display = "none";
+    }
+
+
+    // =====================================================
+    // LÓGICA BANCO VS PLATAFORMA (BVP) - VERSIÓN COMPLETA
+    // =====================================================
+
+    // Variables globales
+    let totalP1Num = 0;
+    let totalP2Num = 0;
+    let homologacionesCache = {}; 
+    let clavesGeneradasP1P2 = [];
+    let csvDataAnterior = null;      
+    let csvTimestamp = null;          
+    let cargasBVP = 0;
+    let mapaDetalleP1P2 = {}; // MAPA PARA GUARDAR DATOS EXTRA (SELLER, CEDULA, NOMBRE)
+
+    // =====================================================
+    // FUNCIÓN: BUSCAR BVP
+    // =====================================================
+    function buscarBVP() {
+      const fi = document.getElementById('bvp_fecha_inicio').value;
+      const ff = document.getElementById('bvp_fecha_fin').value;
+      
+      if (!fi || !ff) return showToast("Selecciona fechas.");
+      
+      clavesGeneradasP1P2 = []; 
+      mapaDetalleP1P2 = {}; // Limpiar mapa de detalles al nueva búsqueda
+      totalP1Num = 0;
+      totalP2Num = 0;
+      cargasBVP = 0;
+      
+      document.getElementById('contenedorP1').innerHTML = '<div class="text-center p-4">Cargando P1...</div>';
+      document.getElementById('contenedorP2').innerHTML = '<div class="text-center p-4">Cargando P2...</div>';
+      document.getElementById('inputBusquedaBVP').value = '';
+      
+      showLoading(true);
+
+      google.script.run
+        .withSuccessHandler(function(dataP1) {
+          renderBVP_P1(dataP1);
+          checkBVPLoading();
+        })
+        .withFailureHandler(function(err) {
+          showLoading(false);
+          showToast("Error al cargar P1: " + err);
+        })
+        .buscarPagosPorRango(fi, ff);
+
+      google.script.run
+        .withSuccessHandler(function(dataP2) {
+          renderBVP_P2(dataP2);
+          checkBVPLoading();
+        })
+        .withFailureHandler(function(err) {
+          showLoading(false);
+          showToast("Error al cargar P2: " + err);
+        })
+        .obtenerDatosP2(fi, ff);
     }
 
     function checkBVPLoading() {
@@ -14968,15 +15299,16 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       const ff = document.getElementById('bvp_fecha_fin').value;
       if (!fi || !ff) return showToast("Selecciona fechas para descargar.");
       showLoading(true);
-      callBackend('generarExcelUnificado', [fi, ff])
-          .then(function(url) {
+      google.script.run
+        .withSuccessHandler(function(url) {
           showLoading(false);
           window.open(url, '_blank');
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("Error: " + err);
-        });
+        })
+        .generarExcelUnificado(fi, ff);
     }
 
     // =====================================================
@@ -15220,15 +15552,16 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         if (Object.keys(homologacionesCache).length > 0) {
             leerArchivoCSV(file, homologacionesCache);
         } else {
-            callBackend('obtenerHomologaciones')
-          .then(function(mapa) {
+            google.script.run
+                .withSuccessHandler(function(mapa) {
                     homologacionesCache = mapa;
                     leerArchivoCSV(file, mapa);
                 })
-          .catch(function(err) {
+                .withFailureHandler(function(err) {
                     showLoading(false);
                     showToast("Error al cargar homologaciones");
-                });
+                })
+                .obtenerHomologaciones();
         }
         input.value = ''; 
     }
@@ -15525,17 +15858,18 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             "No, Solo Ver",
             function() {
                 showLoading(true);
-                callBackend('guardarPilotoCSV', [datosProcesados, anioSeleccionado, mesSeleccionado])
-          .then(function(res) {
+                google.script.run
+                  .withSuccessHandler(function(res) {
                     showLoading(false);
                     showToast(res);
                     document.getElementById('modal-banco-csv').classList.add('active');
                   })
-          .catch(function(err) {
+                  .withFailureHandler(function(err) {
                     showLoading(false);
                     showToast("Error al guardar: " + err);
                     document.getElementById('modal-banco-csv').classList.add('active');
-                  });
+                  })
+                  .guardarPilotoCSV(datosProcesados, anioSeleccionado, mesSeleccionado);
             },
             function() {
                 document.getElementById('modal-banco-csv').classList.add('active');
@@ -15773,8 +16107,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         if (datosCombinados.length === 0) return showToast("No hay datos para descargar.");
         showLoading(true);
         
-        callBackend('generarExcelBVPDesdeDatos', datosCombinados)
-          .then(function(response) {
+        google.script.run
+          .withSuccessHandler(function(response) {
             showLoading(false);
             if (response && response.startsWith && response.startsWith("Error")) {
               showToast(response);
@@ -15787,10 +16121,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
               showToast("Error: El servidor no devolvió una URL válida");
             }
           })
-          .catch(function(error) {
+          .withFailureHandler(function(error) {
             showLoading(false);
             showToast("Error de conexión: " + (error.message || error.toString()));
-          });
+          })
+          .generarExcelBVPDesdeDatos(datosCombinados);
     }
 
     function cerrarModalBVP() {
@@ -15842,6 +16177,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     let currentIndemnizationType = 'inter'; 
 
 
+
     function autoCompletarSeller(inputGuia) {
         const guia = inputGuia.value.trim();
         
@@ -15888,8 +16224,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         if(inputSeller) inputSeller.value = "Buscando...";
 
         // Llamada al Backend
-        callBackend('obtenerDatosParaIndemnizacion', guia)
-          .then(function(datos) {
+        google.script.run
+            .withSuccessHandler(function(datos) {
                 // Verificamos si se encontró la guía (usamos 'seller' como referencia principal)
                 const guiaEncontrada = (datos && datos.seller && datos.seller !== "");
 
@@ -15943,12 +16279,13 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                     clearAndUnlock(inputComHekaAdic);
                 }
             })
-          .catch(function(err) {
+            .withFailureHandler(function(err) {
                 console.error(err);
                 // En caso de error de conexión, también desbloqueamos por si acaso
                 clearAndUnlock(inputSeller);
                 // ... podrías desbloquear los demás también si prefieres
-            });
+            })
+            .obtenerDatosParaIndemnizacion(guia);
     }
 
     // ==========================================
@@ -16195,8 +16532,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     // ==========================================
     function ejecutarCreacionInter(datos) {
         showLoading(true);
-        callBackend('agregarIndemnizacionInter', datos)
-          .then(function(res) {
+        google.script.run
+            .withSuccessHandler(function(res) {
                 showLoading(false);
                 
                 // CASO 1: EL BACKEND DETECTÓ DUPLICADO
@@ -16220,10 +16557,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                     showToast("Error: " + res.message);
                 }
             })
-          .catch(function(err) {
+            .withFailureHandler(function(err) {
                 showLoading(false);
                 showToast("Error de conexión: " + err);
-            });
+            })
+            .agregarIndemnizacionInter(datos);
     }
 
     // ==========================================
@@ -16231,8 +16569,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     // ==========================================
     function ejecutarCreacionServi(datos) {
         showLoading(true);
-        callBackend('agregarIndemnizacionServi', datos)
-          .then(function(res) {
+        google.script.run
+            .withSuccessHandler(function(res) {
                 showLoading(false);
                 
                 if (res.status === "duplicate") {
@@ -16251,10 +16589,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                     showToast("Error: " + res.message);
                 }
             })
-          .catch(function(err) {
+            .withFailureHandler(function(err) {
                 showLoading(false);
                 showToast("Error de conexión: " + err);
-            });
+            })
+            .agregarIndemnizacionServi(datos);
     }
 
     // ==========================================
@@ -16262,8 +16601,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     // ==========================================
     function ejecutarCreacionCoord(datos) {
         showLoading(true);
-        callBackend('agregarIndemnizacionCoordinadora', datos)
-          .then(function(res) {
+        google.script.run
+            .withSuccessHandler(function(res) {
                 showLoading(false);
                 
                 if (res.status === "duplicate") {
@@ -16282,10 +16621,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                     showToast("Error: " + res.message);
                 }
             })
-          .catch(function(err) {
+            .withFailureHandler(function(err) {
                 showLoading(false);
                 showToast("Error de conexión: " + err);
-            });
+            })
+            .agregarIndemnizacionCoordinadora(datos);
     }
 
     // ==========================================
@@ -16358,8 +16698,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
         if (guiaHidden && guiaHidden !== "") {
             showLoading(true);
-            callBackend('actualizarIndemnizacion', [guiaHidden, datos])
-          .then(function(res) {
+            google.script.run
+                .withSuccessHandler(function(res) {
                     showLoading(false);
                     if(res.status === "success") {
                         showToast("Información actualizada correctamente.");
@@ -16373,10 +16713,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                         showToast("Error: " + res.message);
                     }
                 })
-          .catch(function(err) {
+                .withFailureHandler(function(err) {
                     showLoading(false);
                     showToast("Error de conexión: " + err);
-                });
+                })
+                .actualizarIndemnizacion(guiaHidden, datos);
             return;
         }
 
@@ -16447,8 +16788,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         showLoading(true);
 
         if (existeEnCache) {
-            callBackend('actualizarIndemnizacionServi', [guia, datos])
-          .then(function(res) {
+            google.script.run
+                .withSuccessHandler(function(res) {
                     showLoading(false);
                     if(res.status === "success") {
                         showToast("Datos actualizados.");
@@ -16460,12 +16801,13 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                         }
                     } else { showToast("Error: " + res.message); }
                 })
-          .catch(function(err) { showLoading(false); showToast("Error: " + err); });
+                .withFailureHandler(function(err) { showLoading(false); showToast("Error: " + err); })
+                .actualizarIndemnizacionServi(guia, datos);
             return;
         }
 
-        callBackend('agregarIndemnizacionServi', datos)
-          .then(function(res) {
+        google.script.run
+            .withSuccessHandler(function(res) {
                 showLoading(false);
                 if(res.status === "success") {
                     showToast("Registro creado.");
@@ -16475,10 +16817,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                     showToast("Error: " + res.message);
                 }
             })
-          .catch(function(err) {
+            .withFailureHandler(function(err) {
                 showLoading(false);
                 showToast("Error de conexión: " + err);
-            });
+            })
+            .agregarIndemnizacionServi(datos);
     }
 
     // ==========================================
@@ -16526,8 +16869,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
         if (guiaHidden && guiaHidden !== "") {
             showLoading(true);
-            callBackend('actualizarCoordinadora', [guiaHidden, datos])
-          .then(function(res) {
+            google.script.run
+                .withSuccessHandler(function(res) {
                     showLoading(false);
                     if(res.status === "success") {
                         showToast("Datos actualizados.");
@@ -16539,7 +16882,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                         }
                     } else { showToast("Error: " + res.message); }
                 })
-          .catch(function(err) { showLoading(false); showToast("Error: " + err); });
+                .withFailureHandler(function(err) { showLoading(false); showToast("Error: " + err); })
+                .actualizarCoordinadora(guiaHidden, datos);
             return;
         }
 
@@ -16912,8 +17256,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       renderFiltroEstados(); 
       resetearIndemFiltroVisual();
 
-      callBackend('getIndemnizacionesData', sheetName)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           loading.style.display = 'none';
           
           if (res.status === "success") {
@@ -16923,10 +17267,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Error: ${res.message}</td></tr>`;
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           loading.style.display = 'none';
           tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Error de conexión: ${err}</td></tr>`;
-        });
+        })
+        .getIndemnizacionesData(sheetName);
     }
 
     // --- FUNCIÓN MODIFICADA ---
@@ -17793,8 +18138,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
         showLoading(true);
 
-        callBackend(funcionBackend, datos)
-            .then(function(res) {
+        google.script.run
+            .withSuccessHandler(function(res) {
                 showLoading(false);
                 if(res.status === "success") {
                     showToast("Registro creado exitosamente.");
@@ -17805,11 +18150,13 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                     showToast("Error: " + res.message);
                 }
             })
-            .catch(function(err) {
+            .withFailureHandler(function(err) {
                 showLoading(false);
                 showToast("Error de conexión: " + err);
-            });
+            })
+            [funcionBackend](datos);
     }
+
 
 
     function manejarCunMasivo(checkId, obsId) {
@@ -18086,8 +18433,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         }
 
         // 1. LLAMADA RESUMEN (Calcula valores financieros y Comisión)
-        callBackend('getLogisticaListaGuias', [anio, mes])
-          .then(function(res) {
+        google.script.run
+            .withSuccessHandler(function(res) {
                 if (res && res.status === "success") {
                     let totalIngresos = 0; 
                     let totalCostoMensajeros = 0; 
@@ -18181,11 +18528,35 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                     showToast("Error Resumen: " + (res ? res.message : "Desconocido"));
                 }
             })
-          .catch(function(err) {
+            .getLogisticaDashboard(anio);
+
+        // 2. LLAMADA LISTADO DE GUÍAS (Solo llena la tabla)
+        google.script.run
+            .withSuccessHandler(function(res) {
+                if(btnActualizar) btnActualizar.disabled = false;
+                
+                if (res && res.status === "success") {
+                    // --- A. RENDERIZAR TABLA ---
+                    if(tbodyGuias) {
+                        renderizarTablaGuias(res.data);
+                    } else {
+                        console.warn("Elemento tabla-listado-guias-body no encontrado en el HTML.");
+                    }
+                    
+                    // --- B. SIN CÁLCULO DE COMISIÓN AQUÍ ---
+                    // El cálculo y visualización ya están resueltos en el bloque de arriba
+
+                } else {
+                    const errorMsg = (res && res.message) ? res.message : "Error desconocido";
+                    if(tbodyGuias) tbodyGuias.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">${errorMsg}</td></tr>`;
+                }
+            })
+            .withFailureHandler(function(err) {
                 if(btnActualizar) btnActualizar.disabled = false;
                 if(tbodyGuias) tbodyGuias.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error de conexión</td></tr>';
                 alert("Error de conexión: " + err);
-            });
+            })
+            .getLogisticaListaGuias(anio, mes);
     }
 
 
@@ -18271,6 +18642,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
     let datosSeguimiento = []; 
 
 
+
     /* =========================================
       FUNCIONES DEL FILTRO (FALTANTES EN TU CÓDIGO)
       ========================================= */
@@ -18330,8 +18702,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       // 🔥 cargamos mensajeros primero (o en paralelo controlado)
       cargarListaMensajeros(() => {
 
-        callBackend('getSeguimientoData')
-          .then(function(res) {
+        google.script.run
+          .withSuccessHandler(function(res) {
 
             loading.style.display = 'none';
 
@@ -18346,10 +18718,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             }
 
           })
-          .catch(function(err) {
+          .withFailureHandler(function(err) {
             loading.style.display = 'none';
             tbody.innerHTML = `<tr><td colspan="6">Error: ${err}</td></tr>`;
-          });
+          })
+          .getSeguimientoData();
 
       });
     }
@@ -18442,8 +18815,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       }
 
       // ⏳ Primera vez → traer de GAS
-      callBackend('actualizarEnvio', datosAActualizar)
-          .then(function(mensajeros) {
+      google.script.run
+        .withSuccessHandler(function(mensajeros) {
 
           listaMensajeros = mensajeros; // 🔥 guardamos en cache
 
@@ -18458,9 +18831,245 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
           if (callback) callback();
         })
-          .catch(function(err) {
+        .getMensajerosUnicos();
+    }
+
+    /* =========================================
+       5. ABRIR MODAL (COMPLETA Y ACTUALIZADA)
+       ========================================= */
+    /* =========================================
+      ABRIR MODAL DETALLE (CORREGIDO)
+    ========================================= */
+    function abrirModalDetalleSeguimiento(guiaBusqueda) {
+
+      const registro = datosSeguimiento.find(row => String(row.guia) === String(guiaBusqueda));
+
+      if (registro) {
+
+        // =========================================
+        // 1. CAMPOS TEXTO
+        // =========================================
+        document.getElementById('seg_guia').value = registro.guia;
+        document.getElementById('seg_fecha_creacion').value = registro.fecha_creacion || "";
+        document.getElementById('seg_fecha_recogida').value = registro.fecha_recogida || "";
+        document.getElementById('seg_direccion').value = registro.direccion_entrega || "";
+        document.getElementById('seg_tipo_envio').value = registro.tipo_envio || "";
+
+        // =========================================
+        // 2. DINEROS
+        // =========================================
+        document.getElementById('seg_valor_heka').value = formatMoney(registro.valor_heka);
+        document.getElementById('seg_recaudo').value = formatMoney(registro.recaudo);
+
+        // =========================================
+        // 3. SELECT ESTADO
+        // =========================================
+        document.getElementById('seg_estado').value = registro.estado || "Pendiente";
+
+        // =========================================
+        // 4. MÉTODO DE PAGO
+        // =========================================
+        const metodoPago = registro.metodo_pago || "";
+        const valorOffy = registro.pago_oy || "";
+
+        const selectMetodo = document.getElementById('seg_metodo_pago');
+
+        let foundOption = false;
+        for (let i = 0; i < selectMetodo.options.length; i++) {
+          if (selectMetodo.options[i].value === metodoPago) {
+            selectMetodo.selectedIndex = i;
+            foundOption = true;
+            break;
+          }
+        }
+        if (!foundOption) {
+          selectMetodo.value = ""; // 👈 queda vacío, no fuerza EFECTIVO
+        }
+
+        // =========================================
+        // 5. PAGO OFFY
+        // =========================================
+        document.getElementById('seg_pago_oy').value = "";
+        document.getElementById('seg_pago_oy_select').value = "";
+
+        if (metodoPago === 'EFECTIVO') {
+          document.getElementById('seg_pago_oy_select').value = valorOffy;
+        } 
+        else if (metodoPago === 'TRANSFERENCIA') {
+          document.getElementById('seg_pago_oy').value = "SI";
+        } 
+        else {
+          const esNumero = !isNaN(parseFloat(valorOffy)) && isFinite(valorOffy);
+          document.getElementById('seg_pago_oy').value = esNumero ? formatMoney(valorOffy) : valorOffy;
+        }
+
+        // =========================================
+        // 6. VALIDACIONES
+        // =========================================
+        document.getElementById('seg_validacion').value = registro.validacion_moneda || "";
+        document.getElementById('seg_autoriza_devol').value = registro.autoriza_devol || "";
+
+        checkAutorizaDevol();
+
+        // =========================================
+        // 7. MENSAJERO (🔥 FIX REAL AQUÍ)
+        // =========================================
+        const selectMensajero = document.getElementById('seg_mensajero');
+
+        if (selectMensajero.options.length <= 1) {
+
+          // ⏳ Cargar y luego asignar
+          cargarListaMensajeros(() => {
+            selectMensajero.value = registro.mensajero || "";
+          });
+
+        } else {
+
+          // ⚡ Ya cargado → asignar directo
+          selectMensajero.value = registro.mensajero || "";
+        }
+
+        // =========================================
+        // 8. LÓGICA VISUAL
+        // =========================================
+        updatePagoOffyLogic();
+
+        // =========================================
+        // 9. RESET EDICIÓN
+        // =========================================
+        resetEdicion();
+
+        // =========================================
+        // 10. MOSTRAR MODAL
+        // =========================================
+        document.getElementById('seg-titulo-guia').innerText = `Detalle: ${registro.guia}`;
+        document.getElementById('modal-detalle-seguimiento').classList.add('active');
+
+      } else {
+        alert("No se encontró el registro localmente.");
+      }
+    }
+
+    /* =========================================
+       LÓGICA DE EDICIÓN
+       ========================================= */
+    
+    // 1. Activar modo edición
+    function activarEdicion() {
+      // Habilitar campos estándar
+      document.getElementById('seg_mensajero').disabled = false;
+      document.getElementById('seg_estado').disabled = false;
+      document.getElementById('seg_metodo_pago').disabled = false;
+      document.getElementById('seg_validacion').disabled = false;
+      
+      // IMPORTANTE: Habilitar inputs de Offy (pero la lógica visual se encarga de ocultarlos si es necesario)
+      document.getElementById('seg_pago_oy').disabled = false;
+      document.getElementById('seg_pago_oy_select').disabled = false;
+      
+      // Mostrar botón guardar, ocultar editar
+      document.getElementById('btn-editar-seg').style.display = 'none';
+      document.getElementById('btn-guardar-seg').style.display = 'inline-block';
+
+      // --- CORRECCIÓN AQUÍ: VERIFICAR ESTADO AL ABRIR EDICIÓN ---
+      // Ejecutamos la lógica visual una vez para que los campos ya aparezcan ocultos
+      // si corresponden al estado actual (ej: Efectivo/NO).
+      updateEstadoLogic();
+      updatePagoOffyLogic();
+    }
+
+    // 2. Resetear a solo lectura
+    function resetEdicion() {
+      // Deshabilitar campos estándar
+      document.getElementById('seg_mensajero').disabled = true;
+      document.getElementById('seg_estado').disabled = true;
+      document.getElementById('seg_metodo_pago').disabled = true;
+      document.getElementById('seg_validacion').disabled = true;
+
+      // IMPORTANTE: Deshabilitar ambos campos de Offy
+      document.getElementById('seg_pago_oy').disabled = true;
+      document.getElementById('seg_pago_oy_select').disabled = true;
+
+      // Mostrar botón editar, ocultar guardar
+      document.getElementById('btn-editar-seg').style.display = 'inline-block';
+      document.getElementById('btn-guardar-seg').style.display = 'none';
+    }
+
+    // 3. Chequear condición Autoriza Devol
+    function checkAutorizaDevol() {
+      const val = document.getElementById('seg_validacion').value;
+      const container = document.getElementById('grupo-autoriza-devol');
+      
+      // Si hay algo escrito en Validación Mónica, mostramos Autoriza Devol
+      if (val.trim() !== "") {
+        container.style.display = 'block';
+        // Si estamos en modo edición, habilitamos el select
+        if (!document.getElementById('seg_validacion').disabled) {
+           // El select siempre es editable si aparece, o podrías poner disabled=false
+        }
+      } else {
+        container.style.display = 'none';
+      }
+    }
+
+    // 4. Guardar Cambios
+    // 4. Guardar Cambios (ACTUALIZADO)
+    function guardarCambiosSeguimiento() {
+      const guia = document.getElementById('seg_guia').value;
+      const metodoPago = document.getElementById('seg_metodo_pago').value;
+
+      let finalPagoOffy = "";
+
+      // NUEVA LÓGICA PRIORITARIA
+      if (metodoPago.trim() === 'RECAUDO $0' || metodoPago.trim() === 'DEVOLUCION') {
+        finalPagoOffy = "-";
+      }
+      else if (metodoPago.trim() === 'TRANSFERENCIA') {
+        finalPagoOffy = "SI";
+      } 
+      else if (metodoPago.trim() === 'EFECTIVO') {
+        finalPagoOffy = document.getElementById('seg_pago_oy_select').value;
+      } 
+      else if (metodoPago.trim() === 'TRANSFERENCIA, EFECTIVO') {
+        let rawVal = document.getElementById('seg_pago_oy').value;
+        let cleanVal = rawVal.replace(/[^0-9]/g, ''); 
+        finalPagoOffy = cleanVal + " - NO";
+      } 
+      else {
+        // Casos genéricos o antiguos
+        finalPagoOffy = document.getElementById('seg_pago_oy').value;
+      }
+
+      const datosAActualizar = {
+        guia: guia,
+        mensajero: document.getElementById('seg_mensajero').value,
+        estado: document.getElementById('seg_estado').value,
+        metodo_pago: metodoPago,
+        pago_oy: finalPagoOffy,
+        validacion: document.getElementById('seg_validacion').value,
+        autoriza_devol: document.getElementById('seg_autoriza_devol').value
+      };
+
+      if(!datosAActualizar.mensajero) { 
+        showToast("⚠️ Selecciona un Mensajero."); 
+        return; 
+      }
+
+      showLoading(true);
+      google.script.run
+        .withSuccessHandler(function(res) {
+           if (res.status === "success") {
+             showToast("✅ " + res.message);
+             closeModal('modal-detalle-seguimiento');
+             cargarSeguimiento();
+             showLoading(false);
+           } else {
+             showToast("❌ " + res.message);
+           }
+        })
+        .withFailureHandler(err => {
            showToast("❌ Error de conexión: " + err);
-        });
+        })
+        .actualizarEnvio(datosAActualizar);
     }
 
     /* =========================================
@@ -18578,8 +19187,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       modal.classList.add('active');
 
       // Traer lista única de mensajeros desde el servidor
-      callBackend('getMensajerosUnicos')
-          .then(function(mensajeros) {
+      google.script.run
+        .withSuccessHandler(function(mensajeros) {
           // Llenar el select
           mensajeros.forEach(m => {
             const option = document.createElement('option');
@@ -18588,10 +19197,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             select.appendChild(option);
           });
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
            alert("Error cargando mensajeros: " + err);
            closeModal('modal-recogida');
-        });
+        })
+        .getMensajerosUnicos(); // Reutilizamos tu función existente del backend
     }
 
     // 2. Procesar y Enviar (Ahora incluye mensajero)
@@ -18632,8 +19242,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         mensajero: mensajero
       };
       
-      callBackend('registrarRecogidaMasiva', datos)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
            showLoading(false);
            
            if (res.status === "success") {
@@ -18672,10 +19282,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
              showToast("❌ " + res.message);
            }
         })
-          .catch(function(err) {
+        .withFailureHandler(err => {
            showLoading(false);
            showToast("❌ Error de conexión: " + err);
-        });
+        })
+        .registrarRecogidaMasiva(datos);
     }
 
     // Función auxiliar para cuando el usuario acepta cambiar mensajero
@@ -18686,17 +19297,187 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         nuevo_mensajero: nuevoMensajero
       };
 
-      callBackend('getPagosPendientes')
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
            showLoading(false);
            showToast("✅ " + res.message);
            closeModal('modal-recogida');
            cargarSeguimiento();
         })
-          .catch(function(err) {
+        .actualizarMensajerosGuia(datosUpdate);
+    }
+
+
+    /* =========================================
+       LÓGICA MODAL DE CONFIRMACIÓN
+       ========================================= */
+    
+    // Variables globales para guardar los datos temporalmente mientras el usuario decide
+    let conflictListCache = [];
+    let conflictMensajeroCache = "";
+
+    function abrirModalConfirmacion(count, mensajero, list) {
+      conflictListCache = list;
+      conflictMensajeroCache = mensajero;
+
+      const texto = document.getElementById('texto-confirmacion');
+      texto.innerText = `Se encontraron ${count} guías asignadas a OTRO mensajero.\n\n¿Deseas reasignarlas a: ${mensajero}?`;
+      
+      document.getElementById('modal-confirmacion-cambio').classList.add('active');
+    }
+
+    function confirmarCambio() {
+      // 1. Cerrar modal de confirmación
+      closeModal('modal-confirmacion-cambio');
+      
+      // 2. Ejecutar actualización usando los datos guardados en caché
+      actualizarMensajerosConflicto(conflictListCache, conflictMensajeroCache);
+    }
+
+    function cancelarCambio() {
+      // 1. Cerrar modal de confirmación
+      closeModal('modal-confirmacion-cambio');
+      
+      // 2. Cerrar modal principal de recogida
+      closeModal('modal-recogida');
+      
+      // 3. Recargar tabla
+      cargarSeguimiento();
+    }
+
+    /* =========================================
+       LÓGICA MODAL MISMO MENSAJERO
+       ========================================= */
+    
+    let sameListCache = [];
+    let sameReporteCache = {}; // Para guardar el reporte completo y ver si hay conflictos pendientes
+
+    function openModalSameMessenger(count, list, reporteCompleto) {
+      sameListCache = list;
+      sameReporteCache = reporteCompleto; // Guardamos el reporte completo para revisar si hay conflictos después
+
+      const texto = document.getElementById('texto-confirmacion-mismo');
+      texto.innerText = `${count} guías ya están asignadas a este mensajero.\n\n¿Deseas actualizar la fecha de recogida a hoy?`;
+      
+      document.getElementById('modal-confirmacion-mismo').classList.add('active');
+    }
+
+    function confirmarMismo() {
+      closeModal('modal-confirmacion-mismo');
+      
+      showLoading(true);
+      
+      google.script.run
+        .withSuccessHandler(function(res) {
+          showLoading(false);
+          showToast("✅ " + res.message);
+          
+          // CERRAMOS EL MODAL PRINCIPAL
+          closeModal('modal-recogida');
+          
+          // RECARGAMOS TABLA
+          cargarSeguimiento();
+        })
+        .actualizarFechaRecogida({ lista_guias: sameListCache });
+    }
+
+    function cancelarMismo() {
+      closeModal('modal-confirmacion-mismo');
+      
+      // Al cancelar, podríamos cerrar todo o revisar si hay conflictos de "otro mensajero" pendientes.
+      // Para simplificar, cerramos el modal principal.
+      closeModal('modal-recogida');
+      cargarSeguimiento();
+    }    
+
+    /* =========================================
+          LÓGICA DE ESTADO FINAL (OCULTAR CAMPOS Y AUTOMATIZAR)
+          ========================================= */
+    function updateEstadoLogic() {
+      const estado = document.getElementById('seg_estado').value;
+      
+      const containerMetodoPago = document.getElementById('seg_metodo_pago').closest('.form-group');
+      const containerPagoOffy = document.getElementById('container_pago_oy');
+
+      // Estados que activan la ocultación
+      const estadosOcultar = ['Devuelto al Remitente', 'NOVEDAD', 'Verificacion Asesor'];
+
+      if (estadosOcultar.includes(estado)) {
+        // 1. OCULTAR AMBOS CONTENEDORES
+        containerMetodoPago.style.display = 'none';
+        containerPagoOffy.style.display = 'none';
+
+        // 2. ASIGNAR VALORES INTERNOS (Para guardar aunque no se vean)
+        const selectMetodo = document.getElementById('seg_metodo_pago');
+        
+        if (estado === 'Devuelto al Remitente') {
+          selectMetodo.value = "DEVOLUCION";
+          // No necesitamos valor en Pago Offy, pero si quieres dejarlo vacío:
+          document.getElementById('seg_pago_oy').value = ""; 
+        } else {
+          // Si es Novedad o Verificación, ponemos "-" (como tenías antes)
+          selectMetodo.value = "-"; 
+          document.getElementById('seg_pago_oy').value = "-";
+        }
+      } 
+      else {
+        // Si es un estado normal, mostramos los campos
+        containerMetodoPago.style.display = 'block';
+        
+        // --- NUEVA AUTOMATIZACIÓN: ENTREGA EXITOSA + CONVENCIONAL ---
+        if (estado === 'Entrega Exitosa') {
+          const tipoEnvio = document.getElementById('seg_tipo_envio').value;
+          
+          // Si el método de envío es CONVENCIONAL, forzamos RECAUDO $0
+          if (tipoEnvio === 'CONVENCIONAL') {
+            document.getElementById('seg_metodo_pago').value = "RECAUDO $0";
+          }
+        }
+
+        // IMPORTANTE: Llamamos a la otra función para que ajuste 
+        // si se debe ver u ocultar Offy según el nuevo valor (ej: Recaudo $0)
+        updatePagoOffyLogic();
+      }
+    }
+
+
+    /* =========================================
+          LÓGICA PAGOS PENDIENTES (ACTUALIZADA)
+          ========================================= */
+
+
+    // 1. Variables globales para manejar el estado
+    let guiasParaActualizar = []; // Variable global para pasar datos al backend
+    let filtroPagosActual = null; // 'en_tiempo', 'fuera_tiempo' o null (Todos)
+    let datosPagosCache = [];     // Guardamos los datos completos aquí para filtrar rápido
+
+    // Función principal que se ejecuta al abrir el panel
+    function cargarPagosPendientes() {
+      const container = document.getElementById('pagos-grid-container');
+      const loading = document.getElementById('loading-pagos');
+      
+      container.innerHTML = '';
+      loading.style.display = 'block';
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          loading.style.display = 'none';
+          
+          if (res.status === "success") {
+            // Guardamos los datos en caché
+            datosPagosCache = res.data;
+            // Renderizamos inicialmente (que será 'Todos')
+            renderizarTarjetasPagos(datosPagosCache);
+          } else {
+            container.innerHTML = `<p style="color:red; text-align:center; width:100%;">Error: ${res.message}</p>`;
+            showToast("❌ Error cargando pagos");
+          }
+        })
+        .withFailureHandler(function(err) {
           loading.style.display = 'none';
           container.innerHTML = `<p style="color:red; text-align:center; width:100%;">Error de conexión: ${err}</p>`;
-        });
+        })
+        .getPagosPendientes();
     }
 
     // 2. Función para alternar el filtro (ON/OFF)
@@ -18725,8 +19506,7 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         return;
       }
 
-      lista.forEach(item
- => {
+      lista.forEach(item => {
         // --- NUEVA LÓGICA DE FILTRADO ---
         let itemsFiltrados = item.items;
 
@@ -19186,13 +19966,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       showLoading(true);
 
       // Enviar al Backend
-      callBackend('registrarDevolucionBackend', {
-          tipo: tipo,
-          guiaMadre: guiaMadre,
-          valorMadre: valorFlota,
-          guiasHeka: guiasHeka
-        })
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           if (res.status === "success") {
             showToast("✅ " + res.message);
@@ -19202,9 +19977,15 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("❌ " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("❌ Error: " + err);
+        })
+        .registrarDevolucionBackend({
+          tipo: tipo,
+          guiaMadre: guiaMadre,
+          valorMadre: valorFlota,
+          guiasHeka: guiasHeka
         });
     }
 
@@ -19238,8 +20019,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       showLoading(true);
 
       // 3. Enviar al Backend
-      callBackend('calcularValoresGuias', guias)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           
           if (res.status === "success") {
@@ -19252,11 +20033,13 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("❌ Error al calcular: " + res.message);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           showToast("❌ Error de conexión: " + err);
-        });
+        })
+        .calcularValoresGuias(guias);
     }
+
 
 
     // ==========================================
@@ -19305,17 +20088,18 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       showLoading(true);
 
-      callBackend('guardarGuiasMadres', { madre, guias })
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(res => {
           showLoading(false);
           showToast("✅ Guardado correctamente");
           closeModal('modal-guias-madres');
           cargarGuiasMadres(); // Recargar tabla
         })
-          .catch(function(err) {
+        .withFailureHandler(err => {
           showLoading(false);
           showToast("❌ Error al guardar");
-        });
+        })
+        .guardarGuiasMadres({ madre, guias });
     }
 
     // 3. CALCULAR (Botón Calculadora)
@@ -19336,15 +20120,47 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         })
         .filter(g => g);
 
-      callBackend('getGuiasMadres')
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(res => {
           document.getElementById('gm_resultado').innerText =
             res.count + " guías - $ " + res.total.toLocaleString('es-CO');
         })
-          .catch(function(err) {
+        .calcularValoresGuias(guias);
+    }
+
+    // Variable Global para guardar los datos y poder filtrar
+    var dataMadresGlobal = [];
+
+    // 1. CARGAR TABLA
+    function cargarGuiasMadres() {
+      var tbody = document.getElementById('tablaGuiasMadres');
+      var loader = document.getElementById('loadingGuiasMadres');
+      
+      tbody.innerHTML = "";
+      loader.style.display = "block";
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          loader.style.display = "none";
+          
+          if (res.status === "success") {
+            dataMadresGlobal = res.data;
+            
+            if (dataMadresGlobal.length === 0) {
+              tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No hay registros</td></tr>";
+              return;
+            }
+
+            renderizarTablaguiasmadre(dataMadresGlobal);
+          } else {
+            tbody.innerHTML = "<tr><td colspan='7' style='color:red; text-align:center;'>Error al cargar datos</td></tr>";
+          }
+        })
+        .withFailureHandler(function(err) {
           loader.style.display = "none";
           tbody.innerHTML = "<tr><td colspan='7' style='color:red; text-align:center;'>Error de conexión</td></tr>";
-        });
+        })
+        .getGuiasMadres();
     }
 
     // 2. FUNCIÓN DE FILTRADO (BÚSQUEDA)
@@ -19481,8 +20297,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       showLoading(true);
 
-      callBackend('buscarHijasByMadre', madre)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
 
           if (res.status === "success") {
@@ -19502,10 +20318,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("❌ Error al buscar");
           }
         })
-          .catch(function() {
+        .withFailureHandler(function() {
           showLoading(false);
           showToast("❌ Error de conexión");
-        });
+        })
+        .buscarHijasByMadre(madre);
     }
 
     // ==========================================
@@ -19597,19 +20414,20 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       showLoading(true);
 
       // ENVIAMOS AMBAS LISTAS: LAS RECIBIDAS Y LAS A DESVINCULAR (ABANDONADAS)
-      callBackend('recibirGuiasHijas', {
-          recibir: hijasARecibir, 
-          desvincular: noRecibir
-        })
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           showToast("✅ " + res.message);
           closeModal('modal-recibir-hijas');
           cargarGuiasMadres(); // Recargar todo
         })
-          .catch(function() {
+        .withFailureHandler(function() {
           showLoading(false);
           showToast("❌ Error al guardar");
+        })
+        .recibirGuiasHijas({
+          recibir: hijasARecibir, 
+          desvincular: noRecibir
         });
     }
 
@@ -19663,19 +20481,20 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       showLoading(true);
 
-      callBackend('vincularGuiaPendiente', {
-          guiaHija: hijaParaVincular,
-          nuevaMadre: nuevaMadre
-        })
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
           showToast("✅ " + res.message);
           closeModal('modal-vincular-pendiente');
           cargarGuiasMadres(); // Recargar tabla para ver el cambio
         })
-          .catch(function() {
+        .withFailureHandler(function() {
           showLoading(false);
           showToast("❌ Error al vincular");
+        })
+        .vincularGuiaPendiente({
+          guiaHija: hijaParaVincular,
+          nuevaMadre: nuevaMadre
         });
     }
 
@@ -19700,8 +20519,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         loading.style.display = 'block';
 
         // Llamamos a la NUEVA función de Google Apps Script
-        callBackend('historialPorTipoEnvios', [centro, fechaInicio, fechaFin])
-          .then(function(response) {
+        google.script.run
+            .withSuccessHandler(function(response) {
                 loading.style.display = 'none';
                 if (response.ok) {
                     renderizarCardsHistorial(response.data);
@@ -19709,10 +20528,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
                     container.innerHTML = `<p style="color:red; text-align:center;">Error: ${response.error}</p>`;
                 }
             })
-          .catch(function(err) {
+            .withFailureHandler(function(err) {
                 loading.style.display = 'none';
                 container.innerHTML = `<p style="color:red; text-align:center;">Error de comunicación: ${err.message}</p>`;
-            });
+            })
+            .historialPorTipoEnvios(centro, fechaInicio, fechaFin);
     }
 
     function renderizarCardsHistorial(data) {
@@ -19844,19 +20664,20 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             // Tomamos el ID TAL CUAL
             const idActual = idsArray[currentIndex];
             
-            callBackend('getRentabilidadSellerDirect', [idActual, fechaInicio, fechaFin])
-          .then(function(res) {
+            google.script.run
+                .withSuccessHandler(function(res) {
                     if (res && res.ok && res.data) {
                         resultadosCombinados = resultadosCombinados.concat(res.data);
                     }
                     currentIndex++;
                     llamarSiguienteSeller();
                 })
-          .catch(function(err) {
+                .withFailureHandler(function(err) {
                     currentIndex++;
                     console.error("Error con ID " + idActual + ": " + err);
                     llamarSiguienteSeller();
-                });
+                })
+                .getRentabilidadSellerDirect(idActual, fechaInicio, fechaFin);
         }
 
         // Iniciamos el ciclo
@@ -20185,8 +21006,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       document.getElementById('search_gerencial').value = ""; 
       activeFilters = {}; 
 
-      callBackend('getIndemnizacionesDataGerencia', sheetName)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           loading.style.display = 'none';
           
           if (res.status === "success") {
@@ -20224,10 +21045,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:red; padding:20px;">Error: ${res.message}</td></tr>`;
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           loading.style.display = 'none';
           tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:red; padding:20px;">Error de conexión: ${err}</td></tr>`;
-        });
+        })
+        .getIndemnizacionesDataGerencia(sheetName);
     }
 
     // ==========================================
@@ -20680,8 +21502,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       // const loading = document.getElementById('loadingGerencial');
       // loading.style.display = 'block'; 
 
-      callBackend('actualizarEstadoPagado', [guias, currentGerencialType])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           // 1. Cerrar el modal de "Procesando..."
           if(modalRef) modalRef.remove();
           
@@ -20697,10 +21519,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             showToast("Error: " + res.message, 4000);
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           if(modalRef) modalRef.remove(); // Cerrar modal también si falla
           showToast("Error de conexión: " + err.message, 4000);
-        });
+        })
+        .actualizarEstadoPagado(guias, currentGerencialType);
     }
 
     // ============================================================
@@ -20771,8 +21594,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       showLoading(true);
 
-      callBackend('getComisionesPablo', [companyId, fechaInicio, fechaFin, isPablo])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           showLoading(false);
 
           if (res.ok) {
@@ -20814,11 +21637,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             statusBox.innerText = '❌ Error: ' + (res.message || 'Ocurrió un problema desconocido.');
           }
         })
-          .catch(function(err) {
+        .withFailureHandler(function(err) {
           showLoading(false);
           statusBox.className = 'comisiones-status-box error';
           statusBox.innerText = '❌ Error de conexión: ' + err.message;
-        });
+        })
+        .getComisionesPablo(companyId, fechaInicio, fechaFin, isPablo);
     }
 
     function renderTablaComisiones(data) {
@@ -21014,8 +21838,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       document.getElementById('userStatusTextLpropia').innerHTML = 'Verificando: <strong>' + miCentroCosto + '</strong>';
       appendLogLpropia('Centro de costo: ' + miCentroCosto);
 
-      callBackend('obtenerIdUsuarioLpropia', miCentroCosto)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           if (res.success) {
             idPuntoActualLpropia = res.id;
             document.getElementById('userStatusIconLpropia').innerHTML = '<i class="bi bi-patch-check-fill" style="color:#28a745;font-size:20px;"></i>';
@@ -21028,15 +21852,16 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             appendLogLpropia('❌ ' + res.error);
           }
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           document.getElementById('userStatusIconLpropia').textContent = '❌';
           document.getElementById('userStatusTextLpropia').innerHTML = '<span style="color:#dc3545;">Error de conexión</span>';
           appendLogLpropia('❌ ' + e.message);
-        });
+        })
+        .obtenerIdUsuarioLpropia(miCentroCosto);
 
       // Cargar estados para "En Ruta Nacional"
-      callBackend('buscarMultiplesGuiasLpropia', texto)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           if (res.success) {
             estadoEnRutaNacional = null;
             for (var i = 0; i < res.estados.length; i++) {
@@ -21048,10 +21873,53 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             if (estadoEnRutaNacional) appendLogLpropia('✅ Estado "En Ruta Nacional" listo.');
           }
         })
-          .catch(function(e) {
+        .obtenerEstadosHekaApi();
+    }
+
+    function buscarGuiasLpropia() {
+      var texto = document.getElementById('guiasInputLpropia').value.trim();
+      if (!texto) return alert('Ingrese al menos una guía');
+
+      // ========== VALIDACIÓN: DUPLICADOS EN EL INPUT ==========
+      var lineas = texto.split(/[\s,;]+/).map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 0; });
+      var vistas = {};
+      var duplicadosInput = [];
+      for (var i = 0; i < lineas.length; i++) {
+        var g = lineas[i];
+        if (vistas[g]) {
+          duplicadosInput.push(g);
+        } else {
+          vistas[g] = true;
+        }
+      }
+      if (duplicadosInput.length > 0) {
+        document.getElementById('modalDuplicadosInputLista').innerHTML = duplicadosInput.map(function(g) { return '\u2022 ' + g; }).join('<br>');
+        document.getElementById('modalValidacionDuplicadosInput').style.display = 'flex';
+        return;
+      }
+
+      var btn = document.getElementById('btnBuscarGuiasLpropia');
+      btn.disabled = true; btn.textContent = 'Buscando...';
+      clearLogLpropia(); appendLogLpropia('Buscando guías...');
+      google.script.run
+        .withSuccessHandler(function(res) {
+          btn.disabled = false; btn.textContent = 'Buscar Guías en Sistema';
+          enviosActualesLpropia = res.data;
+          document.getElementById('guiasStatsLpropia').innerHTML = 'Total: <strong>' + res.totalIngresadas + '</strong> | Encontradas: <strong style="color:#28a745;">' + res.encontradas + '</strong> | No encontradas: <strong style="color:#dc3545;">' + res.noEncontradas.length + '</strong>';
+          appendLogLpropia('Resultado: ' + res.encontradas + ' de ' + res.totalIngresadas + '.');
+          if (res.noEncontradas.length > 0) appendLogLpropia('NO encontradas: ' + res.noEncontradas.join(', '));
+          if (res.encontradas > 0) {
+            document.getElementById('accionesCardLpropia').style.display = 'block';
+            document.getElementById('btnRecibirLpropia').disabled = false;
+          } else {
+            document.getElementById('accionesCardLpropia').style.display = 'none';
+          }
+        })
+        .withFailureHandler(function(e) {
           btn.disabled = false; btn.textContent = 'Buscar Guías en Sistema';
           appendLogLpropia('ERROR: ' + e.message);
-        });
+        })
+        .buscarMultiplesGuiasLpropia(texto);
     }
 
     // Botón principal: abre modal de guía madre
@@ -21107,8 +21975,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       // Ya no solo revisa el estado actual, sino todo el historial de movimientos
       mostrarModalProgreso('Verificando historial de estados...');
       appendLogLpropia('Verificando historial de estados en sistema...');
-      callBackend('verificarHistorialEstadosLpropia', enviosActualesLpropia)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           cerrarModalProgreso();
           if (!res.ok) {
             alert('Error verificando historial: ' + (res.error || 'Desconocido'));
@@ -21125,10 +21993,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
           // Sin bloqueos, ejecutar el proceso
           ejecutarProcesoIngresoOrigen(madre, hijas, costoFlota);
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           cerrarModalProgreso();
           alert('Error de conexion verificando historial: ' + e.message);
-        });
+        })
+        .verificarHistorialEstadosLpropia(enviosActualesLpropia);
     }
 
     // Ejecutar proceso completo de Ingreso Origen (se llama despues de validar historial)
@@ -21146,13 +22015,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       appendLogLpropia('\n📌 PASO 1/3: Registrando en hoja Guías Madres...');
       btn.textContent = 'Paso 1/3: Registrando hoja...';
 
-      callBackend('registrarGuiaMadreDesdeIngresoLpropia', {
-          madre: madre,
-          tipo: tipoMadreSeleccionado,
-          costoMadreManual: costoFlota,
-          hijas: hijas
-        })
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           if (res.status === 'success') {
             appendLogLpropia('✅ ' + res.message);
             appendLogLpropia('   Costo madre: $' + res.costoMadre.toLocaleString('es-CO') + ' | Total hijas: $' + res.totalHijas.toLocaleString('es-CO'));
@@ -21163,10 +22027,16 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
           }
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           appendLogLpropia('❌ Error hoja: ' + e.message);
           errorModalProgreso('❌ Error hoja: ' + e.message);
           btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
+        })
+        .registrarGuiaMadreDesdeIngresoLpropia({
+          madre: madre,
+          tipo: tipoMadreSeleccionado,
+          costoMadreManual: costoFlota,
+          hijas: hijas
         });
     }
 
@@ -21175,18 +22045,19 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       appendLogLpropia('\n📦 PASO 2/3: Recibiendo en Firestore...');
       btn.textContent = 'Paso 2/3: Recibiendo...';
 
-      callBackend('recibirMultiplesLpropia', [enviosActualesLpropia, idPuntoActualLpropia])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           appendLogLpropia('✅ Recibidas: ' + res.procesadas + ' de ' + res.total + '.');
           if (res.error) appendLogLpropia('⚠️ ' + res.error);
           if (res.logs && res.logs.length > 0) res.logs.forEach(function(l) { appendLogLpropia('⚠️ ' + l); });
           ejecutarPaso3RutaNacional(madre, hijas, btn);
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           appendLogLpropia('❌ Error recibiendo: ' + e.message);
           errorModalProgreso('❌ Error recibiendo: ' + e.message);
           btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
-        });
+        })
+        .recibirMultiplesLpropia(enviosActualesLpropia, idPuntoActualLpropia);
     }
 
     // PASO 3: En Ruta Nacional
@@ -21212,8 +22083,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
         observaciones: ''
       };
 
-      callBackend('actualizarMultiplesEstadosLpropia', [enviosActualesLpropia, estadoData, idPuntoActualLpropia])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           appendLogLpropia('✅ En Ruta Nacional aplicado: ' + res.procesadas + ' de ' + res.total + '.');
           if (res.error) appendLogLpropia('⚠️ ' + res.error);
           if (res.logs && res.logs.length > 0) res.logs.forEach(function(l) { appendLogLpropia('⚠️ ' + l); });
@@ -21223,12 +22094,13 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
           mostrarOkModalProgreso();
           btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           appendLogLpropia('❌ Error En Ruta Nacional: ' + e.message);
           appendLogLpropia('\n⚠️ Pasos 1 y 2 completados. Solo falló el paso 3.');
           errorModalProgreso('Error En Ruta Nacional: ' + e.message);
           btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
-        });
+        })
+        .actualizarMultiplesEstadosLpropia(enviosActualesLpropia, estadoData, idPuntoActualLpropia);
     }
 
 
@@ -21309,8 +22181,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       appendLogLmensajero('Centro de costo: ' + miCentroCosto);
 
       // Buscar usuario
-      callBackend('obtenerIdUsuarioLpropia', miCentroCosto)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           if (res.success) {
             idPuntoActualLmensajero = res.id;
             document.getElementById('userStatusIconLmensajero').innerHTML = '<i class="bi bi-patch-check-fill" style="color:#28a745;font-size:20px;"></i>';
@@ -21322,15 +22194,16 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             appendLogLmensajero('\u274C ' + res.error);
           }
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           document.getElementById('userStatusIconLmensajero').textContent = '\u274C';
           document.getElementById('userStatusTextLmensajero').innerHTML = '<span style="color:#dc3545;">Error de conexi\u00F3n</span>';
           appendLogLmensajero('\u274C ' + e.message);
-        });
+        })
+        .obtenerIdUsuarioLpropia(miCentroCosto);
 
       // Cargar estados (para tab Actualizar Estado) sin "En Ruta Nacional"
-      callBackend('obtenerEstadosHekaApi')
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           if (res.success) {
             estadosDisponiblesLmensajero = res.estados.filter(function(est) {
               return est.estado !== "En Ruta Nacional";
@@ -21360,9 +22233,10 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             appendLogLmensajero('\u274C Error estados: ' + res.error);
           }
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           appendLogLmensajero('\u274C Error estados: ' + e.message);
-        });
+        })
+        .obtenerEstadosHekaApi();
     }
 
     // ========== BUSCAR HIJAS POR GUÍA MADRE (TAB RECOGIDA) ==========
@@ -21385,8 +22259,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
 
       appendLogLmensajero('\n\ud83d\udd0d Buscando hijas de gu\u00EDa madre: ' + madre + '...');
 
-      callBackend('buscarHijasByMadre', madre)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-search"></i> Buscar Hijas';
           if (res.status === 'success' && res.data && res.data.length > 0) {
             hijasEncontradasLmensajero = res.data;
@@ -21400,10 +22274,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             document.getElementById('hijasCountLmensajero').innerHTML = '';
           }
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-search"></i> Buscar Hijas';
           appendLogLmensajero('\u274C Error buscando hijas: ' + e.message);
-        });
+        })
+        .buscarHijasByMadre(madre);
     }
 
     // ========== RENDERIZAR HIJAS CON CHECKBOXES ==========
@@ -21481,8 +22356,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       document.getElementById('accionesCardLmensajero').style.display = 'none';
       appendLogLmensajero('\n\ud83d\udd0d Buscando ' + chuleadas.length + ' gu\u00EDas seleccionadas en sistema...');
 
-      callBackend('buscarMultiplesGuiasLpropia', texto)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-arrow-right-circle"></i> Buscar Gu\u00EDas Seleccionadas en Sistema';
           enviosActualesLmensajero = res.data;
           document.getElementById('guiasStatsLmensajero').innerHTML = 'Seleccionadas: <strong>' + chuleadas.length + '</strong> | Encontradas: <strong style="color:#28a745;">' + res.encontradas + '</strong> | No encontradas: <strong style="color:#dc3545;">' + res.noEncontradas.length + '</strong>';
@@ -21497,10 +22372,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             appendLogLmensajero('\u274C Ninguna gu\u00EDa encontrada en el sistema.');
           }
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-arrow-right-circle"></i> Buscar Gu\u00EDas Seleccionadas en Sistema';
           appendLogLmensajero('ERROR: ' + e.message);
-        });
+        })
+        .buscarMultiplesGuiasLpropia(texto);
     }
 
     // ========== PROCESAR RECOGIDA (TAB RECOGIDA - estado fijo: En Bodega) ==========
@@ -21531,8 +22407,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       appendLogLmensajero('\n\ud83d\udccc PASO 1/2: Cambiando estado a [En Bodega] Ingreso a Bodega, pr\u00F3ximo a salir a reparto...');
       btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Paso 1/2: Cambiando estado...';
 
-      callBackend('actualizarMultiplesEstadosLpropia', [enviosActualesLmensajero, estadoFijo, idPuntoActualLmensajero])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           appendLogLmensajero('\u2705 Estado actualizado: ' + res.procesadas + ' de ' + res.total + '.');
           if (res.error) appendLogLmensajero('\u26A0\uFE0F ' + res.error);
           if (res.logs && res.logs.length > 0) {
@@ -21541,11 +22417,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
           // PASO 2: Actualizar hoja (Despachado → Recibida)
           ejecutarPaso2HojaMensajero(chuleadas, btn);
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           appendLogLmensajero('\u274C Error cambiando estado: ' + e.message);
           errorModalProgreso('Error cambiando estado: ' + e.message);
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Procesar Gu\u00EDas Seleccionadas'; btn.style.background = '#28a745';
-        });
+        })
+        .actualizarMultiplesEstadosLpropia(enviosActualesLmensajero, estadoFijo, idPuntoActualLmensajero);
     }
 
     // ========== PASO 2: ACTUALIZAR HOJA GUIAS MADRE (Despachado → Recibida) ==========
@@ -21559,19 +22436,20 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       appendLogLmensajero('\n\ud83d\udcdd PASO 2/2: Actualizando hoja Gu\u00EDas Madres (Despachado \u2192 Recibida)...');
       btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Paso 2/2: Actualizando hoja...';
 
-      callBackend('recibirGuiasHijas', {
-          recibir: chuleadas.seleccionadas,
-          desvincular: []
-        })
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           appendLogLmensajero('\u2705 Hoja actualizada correctamente.');
           finalizarProcesoMensajero(btn);
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           appendLogLmensajero('\u274C Error actualizando hoja: ' + e.message);
           appendLogLmensajero('\n\u26A0\uFE0F Paso 1 completado. Fall\u00F3 el paso 2 (hoja).');
           errorModalProgreso('Error actualizando hoja. ' + e.message);
           finalizarProcesoMensajero(btn);
+        })
+        .recibirGuiasHijas({
+          recibir: chuleadas.seleccionadas,
+          desvincular: []
         });
     }
 
@@ -21587,8 +22465,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       // Refrescar las hijas para mostrar estados actualizados
       if (guiaMadreActualLmensajero) {
         appendLogLmensajero('\n\ud83d\udd04 Refrescando estado de gu\u00EDas hijas...');
-        callBackend('buscarHijasByMadre', guiaMadreActualLmensajero)
-          .then(function(res) {
+        google.script.run
+          .withSuccessHandler(function(res) {
             if (res.status === 'success' && res.data && res.data.length > 0) {
               hijasEncontradasLmensajero = res.data;
               renderizarHijasMensajero(res.data);
@@ -21597,10 +22475,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             mostrarOkModalProgreso();
             enviarRecogidaWhatsApp();
           })
-          .catch(function() {
+          .withFailureHandler(function() {
             mostrarOkModalProgreso();
             enviarRecogidaWhatsApp();
-          });
+          })
+          .buscarHijasByMadre(guiaMadreActualLmensajero);
       } else {
         mostrarOkModalProgreso();
         enviarRecogidaWhatsApp();
@@ -21693,8 +22572,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       document.getElementById('accionesCardActualizarEstado').style.display = 'none';
       appendLogLmensajero('\n\ud83d\udd0d [Actualizar Estado] Buscando ' + guias.length + ' gu\u00EDas en sistema...');
 
-      callBackend('buscarMultiplesGuiasLpropia', textoLimpio)
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-search"></i> Buscar Gu\u00EDas en Sistema';
           enviosActualesActualizarEstado = res.data;
           document.getElementById('guiasStatsActualizarEstado').innerHTML = 'Ingresadas: <strong>' + res.totalIngresadas + '</strong> | Encontradas: <strong style="color:#28a745;">' + res.encontradas + '</strong> | No encontradas: <strong style="color:#dc3545;">' + res.noEncontradas.length + '</strong>';
@@ -21708,10 +22587,11 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
             appendLogLmensajero('\u274C Ninguna gu\u00EDa encontrada en el sistema.');
           }
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-search"></i> Buscar Gu\u00EDas en Sistema';
           appendLogLmensajero('ERROR: ' + e.message);
-        });
+        })
+        .buscarMultiplesGuiasLpropia(textoLimpio);
     }
 
     // ========== AL CAMBIAR ESTADO (TAB ACTUALIZAR ESTADO) ==========
@@ -21857,8 +22737,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       if (evidenciaBase64ActualizarEstado) {
         mostrarModalProgreso('Actualizar Estado - Subiendo imagen a GitHub...');
         appendLogLmensajero('Subiendo imagen de evidencia a GitHub...');
-        callBackend('subirImagenAGithub', evidenciaNombreActualizarEstado, evidenciaBase64ActualizarEstado)
-          .then(function(res) {
+        google.script.run
+          .withSuccessHandler(function(res) {
             if (!res.ok) {
               appendLogLmensajero('Error subiendo imagen: ' + res.error);
               errorModalProgreso('Error subiendo imagen: ' + res.error);
@@ -21878,11 +22758,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
               observaciones: obsFinal
             }, btn);
           })
-          .catch(function(e) {
+          .withFailureHandler(function(e) {
             appendLogLmensajero('Error subiendo imagen: ' + e.message);
             errorModalProgreso('Error subiendo imagen: ' + e.message);
             btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado'; btn.style.background = '#dc3545';
-          });
+          })
+          .subirImagenAGithub(evidenciaNombreActualizarEstado, evidenciaBase64ActualizarEstado);
       } else {
         // Sin imagen, ejecutar directamente
         ejecutarActualizacionEstado({
@@ -21907,8 +22788,8 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
       appendLogLmensajero('\n\ud83d\udccc Cambiando estado a [' + estadoData.estado + '] ' + estadoData.descripcion + '...');
       btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...';
 
-      callBackend('actualizarMultiplesEstadosLpropia', [enviosActualesActualizarEstado, estadoData, idPuntoActualLmensajero])
-          .then(function(res) {
+      google.script.run
+        .withSuccessHandler(function(res) {
           appendLogLmensajero('\u2705 Estado actualizado: ' + res.procesadas + ' de ' + res.total + '.');
           if (res.error) appendLogLmensajero('\u26A0\uFE0F ' + res.error);
           if (res.logs && res.logs.length > 0) {
@@ -21922,11 +22803,12 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
           btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado';
           btn.style.background = '#dc3545';
         })
-          .catch(function(e) {
+        .withFailureHandler(function(e) {
           appendLogLmensajero('\u274C Error cambiando estado: ' + e.message);
           errorModalProgreso('Error cambiando estado: ' + e.message);
           btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado'; btn.style.background = '#dc3545';
-        });
+        })
+        .actualizarMultiplesEstadosLpropia(enviosActualesActualizarEstado, estadoData, idPuntoActualLmensajero);
     }
 
 
@@ -22068,4 +22950,4 @@ ption value="Sura">Sura</option><option value="Sanitas">Sanitas</option><option 
   </div>
 
 </body>
-</html> 
+</html>
