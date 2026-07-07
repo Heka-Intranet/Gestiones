@@ -8987,14 +8987,78 @@
 
 
   <script>
+    // ============================================================
+    // ⚙️ CONFIGURACIÓN - PEGA AQUÍ LA URL DE TU GOOGLE APPS SCRIPT
+    // Obtienes esta URL al desplegar tu GAS como Web App
+    // Debe terminar en /exec
+    // Ejemplo: https://script.google.com/macros/s/TU_ID_AQUI/exec
+    // ============================================================
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbwFz1K8o2Oau3TUd8oJiHK5RL0IOLLkGwlVlK2aMSQiNSVinJWNA07hKXTtOcKZVzs8/exec';
+
+    // ============================================================
+    // 🔌 SHIM: google.script.run → fetch()
+    // Permite que este HTML funcione en hosting estático (GitHub Pages)
+    // comunicándose con el CODE.GS mediante peticiones HTTP POST.
+    // NO es necesario modificar ninguna de las llamadas google.script.run
+    // que ya existen en el código — este shim las intercepta todas.
+    // ============================================================
+    var google = {
+      script: {
+        run: {
+          keepAlive: function() {}
+        }
+      }
+    };
+
+    (function() {
+      function createCallableProxy(successCb, failureCb) {
+        return new Proxy({}, {
+          get: function(target, prop) {
+            // .withFailureHandler() encadena un nuevo proxy con ambos callbacks
+            if (prop === 'withFailureHandler') {
+              return function(fn) {
+                return createCallableProxy(successCb, fn);
+              };
+            }
+            // Cualquier otra propiedad = nombre de función GAS
+            // Ejecuta la llamada via fetch al doPost del Apps Script
+            return function() {
+              var args = Array.prototype.slice.call(arguments);
+              fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ fn: prop, args: args })
+              })
+              .then(function(r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.text();
+              })
+              .then(function(text) {
+                var data;
+                try { data = JSON.parse(text); } catch(e) { data = text; }
+                if (successCb) successCb(data);
+              })
+              .catch(function(err) {
+                if (failureCb) failureCb(err.message || String(err));
+                else if (successCb) successCb({ status: 'error', message: String(err) });
+              });
+            };
+          }
+        });
+      }
+
+      // Registrar withSuccessHandler como punto de entrada
+      google.script.run.withSuccessHandler = function(fn) {
+        return createCallableProxy(fn, null);
+      };
+    })();
+
     // ========== FUNCIONES MODAL DE PROGRESO (COMPARTIDO) ==========
     var _modalProgresoIntervalo = null;
     var _onModalOkCallback = null;
 
-    // ========== KEEP ALIVE - Mantener sesion abierta ==========
-    setInterval(function() {
-      try { google.script.run.keepAlive(); } catch(e) {}
-    }, 5 * 60 * 1000);
+    // ========== KEEP ALIVE - Desactivado para hosting estático ==========
+    // En hosting estático no hay sesión de GAS que mantener viva.
 
     function mostrarModalProgreso(titulo) {
       var overlay = document.getElementById('modalProgresoOverlay');
