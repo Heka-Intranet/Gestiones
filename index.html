@@ -22070,63 +22070,38 @@
             return;
           }
 
-          // Construir mapas: numeroGuia -> [estados] y numeroGuia -> error
-          var historialMap = {};
-          var errorMap = {};
+          // Construir mapa: numeroGuia -> datos del servidor (flags compactos)
+          var flagsMap = {};
           if (res.guias && res.guias.length > 0) {
             res.guias.forEach(function(g) {
-              if (g.error) {
-                errorMap[g.numeroGuia] = g.error;
-                historialMap[g.numeroGuia] = [];
-              } else {
-                historialMap[g.numeroGuia] = (g.estadosPrevios || []).map(function(s) { return (s || '').toUpperCase(); });
-              }
+              flagsMap[g.numeroGuia] = g;
             });
           }
 
-          // ========== CATEGORIZAR CADA GUÍA POR SU HISTORIAL ==========
+          // ========== CATEGORIZAR CADA GUÍA POR SUS FLAGS ==========
           var guiasParaRecibir = [];  // Sin historial → proceso completo
-          var guiasSoloRuta = [];     // Solo tiene Recibido/Adjuntado → solo Ruta Nacional
-          var guiasBloqueadas = [];   // Tiene Ruta Nacional, otro estado, o error → BLOQUEAR
+          var guiasSoloRuta = [];     // Solo Recibido/Adjuntado → solo Ruta Nacional
+          var guiasBloqueadas = [];   // Tiene Ruta, otro estado, o error → BLOQUEAR
 
           enviosActualesLpropia.forEach(function(env) {
             var numGuia = env.data.numeroGuia;
-            var historial = historialMap[numGuia] || [];
+            var flags = flagsMap[numGuia];
 
-            // Si hubo error consultando esta guía → bloquear por seguridad
-            if (errorMap[numGuia]) {
+            // Si no viene del servidor o hay error → bloquear
+            if (!flags || flags.error) {
               guiasBloqueadas.push(env);
               return;
             }
 
-            if (historial.length === 0) {
+            if (flags.totalEstados === 0) {
               // Sin historial → proceso completo
               guiasParaRecibir.push(env);
-              return;
-            }
-
-            // Revisar cada estado del historial
-            var tieneRuta = false;
-            var tieneEstadoFueraDeOrden = false;
-
-            for (var i = 0; i < historial.length; i++) {
-              var est = historial[i];
-              var esRecibido = (est.indexOf('RECIBIDO') !== -1);
-              var esAdjuntado = (est.indexOf('ADJUNTADO') !== -1);
-              var esRuta = (est.indexOf('RUTA') !== -1);
-
-              if (esRuta) {
-                tieneRuta = true;
-              } else if (!esRecibido && !esAdjuntado) {
-                tieneEstadoFueraDeOrden = true;
-              }
-            }
-
-            if (tieneRuta || tieneEstadoFueraDeOrden) {
-              guiasBloqueadas.push(env);
-            } else {
-              // Solo tiene Recibido y/o Adjuntado → le falta Ruta Nacional
+            } else if (flags.soloRA) {
+              // Solo tiene Recibido/Adjuntado → le falta Ruta Nacional
               guiasSoloRuta.push(env);
+            } else {
+              // Tiene Ruta Nacional u otro estado → bloquear
+              guiasBloqueadas.push(env);
             }
           });
 
@@ -22134,15 +22109,16 @@
           if (guiasBloqueadas.length > 0) {
             var listaHtml = guiasBloqueadas.map(function(b) {
               var numG = b.data.numeroGuia;
-              var hist = historialMap[numG] || [];
-              var err = errorMap[numG];
+              var f = flagsMap[numG] || {};
               var detalle = '';
-              if (err) {
-                detalle = 'Error: ' + err;
-              } else if (hist.length > 0) {
-                detalle = hist.join(' \u2192 ');
+              if (f.error) {
+                detalle = 'Error al consultar historial';
+              } else if (f.tieneRuta) {
+                detalle = 'Tiene ' + f.totalEstados + ' estados (incluye Ruta Nacional)';
+              } else if (f.tieneOtro) {
+                detalle = 'Tiene ' + f.totalEstados + ' estados (incluye estados fuera de Ingreso Origen)';
               } else {
-                detalle = (b.data.estado || 'Sin estado');
+                detalle = 'Tiene ' + (f.totalEstados || '?') + ' estados previos';
               }
               return '\u2022 <strong>' + numG + '</strong> &mdash; ' + detalle;
             }).join('<br>');
@@ -22154,7 +22130,7 @@
           // Todas las guías son procesables (sin historial que bloquee)
           // Ejecutar con todas las guías
           var hijasProcesables = enviosActualesLpropia.map(function(e) { return e.data.numeroGuia; });
-          ejecutarProcesoIngresoOrigen(madre, hijasProcesables, costoFlota, guiasParaRecibir, guiasSoloRuta, guiasBloqueadas, historialMap);
+          ejecutarProcesoIngresoOrigen(madre, hijasProcesables, costoFlota, guiasParaRecibir, guiasSoloRuta, guiasBloqueadas, flagsMap);
         })
         .withFailureHandler(function(e) {
           cerrarModalProgreso();
