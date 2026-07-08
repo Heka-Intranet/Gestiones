@@ -22694,10 +22694,148 @@
         if (i < guias.length - 1) _whatsAppMsg += '\n';
       }
 
+      // Agregar info de pago si existe (Entrega Exitosa)
+      if (_pagoMensaje) {
+        _whatsAppMsg += _pagoMensaje;
+        _pagoMensaje = ''; // limpiar para pr\u00f3ximo uso
+      }
+
       document.getElementById('modalWhatsAppMsg').textContent = _whatsAppMsg;
       document.getElementById('btnCopiarAbrirTexto').textContent = 'Copiar y Abrir WhatsApp';
       document.getElementById('btnCopiarAbrirWhatsApp').style.background = '#25D366';
       document.getElementById('modalWhatsAppOverlay').style.display = 'flex';
+    }
+
+    // ========== MODAL M\u00c9TODO DE PAGO (ENTREGA EXITOSA) ==========
+    var _pagoEstadoInfo = null;
+    var _pagoImagenBase64 = null;
+    var _pagoImagenNombre = '';
+    var _pagoImagenUrl = '';
+    var _pagoMensaje = '';
+
+    function mostrarModalMetodoPago(estadoInfo) {
+      _pagoEstadoInfo = estadoInfo;
+      _pagoImagenBase64 = null;
+      _pagoImagenNombre = '';
+      _pagoImagenUrl = '';
+      _pagoMensaje = '';
+      document.getElementById('pagoRadioEfectivo').checked = false;
+      document.getElementById('pagoRadioTransferencia').checked = false;
+      document.getElementById('pagoRadioAmbos').checked = false;
+      document.getElementById('pagoRadioSinCobro').checked = false;
+      document.getElementById('pagoValorEfectivo').value = '';
+      document.getElementById('pagoValorTransferencia').value = '';
+      document.getElementById('pagoComprobantePreview').innerHTML = '';
+      document.getElementById('pagoComprobanteLabel').textContent = 'Ning\u00fan archivo seleccionado';
+      document.getElementById('pagoInputFile').value = '';
+      var btnC = document.getElementById('pagoBtnConfirmar');
+      btnC.disabled = false;
+      btnC.textContent = 'Confirmar Pago';
+      btnC.style.background = '#28a745';
+      onMetodoPagoChange();
+      document.getElementById('modalMetodoPago').style.display = 'flex';
+    }
+
+    function cerrarModalMetodoPago() {
+      document.getElementById('modalMetodoPago').style.display = 'none';
+    }
+
+    function onMetodoPagoChange() {
+      var metodo = document.querySelector('input[name="metodoPago"]:checked');
+      var v = metodo ? metodo.value : '';
+      document.getElementById('pagoCamposEfectivo').style.display = (v === 'efectivo' || v === 'ambos') ? 'block' : 'none';
+      document.getElementById('pagoCamposTransferencia').style.display = (v === 'transferencia' || v === 'ambos') ? 'block' : 'none';
+      document.getElementById('pagoCamposComprobante').style.display = (v === 'transferencia' || v === 'ambos') ? 'block' : 'none';
+    }
+
+    function previewComprobanteTransferencia(input) {
+      var file = input.files[0];
+      if (!file) return;
+      document.getElementById('pagoComprobanteLabel').textContent = file.name;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+          var MAX = 1024;
+          var w = img.width, h = img.height;
+          if (w > MAX || h > MAX) {
+            if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+            else { w = Math.round(w * MAX / h); h = MAX; }
+          }
+          var canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          _pagoImagenBase64 = canvas.toDataURL('image/jpeg', 0.5).split(',')[1];
+          _pagoImagenNombre = file.name.replace(/\.[^.]+$/, '') + '_comprobante.jpg';
+          document.getElementById('pagoComprobantePreview').innerHTML = '<img src="data:image/jpeg;base64,' + _pagoImagenBase64 + '" style="max-width:100%;max-height:150px;border-radius:8px;border:1px solid #ddd;">';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function confirmarMetodoPago() {
+      var metodo = document.querySelector('input[name="metodoPago"]:checked');
+      if (!metodo) { alert('Seleccione un m\u00e9todo de pago.'); return; }
+      var v = metodo.value;
+
+      if (v === 'efectivo') {
+        if (!document.getElementById('pagoValorEfectivo').value.trim()) { alert('Ingrese el valor cobrado en efectivo.'); return; }
+      } else if (v === 'transferencia') {
+        if (!document.getElementById('pagoValorTransferencia').value.trim()) { alert('Ingrese el valor de la transferencia.'); return; }
+        if (!_pagoImagenBase64) { alert('Debe subir el comprobante de transferencia.'); return; }
+      } else if (v === 'ambos') {
+        if (!document.getElementById('pagoValorEfectivo').value.trim()) { alert('Ingrese el valor cobrado en efectivo.'); return; }
+        if (!document.getElementById('pagoValorTransferencia').value.trim()) { alert('Ingrese el valor de la transferencia.'); return; }
+        if (!_pagoImagenBase64) { alert('Debe subir el comprobante de transferencia.'); return; }
+      }
+
+      // Construir texto de pago
+      _pagoMensaje = '\n\n\ud83d\udcb3 *M\u00c9TODO DE PAGO*\n';
+      if (v === 'efectivo') {
+        _pagoMensaje += '\ud83d\udcb5 Pago en efectivo: $' + document.getElementById('pagoValorEfectivo').value.trim();
+      } else if (v === 'transferencia') {
+        _pagoMensaje += '\ud83d\udcb3 Transferencia: $' + document.getElementById('pagoValorTransferencia').value.trim();
+      } else if (v === 'ambos') {
+        _pagoMensaje += '\ud83d\udcb5 Efectivo: $' + document.getElementById('pagoValorEfectivo').value.trim() + '\n';
+        _pagoMensaje += '\ud83d\udcb3 Transferencia: $' + document.getElementById('pagoValorTransferencia').value.trim();
+      } else {
+        _pagoMensaje += '\u274c Env\u00edo sin cobro - $0';
+      }
+
+      // Si necesita subir imagen de comprobante
+      if ((v === 'transferencia' || v === 'ambos') && _pagoImagenBase64) {
+        var btn = document.getElementById('pagoBtnConfirmar');
+        btn.disabled = true;
+        btn.textContent = 'Subiendo comprobante...';
+        btn.style.background = '#1e7e34';
+        subirImagenConChunks(
+          _pagoImagenNombre,
+          _pagoImagenBase64,
+          function(res) {
+            if (res.ok) {
+              _pagoImagenUrl = res.url;
+              _pagoMensaje += '\n\ud83d\udcf7 Comprobante: ' + res.url;
+              cerrarModalMetodoPago();
+              enviarActualizarEstadoWhatsApp(_pagoEstadoInfo);
+            } else {
+              alert('Error subiendo comprobante: ' + (res.error || 'Intente de nuevo.'));
+              btn.disabled = false;
+              btn.textContent = 'Confirmar Pago';
+              btn.style.background = '#28a745';
+            }
+          },
+          function(e) {
+            alert('Error subiendo comprobante: ' + (e.message || e));
+            btn.disabled = false;
+            btn.textContent = 'Confirmar Pago';
+            btn.style.background = '#28a745';
+          }
+        );
+      } else {
+        cerrarModalMetodoPago();
+        enviarActualizarEstadoWhatsApp(_pagoEstadoInfo);
+      }
     }
 
     //  TAB: ACTUALIZAR ESTADO (SIN GUIA MADRE)
@@ -23125,7 +23263,13 @@
         btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado';
         btn.style.background = '#dc3545';
         // Mostrar modal de WhatsApp para compartir
-        enviarActualizarEstadoWhatsApp(estadoInfo);
+        var descCheck = (estadoInfo.descripcion || '').toUpperCase().trim();
+        var esEntregaExitosa = descCheck.indexOf('ENTREGA EXITOSA') !== -1;
+        if (esEntregaExitosa) {
+          mostrarModalMetodoPago(estadoInfo);
+        } else {
+          enviarActualizarEstadoWhatsApp(estadoInfo);
+        }
         return;
       }
 
@@ -23319,6 +23463,73 @@
       </div>
       <div style="padding:0 24px 20px; display:flex; justify-content:flex-end;">
         <button onclick="document.getElementById('modalValidacionDuplicados').style.display='none'" style="background:#6c757d; color:#fff; border:none; padding:10px 32px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:700;">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MODAL: M\u00c9TODO DE PAGO (ENTREGA EXITOSA) ========== -->
+  <div id="modalMetodoPago" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:100001; justify-content:center; align-items:center;">
+    <div style="background:#fff; border-radius:12px; width:95%; max-width:460px; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+      <!-- Header -->
+      <div style="background:#28a745; color:#fff; padding:18px 24px; display:flex; align-items:center; gap:10px;">
+        <i class="bi bi-credit-card-2-front-fill" style="font-size:22px;"></i>
+        <span style="font-size:16px; font-weight:700;">M\u00e9todo de Pago</span>
+      </div>
+      <!-- Body -->
+      <div style="padding:20px 24px; overflow-y:auto; flex:1;">
+        <p style="margin:0 0 16px; color:#555; font-size:13px;">Seleccione c\u00f3mo se realiz\u00f3 el cobro de la entrega:</p>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:18px;">
+          <label style="display:flex; align-items:center; gap:10px; padding:11px 14px; border:2px solid #e9ecef; border-radius:8px; cursor:pointer; transition:0.2s; font-size:14px;">
+            <input type="radio" name="metodoPago" value="efectivo" id="pagoRadioEfectivo" onchange="onMetodoPagoChange()" style="accent-color:#28a745; width:18px; height:18px;">
+            <span style="font-weight:600;">\ud83d\udcb5 Efectivo</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:10px; padding:11px 14px; border:2px solid #e9ecef; border-radius:8px; cursor:pointer; transition:0.2s; font-size:14px;">
+            <input type="radio" name="metodoPago" value="transferencia" id="pagoRadioTransferencia" onchange="onMetodoPagoChange()" style="accent-color:#28a745; width:18px; height:18px;">
+            <span style="font-weight:600;">\ud83d\udcb3 Transferencia</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:10px; padding:11px 14px; border:2px solid #e9ecef; border-radius:8px; cursor:pointer; transition:0.2s; font-size:14px;">
+            <input type="radio" name="metodoPago" value="ambos" id="pagoRadioAmbos" onchange="onMetodoPagoChange()" style="accent-color:#28a745; width:18px; height:18px;">
+            <span style="font-weight:600;">\ud83d\udcb5\ud83d\udcb3 Ambos (Efectivo + Transferencia)</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:10px; padding:11px 14px; border:2px solid #e9ecef; border-radius:8px; cursor:pointer; transition:0.2s; font-size:14px;">
+            <input type="radio" name="metodoPago" value="sin_cobro" id="pagoRadioSinCobro" onchange="onMetodoPagoChange()" style="accent-color:#28a745; width:18px; height:18px;">
+            <span style="font-weight:600;">\u274c Sin Cobro</span>
+          </label>
+        </div>
+
+        <!-- Campo: Valor efectivo -->
+        <div id="pagoCamposEfectivo" style="display:none; margin-bottom:14px;">
+          <label style="font-size:13px; font-weight:600; color:#495057; margin-bottom:4px; display:block;">Valor en efectivo:</label>
+          <div style="display:flex; align-items:center; gap:4px;">
+            <span style="font-weight:700; color:#495057; font-size:16px;">$</span>
+            <input type="number" id="pagoValorEfectivo" placeholder="0" min="0" style="flex:1; padding:10px 12px; border:1.5px solid #dee2e6; border-radius:8px; font-size:15px; font-weight:600; outline:none;">
+          </div>
+        </div>
+
+        <!-- Campo: Valor transferencia -->
+        <div id="pagoCamposTransferencia" style="display:none; margin-bottom:14px;">
+          <label style="font-size:13px; font-weight:600; color:#495057; margin-bottom:4px; display:block;">Valor de la transferencia:</label>
+          <div style="display:flex; align-items:center; gap:4px;">
+            <span style="font-weight:700; color:#495057; font-size:16px;">$</span>
+            <input type="number" id="pagoValorTransferencia" placeholder="0" min="0" style="flex:1; padding:10px 12px; border:1.5px solid #dee2e6; border-radius:8px; font-size:15px; font-weight:600; outline:none;">
+          </div>
+        </div>
+
+        <!-- Campo: Comprobante transferencia -->
+        <div id="pagoCamposComprobante" style="display:none; margin-bottom:10px;">
+          <label style="font-size:13px; font-weight:600; color:#495057; margin-bottom:6px; display:block;">Comprobante de transferencia:</label>
+          <div onclick="document.getElementById('pagoInputFile').click()" style="border:2px dashed #ced4da; border-radius:8px; padding:16px; text-align:center; cursor:pointer; background:#f8f9fa;">
+            <i class="bi bi-cloud-upload" style="font-size:28px; color:#6c757d;"></i>
+            <p id="pagoComprobanteLabel" style="margin:8px 0 0; font-size:13px; color:#6c757d;">Ning\u00fan archivo seleccionado</p>
+          </div>
+          <input type="file" id="pagoInputFile" accept="image/*" capture="environment" style="display:none;" onchange="previewComprobanteTransferencia(this)">
+          <div id="pagoComprobantePreview" style="margin-top:8px;"></div>
+        </div>
+      </div>
+      <!-- Footer -->
+      <div style="padding:0 24px 20px; display:flex; gap:10px; justify-content:flex-end;">
+        <button onclick="cerrarModalMetodoPago()" style="background:#e9ecef; color:#495057; border:none; padding:11px 20px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; transition:0.2s;">Cancelar</button>
+        <button id="pagoBtnConfirmar" onclick="confirmarMetodoPago()" style="background:#28a745; color:#fff; border:none; padding:11px 24px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:700; transition:0.2s;">Confirmar Pago</button>
       </div>
     </div>
   </div>
