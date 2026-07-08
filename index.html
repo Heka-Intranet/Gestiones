@@ -23209,70 +23209,21 @@
     }
 
 
-    // ========== SUBIDA DE IMAGEN POR CHUNKS (adaptado para GET URL) ==========
+    // ========== SUBIDA DE IMAGEN DIRECTA (POST sin límite de tamaño) ==========
     // La imagen se comprime al seleccionarla (max 1024px, JPEG 0.5).
-    // Si la imagen comprimida es peque\u00F1a (<3KB base64), la env\u00EDa directo.
-    // Si es grande, la divide en chunks de 3KB, los env\u00EDa uno por uno,
-    // y el servidor los reensambla con CacheService antes de subir a GitHub.
+    // Se envía directamente por POST - no hay límite de tamaño.
     function subirImagenConChunks(nombreArchivo, base64Data, onSuccess, onFailure) {
-      var CHUNK_SIZE = 3000; // 3KB por chunk (safe para GET URL - GAS tiene limite en query string)
-
-      if (base64Data.length <= CHUNK_SIZE) {
-        // Archivo peque\u00F1o: env\u00EDo directo
-        appendLogLmensajero('Imagen peque\u00F1a (' + (base64Data.length / 1024).toFixed(1) + 'KB), env\u00EDo directo...');
-        google.script.run
-          .withSuccessHandler(onSuccess)
-          .withFailureHandler(onFailure)
-          .subirImagenAGithub(nombreArchivo, base64Data);
-        return;
-      }
-
-      // Archivo grande: subida por chunks
-      var totalChunks = Math.ceil(base64Data.length / CHUNK_SIZE);
-      appendLogLmensajero('Imagen grande (' + (base64Data.length / 1024).toFixed(1) + 'KB). Dividiendo en ' + totalChunks + ' chunks...');
-
-      // PASO 1: Iniciar sesi\u00F3n de subida en el servidor
+      appendLogLmensajero('Subiendo imagen (' + (base64Data.length / 1024).toFixed(1) + 'KB)...');
       google.script.run
         .withSuccessHandler(function(res) {
-          appendLogLmensajero('\u2705 Sesi\u00F3n iniciada: ' + res.uploadId);
-          enviarSiguienteChunk(nombreArchivo, res.uploadId, base64Data, CHUNK_SIZE, totalChunks, 0, onSuccess, onFailure);
+          appendLogLmensajero('\u2705 Imagen subida: ' + (res.url || nombreArchivo));
+          if (onSuccess) onSuccess(res);
         })
         .withFailureHandler(function(e) {
-          appendLogLmensajero('\u274C Error iniciando subida: ' + (e.message || e));
-          onFailure(e);
+          appendLogLmensajero('\u274C Error subiendo imagen: ' + (e.message || e));
+          if (onFailure) onFailure(e);
         })
-        .iniciarSubidaImagen(nombreArchivo, totalChunks);
-    }
-
-    function enviarSiguienteChunk(nombreArchivo, uploadId, base64Data, chunkSize, totalChunks, chunkIndex, onSuccess, onFailure) {
-      var start = chunkIndex * chunkSize;
-      var chunk = base64Data.substring(start, start + chunkSize);
-
-      appendLogLmensajero('  Enviando chunk ' + (chunkIndex + 1) + '/' + totalChunks + ' (' + (chunk.length / 1024).toFixed(1) + 'KB)...');
-
-      google.script.run
-        .withSuccessHandler(function(res) {
-          appendLogLmensajero('  \u2705 Chunk ' + (chunkIndex + 1) + '/' + totalChunks + ' recibido.');
-          if (chunkIndex + 1 < totalChunks) {
-            // Enviar siguiente chunk
-            enviarSiguienteChunk(nombreArchivo, uploadId, base64Data, chunkSize, totalChunks, chunkIndex + 1, onSuccess, onFailure);
-          } else {
-            // Todos los chunks enviados, finalizar
-            appendLogLmensajero('\n\ud83d\udccc Todos los chunks enviados. Ensamblando y subiendo a GitHub...');
-            google.script.run
-              .withSuccessHandler(onSuccess)
-              .withFailureHandler(function(e) {
-                appendLogLmensajero('\u274C Error finalizando subida: ' + (e.message || e));
-                onFailure(e);
-              })
-              .finalizarSubidaImagen(uploadId);
-          }
-        })
-        .withFailureHandler(function(e) {
-          appendLogLmensajero('\u274C Error en chunk ' + (chunkIndex + 1) + ': ' + (e.message || e));
-          onFailure(e);
-        })
-        .subirChunkImagen(uploadId, chunkIndex, chunk);
+        .subirImagenAGithub(nombreArchivo, base64Data);
     }
 
     // Ejecutar la actualizacion de estado en Firestore (se llama despues de subir imagen si aplica)
