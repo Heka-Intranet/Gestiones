@@ -22035,29 +22035,23 @@
     // Procesar todo: Guía Madre + Firestore
     function procesarConGuiaMadre() {
       var madre = document.getElementById('gmIngresoMadre').value.trim();
-      if (!madre) { alert('Ingrese la guía madre'); return; }
+      if (!madre) { alert('Ingrese la gu\u00eda madre'); return; }
 
       var costoFlota = 0;
       if (tipoMadreSeleccionado === 'flota') {
         costoFlota = Number(document.getElementById('gmIngresoValorFlota').value) || 0;
-        if (costoFlota <= 0) { alert('Ingrese el valor de la guía madre'); return; }
+        if (costoFlota <= 0) { alert('Ingrese el valor de la gu\u00eda madre'); return; }
       }
 
-      // Extraer solo números de guía de los envíos
       var hijas = enviosActualesLpropia.map(function(e) { return e.data.numeroGuia; });
-
       closeModal('modal-guia-madre-ingreso');
 
-      // ========== VALIDACIÓN 1: DUPLICADOS EN EL LOTE ==========
+      // ========== VALIDACI\u00d3N: DUPLICADOS EN EL LOTE ==========
       var guiasMap = {};
       var duplicados = [];
       enviosActualesLpropia.forEach(function(env) {
         var g = env.data.numeroGuia;
-        if (guiasMap[g]) {
-          duplicados.push(g);
-        } else {
-          guiasMap[g] = true;
-        }
+        if (guiasMap[g]) { duplicados.push(g); } else { guiasMap[g] = true; }
       });
       if (duplicados.length > 0) {
         document.getElementById('modalDuplicadosLista').innerHTML = duplicados.map(function(g) { return '\u2022 ' + g; }).join('<br>');
@@ -22065,8 +22059,7 @@
         return;
       }
 
-      // ========== VALIDACIÓN 2: VERIFICAR HISTORIAL COMPLETO DE ESTADOS ==========
-      // Ya no solo revisa el estado actual, sino todo el historial de movimientos
+      // ========== VERIFICAR HISTORIAL COMPLETO DE ESTADOS (SERVIDOR) ==========
       mostrarModalProgreso('Verificando historial de estados...');
       appendLogLpropia('Verificando historial de estados en sistema...');
       google.script.run
@@ -22076,55 +22069,124 @@
             alert('Error verificando historial: ' + (res.error || 'Desconocido'));
             return;
           }
-          if (res.bloqueadas.length > 0) {
-            var listaHtml = res.bloqueadas.map(function(b) {
-              return '\u2022 <strong>' + b.numeroGuia + '</strong> &mdash; ' + b.estadosPrevios.join(', ');
+
+          // Construir mapa de historial: numeroGuia -> [estados en may\u00fasculas]
+          var historialMap = {};
+          if (res.bloqueadas && res.bloqueadas.length > 0) {
+            res.bloqueadas.forEach(function(b) {
+              historialMap[b.numeroGuia] = (b.estadosPrevios || []).map(function(s) { return (s || '').toUpperCase(); });
+            });
+          }
+
+          // ========== CATEGORIZAR CADA GU\u00cdA POR SU HISTORIAL ==========
+          // Los 3 estados iniciales que siempre deben ser: RECIBIDO → ADJUNTADO → RUTA NACIONAL
+          var guiasParaRecibir = [];  // Sin historial \u2192 proceso completo
+          var guiasSoloRuta = [];     // Solo tiene Recibido/Adjuntado (sin Ruta ni otros) \u2192 solo paso 3
+          var guiasBloqueadas = [];   // Ya tiene Ruta Nacional o alg\u00fan estado fuera de orden \u2192 BLOQUEAR
+
+          enviosActualesLpropia.forEach(function(env) {
+            var numGuia = env.data.numeroGuia;
+            var historial = historialMap[numGuia] || [];
+
+            if (historial.length === 0) {
+              // Sin historial \u2192 proceso completo
+              guiasParaRecibir.push(env);
+              return;
+            }
+
+            // Revisar cada estado del historial
+            var tieneRuta = false;
+            var tieneEstadoFueraDeOrden = false;
+
+            for (var i = 0; i < historial.length; i++) {
+              var est = historial[i];
+              // Los \u00fanicos estados v\u00e1lidos en el historial de Ingreso Origen son estos 3
+              var esRecibido = (est.indexOf('RECIBIDO') !== -1);
+              var esAdjuntado = (est.indexOf('ADJUNTADO') !== -1);
+              var esRuta = (est.indexOf('RUTA') !== -1);
+
+              if (esRuta) {
+                tieneRuta = true;
+              } else if (!esRecibido && !esAdjuntado) {
+                // Estado que NO es ninguno de los 3 iniciales \u2192 fuera de orden
+                tieneEstadoFueraDeOrden = true;
+              }
+            }
+
+            if (tieneRuta || tieneEstadoFueraDeOrden) {
+              guiasBloqueadas.push(env);
+            } else {
+              // Solo tiene Recibido y/o Adjuntado \u2192 le falta Ruta Nacional
+              guiasSoloRuta.push(env);
+            }
+          });
+
+          // ========== SI HAY CUALQUIER GUIA BLOQUEADA → BLOQUEAR TODO EL LOTE ==========
+          if (guiasBloqueadas.length > 0) {
+            var listaHtml = guiasBloqueadas.map(function(b) {
+              var hist = historialMap[b.data.numeroGuia] || [];
+              return '\u2022 <strong>' + b.data.numeroGuia + '</strong> &mdash; ' + (hist.length > 0 ? hist.join(' \u2192 ') : (b.data.estado || 'Desconocido'));
             }).join('<br>');
             document.getElementById('modalRecibidasLista').innerHTML = listaHtml;
             document.getElementById('modalValidacionRecibidas').style.display = 'flex';
             return;
           }
-          // Sin bloqueos, ejecutar el proceso
-          ejecutarProcesoIngresoOrigen(madre, hijas, costoFlota);
+
+          // Todas las guías son procesables (sin historial que bloquee)
+          // Ejecutar con todas las guías
+          var hijasProcesables = enviosActualesLpropia.map(function(e) { return e.data.numeroGuia; });
+          ejecutarProcesoIngresoOrigen(madre, hijasProcesables, costoFlota, guiasParaRecibir, guiasSoloRuta, guiasBloqueadas, historialMap);
         })
         .withFailureHandler(function(e) {
           cerrarModalProgreso();
-          alert('Error de conexion verificando historial: ' + e.message);
+          alert('Error de conexi\u00f3n verificando historial: ' + e.message);
         })
         .verificarHistorialEstadosLpropia(enviosActualesLpropia);
     }
 
-    // Ejecutar proceso completo de Ingreso Origen (se llama despues de validar historial)
-    function ejecutarProcesoIngresoOrigen(madre, hijas, costoFlota) {
+    // Ejecutar proceso completo de Ingreso Origen (recibe las guías ya categorizadas por historial)
+    function ejecutarProcesoIngresoOrigen(madre, hijas, costoFlota, guiasParaRecibir, guiasSoloRuta, guiasBloqueadas, historialMap) {
       var btn = document.getElementById('btnRecibirLpropia');
       btn.disabled = true;
+
       mostrarModalProgreso('Ingreso Origen - Procesando...');
       appendLogLpropia('========================================');
       appendLogLpropia('INICIANDO PROCESO COMPLETO');
-      appendLogLpropia('Guía Madre: ' + madre + ' (' + tipoMadreSeleccionado.toUpperCase() + ')');
-      appendLogLpropia('Hijas: ' + hijas.length + ' guías');
+      appendLogLpropia('Gu\u00eda Madre: ' + madre + ' (' + tipoMadreSeleccionado.toUpperCase() + ')');
+      appendLogLpropia('Hijas a procesar: ' + hijas.length);
+      if (guiasBloqueadas && guiasBloqueadas.length > 0) {
+        appendLogLpropia('Omitidas (ya procesadas): ' + guiasBloqueadas.length);
+      }
       appendLogLpropia('========================================');
 
-      // PASO 1: Registrar en hoja de Guías Madres
-      appendLogLpropia('\n📌 PASO 1/3: Registrando en hoja Guías Madres...');
+      if (guiasSoloRuta && guiasSoloRuta.length > 0) {
+        appendLogLpropia('\n\u26a1 ' + guiasSoloRuta.length + ' gu\u00eda(s) con Recibido/Adjuntado \u2192 solo se les aplicar\u00e1 En Ruta Nacional.');
+        appendLogLpropia('   Gu\u00edas: ' + guiasSoloRuta.map(function(e) { return e.data.numeroGuia; }).join(', '));
+      }
+      if (guiasParaRecibir && guiasParaRecibir.length > 0) {
+        appendLogLpropia('\n\ud83d\udce6 ' + guiasParaRecibir.length + ' gu\u00eda(s) sin historial \u2192 Recibir + En Ruta Nacional.');
+      }
+
+      // PASO 1: Registrar en hoja de Gu\u00edas Madres
+      appendLogLpropia('\n\ud83d\udccc PASO 1/3: Registrando en hoja Gu\u00edas Madres...');
       btn.textContent = 'Paso 1/3: Registrando hoja...';
 
       google.script.run
         .withSuccessHandler(function(res) {
           if (res.status === 'success') {
-            appendLogLpropia('✅ ' + res.message);
+            appendLogLpropia('\u2705 ' + res.message);
             appendLogLpropia('   Costo madre: $' + res.costoMadre.toLocaleString('es-CO') + ' | Total hijas: $' + res.totalHijas.toLocaleString('es-CO'));
-            ejecutarPaso2Recibir(madre, hijas, btn);
+            ejecutarPaso2Recibir(madre, hijas, btn, guiasParaRecibir);
           } else {
-            appendLogLpropia('❌ Error en hoja: ' + res.message);
-            errorModalProgreso('❌ Error en hoja: ' + res.message);
-            btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
+            appendLogLpropia('\u274c Error en hoja: ' + res.message);
+            errorModalProgreso('\u274c Error en hoja: ' + res.message);
+            btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Gu\u00edas'; btn.style.background = '#28a745';
           }
         })
         .withFailureHandler(function(e) {
-          appendLogLpropia('❌ Error hoja: ' + e.message);
-          errorModalProgreso('❌ Error hoja: ' + e.message);
-          btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
+          appendLogLpropia('\u274c Error hoja: ' + e.message);
+          errorModalProgreso('\u274c Error hoja: ' + e.message);
+          btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Gu\u00edas'; btn.style.background = '#28a745';
         })
         .registrarGuiaMadreDesdeIngresoLpropia({
           madre: madre,
@@ -22134,24 +22196,31 @@
         });
     }
 
-    // PASO 2: Recibir en Firestore
-    function ejecutarPaso2Recibir(madre, hijas, btn) {
-      appendLogLpropia('\n📦 PASO 2/3: Recibiendo en Firestore...');
+    // PASO 2: Recibir en Firestore (solo guías que no tienen estado avanzado)
+    function ejecutarPaso2Recibir(madre, hijas, btn, guiasParaRecibir) {
+      if (!guiasParaRecibir || guiasParaRecibir.length === 0) {
+        // Todas ya estaban recibidas, saltar al paso 3
+        appendLogLpropia('\n\u23ed\ufe0f PASO 2/3: OMITIDO \u2014 Todas las gu\u00edas ya ten\u00edan estado avanzado.');
+        ejecutarPaso3RutaNacional(madre, hijas, btn);
+        return;
+      }
+
+      appendLogLpropia('\n\ud83d\udce6 PASO 2/3: Recibiendo ' + guiasParaRecibir.length + ' gu\u00eda(s) en Firestore...');
       btn.textContent = 'Paso 2/3: Recibiendo...';
 
       google.script.run
         .withSuccessHandler(function(res) {
-          appendLogLpropia('✅ Recibidas: ' + res.procesadas + ' de ' + res.total + '.');
-          if (res.error) appendLogLpropia('⚠️ ' + res.error);
-          if (res.logs && res.logs.length > 0) res.logs.forEach(function(l) { appendLogLpropia('⚠️ ' + l); });
+          appendLogLpropia('\u2705 Recibidas: ' + res.procesadas + ' de ' + res.total + '.');
+          if (res.error) appendLogLpropia('\u26a0\ufe0f ' + res.error);
+          if (res.logs && res.logs.length > 0) res.logs.forEach(function(l) { appendLogLpropia('\u26a0\ufe0f ' + l); });
           ejecutarPaso3RutaNacional(madre, hijas, btn);
         })
         .withFailureHandler(function(e) {
-          appendLogLpropia('❌ Error recibiendo: ' + e.message);
-          errorModalProgreso('❌ Error recibiendo: ' + e.message);
-          btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Guías'; btn.style.background = '#28a745';
+          appendLogLpropia('\u274c Error recibiendo: ' + e.message);
+          errorModalProgreso('\u274c Error recibiendo: ' + e.message);
+          btn.disabled = false; btn.textContent = 'Recibir y Validar Todas las Gu\u00edas'; btn.style.background = '#28a745';
         })
-        .recibirMultiplesLpropia(enviosActualesLpropia, idPuntoActualLpropia);
+        .recibirMultiplesLpropia(guiasParaRecibir, idPuntoActualLpropia);
     }
 
     // PASO 3: En Ruta Nacional
@@ -23459,10 +23528,10 @@
     <div style="background:#fff; border-radius:12px; width:95%; max-width:520px; max-height:80vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
       <div style="background:#dc3545; color:#fff; padding:18px 24px; display:flex; align-items:center; gap:10px;">
         <i class="bi bi-exclamation-triangle-fill" style="font-size:22px;"></i>
-        <span style="font-size:16px; font-weight:700;">Validaci\u00F3n: Env\u00EDos con historial de procesamiento</span>
+        <span style="font-size:16px; font-weight:700;">Lote bloqueado: Gu\u00EDas ya procesadas</span>
       </div>
       <div style="padding:20px 24px; overflow-y:auto; flex:1;">
-        <p style="margin:0 0 14px 0; font-size:14px; color:#212529; line-height:1.5;">No se logr\u00F3 el proceso porque los siguientes env\u00EDos <strong style="color:#dc3545;">ya pasaron por estados avanzados</strong> (Recibido, Validado, Ruta Nacional, etc.) en su historial.</p>
+        <p style="margin:0 0 14px 0; font-size:14px; color:#212529; line-height:1.5;">No se puede procesar el lote porque las siguientes gu\u00EDas <strong style="color:#dc3545;">ya tienen historial de procesamiento</strong>. Debe <strong>eliminar estas gu\u00EDas del lote</strong> y volver a intentar solo con las gu\u00EDas que falten.</p>
         <div id="modalRecibidasLista" style="background:#f8d7da; border:1px solid #f5c2c7; border-radius:6px; padding:12px 16px; max-height:250px; overflow-y:auto; font-family:'Courier New',monospace; font-size:13px; color:#721c24;"></div>
       </div>
       <div style="padding:0 24px 20px; display:flex; justify-content:flex-end;">
