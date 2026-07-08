@@ -5528,22 +5528,44 @@
 
             <!-- PUNTO DE RECEPCIÓN (AUTOMÁTICO) -->
             <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-left: 4px solid #FDB813; padding: 15px 20px; border-radius: 6px; margin-bottom: 20px;">
-              <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #212529;">
-                <i class="bi bi-person-check-fill" style="color: #FDB813;"></i> Punto de Recepción
-              </h3>
-              <div style="font-size: 14px; color: #6c757d; display: flex; align-items: center; gap: 8px;">
-                <span id="userStatusIconLmensajero" style="font-size: 18px;">&#8987;</span>
-                <span id="userStatusTextLmensajero">Identificando usuario...</span>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #212529;">
+                    <i class="bi bi-person-check-fill" style="color: #FDB813;"></i> Punto de Recepción
+                  </h3>
+                  <div style="font-size: 14px; color: #6c757d; display: flex; align-items: center; gap: 8px;">
+                    <span id="userStatusIconLmensajero" style="font-size: 18px;">&#8987;</span>
+                    <span id="userStatusTextLmensajero">Identificando usuario...</span>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div id="offlineStatusDot" style="width:12px; height:12px; border-radius:50%; background:#198754; border: 2px solid #fff; box-shadow: 0 0 4px rgba(0,0,0,0.2); cursor: help;" title="Conectado"></div>
+                  <button id="btnVerColaOffline" onclick="verColaOffline()" style="background: none; border: 1px solid #dee2e6; border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 13px; color: #495057; display: none;" title="Ver operaciones pendientes">
+                    <i class="bi bi-inbox"></i> Pendientes
+                  </button>
+                </div>
               </div>
             </div>
+
+            <!-- NOTIFICACIÓN OFFLINE (toast) -->
+            <div id="offlineNotification" style="display:none; position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:100020; background:#fff; border-radius:10px; padding:14px 20px; box-shadow:0 8px 30px rgba(0,0,0,0.2); align-items:center; gap:12px; max-width:90vw; border-left:4px solid #0d6efd;">
+              <span style="font-size:14px; color:#212529; line-height:1.4;"></span>
+              <button onclick="cerrarNotificacionOffline()" style="background:none; border:none; color:#6c757d; cursor:pointer; font-size:16px; padding:0 2px;"><i class="bi bi-x-lg"></i></button>
+            </div>
+
+            <!-- BOTÓN SINCRONIZAR (aparece al volver a tener señal) -->
+            <button id="btnSincronizarOffline" onclick="sincronizarColaOffline()" style="display:none; width:100%; padding:14px; background:linear-gradient(135deg, #0d6efd, #0b5ed7); color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; margin-bottom:16px; align-items:center; justify-content:center; gap:10px; box-shadow: 0 4px 12px rgba(13,110,253,0.3);">
+              <i class="bi bi-cloud-arrow-up-fill" style="font-size:20px;"></i> <span>Sincronizar <span id="syncCountText">0</span> operación(es) pendiente(s)</span>
+            </button>
 
             <!-- TABS: Recogida / Actualizar Estado -->
             <div style="display: flex; gap: 0; margin-bottom: 20px; border-radius: 6px; overflow: hidden; border: 1px solid #dee2e6;">
               <button id="tabMensajeroRecogida" onclick="cambiarTabMensajero('recogida')" style="flex: 1; padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; background: #212529; color: #FDB813; transition: 0.2s;">
                 <i class="bi bi-box-seam"></i> Recogida
               </button>
-              <button id="tabMensajeroActualizar" onclick="cambiarTabMensajero('actualizar')" style="flex: 1; padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; background: #f8f9fa; color: #495057; transition: 0.2s;">
+              <button id="tabMensajeroActualizar" onclick="cambiarTabMensajero('actualizar')" style="flex: 1; padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; background: #f8f9fa; color: #495057; transition: 0.2s; position: relative;">
                 <i class="bi bi-arrow-repeat"></i> Actualizar Estado
+                <span id="offlineBadge" style="display:none; position:absolute; top:4px; right:8px; background:#dc3545; color:#fff; font-size:11px; font-weight:700; min-width:20px; height:20px; border-radius:10px; align-items:center; justify-content:center; padding:0 5px;">0</span>
               </button>
             </div>
 
@@ -22289,6 +22311,281 @@
     function appendLogLmensajero(msg) { appendModalProgreso(msg); }
     function clearLogLmensajero() { clearModalProgreso(); }
 
+    // ========== SISTEMA OFFLINE - COLA DE PENDIENTES ==========
+    var OFFLINE_QUEUE_KEY = 'heka_offline_queue';
+    var OFFLINE_SYNCING = false;
+
+    function obtenerColaOffline() {
+      try {
+        return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+      } catch(e) { return []; }
+    }
+
+    function guardarColaOffline(cola) {
+      localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(cola));
+      actualizarBadgeOffline();
+    }
+
+    function agregarAColaOffline(item) {
+      var cola = obtenerColaOffline();
+      item.id = Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+      item.timestamp = new Date().toLocaleString('es-CO');
+      item.status = 'pending';
+      cola.push(item);
+      guardarColaOffline(cola);
+    }
+
+    function eliminarDeColaOffline(id) {
+      var cola = obtenerColaOffline().filter(function(item) { return item.id !== id; });
+      guardarColaOffline(cola);
+    }
+
+    function actualizarBadgeOffline() {
+      var cola = obtenerColaOffline();
+      var pendientes = cola.filter(function(item) { return item.status === 'pending'; }).length;
+      var badge = document.getElementById('offlineBadge');
+      var syncBtn = document.getElementById('btnSincronizarOffline');
+      var statusDot = document.getElementById('offlineStatusDot');
+      var verBtn = document.getElementById('btnVerColaOffline');
+      var syncText = document.getElementById('syncCountText');
+      if (badge) {
+        badge.style.display = pendientes > 0 ? 'inline-flex' : 'none';
+        badge.textContent = pendientes;
+      }
+      if (syncBtn) {
+        syncBtn.style.display = (pendientes > 0 && navigator.onLine) ? 'flex' : 'none';
+      }
+      if (syncText) {
+        syncText.textContent = pendientes;
+      }
+      if (verBtn) {
+        verBtn.style.display = pendientes > 0 ? 'inline-flex' : 'none';
+      }
+      if (statusDot) {
+        statusDot.style.background = navigator.onLine ? '#198754' : '#dc3545';
+        statusDot.title = navigator.onLine ? 'Conectado' : 'Sin conexi\u00f3n';
+      }
+    }
+
+    // Detectar cambios de conexi\u00f3n
+    window.addEventListener('online', function() {
+      actualizarBadgeOffline();
+      var cola = obtenerColaOffline();
+      var pendientes = cola.filter(function(item) { return item.status === 'pending'; }).length;
+      if (pendientes > 0 && !OFFLINE_SYNCING) {
+        // Mostrar notificaci\u00f3n de sincronizaci\u00f3n disponible
+        mostrarNotificacionOffline('Conexi\u00f3n restablecida. Tienes ' + pendientes + ' operaci\u00f3n(es) pendiente(s).', 'sync');
+      }
+    });
+    window.addEventListener('offline', function() {
+      actualizarBadgeOffline();
+    });
+
+    function mostrarNotificacionOffline(mensaje, tipo) {
+      var notif = document.getElementById('offlineNotification');
+      if (!notif) return;
+      var icono = tipo === 'sync' ? 'bi-cloud-arrow-up-fill' : tipo === 'error' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill';
+      var color = tipo === 'sync' ? '#0d6efd' : tipo === 'error' ? '#dc3545' : '#198754';
+      notif.innerHTML = '<i class="bi ' + icono + '" style="font-size:18px; color:' + color + ';"></i><span>' + mensaje + '</span>';
+      notif.style.display = 'flex';
+      if (tipo === 'success') {
+        setTimeout(function() { notif.style.display = 'none'; }, 4000);
+      }
+    }
+
+    function cerrarNotificacionOffline() {
+      var notif = document.getElementById('offlineNotification');
+      if (notif) notif.style.display = 'none';
+    }
+
+    // ========== GUARDAR OPERACI\u00d3N OFFLINE ==========
+    function guardarOperacionOffline(estadoData, guias, imagenBase64, imagenNombre, idPunto) {
+      var item = {
+        estadoData: estadoData,
+        guias: guias.map(function(env) {
+          return { fullPath: env.fullPath, data: env.data };
+        }),
+        imagenBase64: imagenBase64 || null,
+        imagenNombre: imagenNombre || '',
+        idPunto: idPunto
+      };
+      agregarAColaOffline(item);
+      mostrarNotificacionOffline('Guardado offline. Se sincronizar\u00e1 al recuperar se\u00f1al.', 'sync');
+    }
+
+    // ========== SINCRONIZAR COLA OFFLINE ==========
+    function sincronizarColaOffline() {
+      if (OFFLINE_SYNCING || !navigator.onLine) return;
+      var cola = obtenerColaOffline();
+      var pendientes = cola.filter(function(item) { return item.status === 'pending'; });
+      if (pendientes.length === 0) return;
+
+      OFFLINE_SYNCING = true;
+      mostrarModalProgreso('Sincronizando operaciones offline...');
+      clearLogLmensajero();
+      appendLogLmensajero('========================================');
+      appendLogLmensajero('SINCRONIZACI\u00d3N OFFLINE - ' + pendientes.length + ' pendiente(s)');
+      appendLogLmensajero('========================================');
+
+      procesarSiguienteOffline(pendientes, 0);
+    }
+
+    function procesarSiguienteOffline(pendientes, index) {
+      if (index >= pendientes.length) {
+        // Todas procesadas
+        appendLogLmensajero('\n\ud83c\udf89 SINCRONIZACI\u00d3N COMPLETA.');
+        OFFLINE_SYNCING = false;
+        _onModalOkCallback = function() {
+          initPanelGestionMensajero();
+          cerrarModalProgreso();
+        };
+        completarModalProgreso('\ud83c\udf89 Todas las operaciones offline sincronizadas.');
+        mostrarOkModalProgreso();
+        mostrarNotificacionOffline('Todas las operaciones sincronizadas correctamente.', 'success');
+        return;
+      }
+
+      var item = pendientes[index];
+      var total = pendientes.length;
+      appendLogLmensajero('\n\ud83d\udccc OPERACI\u00d3N ' + (index + 1) + '/' + total);
+      appendLogLmensajero('   Gu\u00edas: ' + item.guias.map(function(g) { return g.data.numeroGuia; }).join(', '));
+      appendLogLmensajero('   Estado: ' + item.estadoData.estado + ' - ' + item.estadoData.descripcion);
+      appendLogLmensajero('   Fecha guardado: ' + item.timestamp);
+
+      // Restaurar variables globales necesarias
+      enviosActualesActualizarEstado = item.guias;
+      idPuntoActualLmensajero = item.idPunto;
+      var barra = document.getElementById('modalProgresoBarra');
+      if (barra) barra.style.width = Math.round((index / total) * 100) + '%';
+
+      if (item.imagenBase64) {
+        // Subir imagen primero
+        appendLogLmensajero('   \u2191 Subiendo imagen (' + (item.imagenBase64.length * 0.75 / 1024).toFixed(1) + 'KB)...');
+        google.script.run
+          .withSuccessHandler(function(res) {
+            if (!res.ok) {
+              appendLogLmensajero('   \u274c Error imagen: ' + (res.error || ''));
+              appendLogLmensajero('   \u23ed Saltando a la siguiente...');
+              eliminarDeColaOffline(item.id);
+              procesarSiguienteOffline(pendientes, index + 1);
+              return;
+            }
+            appendLogLmensajero('   \u2705 Imagen subida.');
+            item.estadoData.observaciones = item.estadoData.observaciones ? item.estadoData.observaciones + ' Soporte: ' + res.url : 'Soporte: ' + res.url;
+            ejecutarPasosOffline(item, pendientes, index);
+          })
+          .withFailureHandler(function(e) {
+            appendLogLmensajero('   \u274c Error imagen: ' + (e.message || ''));
+            appendLogLmensajero('   \u23ed Saltando a la siguiente...');
+            eliminarDeColaOffline(item.id);
+            procesarSiguienteOffline(pendientes, index + 1);
+          })
+          .subirImagenAGithub(item.imagenNombre, item.imagenBase64);
+      } else {
+        ejecutarPasosOffline(item, pendientes, index);
+      }
+    }
+
+    function ejecutarPasosOffline(item, pendientes, index) {
+      // Construir pasos autom\u00e1ticos igual que ejecutarActualizacionEstado
+      var pasos = [];
+      var estadoData = item.estadoData;
+      var guiaEnBodega = false;
+      item.guias.forEach(function(env) {
+        if ((env.data.estado || '').toUpperCase().trim() === 'EN BODEGA') guiaEnBodega = true;
+      });
+      var destinoEsReparto = (estadoData.estado || '').toUpperCase().indexOf('REPARTO') !== -1;
+      var destinoEsBodega = (estadoData.estado || '').toUpperCase().indexOf('BODEGA') !== -1;
+      if (guiaEnBodega && !destinoEsReparto && !destinoEsBodega) {
+        pasos.push({ estado: 'En Reparto', tipo: '', descripcion: 'En zona de distribuci\u00f3n', esNovedad: false, observaciones: '' });
+      }
+      pasos.push(estadoData);
+      if (estadoData.esNovedad) {
+        var obsB = '';
+        if (estadoData._tipoRegistro === 'CITA_PROGRAMADA' && estadoData._fechaCita) obsB = 'Cita programada: ' + estadoData._fechaCita;
+        pasos.push({ estado: 'En Bodega', tipo: '', descripcion: 'Ingreso a Bodega, pr\u00f3ximo a salir a reparto', esNovedad: false, observaciones: obsB, _tipoRegistro: estadoData._tipoRegistro, _fechaCita: estadoData._fechaCita });
+      }
+
+      ejecutarPasosSyncOffline(pasos, 0, item, pendientes, index);
+    }
+
+    function ejecutarPasosSyncOffline(pasos, pasoIdx, item, pendientes, itemIndex) {
+      if (pasoIdx >= pasos.length) {
+        // Operaci\u00f3n completada
+        appendLogLmensajero('   \u2705 Operaci\u00f3n ' + (itemIndex + 1) + ' completada.');
+        eliminarDeColaOffline(item.id);
+        procesarSiguienteOffline(pendientes, itemIndex + 1);
+        return;
+      }
+
+      var paso = pasos[pasoIdx];
+      var esUltimo = (pasoIdx === pasos.length - 1);
+      appendLogLmensajero('   Paso ' + (pasoIdx + 1) + '/' + pasos.length + ': [' + paso.estado + ']');
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          appendLogLmensajero('   \u2705 Aplicado: ' + (res.procesadas || 0) + ' de ' + (res.total || 0));
+          if (res.error) appendLogLmensajero('   \u26a0\ufe0f ' + res.error);
+          if (esUltimo && paso._tipoRegistro) {
+            var guiasReg = item.guias.map(function(e) { return { numeroGuia: e.data.numeroGuia, id_user: e.data.id_user }; });
+            registrarCambioAutomaticoSync(guiasReg, paso._tipoRegistro, paso._fechaCita || '');
+          }
+          ejecutarPasosSyncOffline(pasos, pasoIdx + 1, item, pendientes, itemIndex);
+        })
+        .withFailureHandler(function(e) {
+          appendLogLmensajero('   \u274c Error: ' + (e.message || ''));
+          appendLogLmensajero('   \u23ed Se mantiene en cola para reintentar.');
+          OFFLINE_SYNCING = false;
+          errorModalProgreso('Error sincronizando operaci\u00f3n ' + (itemIndex + 1) + ': ' + (e.message || ''));
+        })
+        .actualizarMultiplesEstadosLpropia(item.guias, paso, item.idPunto);
+    }
+
+    function registrarCambioAutomaticoSync(guias, tipo, fechaCita) {
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (res.ok) appendLogLmensajero('   \u2705 Registrada para cambio autom\u00e1tico.');
+          else appendLogLmensajero('   \u26a0\ufe0f Error registro: ' + (res.error || ''));
+        })
+        .withFailureHandler(function(e) {
+          appendLogLmensajero('   \u26a0\ufe0f Error registro autom\u00e1tico: ' + (e.message || ''));
+        })
+        .registrarGuiasCambioAutomatico(guias, tipo, fechaCita);
+    }
+
+    function verColaOffline() {
+      var cola = obtenerColaOffline();
+      var pendientes = cola.filter(function(item) { return item.status === 'pending'; });
+      var container = document.getElementById('offlineListaPendientes');
+      if (!container) return;
+
+      if (pendientes.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:30px; color:#6c757d;"><i class="bi bi-check-circle" style="font-size:40px; display:block; margin-bottom:10px;"></i>No hay operaciones pendientes.</div>';
+      } else {
+        container.innerHTML = pendientes.map(function(item, i) {
+          var guias = item.guias.map(function(g) { return g.data.numeroGuia; }).join(', ');
+          var imgInfo = item.imagenBase64 ? ' \u{1F4F7}' : '';
+          return '<div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; padding:12px 16px; margin-bottom:10px;">' +
+            '<div style="display:flex; justify-content:space-between; align-items:start;">' +
+              '<div>' +
+                '<div style="font-weight:700; font-size:14px; color:#212529;">' + item.estadoData.estado + ' - ' + item.estadoData.descripcion + imgInfo + '</div>' +
+                '<div style="font-size:12px; color:#6c757d; margin-top:4px;">\u{1F4E6} ' + guias + '</div>' +
+                '<div style="font-size:11px; color:#adb5bd; margin-top:2px;">' + item.timestamp + '</div>' +
+              '</div>' +
+              '<button onclick="eliminarDeColaOffline(\'' + item.id + '\'); verColaOffline(); actualizarBadgeOffline();" style="background:none; border:none; color:#dc3545; cursor:pointer; font-size:18px; padding:0 4px;" title="Eliminar"><i class="bi bi-trash3"></i></button>' +
+            '</div></div>';
+        }).join('');
+      }
+      document.getElementById('modalColaOffline').style.display = 'flex';
+    }
+
+    function cerrarColaOffline() {
+      document.getElementById('modalColaOffline').style.display = 'none';
+    }
+
+    // Inicializar badge al cargar
+    setTimeout(function() { actualizarBadgeOffline(); }, 500);
+
     // ========== CAMBIAR TAB ==========
     function cambiarTabMensajero(tab) {
       var tabRecogida = document.getElementById('tabMensajeroRecogida');
@@ -23173,9 +23470,24 @@
       // (La validaci\u00F3n de En Bodega se maneja autom\u00E1ticamente en ejecutarActualizacionEstado)
 
       var btn = document.getElementById('btnActualizarEstadoManual');
-      btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Subiendo evidencia...'; btn.style.background = '#a71d2a';
+      btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...'; btn.style.background = '#a71d2a';
 
-      // Si hay imagen, subirla a GitHub (con chunks si es grande)
+      // ========== CHEQUEO OFFLINE ==========
+      if (!navigator.onLine) {
+        // Sin conexi\\u00f3n → guardar en cola offline
+        guardarOperacionOffline(estadoDataFinal, enviosActualesActualizarEstado, evidenciaBase64ActualizarEstado, evidenciaNombreActualizarEstado, idPuntoActualLmensajero);
+        // Limpiar formulario
+        evidenciaBase64ActualizarEstado = null;
+        evidenciaNombreActualizarEstado = '';
+        var evidenciaPreview = document.getElementById('evidenciaPreviewActualizarEstado');
+        if (evidenciaPreview) evidenciaPreview.style.display = 'none';
+        document.getElementById('evidenciaNombreArchivo').textContent = '';
+        document.getElementById('updObservacionesActualizarEstado').value = '';
+        btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado'; btn.style.background = '#dc3545';
+        return;
+      }
+
+      // Si hay imagen, subirla a GitHub
       if (evidenciaBase64ActualizarEstado) {
         mostrarModalProgreso('Actualizar Estado - Subiendo imagen a GitHub...');
         appendLogLmensajero('Subiendo imagen de evidencia a GitHub...');
@@ -23572,5 +23884,26 @@
     </div>
   </div>
 
+<!-- ========== MODAL: COLA OFFLINE - PENDIENTES ========== -->
+  <div id="modalColaOffline" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:100010; justify-content:center; align-items:center;">
+    <div style="background:#fff; border-radius:12px; width:95%; max-width:560px; max-height:80vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+      <div style="background:#212529; color:#FDB813; padding:18px 24px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <i class="bi bi-inbox-fill" style="font-size:22px;"></i>
+          <span style="font-size:16px; font-weight:700;">Operaciones Pendientes (Offline)</span>
+        </div>
+        <button onclick="cerrarColaOffline()" style="background:none; border:none; color:#adb5bd; cursor:pointer; font-size:20px;"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div id="offlineListaPendientes" style="flex:1; overflow-y:auto; padding:16px 20px; min-height:100px;"></div>
+      <div style="padding:0 20px 18px; display:flex; gap:10px;">
+        <button onclick="sincronizarColaOffline(); cerrarColaOffline();" style="flex:1; padding:12px; background:#0d6efd; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <i class="bi bi-cloud-arrow-up-fill"></i> Sincronizar Todo
+        </button>
+        <button onclick="if(confirm('\u00bfEliminar todas las operaciones pendientes?')){localStorage.removeItem('heka_offline_queue'); cerrarColaOffline(); actualizarBadgeOffline();}" style="padding:12px 16px; background:#f8f9fa; color:#dc3545; border:1px solid #dee2e6; border-radius:6px; cursor:pointer; font-size:14px; font-weight:600;">
+          <i class="bi bi-trash3"></i> Limpiar
+        </button>
+      </div>
+    </div>
+  </div>
+
 </body>
-</html>
