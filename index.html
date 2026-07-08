@@ -9006,13 +9006,12 @@
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbwFz1K8o2Oau3TUd8oJiHK5RL0IOLLkGwlVlK2aMSQiNSVinJWNA07hKXTtOcKZVzs8/exec';
 
     // ============================================================
-    // 🔌 SHIM: google.script.run → fetch GET
-    // 
-    // Usa GET (no POST) porque GAS doPost NO soporta CORS cross-origin.
-    // GAS doGet con ContentService SÍ incluye headers CORS correctamente.
-    // 
-    // El payload se envía como query parameter '?p=...'
-    // NO es necesario modificar ninguna llamada google.script.run existente.
+    // 🔌 SHIM: google.script.run → fetch POST
+    //
+    // Usa POST con Content-Type: text/plain.
+    // - Sin límite de tamaño de payload (a diferencia de GET URLs).
+    // - text/plain NO dispara pre-flight CORS (es "simple request").
+    // - GAS doPost con ContentService incluye headers CORS.
     // ============================================================
     var google = {
       script: {
@@ -9035,9 +9034,12 @@
             return function() {
               var args = Array.prototype.slice.call(arguments);
               var payload = JSON.stringify({ fn: prop, args: args });
-              var url = GAS_URL + '?p=' + encodeURIComponent(payload);
-              
-              fetch(url)
+
+              fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: payload
+              })
               .then(function(r) {
                 if (!r.ok) throw new Error('HTTP ' + r.status);
                 return r.text();
