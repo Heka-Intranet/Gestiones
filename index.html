@@ -22070,26 +22070,37 @@
             return;
           }
 
-          // Construir mapa de historial: numeroGuia -> [estados en may\u00fasculas]
+          // Construir mapas: numeroGuia -> [estados] y numeroGuia -> error
           var historialMap = {};
-          if (res.bloqueadas && res.bloqueadas.length > 0) {
-            res.bloqueadas.forEach(function(b) {
-              historialMap[b.numeroGuia] = (b.estadosPrevios || []).map(function(s) { return (s || '').toUpperCase(); });
+          var errorMap = {};
+          if (res.guias && res.guias.length > 0) {
+            res.guias.forEach(function(g) {
+              if (g.error) {
+                errorMap[g.numeroGuia] = g.error;
+                historialMap[g.numeroGuia] = [];
+              } else {
+                historialMap[g.numeroGuia] = (g.estadosPrevios || []).map(function(s) { return (s || '').toUpperCase(); });
+              }
             });
           }
 
-          // ========== CATEGORIZAR CADA GU\u00cdA POR SU HISTORIAL ==========
-          // Los 3 estados iniciales que siempre deben ser: RECIBIDO → ADJUNTADO → RUTA NACIONAL
-          var guiasParaRecibir = [];  // Sin historial \u2192 proceso completo
-          var guiasSoloRuta = [];     // Solo tiene Recibido/Adjuntado (sin Ruta ni otros) \u2192 solo paso 3
-          var guiasBloqueadas = [];   // Ya tiene Ruta Nacional o alg\u00fan estado fuera de orden \u2192 BLOQUEAR
+          // ========== CATEGORIZAR CADA GUÍA POR SU HISTORIAL ==========
+          var guiasParaRecibir = [];  // Sin historial → proceso completo
+          var guiasSoloRuta = [];     // Solo tiene Recibido/Adjuntado → solo Ruta Nacional
+          var guiasBloqueadas = [];   // Tiene Ruta Nacional, otro estado, o error → BLOQUEAR
 
           enviosActualesLpropia.forEach(function(env) {
             var numGuia = env.data.numeroGuia;
             var historial = historialMap[numGuia] || [];
 
+            // Si hubo error consultando esta guía → bloquear por seguridad
+            if (errorMap[numGuia]) {
+              guiasBloqueadas.push(env);
+              return;
+            }
+
             if (historial.length === 0) {
-              // Sin historial \u2192 proceso completo
+              // Sin historial → proceso completo
               guiasParaRecibir.push(env);
               return;
             }
@@ -22100,7 +22111,6 @@
 
             for (var i = 0; i < historial.length; i++) {
               var est = historial[i];
-              // Los \u00fanicos estados v\u00e1lidos en el historial de Ingreso Origen son estos 3
               var esRecibido = (est.indexOf('RECIBIDO') !== -1);
               var esAdjuntado = (est.indexOf('ADJUNTADO') !== -1);
               var esRuta = (est.indexOf('RUTA') !== -1);
@@ -22108,7 +22118,6 @@
               if (esRuta) {
                 tieneRuta = true;
               } else if (!esRecibido && !esAdjuntado) {
-                // Estado que NO es ninguno de los 3 iniciales \u2192 fuera de orden
                 tieneEstadoFueraDeOrden = true;
               }
             }
@@ -22116,16 +22125,26 @@
             if (tieneRuta || tieneEstadoFueraDeOrden) {
               guiasBloqueadas.push(env);
             } else {
-              // Solo tiene Recibido y/o Adjuntado \u2192 le falta Ruta Nacional
+              // Solo tiene Recibido y/o Adjuntado → le falta Ruta Nacional
               guiasSoloRuta.push(env);
             }
           });
 
-          // ========== SI HAY CUALQUIER GUIA BLOQUEADA → BLOQUEAR TODO EL LOTE ==========
+          // ========== SI HAY CUALQUIER GUÍA BLOQUEADA → BLOQUEAR TODO EL LOTE ==========
           if (guiasBloqueadas.length > 0) {
             var listaHtml = guiasBloqueadas.map(function(b) {
-              var hist = historialMap[b.data.numeroGuia] || [];
-              return '\u2022 <strong>' + b.data.numeroGuia + '</strong> &mdash; ' + (hist.length > 0 ? hist.join(' \u2192 ') : (b.data.estado || 'Desconocido'));
+              var numG = b.data.numeroGuia;
+              var hist = historialMap[numG] || [];
+              var err = errorMap[numG];
+              var detalle = '';
+              if (err) {
+                detalle = 'Error: ' + err;
+              } else if (hist.length > 0) {
+                detalle = hist.join(' \u2192 ');
+              } else {
+                detalle = (b.data.estado || 'Sin estado');
+              }
+              return '\u2022 <strong>' + numG + '</strong> &mdash; ' + detalle;
             }).join('<br>');
             document.getElementById('modalRecibidasLista').innerHTML = listaHtml;
             document.getElementById('modalValidacionRecibidas').style.display = 'flex';
