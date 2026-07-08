@@ -23125,6 +23125,7 @@
       document.getElementById('pagoComprobantePreview').innerHTML = '';
       document.getElementById('pagoComprobanteLabel').textContent = 'Ning\u00fan archivo seleccionado';
       document.getElementById('pagoInputFile').value = '';
+      document.getElementById('pagoInputFileCamara').value = '';
       var btnC = document.getElementById('pagoBtnConfirmar');
       btnC.disabled = false;
       btnC.textContent = 'Confirmar Pago';
@@ -23889,11 +23890,19 @@
         <!-- Campo: Comprobante transferencia -->
         <div id="pagoCamposComprobante" style="display:none; margin-bottom:10px;">
           <label style="font-size:13px; font-weight:600; color:#495057; margin-bottom:6px; display:block;">Comprobante de transferencia:</label>
-          <div onclick="document.getElementById('pagoInputFile').click()" style="border:2px dashed #ced4da; border-radius:8px; padding:16px; text-align:center; cursor:pointer; background:#f8f9fa;">
-            <i class="bi bi-cloud-upload" style="font-size:28px; color:#6c757d;"></i>
-            <p id="pagoComprobanteLabel" style="margin:8px 0 0; font-size:13px; color:#6c757d;">Ning\u00fan archivo seleccionado</p>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <label style="display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#f8f9fa; border:2px dashed #ced4da; border-radius:8px; cursor:pointer; font-size:13px; color:#495057; transition:0.2s;" onmouseover="this.style.borderColor='#28a745'" onmouseout="this.style.borderColor='#ced4da'">
+              <i class="bi bi-camera-fill" style="font-size:18px; color:#28a745;"></i>
+              Cámara
+              <input type="file" id="pagoInputFileCamara" accept="image/*" capture="environment" style="display:none;" onchange="previewComprobanteTransferencia(this)">
+            </label>
+            <label style="display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#f8f9fa; border:2px dashed #ced4da; border-radius:8px; cursor:pointer; font-size:13px; color:#495057; transition:0.2s;" onmouseover="this.style.borderColor='#FDB813'" onmouseout="this.style.borderColor='#ced4da'">
+              <i class="bi bi-image" style="font-size:18px; color:#FDB813;"></i>
+              Galería
+              <input type="file" id="pagoInputFile" accept="image/*" style="display:none;" onchange="previewComprobanteTransferencia(this)">
+            </label>
           </div>
-          <input type="file" id="pagoInputFile" accept="image/*" capture="environment" style="display:none;" onchange="previewComprobanteTransferencia(this)">
+          <p id="pagoComprobanteLabel" style="margin:6px 0 0; font-size:13px; color:#6c757d;">Ningún archivo seleccionado</p>
           <div id="pagoComprobantePreview" style="margin-top:8px;"></div>
         </div>
       </div>
