@@ -23154,7 +23154,7 @@
           }
 
           // Siguiente paso
-          ejecutarPasosSecuenciales(pasos, indice + 1, btn);
+          ejecutarPasosSecuenciales(pasos, indice + 1, btn, estadoInfo);
         })
         .withFailureHandler(function(e) {
           appendLogLmensajero('\u274C Error en paso ' + (indice + 1) + '/' + total + ': ' + e.message);
