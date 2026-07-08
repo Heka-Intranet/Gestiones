@@ -5698,9 +5698,14 @@
                     Evidencia Fotografica: <span id="evidenciaObligatoriaTag" style="color:#dc3545; font-weight:700; font-size:11px; display:none;">OBLIGATORIO</span><span id="evidenciaOpcionalTag" style="color:#6c757d; font-weight:400; font-size:11px;">(Opcional)</span>
                   </label>
                   <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <label style="display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#f8f9fa; border:2px dashed #ced4da; border-radius:8px; cursor:pointer; font-size:13px; color:#495057; transition:0.2s;" onmouseover="this.style.borderColor='#dc3545'" onmouseout="this.style.borderColor='#ced4da'">
+                      <i class="bi bi-camera-fill" style="font-size:18px; color:#dc3545;"></i>
+                      Cámara
+                      <input type="file" id="inputEvidenciaCamara" accept="image/*" capture="environment" style="display:none;" onchange="previewEvidenciaActualizarEstado(this)">
+                    </label>
                     <label style="display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#f8f9fa; border:2px dashed #ced4da; border-radius:8px; cursor:pointer; font-size:13px; color:#495057; transition:0.2s;" onmouseover="this.style.borderColor='#FDB813'" onmouseout="this.style.borderColor='#ced4da'">
-                      <i class="bi bi-camera-fill" style="font-size:18px; color:#FDB813;"></i>
-                      Seleccionar Imagen
+                      <i class="bi bi-image" style="font-size:18px; color:#FDB813;"></i>
+                      Galería
                       <input type="file" id="inputEvidenciaActualizarEstado" accept="image/*" style="display:none;" onchange="previewEvidenciaActualizarEstado(this)">
                     </label>
                     <span id="evidenciaNombreArchivo" style="font-size:12px; color:#6c757d;"></span>
@@ -23400,6 +23405,7 @@
       evidenciaBase64ActualizarEstado = null;
       evidenciaNombreActualizarEstado = "";
       document.getElementById("inputEvidenciaActualizarEstado").value = "";
+      document.getElementById("inputEvidenciaCamara").value = "";
       document.getElementById("evidenciaNombreArchivo").textContent = "";
       document.getElementById("evidenciaPreviewContainer").style.display = "none";
       document.getElementById("evidenciaPreviewImg").src = "";
