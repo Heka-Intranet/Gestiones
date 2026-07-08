@@ -9628,10 +9628,12 @@
         goToStep('step-login');
         document.getElementById('loginOverlay').classList.remove('hidden');
         document.getElementById('appContainer').classList.remove('logged-in');
-        currentUser = { name: '', image: '', permissions: '', role: '', cedula: '', centroCosto: '' }; // <--- AGREGAR LIMPIEZA
+        currentUser = { name: '', image: '', permissions: '', role: '', cedula: '', centroCosto: '' };
+        // Limpiar sesi\u00f3n persistente
+        try { localStorage.removeItem('heka_session'); } catch(ex) {}
         updateUserHeader();
         showLoading(false);
-        showToast("Sesión cerrada");
+        showToast("Sesi\u00f3n cerrada");
       }, 800);
     }
 
@@ -9644,15 +9646,17 @@
         .withSuccessHandler(function(data) {
           showLoading(false);
          if (data.status === "success") {
-            currentUser = { 
-              name: data.name, 
-              image: data.image, 
-              permissions: data.permissions, 
-              role: data.role, 
+            currentUser = {
+              name: data.name,
+              image: data.image,
+              permissions: data.permissions,
+              role: data.role,
               cedula: data.cedula,
               isInactive: data.isInactive,
-              centroCosto: data.centroCosto || '' // <--- AGREGAR ESTO AL LOGIN
+              centroCosto: data.centroCosto || ''
             };
+            // Guardar sesi\u00f3n en localStorage para no pedir login de nuevo
+            try { localStorage.setItem('heka_session', JSON.stringify({ user: user, pass: pass })); } catch(ex) {}
             loginSuccess();
           } else { showToast(data.message); }
         })
@@ -21642,6 +21646,23 @@
         });
       }
     });
+
+    // ========== AUTO-LOGIN DESDE localStorage ==========
+    (function() {
+      try {
+        var saved = localStorage.getItem('heka_session');
+        if (saved) {
+          var creds = JSON.parse(saved);
+          if (creds.user && creds.pass) {
+            // Auto-rellenar y enviar login sin mostrar el formulario
+            document.getElementById('loginUser').value = creds.user;
+            document.getElementById('loginPass').value = creds.pass;
+            // Ejecutar login autom\u00e1ticamente despu\u00e9s de que la p\u00e1gina cargue
+            setTimeout(function() { handleLogin(new Event('submit')); }, 300);
+          }
+        }
+      } catch(ex) {}
+    })();
 
     function buscarComisionesPablo() {
       const isPablo = document.getElementById('comisiones_checkDataPablo').checked;
