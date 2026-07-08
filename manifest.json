@@ -2,7 +2,7 @@
   "name": "Heka Panel",
   "short_name": "Heka",
   "description": "Intranet Heka Entrega",
-  "start_url": "./index.html",
+  "start_url": "./Heka-Index.html",
   "display": "standalone",
   "background_color": "#FDB813",
   "theme_color": "#FDB813",
