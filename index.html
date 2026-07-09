@@ -23085,9 +23085,24 @@
       // Agregar info de pago si existe (Entrega Exitosa)
       if (_pagoMensaje) {
         _whatsAppMsg += _pagoMensaje;
-        _pagoMensaje = ''; // limpiar para pr\u00f3ximo uso
+        _pagoMensaje = '';
       }
 
+      // Intentar Web Share API primero (selector de WhatsApp directo en m\u00f3vil)
+      if (navigator.share && navigator.canShare && navigator.canShare({ text: _whatsAppMsg })) {
+        navigator.share({ text: _whatsAppMsg }).then(function() {
+          appendLogLmensajero('\u2705 Compartido v\u00eda WhatsApp.');
+        }).catch(function(err) {
+          if (err.name !== 'AbortError') {
+            mostrarModalWhatsAppFallback();
+          }
+        });
+      } else {
+        mostrarModalWhatsAppFallback();
+      }
+    }
+
+    function mostrarModalWhatsAppFallback() {
       document.getElementById('modalWhatsAppMsg').textContent = _whatsAppMsg;
       document.getElementById('btnCopiarAbrirTexto').textContent = 'Copiar y Abrir WhatsApp';
       document.getElementById('btnCopiarAbrirWhatsApp').style.background = '#25D366';
