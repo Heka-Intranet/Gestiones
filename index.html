@@ -10296,8 +10296,8 @@
           
           if (!response) { showToast("Error de comunicación"); return; }
           
-          var parsedResponse;
-          try { parsedResponse = JSON.parse(response); } catch (e) { return; }
+          // ✅ CORREGIDO
+          var parsedResponse = (typeof response === 'string') ? JSON.parse(response) : response;
 
           if (parsedResponse.status === "success") {
             var dataList = parsedResponse.data; 
@@ -10335,7 +10335,6 @@
                   `;
                 }
 
-
                 var htmlInHouse = d.inHouse || '-';
 
                 filasHTML += `
@@ -10351,8 +10350,6 @@
                     <td>
                       <div class="support-icons-container">
                           ${filesHtml}
-                          <!-- Aquí inyectamos el botón si corresponde -->
-
                           ${botonAgregar}
                       </div>
                     </td>
@@ -10653,8 +10650,8 @@
           
           if (!response) { showToast("Error de comunicación"); return; }
           
-          var parsedResponse;
-          try { parsedResponse = JSON.parse(response); } catch (e) { return; }
+          // ✅ CORREGIDO
+          var parsedResponse = (typeof response === 'string') ? JSON.parse(response) : response;
 
           if (parsedResponse.status === "success") {
             var dataList = parsedResponse.data; 
@@ -10666,10 +10663,9 @@
               
               dataList.forEach(function(d) {
                 
-                // Lógica para darle color al Estado
                 var badgeClass = "badge-default";
-                if (d.estado === "En Proceso") badgeClass = "badge-warning"; // Amarillo
-                if (d.estado === "Anulada") badgeClass = "badge-success";  // Verde (o rojo según prefieras)
+                if (d.estado === "En Proceso") badgeClass = "badge-warning";
+                if (d.estado === "Anulada") badgeClass = "badge-success";
 
                 var htmlEstado = `<span class="badge ${badgeClass}">${d.estado}</span>`;
 
@@ -10698,7 +10694,7 @@
         })
         .buscarGuiaAnulacionBackend(inputGuia);
     }
-
+    
     function limpiarBusquedaAnular() {
       document.getElementById('search_guia_estado_anular').value = '';
       document.getElementById('tablaResultadosAnular').innerHTML = '';
