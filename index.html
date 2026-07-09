@@ -23058,7 +23058,8 @@
       document.body.removeChild(ta);
     }
 
-    // ========== ENVIAR ACTUALIZAR ESTADO A WHATSAPP ==========
+
+    // ========== ENVIAR ACTUALIZAR ESTADO A WHATSAPP (CON IMAGEN) ==========
     function enviarActualizarEstadoWhatsApp(estadoData) {
       var guias = enviosActualesActualizarEstado;
       if (!guias || guias.length === 0) return;
@@ -23088,6 +23089,56 @@
         _pagoMensaje = ''; // limpiar para pr\u00f3ximo uso
       }
 
+      // ========== NUEVO: WEB SHARE API CON IMAGEN ==========
+      var imagenBase64 = evidenciaBase64ActualizarEstado || _pagoImagenBase64;
+
+      if (imagenBase64 && navigator.share && navigator.canShare) {
+        try {
+          // Separar el base64 puro del prefijo data:image/xxx;base64,
+          var partes = imagenBase64.split(',');
+          var base64Puro = (partes.length > 1) ? partes[1] : imagenBase64;
+          var mimeMatch = imagenBase64.match(/^data:(image\/\w+);/);
+          var mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+          var nombreArchivo = evidenciaNombreActualizarEstado || _pagoImagenNombre || 'evidencia.jpg';
+
+          // Convertir base64 → Uint8Array → File
+          var byteChars = atob(base64Puro);
+          var byteNums = new Array(byteChars.length);
+          for (var b = 0; b < byteChars.length; b++) {
+            byteNums[b] = byteChars.charCodeAt(b);
+          }
+          var byteArray = new Uint8Array(byteNums);
+          var blob = new Blob([byteArray], { type: mimeType });
+          var archivo = new File([blob], nombreArchivo, { type: mimeType });
+
+          var shareData = { text: _whatsAppMsg, files: [archivo] };
+
+          if (navigator.canShare(shareData)) {
+            navigator.share(shareData)
+              .then(function() {
+                appendLogLmensajero('\ud83d\udce7 Compartido por WhatsApp con imagen adjunta.');
+              })
+              .catch(function(err) {
+                // Si el usuario cancela no mostramos error
+                if (err.name !== 'AbortError') {
+                  appendLogLmensajero('\u26a0\ufe0f No se pudo compartir con imagen. Abriendo flujo normal...');
+                  mostrarModalWhatsAppNormal();
+                }
+              });
+            return;
+          }
+        } catch (e) {
+          // Si falla la conversión, ir al flujo normal
+          appendLogLmensajero('\u26a0\ufe0f Error preparando imagen para compartir: ' + e.message);
+        }
+      }
+
+      // Fallback: Flujo normal (copiar texto + abrir wa.me)
+      mostrarModalWhatsAppNormal();
+    }
+
+    // ========== MOSTRAR MODAL WHATSAPP NORMAL (SIN IMAGEN ADJUNTA) ==========
+    function mostrarModalWhatsAppNormal() {
       document.getElementById('modalWhatsAppMsg').textContent = _whatsAppMsg;
       document.getElementById('btnCopiarAbrirTexto').textContent = 'Copiar y Abrir WhatsApp';
       document.getElementById('btnCopiarAbrirWhatsApp').style.background = '#25D366';
@@ -23419,6 +23470,32 @@
 
       var estadoHeka = estadosFiltradosActualizarEstado[parseInt(descIndex)];
       if (!estadoHeka) return alert("Estado no v\u00E1lido.");
+
+      // ========== VALIDACIÓN: BLOQUEAR ENTREGA EXITOSA / DEVUELTO AL REMITENTE DUPLICADO ==========
+      var descUpperBloq = (estadoHeka.descripcion || '').toUpperCase().trim();
+      var estadoUpperBloq = (estadoHeka.estado || '').toUpperCase().trim();
+      var esEntregaExitosaBloq = (estadoUpperBloq.indexOf('ENTREGA EXITOSA') !== -1 || descUpperBloq.indexOf('ENTREGA EXITOSA') !== -1);
+      var esDevueltoBloq = (estadoUpperBloq.indexOf('DEVUELTO AL REMITENTE') !== -1 || descUpperBloq.indexOf('DEVUELTO AL REMITENTE') !== -1);
+
+      if (esEntregaExitosaBloq || esDevueltoBloq) {
+        var guiasYaConEstado = [];
+        enviosActualesActualizarEstado.forEach(function(env) {
+          var estadoActual = (env.data.estado || '').toUpperCase().trim();
+          if (esEntregaExitosaBloq && estadoActual.indexOf('ENTREGA EXITOSA') !== -1) {
+            guiasYaConEstado.push(env.data.numeroGuia);
+          }
+          if (esDevueltoBloq && estadoActual.indexOf('DEVUELTO AL REMITENTE') !== -1) {
+            guiasYaConEstado.push(env.data.numeroGuia);
+          }
+        });
+
+        if (guiasYaConEstado.length > 0) {
+          var tipoEstadoBloq = esEntregaExitosaBloq ? 'ENTREGA EXITOSA' : 'DEVUELTO AL REMITENTE';
+          alert('\u26a0\ufe0f El/Los siguiente(s) n\u00famero(s) de gu\u00eda YA cuenta(n) con ' + tipoEstadoBloq + '. Valide el n\u00famero:\n\n' + guiasYaConEstado.join('\n'));
+          return;
+        }
+      }
+      // ========== FIN VALIDACIÓN BLOQUEO ==========
 
       // ========== VALIDACIÓN IMAGEN OBLIGATORIA ==========
       var descUpper = (estadoHeka.descripcion || '').toUpperCase().trim();
@@ -23927,4 +24004,3 @@
     </div>
   </div>
 
-</body>
