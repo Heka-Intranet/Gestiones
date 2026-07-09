@@ -10473,97 +10473,92 @@
       }
     }
 
-    function buscarEstadoServi() {
-      var inputGuia = document.getElementById('search_guia_estado_servi').value.trim();
-      var tbody = document.getElementById('tablaResultadosServi');
-      var noResults = document.getElementById('sinResultadosServi');
-      
-      if (!inputGuia) {
-        showToast("Por favor ingresa un número de guía.");
-        return;
-      }
-
-      showLoading(true);
-      tbody.innerHTML = '';
-      noResults.style.display = 'none';
-
-      google.script.run
-        .withSuccessHandler(function(response) {
-          showLoading(false);
-          
-          if (!response) { showToast("Error de comunicación"); return; }
-          
-          var parsedResponse;
-          try { parsedResponse = JSON.parse(response); } catch (e) { return; }
-
-          if (parsedResponse.status === "success") {
-            var dataList = parsedResponse.data; 
-
-            if (dataList.length === 0) {
-              noResults.style.display = 'block';
-            } else {
-              var filasHTML = "";
-              
-              dataList.forEach(function(d) {
-                
-                // Iconos de archivos
-                var filesHtml = '';
-                if (d.archivos && d.archivos.trim() !== "") {
-                  var archivosArray = d.archivos.split(/[\r\n]+/); 
-                  archivosArray.forEach(function(url) {
-                    url = url.trim();
-                    if(url) {
-                      filesHtml += `<a href="${url}" target="_blank" class="support-link" onclick="verSoporte(this, event)"><i class="bi bi-file-earmark-arrow-down"></i></a>`;
-                    }
-                  });
-                } else {
-                  filesHtml = '<span style="color:#ccc; font-size:10px;">No hay</span>';
-                }
-
-                // Formato Gestión
-                var htmlPqr = `
-                  <div style="font-weight:500;">${d.tipoPqr}</div>
-                  ${d.tipoSolicitud ? `<small style="color:#6c757d;">${d.tipoSolicitud}</small>` : ''}
-                `;
-
-                filasHTML += `
-                  <tr>
-                    <td>${d.fecha}</td>
-                    <td style="font-weight:600;">${d.guia}</td>
-                    <td>${d.asesor || 'N/A'}</td>
-                    <td>${htmlPqr}</td>
-                    <td style="max-width: 250px; white-space: pre-wrap; font-size:13px;">${d.descNovedad || ''}</td>
-                    <td style="max-width: 250px; white-space: pre-wrap; font-size:13px; color:#555;">${d.descEnvio || ''}</td>
-                    <td>
-                      <div class="support-icons-container">
-                          ${filesHtml}
-                      </div>
-                    </td>
-                    
-                    <!-- NUEVAS CELDAS AQUÍ -->
-                    <td style="font-size:12px;">${d.fechaServi || '-'}</td>
-                    <td style="font-weight:600;">${d.cun || '-'}</td>
-                    <td style="max-width: 200px; white-space: pre-wrap; font-size:12px;">${d.obsServi || '-'}</td>
-                    <td style="font-size:12px;">${d.fechaRespuesta || '-'}</td>
-                    
-                  </tr>
-                `;
-              });
-              
-              tbody.innerHTML = filasHTML;
-            }
-            
-          } else {
-            noResults.style.display = 'block';
-          }
-        })
-        .withFailureHandler(function(err) {
-          showLoading(false);
-          noResults.style.display = 'block';
-          showToast("Error: " + err.message);
-        })
-        .buscarGuiaServiBackend(inputGuia);
+  function buscarEstadoServi() {
+    var inputGuia = document.getElementById('search_guia_estado_servi').value.trim();
+    var tbody = document.getElementById('tablaResultadosServi');
+    var noResults = document.getElementById('sinResultadosServi');
+    
+    if (!inputGuia) {
+      showToast("Por favor ingresa un número de guía.");
+      return;
     }
+  
+    showLoading(true);
+    tbody.innerHTML = '';
+    noResults.style.display = 'none';
+  
+    google.script.run
+      .withSuccessHandler(function(response) {
+        showLoading(false);
+        
+        if (!response) { showToast("Error de comunicación"); return; }
+        
+        // ✅ CORREGIDO: Detecta si es string u objeto
+        var parsedResponse = (typeof response === 'string') ? JSON.parse(response) : response;
+  
+        if (parsedResponse.status === "success") {
+          var dataList = parsedResponse.data; 
+  
+          if (dataList.length === 0) {
+            noResults.style.display = 'block';
+          } else {
+            var filasHTML = "";
+            
+            dataList.forEach(function(d) {
+              
+              var filesHtml = '';
+              if (d.archivos && d.archivos.trim() !== "") {
+                var archivosArray = d.archivos.split(/[\r\n]+/); 
+                archivosArray.forEach(function(url) {
+                  url = url.trim();
+                  if(url) {
+                    filesHtml += `<a href="${url}" target="_blank" class="support-link" onclick="verSoporte(this, event)"><i class="bi bi-file-earmark-arrow-down"></i></a>`;
+                  }
+                });
+              } else {
+                filesHtml = '<span style="color:#ccc; font-size:10px;">No hay</span>';
+              }
+  
+              var htmlPqr = `
+                <div style="font-weight:500;">${d.tipoPqr}</div>
+                ${d.tipoSolicitud ? `<small style="color:#6c757d;">${d.tipoSolicitud}</small>` : ''}
+              `;
+  
+              filasHTML += `
+                <tr>
+                  <td>${d.fecha}</td>
+                  <td style="font-weight:600;">${d.guia}</td>
+                  <td>${d.asesor || 'N/A'}</td>
+                  <td>${htmlPqr}</td>
+                  <td style="max-width: 250px; white-space: pre-wrap; font-size:13px;">${d.descNovedad || ''}</td>
+                  <td style="max-width: 250px; white-space: pre-wrap; font-size:13px; color:#555;">${d.descEnvio || ''}</td>
+                  <td>
+                    <div class="support-icons-container">
+                        ${filesHtml}
+                    </div>
+                  </td>
+                  <td style="font-size:12px;">${d.fechaServi || '-'}</td>
+                  <td style="font-weight:600;">${d.cun || '-'}</td>
+                  <td style="max-width: 200px; white-space: pre-wrap; font-size:12px;">${d.obsServi || '-'}</td>
+                  <td style="font-size:12px;">${d.fechaRespuesta || '-'}</td>
+                </tr>
+              `;
+            });
+            
+            tbody.innerHTML = filasHTML;
+          }
+          
+        } else {
+          noResults.style.display = 'block';
+        }
+      })
+      .withFailureHandler(function(err) {
+        showLoading(false);
+        noResults.style.display = 'block';
+        showToast("Error: " + err.message);
+      })
+      .buscarGuiaServiBackend(inputGuia);
+  }
 
     function limpiarBusquedaServi() {
       document.getElementById('search_guia_estado_servi').value = '';
