@@ -23710,7 +23710,12 @@
         if (esEntregaExitosa) {
           mostrarModalMetodoPago(estadoInfo);
         } else {
-          enviarActualizarEstadoWhatsApp(estadoInfo);
+          // Compartir cuando el usuario haga clic en OK del modal completo
+          // (gesto de usuario fresco necesario para navigator.share con archivos adjuntos)
+          _onModalOkCallback = function() {
+            enviarActualizarEstadoWhatsApp(estadoInfo);
+            initPanelGestionMensajero();
+          };
         }
         return;
       }
