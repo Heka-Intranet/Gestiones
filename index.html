@@ -23067,7 +23067,7 @@
       var estadoLabel = esNov ? 'Novedad' : (estadoData.estado || 'Actualizado');
       var descLabel = estadoData.descripcion || '';
 
-      _whatsAppMsg = '\ud83d\udccb *ACTUALIZACI\u00d3N DE ESTADO*\n\n';
+      _whatsAppMsg = '\ud83d\udccb *ACTUALIZACIÓN DE ESTADO*\n\n';
 
       for (var i = 0; i < guias.length; i++) {
         var g = guias[i].data;
@@ -23088,10 +23088,47 @@
         _pagoMensaje = '';
       }
 
-      // Intentar Web Share API primero (selector de WhatsApp directo en m\u00f3vil)
+      // Recolectar imágenes disponibles para compartir como archivo
+      var imagenesParaCompartir = [];
+
+      // Imagen de evidencia (Novedad, Entrega, Devolución)
+      if (evidenciaBase64ActualizarEstado) {
+        var evFile = base64AFile(evidenciaBase64ActualizarEstado, evidenciaNombreActualizarEstado || 'evidencia.jpg', 'image/jpeg');
+        if (evFile) imagenesParaCompartir.push(evFile);
+      }
+
+      // Imagen de comprobante de pago (Entrega Exitosa con transferencia)
+      if (_pagoImagenBase64) {
+        var pgFile = base64AFile(_pagoImagenBase64, _pagoImagenNombre || 'comprobante.jpg', 'image/jpeg');
+        if (pgFile) imagenesParaCompartir.push(pgFile);
+      }
+
+      // Intentar compartir CON imagen(es) adjunta(s)
+      if (navigator.share && navigator.canShare && imagenesParaCompartir.length > 0) {
+        var shareDataFiles = { text: _whatsAppMsg, files: imagenesParaCompartir };
+        if (navigator.canShare(shareDataFiles)) {
+          navigator.share(shareDataFiles).then(function() {
+            appendLogLmensajero('\u2705 Compartido con imagen(es) adjunta(s) vía WhatsApp.');
+            limpiarImagenesTrasCompartir();
+          }).catch(function(err) {
+            if (err.name !== 'AbortError') {
+              intentarCompartirSoloTexto();
+            }
+          });
+          return;
+        }
+      }
+
+      // No se pudo compartir con archivos, intentar solo texto
+      intentarCompartirSoloTexto();
+    }
+
+    // Intentar compartir solo texto (sin imagen adjunta)
+    function intentarCompartirSoloTexto() {
       if (navigator.share && navigator.canShare && navigator.canShare({ text: _whatsAppMsg })) {
         navigator.share({ text: _whatsAppMsg }).then(function() {
-          appendLogLmensajero('\u2705 Compartido v\u00eda WhatsApp.');
+          appendLogLmensajero('\u2705 Compartido vía WhatsApp (texto con link de imagen).');
+          limpiarImagenesTrasCompartir();
         }).catch(function(err) {
           if (err.name !== 'AbortError') {
             mostrarModalWhatsAppFallback();
@@ -23099,6 +23136,30 @@
         });
       } else {
         mostrarModalWhatsAppFallback();
+      }
+    }
+
+    // Limpiar imágenes de memoria después de compartir
+    function limpiarImagenesTrasCompartir() {
+      evidenciaBase64ActualizarEstado = null;
+      evidenciaNombreActualizarEstado = '';
+      _pagoImagenBase64 = null;
+      _pagoImagenNombre = '';
+    }
+
+    // Convertir base64 (sin prefijo data:) a objeto File para compartir
+    function base64AFile(base64Data, nombreArchivo, mimeType) {
+      try {
+        var byteString = atob(base64Data);
+        var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(ab);
+        for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        return new File([ab], nombreArchivo || 'imagen.jpg', { type: mimeType || 'image/jpeg' });
+      } catch(e) {
+        console.error('Error convirtiendo base64 a File:', e);
+        return null;
       }
     }
 
@@ -23304,7 +23365,7 @@
       });
 
       var containerDesc = document.getElementById('containerDescActualizarEstado');
-      selectDesc.innerHTML = '<option value="">-- Seleccione Descripci\u00F3n --</option>';
+      selectDesc.innerHTML = '';
       if (estadosFiltradosActualizarEstado.length === 1) {
         // Solo una descripci\u00F3n: auto-seleccionar y OCULTAR el desplegable
         var est = estadosFiltradosActualizarEstado[0];
@@ -23312,6 +23373,7 @@
         opt.value = 0;
         opt.textContent = est.descripcion;
         selectDesc.appendChild(opt);
+        selectDesc.value = '0';
         selectDesc.disabled = false;
         containerDesc.style.display = 'none';
         appendLogLmensajero('\u2705 ' + estadoSeleccionado + ' \u2192 ' + est.descripcion + ' (auto-seleccionado, desplegable oculto)');
