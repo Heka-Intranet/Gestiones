@@ -1,11 +1,11 @@
-const CACHE_NAME = 'heka-panel-v1';
+const CACHE_NAME = 'heka-panel-v2'; // ← CAMBIA esto en cada despliegue
 const ASSETS_TO_CACHE = [
   './',
-  './index.html',
   './manifest.json'
+  // Ya NO pones index.html aquí
 ];
 
-// Instalar: cachear archivos estáticos
+// Instalar
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -25,7 +25,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Network first, fallback a cache (para API)
+// Fetch
 self.addEventListener('fetch', (event) => {
   // No cachear llamadas a la API
   if (event.request.url.includes('/exec') || event.request.url.includes('script.google.com')) {
@@ -37,11 +37,32 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Para archivos estáticos: cache first
+  const url = new URL(event.request.url);
+
+  // ── INDEX.HTML: SIEMPRE A LA RED PRIMERO ──
+  if (url.pathname === '/' || url.pathname === '/index.html') {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Cacheamos la versión nueva para offline
+          if (response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => {
+          // Sin red: usamos lo que haya en caché (offline)
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // ── DEMÁS ARCHIVOS: cache first ──
   event.respondWith(
     caches.match(event.request).then(cached => {
       return cached || fetch(event.request).then(response => {
-        // Cachear respuestas exitosas
         if (response.status === 200) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
