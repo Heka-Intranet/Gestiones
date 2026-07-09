@@ -5670,7 +5670,7 @@
                       <option value="">Cargando...</option>
                     </select>
                   </div>
-                  <div style="flex: 1;">
+                  <div id="containerDescActualizarEstado" style="flex: 1;">
                     <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: #495057;">Descripción del Estado:</label>
                     <select id="selectDescActualizarEstado" onchange="onDescChangeActualizarEstado()" disabled style="width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px; box-sizing: border-box; outline: none; background: #fff;">
                       <option value="">-- Primero seleccione Estado --</option>
@@ -22677,7 +22677,7 @@
         .withSuccessHandler(function(res) {
           if (res.success) {
             estadosDisponiblesLmensajero = res.estados.filter(function(est) {
-              return est.estado !== "En Ruta Nacional";
+              return est.estado !== "En Ruta Nacional" && est.estado !== "En Bodega" && est.estado !== "En Reparto";
             });
             var estadosUnicos = [];
             estadosDisponiblesLmensajero.forEach(function(est) {
@@ -23278,6 +23278,7 @@
       if (!estadoSeleccionado) {
         selectDesc.innerHTML = '<option value="">-- Primero seleccione Estado --</option>';
         selectDesc.disabled = true;
+        document.getElementById('containerDescActualizarEstado').style.display = '';
         return;
       }
 
@@ -23287,18 +23288,26 @@
         }
       });
 
+      var containerDesc = document.getElementById('containerDescActualizarEstado');
       selectDesc.innerHTML = '<option value="">-- Seleccione Descripci\u00F3n --</option>';
       if (estadosFiltradosActualizarEstado.length === 1) {
+        // Solo una descripci\u00F3n: auto-seleccionar y OCULTAR el desplegable
         var est = estadosFiltradosActualizarEstado[0];
         var opt = document.createElement('option');
         opt.value = 0;
         opt.textContent = est.descripcion;
         selectDesc.appendChild(opt);
         selectDesc.disabled = false;
-        appendLogLmensajero('\ud83d\udccb ' + estadoSeleccionado + ' \u2192 ' + est.descripcion + ' (auto-seleccionado)');
+        containerDesc.style.display = 'none';
+        appendLogLmensajero('\u2705 ' + estadoSeleccionado + ' \u2192 ' + est.descripcion + ' (auto-seleccionado, desplegable oculto)');
         // Auto-detectar si es CITA PROGRAMADA
         checkFechaProgramada(est);
+      } else if (estadosFiltradosActualizarEstado.length === 0) {
+        selectDesc.disabled = true;
+        containerDesc.style.display = 'none';
       } else {
+        // M\u00FAltiples descripciones: mostrar el desplegable
+        containerDesc.style.display = '';
         estadosFiltradosActualizarEstado.forEach(function(est, idx) {
           var opt = document.createElement('option');
           opt.value = idx;
