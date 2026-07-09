@@ -9184,6 +9184,27 @@
     function cerrarModalNovedad() {
       document.getElementById('modalValidacionNovedad').style.display = 'none';
     }
+    // ========== MODAL BLOQUEO ESTADO CIERRE ==========
+    function mostrarModalBloqueoEstado(guias) {
+      var lista = document.getElementById('modalBloqueoEstadoLista');
+      var html = '';
+      guias.forEach(function(item) {
+        html += '<div style="padding:8px 0; border-bottom:1px solid #f5c2c7;">' +
+                '<div style="display:flex; align-items:center; gap:8px;">' +
+                '<i class="bi bi-x-circle-fill" style="color:#dc3545; font-size:16px; flex-shrink:0;"></i>' +
+                '<div>' +
+                '<strong style="font-size:13px;">' + item.guia + '</strong>' +
+                '<br><span style="color:#721c24; font-size:12px;">Ya cuenta con: <em>' + item.tipo + '</em></span>' +
+                '</div></div></div>';
+      });
+      lista.innerHTML = html;
+      document.getElementById('modalBloqueoEstadoOverlay').style.display = 'flex';
+    }
+
+    function cerrarModalBloqueoEstado() {
+      document.getElementById('modalBloqueoEstadoOverlay').style.display = 'none';
+    }
+
 
     let tempRecoveryUser = null;
     let currentUser = { name: '', image: '', permissions: '', role: '', cedula: '', isInactive: false, centroCosto: '' }; // <--- AGREGADO 
@@ -23090,7 +23111,7 @@
       }
 
       // ========== NUEVO: WEB SHARE API CON IMAGEN ==========
-      var imagenBase64 = evidenciaBase64ActualizarEstado || _pagoImagenBase64;
+      var imagenBase64 = _pagoImagenBase64 || evidenciaBase64ActualizarEstado;
 
       if (imagenBase64 && navigator.share && navigator.canShare) {
         try {
@@ -23471,29 +23492,20 @@
       var estadoHeka = estadosFiltradosActualizarEstado[parseInt(descIndex)];
       if (!estadoHeka) return alert("Estado no v\u00E1lido.");
 
-      // ========== VALIDACIÓN: BLOQUEAR ENTREGA EXITOSA / DEVUELTO AL REMITENTE DUPLICADO ==========
-      var descUpperBloq = (estadoHeka.descripcion || '').toUpperCase().trim();
-      var estadoUpperBloq = (estadoHeka.estado || '').toUpperCase().trim();
-      var esEntregaExitosaBloq = (estadoUpperBloq.indexOf('ENTREGA EXITOSA') !== -1 || descUpperBloq.indexOf('ENTREGA EXITOSA') !== -1);
-      var esDevueltoBloq = (estadoUpperBloq.indexOf('DEVUELTO AL REMITENTE') !== -1 || descUpperBloq.indexOf('DEVUELTO AL REMITENTE') !== -1);
-
-      if (esEntregaExitosaBloq || esDevueltoBloq) {
-        var guiasYaConEstado = [];
-        enviosActualesActualizarEstado.forEach(function(env) {
-          var estadoActual = (env.data.estado || '').toUpperCase().trim();
-          if (esEntregaExitosaBloq && estadoActual.indexOf('ENTREGA EXITOSA') !== -1) {
-            guiasYaConEstado.push(env.data.numeroGuia);
-          }
-          if (esDevueltoBloq && estadoActual.indexOf('DEVUELTO AL REMITENTE') !== -1) {
-            guiasYaConEstado.push(env.data.numeroGuia);
-          }
-        });
-
-        if (guiasYaConEstado.length > 0) {
-          var tipoEstadoBloq = esEntregaExitosaBloq ? 'ENTREGA EXITOSA' : 'DEVUELTO AL REMITENTE';
-          alert('\u26a0\ufe0f El/Los siguiente(s) n\u00famero(s) de gu\u00eda YA cuenta(n) con ' + tipoEstadoBloq + '. Valide el n\u00famero:\n\n' + guiasYaConEstado.join('\n'));
-          return;
+      // ========== VALIDACIÓN: BLOQUEAR CAMBIO EN GUIAS CON ESTADO DE CIERRE ==========
+      var guiasConCierre = [];
+      enviosActualesActualizarEstado.forEach(function(env) {
+        var estadoActual = (env.data.estado || '').toUpperCase().trim();
+        if (estadoActual.indexOf('ENTREGA EXITOSA') !== -1) {
+          guiasConCierre.push({ guia: env.data.numeroGuia, tipo: 'ENTREGA EXITOSA' });
+        } else if (estadoActual.indexOf('DEVUELTO AL REMITENTE') !== -1) {
+          guiasConCierre.push({ guia: env.data.numeroGuia, tipo: 'DEVUELTO AL REMITENTE' });
         }
+      });
+
+      if (guiasConCierre.length > 0) {
+        mostrarModalBloqueoEstado(guiasConCierre);
+        return;
       }
       // ========== FIN VALIDACIÓN BLOQUEO ==========
 
@@ -23839,6 +23851,29 @@
     </div>
   </div>
 
+
+
+  <!-- ========== MODAL: BLOQUEO ESTADO DE CIERRE ========== -->
+  <div id="modalBloqueoEstadoOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:99999; justify-content:center; align-items:center;">
+    <div style="background:#fff; border-radius:14px; width:95%; max-width:520px; max-height:80vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+      <div style="background:linear-gradient(135deg, #dc3545, #c82333); color:#fff; padding:20px 24px; display:flex; align-items:center; gap:12px;">
+        <i class="bi bi-shield-lock-fill" style="font-size:24px;"></i>
+        <div>
+          <div style="font-size:17px; font-weight:700;">Estado de Cierre Detectado</div>
+          <div style="font-size:12px; opacity:0.85; margin-top:2px;">No se puede modificar un env&iacute;o cerrado</div>
+        </div>
+      </div>
+      <div style="padding:20px 24px; overflow-y:auto; flex:1;">
+        <p style="margin:0 0 14px 0; font-size:14px; color:#212529; line-height:1.6;">Los siguientes n&uacute;meros de gu&iacute;a <strong style="color:#dc3545;">YA cuentan con estado de cierre</strong> y no pueden ser modificados. Valide el n&uacute;mero.</p>
+        <div id="modalBloqueoEstadoLista" style="background:#f8d7da; border:1px solid #f5c2c7; border-radius:8px; padding:8px 16px; max-height:250px; overflow-y:auto; font-family:'Courier New',monospace; font-size:13px; color:#721c24;"></div>
+      </div>
+      <div style="padding:0 24px 22px; display:flex; justify-content:flex-end;">
+        <button onclick="cerrarModalBloqueoEstado()" style="background:#dc3545; color:#fff; border:none; padding:11px 32px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:700; transition:0.2s; display:flex; align-items:center; gap:8px;" onmouseover="this.style.background='#c82333'" onmouseout="this.style.background='#dc3545'">
+          <i class="bi bi-check-lg"></i> Entendido
+        </button>
+      </div>
+    </div>
+  </div>
   <!-- ========== MODAL: VALIDACIÓN EN BODEGA (debe pasar a Reparto primero) ========== -->
   <div id="modalValidacionBodega" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:99999; justify-content:center; align-items:center;">
     <div style="background:#fff; border-radius:12px; width:95%; max-width:520px; max-height:80vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
