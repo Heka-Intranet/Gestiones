@@ -5232,6 +5232,17 @@
 
               </div>
 
+              <!-- DESGLOSE POR TRANSPORTADORA (lo que excede el 15%) -->
+              <div id="seller-desglose-transportadoras" style="margin-top: 18px; display: none;">
+                <div style="font-size: 12px; font-weight: bold; color: #555; margin-bottom: 10px;">
+                  <i class="bi bi-truck" style="margin-right: 4px; color: #28a745;"></i>
+                  Desglose Exceso por Transportadora
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;" id="seller-transportadoras-grid">
+                  <!-- Se llena con JS -->
+                </div>
+              </div>
+
               <!-- ===== CARD DEFINITIVA: RENTABILIDAD FINAL ===== -->
               <div style="margin-top: 20px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 20px 25px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                 
@@ -5251,6 +5262,7 @@
               </div>
             </div>
 
+            <!-- FILTROS -->
             
             <!-- FILTROS -->
             <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap;">
@@ -21016,6 +21028,9 @@
         // Para el cálculo del 15%
         let costoTotalDevoluciones = 0;
 
+        // Para desglose por transportadora (solo guías devueltas)
+        let mapaTransportadoras = {};
+
         // ⭐ VARIABLE PARA SIMULACIÓN DE DEVOLUCIONES
         let costoSimulacionDev = 0;
 
@@ -21027,6 +21042,9 @@
             const comTrans = Number(item.comision_trasportadora) || 0;
             const costoDev = Number(item.costoDevolucion) || 0;
 
+            // Nombre transportadora: P1 usa "transportadora", P2 usa "distributor_id"
+            const transportadora = item.transportadora || item.distributor_id || "Sin Transportadora";
+
             if (estadosEntregas.includes(estado)) {
                 // 1. ENTREGAS
                 ingresosEntregas += comHeka;
@@ -21034,19 +21052,24 @@
             } else if (estadosDevoluciones.includes(estado)) {
                 // 2. DEVOLUCIONES
                 if (cobraDevFiltro === "SI") {
-                    // Cuando cobraDevolucion=SI: las devoluciones generan ingreso por comisionHeka
                     ingresosDevoluciones += comHeka;
                 } else {
-                    // Comportamiento anterior: costo de devolución
                     const costoRetorno = flete + comTrans;
                     ingresosDevoluciones += costoRetorno;
                 }
                 costoTotalDevoluciones += costoDev;
+
+                // Acumular por transportadora
+                if (!mapaTransportadoras[transportadora]) {
+                    mapaTransportadoras[transportadora] = { costo: 0, count: 0 };
+                }
+                mapaTransportadoras[transportadora].costo += costoDev;
+                mapaTransportadoras[transportadora].count++;
+
                 countDevoluciones++;
             } else {
                 // 3. PENDIENTES
                 if (cobraDevFiltro === "SI") {
-                    // Cuando cobraDevolucion=SI: los pendientes generan ingreso
                     ingresosPendientes += comHeka;
                     costoSimulacionDev += costoDev;
                 } else {
@@ -21067,7 +21090,6 @@
 
         if (cobraDevFiltro === "SI") {
             // ===== MODO COBRA DEVOLUCION = SI =====
-            // Ingresos = Comisión Heka de TODO (entregas + devoluciones + pendientes)
             totalIngresos = ingresosEntregas + ingresosDevoluciones + ingresosPendientes;
 
             // Rentabilidad Bruta = todo lo que ganó (antes de devolver)
@@ -21085,12 +21107,10 @@
             let excede15 = 0;
 
             if (pctDevol > 15) {
-                // Solo paga proporcional al 15% de guías movilizadas
                 const guias15Pct = totalMovilizados * 0.15;
                 valor15 = countDevoluciones > 0 ? (costoTotalDevoluciones * (guias15Pct / countDevoluciones)) : 0;
                 excede15 = costoTotalDevoluciones - valor15;
             } else {
-                // Paga el 100% del costo de devoluciones
                 valor15 = costoTotalDevoluciones;
                 excede15 = 0;
             }
@@ -21106,6 +21126,40 @@
             document.getElementById('seller-excede-15').innerText = formatCurrency(Math.round(excede15));
             document.getElementById('seller-pct-devolucion').innerText = pctDevol.toFixed(2) + '%';
             document.getElementById('seller-pct-devolucion').style.color = pctDevol > 15 ? '#dc3545' : '#28a745';
+
+            // ===== DESGLOSE POR TRANSPORTADORA =====
+            const desgloseContainer = document.getElementById('seller-desglose-transportadoras');
+            const gridContainer = document.getElementById('seller-transportadoras-grid');
+            gridContainer.innerHTML = '';
+
+            if (excede15 > 0 && costoTotalDevoluciones > 0) {
+                desgloseContainer.style.display = 'block';
+
+                // Ordenar transportadoras por valor descendente
+                const transportadoras = Object.keys(mapaTransportadoras).sort(function(a, b) {
+                    return mapaTransportadoras[b].costo - mapaTransportadoras[a].costo;
+                });
+
+                transportadoras.forEach(function(nombre) {
+                    const datos = mapaTransportadoras[nombre];
+                    // Proporción del exceso según su participación en el costo total
+                    const excesoTransportadora = excede15 * (datos.costo / costoTotalDevoluciones);
+                    const pctTransportadora = costoTotalDevoluciones > 0 ? (datos.costo / costoTotalDevoluciones * 100) : 0;
+
+                    const div = document.createElement('div');
+                    div.style.cssText = 'background: #f8f9fa; padding: 10px 14px; border-radius: 8px; border-left: 3px solid #28a745; display: flex; justify-content: space-between; align-items: center;';
+                    div.innerHTML = `
+                        <div>
+                            <div style="font-size: 13px; font-weight: bold; color: #333;">${nombre}</div>
+                            <div style="font-size: 11px; color: #999;">${datos.count} guías · ${pctTransportadora.toFixed(1)}% del costo</div>
+                        </div>
+                        <div style="font-size: 15px; font-weight: bold; color: #155724;">${formatCurrency(Math.round(excesoTransportadora))}</div>
+                    `;
+                    gridContainer.appendChild(div);
+                });
+            } else {
+                desgloseContainer.style.display = 'none';
+            }
 
             // Actualizar Rentabilidad Final (card definitiva)
             document.getElementById('seller-rentabilidad-final').innerText = formatCurrency(Math.round(rentabilidadFinal));
