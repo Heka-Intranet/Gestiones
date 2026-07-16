@@ -5212,6 +5212,16 @@
                 </select>
               </div>
 
+              <!-- FILTRO COBRA DEVOLUCIÓN -->
+              <div style="flex: 0 0 auto;">
+                <label style="font-size:12px; font-weight:bold; color:#666; margin-bottom:5px; display:block;">Cobra Devolución</label>
+                <select id="seller-cobra-dev" class="form-input" style="min-width: 130px;" onchange="filtrarTablaSellerDirecto()">
+                  <option value="">Todos</option>
+                  <option value="NO">NO</option>
+                  <option value="SI">SI</option>
+                </select>
+              </div>              
+
               <button class="btn btn-primary" onclick="cargarRentabilidadSellerDirect()">
                 <i class="bi bi-search"></i> Consultar
               </button>
@@ -20804,12 +20814,7 @@
             return !estadosNoDeseados.includes(item.estado);
           
         });
-
-        sellerGlobalData = sellerGlobalData.filter(function(item) {
-            // Convertimos a string y mayúscula por seguridad
-            const valor = (item.cobraDevolucion || "").toString().trim().toUpperCase();
-            return valor !== "SI"; 
-        });        
+    
 
         // C. LLENAR SELECT
         const selectEstado = document.getElementById('seller-estado');
@@ -20846,18 +20851,22 @@
     // 2. FUNCIÓN DE FILTRADO LOCAL (ONCHANGE)
     // =========================================
     function filtrarTablaSellerDirecto() {
-        const estadoFiltro = document.getElementById('seller-estado').value.trim(); // Usamos trim por seguridad
+        const estadoFiltro = document.getElementById('seller-estado').value.trim();
+        const cobraFiltro = document.getElementById('seller-cobra-dev').value.trim();
         let listaFiltrada = [];
 
-        if (!estadoFiltro) {
-            // Si es "Todos", mostramos todo
-            listaFiltrada = sellerGlobalData;
-        } else {
-            // Filtramos buscando coincidencia exacta (con trim para evitar espacios)
-            listaFiltrada = sellerGlobalData.filter(function(item) {
-                return item.estado.trim() === estadoFiltro;
-            });
-        }
+        listaFiltrada = sellerGlobalData.filter(function(item) {
+            // Filtro estado
+            if (estadoFiltro && item.estado.trim() !== estadoFiltro) return false;
+
+            // Filtro cobra devolución
+            if (cobraFiltro) {
+                const valor = (item.cobraDevolucion || "").toString().trim().toUpperCase();
+                if (valor !== cobraFiltro) return false;
+            }
+
+            return true;
+        });
 
         renderizarTablaSellerDirect(listaFiltrada);
     }
