@@ -5224,7 +5224,7 @@
 
               <button class="btn btn-primary" onclick="cargarRentabilidadSellerDirect()">
                 <i class="bi bi-search"></i> Consultar
-              </button>
+              </button>      
 
               <!-- BOTÓN DESCARGAR EXCEL -->
               <button class="btn" style="background-color: #198754; color: white; border: none;" onclick="descargarExcelSeller()">
@@ -20972,7 +20972,6 @@
         });
 
         // 🔥 CORRECCIÓN: INGRESOS TOTALES = ENTREGAS + PENDIENTES
-        // Esto excluye la comisión de lo ya devuelto (pérdida) de los ingresos
         totalIngresos = ingresosEntregas;
 
         // Cálculos de Porcentaje
