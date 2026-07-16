@@ -5180,9 +5180,57 @@
               <div class="seller-card card-profit">
                 <div class="seller-stat-header">Rentabilidad</div>
                 <div class="seller-stat-value" id="seller-res-rentabilidad">$ 0</div>
-                <div class="seller-stat-sub">Ingresos - Devoluciones</div>
+                <div class="seller-stat-sub" id="seller-sub-rentabilidad">Ingresos - Devoluciones</div>
               </div>
 
+            </div>
+
+            <!-- CARD RESPONSABILIDAD 15% DEVOLUCIONES (solo visible cuando cobraDevolucion = SI) -->
+            <div id="card-responsabilidad-15" class="card" style="margin-top: 20px; display: none; border-left: 4px solid #dc3545;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="font-size: 15px; font-weight: bold; color: #333;">
+                  <i class="bi bi-shield-exclamation" style="color: #dc3545; margin-right: 6px;"></i>
+                  Responsabilidad Devoluciones (Tope 15%)
+                </div>
+                <div id="seller-pct-devolucion" style="font-size: 22px; font-weight: bold; color: #dc3545;">0%</div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                
+                <!-- Total Movilizados -->
+                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px;">
+                  <div style="font-size: 11px; color: #666; font-weight: bold;">Total Movilizados</div>
+                  <div id="seller-total-movilizados" style="font-size: 20px; font-weight: bold; color: #333;">0</div>
+                  <div style="font-size: 11px; color: #999;">Entregas + Pendientes + Devueltos</div>
+                </div>
+
+                <!-- Devoluciones -->
+                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px;">
+                  <div style="font-size: 11px; color: #666; font-weight: bold;">Devoluciones</div>
+                  <div id="seller-count-devoluciones" style="font-size: 20px; font-weight: bold; color: #dc3545;">0</div>
+                  <div style="font-size: 11px; color: #999;">Guias devueltas</div>
+                </div>
+
+                <!-- Costo Total Devoluciones -->
+                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px;">
+                  <div style="font-size: 11px; color: #666; font-weight: bold;">Valor Total Costo Devoluciones</div>
+                  <div id="seller-valor-total-dev" style="font-size: 20px; font-weight: bold; color: #333;">$ 0</div>
+                </div>
+
+                <!-- Valor 15% que devuelve el seller -->
+                <div style="background: #fff3cd; padding: 12px; border-radius: 8px; border: 1px solid #ffc107;">
+                  <div style="font-size: 11px; color: #856404; font-weight: bold;">Valor 15% Dev. Que Devuelve</div>
+                  <div id="seller-valor-15-dev" style="font-size: 20px; font-weight: bold; color: #856404;">$ 0</div>
+                </div>
+
+                <!-- Lo que excede el 15% (Heka cubre) -->
+                <div style="background: #d4edda; padding: 12px; border-radius: 8px; border: 1px solid #28a745;">
+                  <div style="font-size: 11px; color: #155724; font-weight: bold;">Lo Que Excede el 15%</div>
+                  <div id="seller-excede-15" style="font-size: 20px; font-weight: bold; color: #155724;">$ 0</div>
+                  <div style="font-size: 11px; color: #28a745;">Cubre Heka</div>
+                </div>
+
+              </div>
             </div>
 
             <!-- FILTROS -->
@@ -5224,7 +5272,7 @@
 
               <button class="btn btn-primary" onclick="cargarRentabilidadSellerDirect()">
                 <i class="bi bi-search"></i> Consultar
-              </button>      
+              </button>
 
               <!-- BOTÓN DESCARGAR EXCEL -->
               <button class="btn" style="background-color: #198754; color: white; border: none;" onclick="descargarExcelSeller()">
@@ -5258,7 +5306,7 @@
             </div>
           </div>
         </div>
-
+        
         <!-- PANEL DASHBOARD LOGÍSTICA PROPIA -->
         <div id="panel-dashboard-logistica" class="panel">
           <div class="page-header">
@@ -20819,7 +20867,7 @@
         // Ahora se maneja dinámicamente desde el select "seller-cobra-devolucion"
         // en la función filtrarTablaSellerDirecto().
 
-        // C. LLENAR SELECT
+        // C. LLENAR SELECT DE ESTADO
         const selectEstado = document.getElementById('seller-estado');
         const currentSelection = selectEstado.value;
 
@@ -20843,29 +20891,37 @@
             selectEstado.value = "";
         }
 
-        // D. CALCULAR KPIS
-        calcularKPIsSeller();
-
-        // E. RENDERIZAR TABLA
+        // D. RENDERIZAR TABLA (esto ya llama a calcularKPIsSeller internamente)
         filtrarTablaSellerDirecto();
     }
 
+  
     // =========================================
     // 2. FUNCIÓN DE FILTRADO LOCAL (ONCHANGE)
     // =========================================
     function filtrarTablaSellerDirecto() {
         const estadoFiltro = document.getElementById('seller-estado').value.trim();
         const cobraDevFiltro = document.getElementById('seller-cobra-devolucion').value.trim().toUpperCase();
+
+        // ===== KPIs: se calculan SOLO con filtro cobraDevolucion (sin estado) =====
+        let datosKPI = sellerGlobalData;
+        if (cobraDevFiltro) {
+            datosKPI = datosKPI.filter(function(item) {
+                const valor = (item.cobraDevolucion || "").toString().trim().toUpperCase();
+                return valor === cobraDevFiltro;
+            });
+        }
+        calcularKPIsSeller(datosKPI, cobraDevFiltro);
+
+        // ===== TABLA: se filtra por ambos (estado + cobraDevolucion) =====
         let listaFiltrada = sellerGlobalData;
 
-        // 1. Filtrar por Estado
         if (estadoFiltro) {
             listaFiltrada = listaFiltrada.filter(function(item) {
                 return (item.estado || "").trim() === estadoFiltro;
             });
         }
 
-        // 2. Filtrar por Cobra Devolución
         if (cobraDevFiltro) {
             listaFiltrada = listaFiltrada.filter(function(item) {
                 const valor = (item.cobraDevolucion || "").toString().trim().toUpperCase();
@@ -20876,6 +20932,7 @@
         renderizarTablaSellerDirect(listaFiltrada);
     }
 
+    
     // =========================================
     // 3. FUNCIÓN RENDERIZAR TABLA SELLER
     // =========================================
@@ -20919,7 +20976,7 @@
     // =========================================
     // FUNCIÓN CÁLCULO DE KPIs (CARDS) - INGRESOS CORREGIDO
     // =========================================
-    function calcularKPIsSeller() {
+    function calcularKPIsSeller(datos, cobraDevFiltro) {
         
         // Definimos los estados según tus indicaciones
         const estadosEntregas = ["ENTREGADO", "ENTREGADA", "Entrega Exitosa", "ENTREGADA_"];
@@ -20927,7 +20984,7 @@
         
         // Variables Totales
         let totalIngresos = 0;
-        let totalEnvios = sellerGlobalData.length;
+        let totalEnvios = datos.length;
 
         let ingresosEntregas = 0;
         let ingresosDevoluciones = 0;
@@ -20937,52 +20994,110 @@
         let countDevoluciones = 0;
         let countPendientes = 0;
 
+        // Para el cálculo del 15%
+        let costoTotalDevoluciones = 0;
+
         // ⭐ VARIABLE PARA SIMULACIÓN DE DEVOLUCIONES
         let costoSimulacionDev = 0;
 
-        sellerGlobalData.forEach(function(item) {
+        datos.forEach(function(item) {
             
-            // Añadimos .trim() al estado para evitar errores por espacios
             const estado = (item.estado || "").trim();
-            
-            // EXTRAEMOS VALORES UNA SOLA VEZ
             const comHeka = Number(item.comisionHeka) || 0;
             const flete = Number(item.flete) || 0;
             const comTrans = Number(item.comision_trasportadora) || 0;
+            const costoDev = Number(item.costoDevolucion) || 0;
 
-            // CLASIFICACIÓN
             if (estadosEntregas.includes(estado)) {
                 // 1. ENTREGAS
                 ingresosEntregas += comHeka;
                 countEntregas++;
             } else if (estadosDevoluciones.includes(estado)) {
                 // 2. DEVOLUCIONES
-                const costoRetorno = flete + comTrans;
-                ingresosDevoluciones += costoRetorno;
+                if (cobraDevFiltro === "SI") {
+                    // Cuando cobraDevolucion=SI: las devoluciones generan ingreso por comisionHeka
+                    ingresosDevoluciones += comHeka;
+                } else {
+                    // Comportamiento anterior: costo de devolución
+                    const costoRetorno = flete + comTrans;
+                    ingresosDevoluciones += costoRetorno;
+                }
+                costoTotalDevoluciones += costoDev;
                 countDevoluciones++;
             } else {
                 // 3. PENDIENTES
-                ingresosPendientes += comHeka;
-                
-                // SIMULACIÓN
-                costoSimulacionDev += (flete + comTrans);
-                
+                if (cobraDevFiltro === "SI") {
+                    // Cuando cobraDevolucion=SI: los pendientes generan ingreso
+                    ingresosPendientes += comHeka;
+                    costoSimulacionDev += costoDev;
+                } else {
+                    ingresosPendientes += comHeka;
+                    costoSimulacionDev += (flete + comTrans);
+                }
                 countPendientes++;
             }
         });
 
-        // 🔥 CORRECCIÓN: INGRESOS TOTALES = ENTREGAS + PENDIENTES
-        totalIngresos = ingresosEntregas;
+        // =============================================
+        // CÁLCULO DE INGRESOS Y RENTABILIDAD
+        // =============================================
+        let rentabilidadNeta = 0;
+        const elRentabilidad = document.getElementById('seller-res-rentabilidad');
+
+        if (cobraDevFiltro === "SI") {
+            // ===== MODO COBRA DEVOLUCION = SI =====
+            // Ingresos = Comisión Heka de TODO (entregas + devoluciones + pendientes)
+            totalIngresos = ingresosEntregas + ingresosDevoluciones + ingresosPendientes;
+
+            // Mostrar card del 15%
+            const card15 = document.getElementById('card-responsabilidad-15');
+            card15.style.display = 'block';
+
+            // Cálculo del 15%
+            const totalMovilizados = countEntregas + countPendientes + countDevoluciones;
+            const pctDevol = totalMovilizados > 0 ? (countDevoluciones / totalMovilizados * 100) : 0;
+
+            let valor15 = 0;
+            let excede15 = 0;
+
+            if (pctDevol > 15) {
+                // Solo paga proporcional al 15% de guías movilizadas
+                const guias15Pct = totalMovilizados * 0.15;
+                valor15 = countDevoluciones > 0 ? (costoTotalDevoluciones * (guias15Pct / countDevoluciones)) : 0;
+                excede15 = costoTotalDevoluciones - valor15;
+            } else {
+                // Paga el 100% del costo de devoluciones
+                valor15 = costoTotalDevoluciones;
+                excede15 = 0;
+            }
+
+            rentabilidadNeta = totalIngresos - valor15;
+
+            // Actualizar card 15%
+            document.getElementById('seller-total-movilizados').innerText = totalMovilizados.toLocaleString();
+            document.getElementById('seller-count-devoluciones').innerText = countDevoluciones.toLocaleString();
+            document.getElementById('seller-valor-total-dev').innerText = formatCurrency(costoTotalDevoluciones);
+            document.getElementById('seller-valor-15-dev').innerText = formatCurrency(Math.round(valor15));
+            document.getElementById('seller-excede-15').innerText = formatCurrency(Math.round(excede15));
+            document.getElementById('seller-pct-devolucion').innerText = pctDevol.toFixed(2) + '%';
+            document.getElementById('seller-pct-devolucion').style.color = pctDevol > 15 ? '#dc3545' : '#28a745';
+
+        } else {
+            // ===== MODO NORMAL (NO o Todos) =====
+            totalIngresos = ingresosEntregas;
+            rentabilidadNeta = ingresosEntregas - ingresosDevoluciones;
+
+            // Ocultar card del 15%
+            const card15 = document.getElementById('card-responsabilidad-15');
+            card15.style.display = 'none';
+        }
 
         // Cálculos de Porcentaje
         const pctEntregas = totalEnvios > 0 ? ((countEntregas / totalEnvios) * 100).toFixed(1) : 0;
         const pctDevoluciones = totalEnvios > 0 ? ((countDevoluciones / totalEnvios) * 100).toFixed(1) : 0;
         const pctPendientes = totalEnvios > 0 ? ((countPendientes / totalEnvios) * 100).toFixed(1) : 0;
 
-        // Cálculo Rentabilidad: Ingresos Entregas (Ganancia) - Costo Devoluciones (Pérdida)
-        const rentabilidadNeta = ingresosEntregas - ingresosDevoluciones;
-
-        // ACTUALIZAR DOM
+        // ACTUALIZAR DOM - CARDS PRINCIPALES
         document.getElementById('seller-res-ingresos').innerText = formatCurrency(totalIngresos);
 
         document.getElementById('seller-res-entregas').innerText = formatCurrency(ingresosEntregas);
@@ -21001,12 +21116,9 @@
             </span>
         `;
 
-        const elRentabilidad = document.getElementById('seller-res-rentabilidad');
         elRentabilidad.innerText = formatCurrency(rentabilidadNeta);
-        // Color según resultado
         elRentabilidad.style.color = rentabilidadNeta >= 0 ? "green" : "red";
     }
-
 
     // =========================================
     // FUNCIÓN DESCARGAR EXCEL (CSV)
@@ -21026,6 +21138,7 @@
         }
 
         // 1. Verificamos si hay filtros activos
+        // 1. Verificamos si hay filtros activos
         const estadoFiltro = document.getElementById('seller-estado').value.trim();
         const cobraDevFiltro = document.getElementById('seller-cobra-devolucion').value.trim().toUpperCase();
         let dataToExport = sellerGlobalData;
@@ -21042,7 +21155,7 @@
                 return valor === cobraDevFiltro;
             });
         }
-
+      
         if (dataToExport.length === 0) {
             return showToast("No hay datos con los filtros actuales.");
         }
