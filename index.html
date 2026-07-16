@@ -23776,7 +23776,75 @@
         .registrarGuiasCambioAutomatico(guias, tipo, fechaCita);
     }
 
+    function procesarDatosFinales(dataCombinada) {
+        
+        // A. GUARDAR DATOS
+        sellerGlobalData = dataCombinada;
 
+        // 🔍 DEBUG: Cuántos llegaron
+        console.log("📦 Datos recibidos TOTAL:", sellerGlobalData.length);
+        console.log("📦 Muestra estados:", sellerGlobalData.slice(0,5).map(i => ({estado: i.estado, cobraDevolucion: i.cobraDevolucion})));
+
+        // B. ELIMINAR ESTADOS NO DESEADOS
+        const estadosNoDeseados = ["ELIMINADA", "ANULADA_", "PEDIDO", "ANULADA","Enviado", "GENERADA", "Generado", "Documento Anulado", "EN ALISTAMIENTO DEL CLIENTE"];
+        
+        sellerGlobalData = sellerGlobalData.filter(function(item) {
+            return !estadosNoDeseados.includes(item.estado);
+        });
+
+        console.log("✅ Después de filtro ESTADO:", sellerGlobalData.length);
+        if (sellerGlobalData.length === 0 && dataCombinada.length > 0) {
+            console.log("⚠️ TODOS fueron filtrados por ESTADO. Estados que tenían:", [...new Set(dataCombinada.map(i => i.estado))]);
+        }
+
+        sellerGlobalData = sellerGlobalData.filter(function(item) {
+            const valor = (item.cobraDevolucion || "").toString().trim().toUpperCase();
+            return valor !== "SI"; 
+        });
+
+        console.log("✅ Después de filtro COBRA DEVOLUCION:", sellerGlobalData.length);
+        if (sellerGlobalData.length === 0 && dataCombinada.length > 0) {
+            console.log("⚠️ TODOS fueron filtrados por COBRA DEVOLUCION. Valores que tenían:", [...new Set(dataCombinada.map(i => i.cobraDevolucion))]);
+        }
+
+        // C. LLENAR SELECT
+        const selectEstado = document.getElementById('seller-estado');
+        const currentSelection = selectEstado ? selectEstado.value : "";
+
+        if (selectEstado) {
+            while (selectEstado.options.length > 1) {
+                selectEstado.remove(1);
+            }
+        }
+
+        const uniqueStatuses = [...new Set(sellerGlobalData.map(item => item.estado).filter(e => e))];
+        uniqueStatuses.sort();
+
+        if (selectEstado) {
+            uniqueStatuses.forEach(estado => {
+                const option = document.createElement("option");
+                option.value = estado;
+                option.text = estado;
+                selectEstado.appendChild(option);
+            });
+
+            if (currentSelection && uniqueStatuses.includes(currentSelection)) {
+                selectEstado.value = currentSelection;
+            } else {
+                selectEstado.value = "";
+            }
+        }
+
+        // D. CALCULAR KPIS (con try/catch para que no mate el render)
+        try {
+            calcularKPIsSeller();
+        } catch(err) {
+            console.error("❌ ERROR en calcularKPIsSeller:", err);
+        }
+
+        // E. RENDERIZAR TABLA
+        filtrarTablaSellerDirecto();
+    }
       
       // ========== REGISTRAR SERVICE WORKER ==========
       if ('serviceWorker' in navigator) {
