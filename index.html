@@ -5231,8 +5231,27 @@
                 </div>
 
               </div>
+
+              <!-- ===== CARD DEFINITIVA: RENTABILIDAD FINAL ===== -->
+              <div style="margin-top: 20px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 20px 25px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                
+                <div>
+                  <div style="font-size: 13px; color: #adb5bd; font-weight: bold; margin-bottom: 4px;">
+                    <i class="bi bi-check-circle-fill" style="margin-right: 5px; color: #28a745;"></i>
+                    RENTABILIDAD FINAL
+                  </div>
+                  <div style="font-size: 11px; color: #6c757d;">Ingresos Brutos - Valor Que Devuelve</div>
+                </div>
+
+                <div style="text-align: right;">
+                  <div id="seller-rentabilidad-final" style="font-size: 28px; font-weight: bold; color: #28a745;">$ 0</div>
+                  <div id="seller-rentabilidad-final-sub" style="font-size: 11px; color: #6c757d;">vs Rentabilidad Bruta: <span id="seller-rentabilidad-bruta-ref">$ 0</span></div>
+                </div>
+
+              </div>
             </div>
 
+            
             <!-- FILTROS -->
             <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap;">
               
@@ -21041,13 +21060,18 @@
         // =============================================
         // CÁLCULO DE INGRESOS Y RENTABILIDAD
         // =============================================
-        let rentabilidadNeta = 0;
+        let rentabilidadBruta = 0;
+        let rentabilidadFinal = 0;
         const elRentabilidad = document.getElementById('seller-res-rentabilidad');
+        const elSubRentabilidad = document.getElementById('seller-sub-rentabilidad');
 
         if (cobraDevFiltro === "SI") {
             // ===== MODO COBRA DEVOLUCION = SI =====
             // Ingresos = Comisión Heka de TODO (entregas + devoluciones + pendientes)
             totalIngresos = ingresosEntregas + ingresosDevoluciones + ingresosPendientes;
+
+            // Rentabilidad Bruta = todo lo que ganó (antes de devolver)
+            rentabilidadBruta = totalIngresos;
 
             // Mostrar card del 15%
             const card15 = document.getElementById('card-responsabilidad-15');
@@ -21071,7 +21095,8 @@
                 excede15 = 0;
             }
 
-            rentabilidadNeta = totalIngresos - valor15;
+            // Rentabilidad Final = Bruta - lo que devuelve
+            rentabilidadFinal = rentabilidadBruta - valor15;
 
             // Actualizar card 15%
             document.getElementById('seller-total-movilizados').innerText = totalMovilizados.toLocaleString();
@@ -21082,14 +21107,30 @@
             document.getElementById('seller-pct-devolucion').innerText = pctDevol.toFixed(2) + '%';
             document.getElementById('seller-pct-devolucion').style.color = pctDevol > 15 ? '#dc3545' : '#28a745';
 
+            // Actualizar Rentabilidad Final (card definitiva)
+            document.getElementById('seller-rentabilidad-final').innerText = formatCurrency(Math.round(rentabilidadFinal));
+            document.getElementById('seller-rentabilidad-final').style.color = rentabilidadFinal >= 0 ? '#28a745' : '#dc3545';
+            document.getElementById('seller-rentabilidad-bruta-ref').innerText = formatCurrency(rentabilidadBruta);
+
+            // La card de arriba muestra la Bruta
+            elRentabilidad.innerText = formatCurrency(rentabilidadBruta);
+            elRentabilidad.style.color = '#333';
+            elSubRentabilidad.innerText = 'Rentabilidad Bruta (antes de devolver)';
+
         } else {
             // ===== MODO NORMAL (NO o Todos) =====
             totalIngresos = ingresosEntregas;
-            rentabilidadNeta = ingresosEntregas - ingresosDevoluciones;
+            rentabilidadBruta = ingresosEntregas - ingresosDevoluciones;
+            rentabilidadFinal = rentabilidadBruta;
 
             // Ocultar card del 15%
             const card15 = document.getElementById('card-responsabilidad-15');
             card15.style.display = 'none';
+
+            // La card de arriba muestra la rentabilidad normal
+            elRentabilidad.innerText = formatCurrency(rentabilidadBruta);
+            elRentabilidad.style.color = rentabilidadBruta >= 0 ? "green" : "red";
+            elSubRentabilidad.innerText = 'Ingresos - Devoluciones';
         }
 
         // Cálculos de Porcentaje
@@ -21115,11 +21156,8 @@
                 Sim. Dev: ${formatCurrency(costoSimulacionDev)}
             </span>
         `;
-
-        elRentabilidad.innerText = formatCurrency(rentabilidadNeta);
-        elRentabilidad.style.color = rentabilidadNeta >= 0 ? "green" : "red";
     }
-
+    
     // =========================================
     // FUNCIÓN DESCARGAR EXCEL (CSV)
     // =========================================
