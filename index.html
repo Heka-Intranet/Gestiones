@@ -17,6 +17,7 @@
   rel="stylesheet">
   <!-- Librería Excel para Comisiones Pablo -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>  
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
   <style>
     :root {
       --primary-yellow: #FDB813;
@@ -21217,22 +21218,13 @@
     // =========================================
     // FUNCIÓN DESCARGAR EXCEL (CSV)
     // =========================================
-    // =========================================
-    // FUNCIÓN DESCARGAR EXCEL (CON COLUMNA SELLER)
-    // =========================================
-    // =========================================
-    // FUNCIÓN DESCARGAR EXCEL (CSV COLUMNAS CLARAS)
-    // =========================================
-    // =========================================
-    // FUNCIÓN DESCARGAR EXCEL (ESTRUCTURA A, B, C)
-    // =========================================
+
     function descargarExcelSeller() {
         if (!sellerGlobalData || sellerGlobalData.length === 0) {
             return showToast("No hay datos para descargar.");
         }
 
-        // 1. Verificamos si hay filtros activos
-        // 1. Verificamos si hay filtros activos
+        // 1. Aplicar filtros activos
         const estadoFiltro = document.getElementById('seller-estado').value.trim();
         const cobraDevFiltro = document.getElementById('seller-cobra-devolucion').value.trim().toUpperCase();
         let dataToExport = sellerGlobalData;
@@ -21249,59 +21241,56 @@
                 return valor === cobraDevFiltro;
             });
         }
-      
+
         if (dataToExport.length === 0) {
             return showToast("No hay datos con los filtros actuales.");
         }
 
-        // 2. Construimos el contenido CSV
-        // \uFEFF es el BOM para que Excel reconozca acentos y ñ correctamente
-        let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-        
-        // 🟢 ENCABEZADOS (Fila 1 del Excel - Columna A, B, C...)
-        // Todo entre comillas dobles para asegurar la separación de columnas
-        csvContent += '"Seller","Fecha","Guia","Estado","Tipo","Comision Heka","Flete","Comision Trans","Total","Costo Devol","Plataforma"\n';
+        // 2. Armar datos para el Excel
+        var wsData = [
+            ["Seller", "Fecha", "Guía", "Estado", "Tipo", "Comisión Heka", "Flete", "Comision Trans", "Total", "Costo Devol", "Plataforma"]
+        ];
 
-        // 3. DATOS (Filas 2 en adelante)
         dataToExport.forEach(function(item) {
-            const tipoMostrar = item.tipo || item.tipoEntrega || '-';
-            // Usamos el nombre de la empresa, si no hay, el ID, si no, "Desconocido"
-            const nombreSeller = item.empresa || item.centro_de_costo || 'Desconocido';
-            
-            // Creamos la fila con cada campo entre comillas
-            const row = [
-                `"${nombreSeller}"`,                // Columna A
-                `"${item.fecha}"`,                  // Columna B
-                `"${item.guiaTransportadora}"`,    // Columna C
-                `"${item.estado}"`,                 // Columna D
-                `"${tipoMostrar}"`,                // Columna E
-                
-                // Exportamos números como texto formateado con signo pesos y puntos de miles
-                // Entre comillas para que Excel respete el formato visual
-                `"${formatCurrency(item.comisionHeka)}"`,         // Columna F
-                `"${formatCurrency(item.flete)}"`,                // Columna G
-                `"${formatCurrency(item.comision_trasportadora)}"`, // Columna H
-                `"${formatCurrency(item.total)}"`,                // Columna I
-                `"${item.plataforma}"`              // Columna J
-            ];
-            
-            // Unimos con comas y saltamos de línea
-            csvContent += row.join(",") + "\n";
+            wsData.push([
+                item.nombre || "",
+                item.fecha || "",
+                item.guiaTransportadora || "",
+                item.estado || "",
+                item.tipo || item.tipoEntrega || "-",
+                Number(item.comisionHeka) || 0,
+                Number(item.flete) || 0,
+                Number(item.comision_trasportadora) || 0,
+                Number(item.total) || 0,
+                Number(item.costoDevolucion) || 0,
+                item.plataforma || ""
+            ]);
         });
 
-        // 4. Crear enlace de descarga
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        
-        const fechaHoy = new Date().toLocaleDateString('es-CO').split('/').join('-');
-        link.setAttribute("download", `Rentabilidad_Sellers_${fechaHoy}.csv`);
-        
-        document.body.appendChild(link); // Necesario para algunos navegadores
-        link.click();
-        document.body.removeChild(link);
-    }
+        // 3. Crear libro Excel
+        var wb = XLSX.utils.book_new();
+        var ws = XLSX.utils.aoa_to_sheet(wsData);
 
+        // 4. Anchos de columna
+        ws['!cols'] = [
+            { wch: 22 },  // Seller
+            { wch: 13 },  // Fecha
+            { wch: 20 },  // Guía
+            { wch: 25 },  // Estado
+            { wch: 28 },  // Tipo
+            { wch: 16 },  // Comisión Heka
+            { wch: 12 },  // Flete
+            { wch: 16 },  // Comision Trans
+            { wch: 14 },  // Total
+            { wch: 14 },  // Costo Devol
+            { wch: 12 }   // Plataforma
+        ];
+
+        XLSX.utils.book_append_sheet(wb, ws, "Rentabilidad Seller");
+
+        // 5. Descargar archivo .xlsx
+        XLSX.writeFile(wb, "Rentabilidad_Seller.xlsx");
+    }
 
     // --- VARIABLES GLOBALES GERENCIAL ---
     let datosBaseGerencial = [];    
