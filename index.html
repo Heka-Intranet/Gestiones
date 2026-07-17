@@ -5326,6 +5326,7 @@
                             <th style="padding: 12px; text-align: right;">Flete</th>
                             <th style="padding: 12px; text-align: right;">Comision Trans</th>
                             <th style="padding: 12px; text-align: right;">Total</th>
+                            <th style="padding: 12px; text-align: right; color: #dc3545;">Costo Devol</th>
                             <th style="padding: 12px; text-align: center; background-color: #f8f9fa;">Plataforma</th>
 
                         </tr>
@@ -20975,8 +20976,7 @@
         tbody.innerHTML = '';
         
         if (!lista || lista.length === 0) {
-            // CAMBIO: colspan de 8 a 9
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:20px;">No se encontraron guías con estos filtros.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:20px;">No se encontraron guías con estos filtros.</td></tr>';
             return;
         }
 
@@ -20985,6 +20985,7 @@
             tr.style.borderBottom = "1px solid #eee";
             
             const tipoMostrar = item.tipo || item.tipoEntrega || '-';
+            const costoDev = Number(item.costoDevolucion) || 0;
             
             tr.innerHTML = `
                 <td style="padding: 10px;">${item.fecha}</td>
@@ -20997,7 +20998,8 @@
                 <td style="padding: 10px; text-align: right;">${formatCurrency(item.comision_trasportadora)}</td>
                 <td style="padding: 10px; text-align: right; font-weight:bold;">${formatCurrency(item.total)}</td>
                 
-                <!-- NUEVA COLUMNA PLATAFORMA -->
+                <td style="padding: 10px; text-align: right; color: #dc3545;">${formatCurrency(costoDev)}</td>
+                
                 <td style="padding: 10px; text-align: center; font-weight:bold; color: #666;">${item.plataforma}</td>
             `;
             tbody.appendChild(tr);
@@ -21258,7 +21260,7 @@
         
         // 🟢 ENCABEZADOS (Fila 1 del Excel - Columna A, B, C...)
         // Todo entre comillas dobles para asegurar la separación de columnas
-        csvContent += '"Seller","Fecha","Guia","Estado","Tipo","Comision Heka","Flete","Comision Trans","Total","Plataforma"\n';
+        csvContent += '"Seller","Fecha","Guia","Estado","Tipo","Comision Heka","Flete","Comision Trans","Total","Costo Devol","Plataforma"\n';
 
         // 3. DATOS (Filas 2 en adelante)
         dataToExport.forEach(function(item) {
