@@ -5302,6 +5302,14 @@
                 </select>
               </div>
 
+              <!-- CHECKBOX "CON %" (aparece solo cuando se selecciona NO) -->
+              <div id="seller-chk-con-pct-wrap" style="flex: 0 0 auto; display: none; align-items: flex-end; padding-bottom: 2px;">
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: bold; color: #dc3545; background: #fff5f5; padding: 8px 14px; border-radius: 6px; border: 1px solid #f5c6cb;">
+                  <input type="checkbox" id="seller-chk-con-pct" onchange="filtrarTablaSellerDirecto()" style="width: 16px; height: 16px; cursor: pointer; accent-color: #dc3545;">
+                  Con %
+                </label>
+              </div>
+
               <button class="btn btn-primary" onclick="cargarRentabilidadSellerDirect()">
                 <i class="bi bi-search"></i> Consultar
               </button>
@@ -20935,6 +20943,19 @@
     function filtrarTablaSellerDirecto() {
         const estadoFiltro = document.getElementById('seller-estado').value.trim();
         const cobraDevFiltro = document.getElementById('seller-cobra-devolucion').value.trim().toUpperCase();
+        const chkConPct = document.getElementById('seller-chk-con-pct');
+        const chkWrap = document.getElementById('seller-chk-con-pct-wrap');
+
+        // Mostrar/ocultar checkbox: visible solo cuando selecciona "NO"
+        if (cobraDevFiltro === "NO") {
+            chkWrap.style.display = 'flex';
+        } else {
+            chkWrap.style.display = 'none';
+            chkConPct.checked = false;
+        }
+
+        // Determinar si aplica lógica del 15%
+        const modoCobra15 = (cobraDevFiltro === "SI") || (cobraDevFiltro === "NO" && chkConPct.checked);
 
         // ===== KPIs: se calculan SOLO con filtro cobraDevolucion (sin estado) =====
         let datosKPI = sellerGlobalData;
@@ -20944,7 +20965,7 @@
                 return valor === cobraDevFiltro;
             });
         }
-        calcularKPIsSeller(datosKPI, cobraDevFiltro);
+        calcularKPIsSeller(datosKPI, modoCobra15);
 
         // ===== TABLA: se filtra por ambos (estado + cobraDevolucion) =====
         let listaFiltrada = sellerGlobalData;
@@ -20964,7 +20985,6 @@
 
         renderizarTablaSellerDirect(listaFiltrada);
     }
-
     
     // =========================================
     // 3. FUNCIÓN RENDERIZAR TABLA SELLER
@@ -21010,7 +21030,7 @@
     // =========================================
     // FUNCIÓN CÁLCULO DE KPIs (CARDS) - INGRESOS CORREGIDO
     // =========================================
-    function calcularKPIsSeller(datos, cobraDevFiltro) {
+    function calcularKPIsSeller(datos, modoCobra15) {
         
         // Definimos los estados según tus indicaciones
         const estadosEntregas = ["ENTREGADO", "ENTREGADA", "Entrega Exitosa", "ENTREGADA_"];
@@ -21031,7 +21051,7 @@
         // Para el cálculo del 15%
         let costoTotalDevoluciones = 0;
 
-        // Para desglose por transportadora (solo guías devueltas)
+        // Para desglose por transportadora
         let mapaTransportadoras = {};
 
         // ⭐ VARIABLE PARA SIMULACIÓN DE DEVOLUCIONES
@@ -21045,16 +21065,13 @@
             const comTrans = Number(item.comision_trasportadora) || 0;
             const costoDev = Number(item.costoDevolucion) || 0;
 
-            // Nombre transportadora: P1 usa "transportadora", P2 usa "distributor_id"
             const transportadora = item.transportadora || item.distributor_id || "Sin Transportadora";
 
             if (estadosEntregas.includes(estado)) {
-                // 1. ENTREGAS
                 ingresosEntregas += comHeka;
                 countEntregas++;
             } else if (estadosDevoluciones.includes(estado)) {
-                // 2. DEVOLUCIONES
-                if (cobraDevFiltro === "SI") {
+                if (modoCobra15) {
                     ingresosDevoluciones += comHeka;
                 } else {
                     const costoRetorno = flete + comTrans;
@@ -21062,7 +21079,6 @@
                 }
                 costoTotalDevoluciones += costoDev;
 
-                // Acumular por transportadora
                 if (!mapaTransportadoras[transportadora]) {
                     mapaTransportadoras[transportadora] = { costo: 0, count: 0 };
                 }
@@ -21071,8 +21087,7 @@
 
                 countDevoluciones++;
             } else {
-                // 3. PENDIENTES
-                if (cobraDevFiltro === "SI") {
+                if (modoCobra15) {
                     ingresosPendientes += comHeka;
                     costoSimulacionDev += costoDev;
                 } else {
@@ -21091,14 +21106,11 @@
         const elRentabilidad = document.getElementById('seller-res-rentabilidad');
         const elSubRentabilidad = document.getElementById('seller-sub-rentabilidad');
 
-        if (cobraDevFiltro === "SI") {
-            // ===== MODO COBRA DEVOLUCION = SI =====
+        if (modoCobra15) {
+            // ===== MODO COBRA DEVOLUCION = SI (o NO + con %) =====
             totalIngresos = ingresosEntregas + ingresosDevoluciones + ingresosPendientes;
-
-            // Rentabilidad Bruta = todo lo que ganó (antes de devolver)
             rentabilidadBruta = totalIngresos;
 
-            // Mostrar card del 15%
             const card15 = document.getElementById('card-responsabilidad-15');
             card15.style.display = 'block';
 
@@ -21118,7 +21130,6 @@
                 excede15 = 0;
             }
 
-            // Rentabilidad Final = Bruta - lo que devuelve
             rentabilidadFinal = rentabilidadBruta - valor15;
 
             // Actualizar card 15%
@@ -21130,7 +21141,7 @@
             document.getElementById('seller-pct-devolucion').innerText = pctDevol.toFixed(2) + '%';
             document.getElementById('seller-pct-devolucion').style.color = pctDevol > 15 ? '#dc3545' : '#28a745';
 
-            // ===== DESGLOSE POR TRANSPORTADORA =====
+            // Desglose por transportadora
             const desgloseContainer = document.getElementById('seller-desglose-transportadoras');
             const gridContainer = document.getElementById('seller-transportadoras-grid');
             gridContainer.innerHTML = '';
@@ -21138,23 +21149,21 @@
             if (excede15 > 0 && costoTotalDevoluciones > 0) {
                 desgloseContainer.style.display = 'block';
 
-                // Ordenar transportadoras por valor descendente
                 const transportadoras = Object.keys(mapaTransportadoras).sort(function(a, b) {
                     return mapaTransportadoras[b].costo - mapaTransportadoras[a].costo;
                 });
 
                 transportadoras.forEach(function(nombre) {
-                    const datos = mapaTransportadoras[nombre];
-                    // Proporción del exceso según su participación en el costo total
-                    const excesoTransportadora = excede15 * (datos.costo / costoTotalDevoluciones);
-                    const pctTransportadora = costoTotalDevoluciones > 0 ? (datos.costo / costoTotalDevoluciones * 100) : 0;
+                    const datosT = mapaTransportadoras[nombre];
+                    const excesoTransportadora = excede15 * (datosT.costo / costoTotalDevoluciones);
+                    const pctTransportadora = costoTotalDevoluciones > 0 ? (datosT.costo / costoTotalDevoluciones * 100) : 0;
 
                     const div = document.createElement('div');
                     div.style.cssText = 'background: #f8f9fa; padding: 10px 14px; border-radius: 8px; border-left: 3px solid #28a745; display: flex; justify-content: space-between; align-items: center;';
                     div.innerHTML = `
                         <div>
                             <div style="font-size: 13px; font-weight: bold; color: #333;">${nombre}</div>
-                            <div style="font-size: 11px; color: #999;">${datos.count} guías · ${pctTransportadora.toFixed(1)}% del costo</div>
+                            <div style="font-size: 11px; color: #999;">${datosT.count} guías · ${pctTransportadora.toFixed(1)}% del costo</div>
                         </div>
                         <div style="font-size: 15px; font-weight: bold; color: #155724;">${formatCurrency(Math.round(excesoTransportadora))}</div>
                     `;
@@ -21164,27 +21173,25 @@
                 desgloseContainer.style.display = 'none';
             }
 
-            // Actualizar Rentabilidad Final (card definitiva)
+            // Rentabilidad Final
             document.getElementById('seller-rentabilidad-final').innerText = formatCurrency(Math.round(rentabilidadFinal));
             document.getElementById('seller-rentabilidad-final').style.color = rentabilidadFinal >= 0 ? '#28a745' : '#dc3545';
             document.getElementById('seller-rentabilidad-bruta-ref').innerText = formatCurrency(rentabilidadBruta);
 
-            // La card de arriba muestra la Bruta
+            // Card de arriba = Bruta
             elRentabilidad.innerText = formatCurrency(rentabilidadBruta);
             elRentabilidad.style.color = '#333';
             elSubRentabilidad.innerText = 'Rentabilidad Bruta (antes de devolver)';
 
         } else {
-            // ===== MODO NORMAL (NO o Todos) =====
+            // ===== MODO NORMAL (NO sin check, o Todos) =====
             totalIngresos = ingresosEntregas;
             rentabilidadBruta = ingresosEntregas - ingresosDevoluciones;
             rentabilidadFinal = rentabilidadBruta;
 
-            // Ocultar card del 15%
             const card15 = document.getElementById('card-responsabilidad-15');
             card15.style.display = 'none';
 
-            // La card de arriba muestra la rentabilidad normal
             elRentabilidad.innerText = formatCurrency(rentabilidadBruta);
             elRentabilidad.style.color = rentabilidadBruta >= 0 ? "green" : "red";
             elSubRentabilidad.innerText = 'Ingresos - Devoluciones';
