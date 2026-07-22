@@ -23738,10 +23738,31 @@
         return alert('Para el estado [' + estadoHeka.estado + '] es OBLIGATORIO subir una imagen de evidencia.');
       }
 
+      // ========== VALIDACIÓN: GUÍAS YA ENTREGADAS O DEVUELTAS ==========
+      var guiasFinalizadas = [];
+      enviosActualesActualizarEstado.forEach(function(env) {
+        var estadoActual = (env.data.estado || "").trim();
+        if (estadoActual === "Entrega Exitosa") {
+          guiasFinalizadas.push({ guia: env.data.numeroGuia, estado: estadoActual, motivo: "Este envío ya está como ENTREGADO. Validar número de guía." });
+        }
+        if (estadoActual === "Devuelto al Remitente") {
+          guiasFinalizadas.push({ guia: env.data.numeroGuia, estado: estadoActual, motivo: "Este envío ya está como DEVUELTO AL REMITENTE. Validar número de guía." });
+        }
+      });
+
+      if (guiasFinalizadas.length > 0) {
+        var mensaje = "⚠️ No es posible actualizar las siguientes guías porque ya tienen un estado final:\n\n";
+        guiasFinalizadas.forEach(function(item, i) {
+          mensaje += (i + 1) + ". Guía " + item.guia + " — " + item.motivo + "\n";
+        });
+        alert(mensaje);
+        return;
+      }
+
       // ========== DETECTAR NOVEDADES ESPECIALES ==========
       var esCitaProgramada = (descUpper.indexOf('SE PROGRAMA CITA') !== -1);
       var esCambioDiaSiguiente = NOVEDADES_CAMBIO_DIA_SIGUIENTE.some(function(n) { return descUpper.indexOf(n) !== -1; });
-      var tipoRegistroAuto = ''; // '', 'DIA_SIGUIENTE', o 'CITA_PROGRAMADA'
+      var tipoRegistroAuto = '';
       var fechaCita = '';
 
       if (esCitaProgramada) {
@@ -23755,8 +23776,7 @@
       // Construir observaciones base
       var obsBase = document.getElementById('updObservacionesActualizarEstado').value || '';
 
-      // Construir estadoData - SIEMPRE el estado que eligi\u00F3 el usuario
-      // (la novedad se aplica primero, luego En Bodega se aplica autom\u00E1ticamente)
+      // Construir estadoData
       var estadoDataFinal = {
         estado: estadoHeka.estado,
         tipo: estadoHeka.tipo,
@@ -23783,16 +23803,12 @@
         }
       }
 
-      // (La validaci\u00F3n de En Bodega se maneja autom\u00E1ticamente en ejecutarActualizacionEstado)
-
       var btn = document.getElementById('btnActualizarEstadoManual');
       btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...'; btn.style.background = '#a71d2a';
 
       // ========== CHEQUEO OFFLINE ==========
       if (!navigator.onLine) {
-        // Sin conexi\\u00f3n → guardar en cola offline
         guardarOperacionOffline(estadoDataFinal, enviosActualesActualizarEstado, evidenciaBase64ActualizarEstado, evidenciaNombreActualizarEstado, idPuntoActualLmensajero);
-        // Limpiar formulario
         evidenciaBase64ActualizarEstado = null;
         evidenciaNombreActualizarEstado = '';
         var evidenciaPreview = document.getElementById('evidenciaPreviewActualizarEstado');
@@ -23811,7 +23827,6 @@
           evidenciaNombreActualizarEstado,
           evidenciaBase64ActualizarEstado,
           function(res) {
-            // SUCCESS
             if (!res.ok) {
               appendLogLmensajero('Error subiendo imagen: ' + res.error);
               errorModalProgreso('Error subiendo imagen: ' + res.error);
@@ -23824,14 +23839,12 @@
             ejecutarActualizacionEstado(estadoDataFinal, btn);
           },
           function(e) {
-            // FAILURE
             appendLogLmensajero('\u274C Error subiendo imagen: ' + (e.message || e));
             errorModalProgreso('Error subiendo imagen: ' + (e.message || e));
             btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-all"></i> Actualizar Estado'; btn.style.background = '#dc3545';
           }
         );
       } else {
-        // Sin imagen, ejecutar directamente
         ejecutarActualizacionEstado(estadoDataFinal, btn);
       }
     }
