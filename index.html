@@ -16575,10 +16575,11 @@
     function autoCompletarSeller(inputGuia) {
         const guia = inputGuia.value.trim();
         
-        // Determinar el prefijo (indem, servi, coord)
+        // Determinar el prefijo (indem, servi, coord, tcc)
         let prefix = "indem"; 
         if (inputGuia.id === 'servi-guia-edit') prefix = "servi";
         else if (inputGuia.id === 'coord-guia-edit') prefix = "coord";
+        else if (inputGuia.id === 'tcc-guia-edit') prefix = "tcc";
         
         if (!guia) return;
 
@@ -16587,7 +16588,7 @@
         const inputPagoDest = document.getElementById(prefix + '-pago-destino-edit');
         const inputCobroDevol = document.getElementById(prefix + '-cobro-devol-edit');
         
-        let idSeguro = (prefix === 'coord') ? 'coord-val-seguro-edit' : prefix + '-val-rec-seg-edit';
+        let idSeguro = (prefix === 'coord' || prefix === 'tcc') ? prefix + '-val-seguro-edit' : prefix + '-val-rec-seg-edit';
         const inputSeguro = document.getElementById(idSeguro);
         const inputComTransFlete = document.getElementById(prefix + '-com-trans-flete-edit');
         const inputComHeka = document.getElementById(prefix + '-com-heka-edit');
@@ -16654,6 +16655,9 @@
                     // Si es Coord, descomenta esto cuando tengas la función
                     else if (prefix === 'coord') {
                         // recalcularAutomaticosCoord(); 
+                    }             
+                    else if (prefix === 'tcc') {
+                        recalcularAutomaticosTCC(); 
                     }
 
                 } else {
