@@ -7703,7 +7703,7 @@
           </div>
 
           <!-- TCC (Placeholder) -->
-          <div class="partner-showcase" onclick="showToast('Módulo TCC en construcción')" style="cursor: not-allowed; width: 120px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; opacity: 0.6;">
+          <div class="partner-showcase" onclick="abrirFormularioNuevo('tcc')" style="cursor: pointer; width: 120px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; transition: 0.3s;" onmouseover="this.style.borderColor='#0d6efd'" onmouseout="this.style.borderColor='#ddd'">
             <img src="https://i.postimg.cc/1XJ42vNB/Logo-TCC-svg.png" alt="TCC" style="max-height: 60px;">
             <div style="font-size: 12px; margin-top: 5px; font-weight: bold;">TCC</div>
           </div>
@@ -18669,6 +18669,16 @@
                 btn.setAttribute('onclick', 'guardarNuevoRegistroBackend()');
             }
         }
+        else if (tipo === 'tcc') {
+            modalId = 'modal-indemnizacion-tcc';
+            titulo = 'NUEVO REGISTRO: TCC';
+            limpiarCamposModal('tcc');
+            const btn = document.querySelector('#modal-indemnizacion-tcc #footer-guardar-tcc button.btn-primary');
+            if(btn) {
+                btn.innerHTML = '<i class="bi bi-plus-circle"></i> Crear Registro';
+                btn.setAttribute('onclick', 'guardarNuevoRegistroBackend()');
+            }
+        }    
 
         if (modalId) {
             const modal = document.getElementById(modalId);
@@ -18681,6 +18691,7 @@
             if(tipo === 'inter') habilitarEdicionIndemnizacion();
             if(tipo === 'servi') habilitarEdicionServi();
             if(tipo === 'coord') habilitarEdicionCoord();
+            if(tipo === 'tcc') habilitarEdicionTCC();
         }
     }
 
@@ -18790,6 +18801,31 @@
             if(!datos.guia) return showToast("Error: La Guía es obligatoria.");
         }
 
+        else if (currentCreateType === 'tcc') {
+            datos = {
+                fechaAprob: document.getElementById('tcc-fecha-aprob-edit').value,
+                causal: document.getElementById('tcc-causal-edit').value,
+                seller: document.getElementById('tcc-seller-edit').value,
+                guia: document.getElementById('tcc-guia-edit').value,
+                fechaNCPago: document.getElementById('tcc-fecha-nc-edit').value,
+                numNota: document.getElementById('tcc-num-nota-edit').value,
+                valNCPago: parseFloat(document.getElementById('tcc-val-nc-edit').value) || 0,
+                pagoDestino: document.getElementById('tcc-pago-destino-edit').value,
+                cobroDevol: document.getElementById('tcc-cobro-devol-edit').value,
+                valSeguro: parseFloat(document.getElementById('tcc-val-seguro-edit').value) || 0,
+                fleteNeto: parseFloat(document.getElementById('tcc-flete-neto-edit').value) || 0,
+                comHeka: parseFloat(document.getElementById('tcc-com-heka-edit').value) || 0,
+                comHekaAdic: parseFloat(document.getElementById('tcc-com-heka-adic-edit').value) || 0,
+                valFinalPagar: parseFloat(document.getElementById('tcc-val-pagar-edit').value) || 0,
+                valFinalHeka: parseFloat(document.getElementById('tcc-val-final-edit').value) || 0,
+                observaciones: document.getElementById('tcc-obs-edit').value,
+                estado: document.getElementById('tcc-estado-edit').value,
+                conceptoPago: document.getElementById('tcc-concepto-edit').value
+            };
+            funcionBackend = 'agregarIndemnizacionTCC';
+            if(!datos.guia) return showToast("Error: La Guía es obligatoria.");
+        }    
+
         showLoading(true);
 
         google.script.run
@@ -18800,6 +18836,7 @@
                     if(currentCreateType === 'inter') closeModal('modal-indemnizacion');
                     if(currentCreateType === 'servi') closeModal('modal-indemnizacion-servi');
                     if(currentCreateType === 'coord') closeModal('modal-indemnizacion-coord');
+                    if(currentCreateType === 'tcc') closeModal('modal-indemnizacion-tcc');
                 } else {
                     showToast("Error: " + res.message);
                 }
