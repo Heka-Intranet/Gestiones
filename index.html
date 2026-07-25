@@ -4685,9 +4685,13 @@
                 <span>Logística Propia</span>
               </div>
 
+              <!-- TCC (NUEVO) -->
+              <div class="partner-showcase" style="animation: float 6s ease-in-out infinite;"  onclick="cargarGerencial('tcc', 'TCC', this)">
+                <img src="https://i.postimg.cc/1XJ42vNB/Logo-TCC-svg.png" alt="TCC">
+                <span>TCC</span>
+              </div>
+
             </div>
-
-
 
             <!-- HERRAMIENTAS: BUSCADOR -->
             <div class="indemnizaciones-toolbar" style="margin-bottom: 15px; display: flex; gap: 15px; align-items: center; width: 100%;">
@@ -22063,8 +22067,23 @@
           { key: 'ganancia', label: 'Ganancia' },     // Columna J
           { key: 'estado', label: 'Estado' }          // Columna K
         );
-      }      
-
+      }
+      else if (tipo === 'tcc') {
+        columnas.push(
+          { key: 'guia', label: 'Guía' },
+          { key: 'plata', label: 'Plata' },
+          { key: 'version', label: 'Versión' },
+          { key: 'tipoPqr', label: 'Tipo PQR' },          // Columna B (causal)
+          { key: 'valNCredito', label: 'Val. N. Crédito' }, // Columna G (valNCPago)
+          { key: 'tipoEnvio', label: 'Tipo Envio' },       // Columna H (pagoDestino)
+          { key: 'seguro', label: 'Seguro' },              // Columna J (valSeguro)
+          { key: 'fleteHk', label: 'Flete HK' },           // Columna K (fleteNeto)
+          { key: 'valIndemnizar', label: 'Val. Indemnizar' }, // Columna N (valFinalPagar)
+          { key: 'ganancia', label: 'Ganancia' },          // Columna O (valFinalHeka)
+          { key: 'estado', label: 'Estado' }               // Columna Q (estado)
+        );
+      }
+  
       // Renderizar HTML
       let headerHTML = '<tr>';
       columnas.forEach((col, index) => {
@@ -22176,7 +22195,21 @@
             <!-- Estado -->
             <td><span class="badge badge-default">${row.estado || ''}</span></td>
           `;
-        }        
+        } else if (currentGerencialType === 'tcc') {
+          cellsHTML += `
+            <td style="font-weight:bold; color:var(--primary-dark);">${row.guia || ''}</td>
+            <td style="text-align:center;">${badgePlata}</td>
+            <td style="text-align:center; font-weight:bold;">${row.version || ''}</td>
+            <td>${row.tipoPqr || ''}</td>
+            <td style="text-align:right; white-space: nowrap; color:var(--primary-dark); font-weight:bold;">${fmt(row.valNCredito)}</td>
+            <td>${row.tipoEnvio || ''}</td>
+            <td style="text-align:right; white-space: nowrap; color:var(--primary-dark); font-weight:bold;">${fmt(row.seguro)}</td>
+            <td style="text-align:right; white-space: nowrap; color:var(--primary-dark); font-weight:bold;">${fmt(row.fleteHk)}</td>
+            <td style="text-align:right; white-space: nowrap; color:var(--primary-dark); font-weight:bold;">${fmt(row.valIndemnizar)}</td>
+            <td style="text-align:right; white-space: nowrap; color:green; font-weight:bold;">${fmt(row.ganancia)}</td>
+            <td><span class="badge badge-default">${row.estado || ''}</span></td>
+          `;
+        }                
 
         tr.innerHTML = cellsHTML;
         tbody.appendChild(tr);
