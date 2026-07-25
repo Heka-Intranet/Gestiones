@@ -16639,6 +16639,12 @@
                     setAndLock(inputComTransFlete, datos.comTransFlete);
                     setAndLock(inputComHeka, datos.comHeka);
                     setAndLock(inputComHekaAdic, datos.comHekaAdic);
+                    
+                    // ✅ TCC: Llenar Flete Neto con el Comisión Transp. + Flete que trae el backend
+                    if (prefix === 'tcc') {
+                        const inputFleteNeto = document.getElementById('tcc-flete-neto-edit');
+                        setAndLock(inputFleteNeto, datos.comTransFlete);
+                    }
 
                     // ==========================================
                     // CÁLCULOS AUTOMÁTICOS SEGÚN TRANSPORTADORA
@@ -16675,6 +16681,12 @@
                     clearAndUnlock(inputComTransFlete);
                     clearAndUnlock(inputComHeka);
                     clearAndUnlock(inputComHekaAdic);
+                    
+                    // ✅ TCC: Desbloquear Flete Neto en modo manual
+                    if (prefix === 'tcc') {
+                        const inputFleteNeto = document.getElementById('tcc-flete-neto-edit');
+                        clearAndUnlock(inputFleteNeto);
+                    }
                 }
             })
             .withFailureHandler(function(err) {
@@ -18257,7 +18269,7 @@
         let VALOR_FINAL_HEKA = 0;
     
         // =====================================================
-        // REGLA 1: CIERRE LOGÍSTICO
+        // REGLA 1: CIERRE LOGÍSTICO (sin cambios)
         // =====================================================
     
         if (
@@ -18275,111 +18287,42 @@
         }
     
         // =====================================================
-        // REGLA 2: PAGO CONTRAENTREGA SIN COBRO DEVOL
+        // REGLA 2: NUEVA LÓGICA GENERAL — SEGURO vs VALOR NC
+        // =====================================================
+        // Si el seguro es menor o igual al Valor NC:
+        //   → Al Seller se le paga únicamente el seguro
+        //   → Heka se queda con el resto (NC - Seguro)
+        //
+        // Si el seguro es mayor al Valor NC:
+        //   → Al Seller se le paga todo lo disponible (NC)
+        //   → Heka se queda en 0
         // =====================================================
     
-        else if (
-            TIPO_PAGO === "PAGO CONTRAENTREGA" &&
-            COBRO_DEVOL === "NO"
-        ) {
+        else if (VALOR_SEGURO > 0) {
     
-            // Heka se queda con el FLETE NETO + LAS COMISIONES
-            VALOR_FINAL_HEKA = 
-                FLETE_NETO + TOTAL_COMISIONES;
-    
-            VALOR_PAGAR_SELLER =
-                TOTAL_DISPONIBLE - VALOR_FINAL_HEKA;
-        }
-    
-        // =====================================================
-        // REGLA 3: PAGO DESTINO / CONTRAENTREGA
-        // =====================================================
-    
-        else if (
-            TIPO_PAGO === "PAGO CONTRAENTREGA" ||
-            TIPO_PAGO === "PAGO DESTINO"
-        ) {
-    
-            if (
-                TOTAL_DISPONIBLE >= (FLETE_NETO + VALOR_SEGURO)
-                ||
-                (
-                    TOTAL_DISPONIBLE >= (FLETE_NETO + VALOR_SEGURO - 5000)
-                    &&
-                    TOTAL_DISPONIBLE < (FLETE_NETO + VALOR_SEGURO)
-                )
-            ) {
-    
-                VALOR_FINAL_HEKA =
-                    FLETE_NETO +
-                    COMISION_HEKA;
-    
-                VALOR_PAGAR_SELLER =
-                    TOTAL_DISPONIBLE - VALOR_FINAL_HEKA;
-            }
-    
-            else if (TOTAL_DISPONIBLE === VALOR_SEGURO) {
-    
-                VALOR_FINAL_HEKA =
-                    FLETE_NETO +
-                    COMISION_HEKA +
-                    COMISION_HEKA_ADIC;
-    
-                VALOR_PAGAR_SELLER =
-                    TOTAL_DISPONIBLE - VALOR_FINAL_HEKA;
-            }
-    
-            else if (FLETE_NETO > TOTAL_DISPONIBLE) {
-    
-                VALOR_FINAL_HEKA =
-                    TOTAL_DISPONIBLE;
-    
-                VALOR_PAGAR_SELLER = 0;
-            }
-    
-            else {
-    
-                VALOR_FINAL_HEKA =
-                    FLETE_NETO;
-    
-                VALOR_PAGAR_SELLER =
-                    TOTAL_DISPONIBLE - FLETE_NETO;
-            }
-        }
-    
-        // =====================================================
-        // REGLA 4: CONVENCIONAL
-        // =====================================================
-    
-        else if (TIPO_PAGO === "CONVENCIONAL") {
-    
-            // Si la Nota es igual al Seguro y hay Cobro de Devolución,
-            // Heka no se queda con nada (0).
-            if (
-                TOTAL_DISPONIBLE === VALOR_SEGURO &&
-                COBRO_DEVOL === "SI"
-            ) {
-                VALOR_FINAL_HEKA = 0;
+            if (VALOR_SEGURO <= TOTAL_DISPONIBLE) {
+                // El seguro cabe dentro de la NC
+                VALOR_PAGAR_SELLER = VALOR_SEGURO;
+                VALOR_FINAL_HEKA = TOTAL_DISPONIBLE - VALOR_SEGURO;
+            } else {
+                // El seguro es MAYOR que la NC → Seller recibe todo, Heka nada
                 VALOR_PAGAR_SELLER = TOTAL_DISPONIBLE;
+                VALOR_FINAL_HEKA = 0;
             }
+        }
     
-            // No cubre ni el flete
-            else if (TOTAL_DISPONIBLE <= FLETE_NETO) {
+        // =====================================================
+        // REGLA 3: SIN SEGURO (fallback)
+        // Si no hay seguro, Heka se queda con el flete neto
+        // =====================================================
     
-                VALOR_FINAL_HEKA =
-                    TOTAL_DISPONIBLE;
-    
+        else {
+            if (FLETE_NETO <= TOTAL_DISPONIBLE) {
+                VALOR_FINAL_HEKA = FLETE_NETO;
+                VALOR_PAGAR_SELLER = TOTAL_DISPONIBLE - FLETE_NETO;
+            } else {
+                VALOR_FINAL_HEKA = TOTAL_DISPONIBLE;
                 VALOR_PAGAR_SELLER = 0;
-            }
-    
-            // Caso parcial o normal (Cubre más que el flete)
-            else {
-    
-                VALOR_FINAL_HEKA =
-                    FLETE_NETO;
-    
-                VALOR_PAGAR_SELLER =
-                    TOTAL_DISPONIBLE - VALOR_FINAL_HEKA;
             }
         }
     
@@ -18403,8 +18346,11 @@
         setVal('tcc-val-final-edit', VALOR_FINAL_HEKA);
     
         console.log({
-            TOTAL_DISPONIBLE,
+            VALOR_NC,
+            VALOR_SEGURO,
+            FLETE_NETO,
             TOTAL_COMISIONES,
+            TOTAL_DISPONIBLE,
             VALOR_PAGAR_SELLER,
             VALOR_FINAL_HEKA
         });
