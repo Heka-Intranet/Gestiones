@@ -22131,9 +22131,11 @@
         if (row.plata === 'P1') badgePlata = '<span class="badge-plata badge-p1">P1</span>';
         else if (row.plata === 'P2') badgePlata = '<span class="badge-plata badge-p2">P2</span>';
 
+        // Valor de indemnización para el contador
+        const valorIndem = parseFloat(row.valIndemnizar || row.valPagarHeka || 0);
         // HTML para la columna de CHECK
         const checkHTML = `<td style="text-align:center;">
-            <input type="checkbox" class="chk-pago-row" data-guia="${row.guia}" onchange="actualizarContadorSeleccionGerencial()">
+            <input type="checkbox" class="chk-pago-row" data-guia="${row.guia}" data-valor="${valorIndem}" onchange="actualizarContadorSeleccionGerencial()">
         </td>`;
 
         let cellsHTML = checkHTML; // Empezamos con el check
@@ -22398,21 +22400,8 @@
       checkboxes.forEach(function(cb) {
         if (cb.checked) {
           total++;
-          const fila = cb.closest('tr');
-          if (fila) {
-            // Buscar la celda de Val. Indemnizar según la transportadora
-            const cells = fila.querySelectorAll('td');
-            // La columna de indemnizar es la penúltima celda de datos (antes de ganancia y estado)
-            // Ganancia = anteúltima, Estado = última, Indemnizar = 2 antes del final
-            // Pero varía por transportadora. Usamos un enfoque más seguro:
-            // Buscamos el valor del checkbox data-guia en datosBaseGerencial
-            const guia = cb.getAttribute('data-guia');
-            const item = datosBaseGerencial.find(r => r.guia === guia);
-            if (item) {
-              const val = parseFloat(item.valIndemnizar || item.valPagarHeka || 0);
-              if (!isNaN(val)) totalValor += val;
-            }
-          }
+          const val = parseFloat(cb.getAttribute('data-valor') || 0);
+          if (!isNaN(val)) totalValor += val;
         }
       });
 
@@ -22426,7 +22415,6 @@
         contadorEl.style.display = 'flex';
       } else {
         contadorEl.style.display = 'none';
-        // Resetear el "Marcar Todos" también
         const chkAll = document.getElementById('chk-all-gerencial');
         if (chkAll) chkAll.checked = false;
       }
