@@ -18189,52 +18189,225 @@
     }
 
     function recalcularAutomaticosTCC() {
+    
+        // =====================================================
+        // HELPERS
+        // =====================================================
+    
         const getNum = (id) => {
             const el = document.getElementById(id);
+    
             if (!el) return 0;
+    
             let val = el.value;
-            if (typeof val === "string") val = val.replace(/\./g, '').replace(',', '.');
-            return (val === "" || val == null || isNaN(val)) ? 0 : parseFloat(val);
+    
+            if (typeof val === "string") {
+                val = val.replace(/\./g, '').replace(',', '.');
+            }
+    
+            return (val === "" || val == null || isNaN(val))
+                ? 0
+                : parseFloat(val);
         };
-
+    
         const getText = (id) => {
             const el = document.getElementById(id);
+    
             if (!el) return "";
-            return (el.value || "").toString().trim().toUpperCase();
+    
+            return (el.value || "")
+                .toString()
+                .trim()
+                .toUpperCase();
         };
-
+    
         const setVal = (id, value) => {
             const el = document.getElementById(id);
-            if (el) el.value = Math.round(value || 0);
+    
+            if (el) {
+                el.value = Math.round(value || 0);
+            }
         };
-
+    
+        // =====================================================
+        // VARIABLES
+        // =====================================================
+    
         const VALOR_NC = getNum('tcc-val-nc-edit');
         const VALOR_SEGURO = getNum('tcc-val-seguro-edit');
         const FLETE_NETO = getNum('tcc-flete-neto-edit');
+    
         const COMISION_HEKA = getNum('tcc-com-heka-edit');
         const COMISION_HEKA_ADIC = getNum('tcc-com-heka-adic-edit');
+    
         const TIPO_PAGO = getText('tcc-pago-destino-edit');
         const COBRO_DEVOL = getText('tcc-cobro-devol-edit');
         const CAUSAL = getText('tcc-causal-edit');
-
-        let TOTAL_COMISIONES = COMISION_HEKA + COMISION_HEKA_ADIC;
+    
+        // =====================================================
+        // TOTALES
+        // =====================================================
+    
+        const TOTAL_DISPONIBLE = VALOR_NC;
+    
+        const TOTAL_COMISIONES =
+            COMISION_HEKA + COMISION_HEKA_ADIC;
+    
         let VALOR_PAGAR_SELLER = 0;
         let VALOR_FINAL_HEKA = 0;
-
-        if (COBRO_DEVOL === "SI") {
-            VALOR_PAGAR_SELLER = VALOR_NC;
-            VALOR_FINAL_HEKA = VALOR_NC + TOTAL_COMISIONES;
-        } else {
-            VALOR_PAGAR_SELLER = VALOR_NC - TOTAL_COMISIONES;
-            VALOR_FINAL_HEKA = VALOR_NC;
+    
+        // =====================================================
+        // REGLA 1: CIERRE LOGÍSTICO
+        // =====================================================
+    
+        if (
+            (
+                CAUSAL === "CIERRE LOGISTICO" ||
+                CAUSAL === "CIERRE LOGISTICO INTENTO DE FRAUDE"
+            ) &&
+            TIPO_PAGO !== "CONVENCIONAL"
+        ) {
+    
+            VALOR_FINAL_HEKA =
+                TOTAL_DISPONIBLE - TOTAL_COMISIONES;
+    
+            VALOR_PAGAR_SELLER = 0;
         }
-
-        if (CAUSAL === "PERDIDA / HURTO" || CAUSAL === "SAQUEO") {
-            VALOR_PAGAR_SELLER += VALOR_SEGURO;
+    
+        // =====================================================
+        // REGLA 2: PAGO CONTRAENTREGA SIN COBRO DEVOL
+        // =====================================================
+    
+        else if (
+            TIPO_PAGO === "PAGO CONTRAENTREGA" &&
+            COBRO_DEVOL === "NO"
+        ) {
+    
+            // Heka se queda con el FLETE NETO + LAS COMISIONES
+            VALOR_FINAL_HEKA = 
+                FLETE_NETO + TOTAL_COMISIONES;
+    
+            VALOR_PAGAR_SELLER =
+                TOTAL_DISPONIBLE - VALOR_FINAL_HEKA;
         }
-
+    
+        // =====================================================
+        // REGLA 3: PAGO DESTINO / CONTRAENTREGA
+        // =====================================================
+    
+        else if (
+            TIPO_PAGO === "PAGO CONTRAENTREGA" ||
+            TIPO_PAGO === "PAGO DESTINO"
+        ) {
+    
+            if (
+                TOTAL_DISPONIBLE >= (FLETE_NETO + VALOR_SEGURO)
+                ||
+                (
+                    TOTAL_DISPONIBLE >= (FLETE_NETO + VALOR_SEGURO - 5000)
+                    &&
+                    TOTAL_DISPONIBLE < (FLETE_NETO + VALOR_SEGURO)
+                )
+            ) {
+    
+                VALOR_FINAL_HEKA =
+                    FLETE_NETO +
+                    COMISION_HEKA;
+    
+                VALOR_PAGAR_SELLER =
+                    TOTAL_DISPONIBLE - VALOR_FINAL_HEKA;
+            }
+    
+            else if (TOTAL_DISPONIBLE === VALOR_SEGURO) {
+    
+                VALOR_FINAL_HEKA =
+                    FLETE_NETO +
+                    COMISION_HEKA +
+                    COMISION_HEKA_ADIC;
+    
+                VALOR_PAGAR_SELLER =
+                    TOTAL_DISPONIBLE - VALOR_FINAL_HEKA;
+            }
+    
+            else if (FLETE_NETO > TOTAL_DISPONIBLE) {
+    
+                VALOR_FINAL_HEKA =
+                    TOTAL_DISPONIBLE;
+    
+                VALOR_PAGAR_SELLER = 0;
+            }
+    
+            else {
+    
+                VALOR_FINAL_HEKA =
+                    FLETE_NETO;
+    
+                VALOR_PAGAR_SELLER =
+                    TOTAL_DISPONIBLE - FLETE_NETO;
+            }
+        }
+    
+        // =====================================================
+        // REGLA 4: CONVENCIONAL
+        // =====================================================
+    
+        else if (TIPO_PAGO === "CONVENCIONAL") {
+    
+            // Si la Nota es igual al Seguro y hay Cobro de Devolución,
+            // Heka no se queda con nada (0).
+            if (
+                TOTAL_DISPONIBLE === VALOR_SEGURO &&
+                COBRO_DEVOL === "SI"
+            ) {
+                VALOR_FINAL_HEKA = 0;
+                VALOR_PAGAR_SELLER = TOTAL_DISPONIBLE;
+            }
+    
+            // No cubre ni el flete
+            else if (TOTAL_DISPONIBLE <= FLETE_NETO) {
+    
+                VALOR_FINAL_HEKA =
+                    TOTAL_DISPONIBLE;
+    
+                VALOR_PAGAR_SELLER = 0;
+            }
+    
+            // Caso parcial o normal (Cubre más que el flete)
+            else {
+    
+                VALOR_FINAL_HEKA =
+                    FLETE_NETO;
+    
+                VALOR_PAGAR_SELLER =
+                    TOTAL_DISPONIBLE - VALOR_FINAL_HEKA;
+            }
+        }
+    
+        // =====================================================
+        // VALIDAR NEGATIVOS
+        // =====================================================
+    
+        if (VALOR_PAGAR_SELLER < 0) {
+            VALOR_PAGAR_SELLER = 0;
+        }
+    
+        if (VALOR_FINAL_HEKA < 0) {
+            VALOR_FINAL_HEKA = 0;
+        }
+    
+        // =====================================================
+        // UI
+        // =====================================================
+    
         setVal('tcc-val-pagar-edit', VALOR_PAGAR_SELLER);
         setVal('tcc-val-final-edit', VALOR_FINAL_HEKA);
+    
+        console.log({
+            TOTAL_DISPONIBLE,
+            TOTAL_COMISIONES,
+            VALOR_PAGAR_SELLER,
+            VALOR_FINAL_HEKA
+        });
     }
     
     function recalcularAutomaticosCoord() {
