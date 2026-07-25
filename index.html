@@ -4694,12 +4694,21 @@
             </div>
 
             <!-- HERRAMIENTAS: BUSCADOR -->
-            <div class="indemnizaciones-toolbar" style="margin-bottom: 15px; display: flex; gap: 15px; align-items: center; width: 100%;">
+            <div class="indemnizaciones-toolbar" style="margin-bottom: 15px; display: flex; gap: 15px; align-items: center; width: 100%; flex-wrap: wrap;">
               
               <!-- 1. El Botón (Tamaño fijo a la izquierda) -->
               <button onclick="procesarPago()" class="btn btn-success" style="margin: 0; white-space: nowrap;">
                 Generar Pago
               </button>                
+              
+              <!-- 1.5 Contador de selección -->
+              <div id="contador-seleccion-gerencial" style="display:none; align-items:center; gap:8px; padding:8px 14px; background:linear-gradient(135deg,#10b981,#059669); color:#fff; border-radius:8px; font-weight:700; font-size:14px; box-shadow:0 2px 8px rgba(16,185,129,0.3);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span>Seleccionados: <span id="contador-seleccion-numero">0</span></span>
+                <span id="contador-seleccion-valor" style="margin-left:10px; padding-left:10px; border-left:1px solid rgba(255,255,255,0.4); font-size:13px; font-weight:600;"></span>
+              </div>
+              
+              <!-- 2. El Buscador (Ocupa el espacio restante con flex: 1) -->              
               
               <!-- 2. El Buscador (Ocupa el espacio restante con flex: 1) -->
               <div class="search-indem-wrapper" style="flex: 1;">
@@ -22124,7 +22133,7 @@
 
         // HTML para la columna de CHECK
         const checkHTML = `<td style="text-align:center;">
-            <input type="checkbox" class="chk-pago-row" data-guia="${row.guia}">
+            <input type="checkbox" class="chk-pago-row" data-guia="${row.guia}" onchange="actualizarContadorSeleccionGerencial()">
         </td>`;
 
         let cellsHTML = checkHTML; // Empezamos con el check
@@ -22375,7 +22384,54 @@
     function toggleAllChecks(source) {
       const checkboxes = document.querySelectorAll('.chk-pago-row');
       checkboxes.forEach(chk => chk.checked = source.checked);
+      actualizarContadorSeleccionGerencial();
     }
+
+    // ==========================================
+    // CONTADOR DE SELECCIÓN
+    // ==========================================
+    function actualizarContadorSeleccionGerencial() {
+      const checkboxes = document.querySelectorAll('.chk-pago-row');
+      let total = 0;
+      let totalValor = 0;
+
+      checkboxes.forEach(function(cb) {
+        if (cb.checked) {
+          total++;
+          const fila = cb.closest('tr');
+          if (fila) {
+            // Buscar la celda de Val. Indemnizar según la transportadora
+            const cells = fila.querySelectorAll('td');
+            // La columna de indemnizar es la penúltima celda de datos (antes de ganancia y estado)
+            // Ganancia = anteúltima, Estado = última, Indemnizar = 2 antes del final
+            // Pero varía por transportadora. Usamos un enfoque más seguro:
+            // Buscamos el valor del checkbox data-guia en datosBaseGerencial
+            const guia = cb.getAttribute('data-guia');
+            const item = datosBaseGerencial.find(r => r.guia === guia);
+            if (item) {
+              const val = parseFloat(item.valIndemnizar || item.valPagarHeka || 0);
+              if (!isNaN(val)) totalValor += val;
+            }
+          }
+        }
+      });
+
+      const contadorEl = document.getElementById('contador-seleccion-gerencial');
+      const numeroEl = document.getElementById('contador-seleccion-numero');
+      const valorEl = document.getElementById('contador-seleccion-valor');
+
+      if (total > 0) {
+        numeroEl.textContent = total;
+        valorEl.textContent = 'Total: $' + totalValor.toLocaleString('es-CO');
+        contadorEl.style.display = 'flex';
+      } else {
+        contadorEl.style.display = 'none';
+        // Resetear el "Marcar Todos" también
+        const chkAll = document.getElementById('chk-all-gerencial');
+        if (chkAll) chkAll.checked = false;
+      }
+    }
+
 
     // Función para mostrar Modal Personalizado (Reemplazo de Confirm)
     function mostrarConfirmacionPago(mensaje, onAceptar) {
