@@ -8381,7 +8381,197 @@
     </div>
   </div>
 
+  <!-- MODAL TCC -->
+  <div id="modal-indemnizacion-tcc" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'modal-indemnizacion-tcc')">
+    <div class="modal-content" style="max-width: 900px;" onclick="event.stopPropagation()">
+      <div class="modal-header" style="background-color: #0d6efd;">
+        <div class="modal-title">
+          <h2 id="tcc-titulo-guia" style="color: #fff; font-size: 18px;">📦 Edición TCC</h2>
+        </div>
+        
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button id="btn-editar-tcc" class="btn btn-sm btn-warning" onclick="habilitarEdicionTCC()" title="Habilitar edición">
+                <i class="bi bi-pencil-fill"></i> Editar
+            </button>
+            <button class="close-modal-btn" onclick="closeModal('modal-indemnizacion-tcc')" style="color: #fff;">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        
+        <input type="hidden" id="tcc-guia-hidden">
 
+        <div class="indemnizacion-grid">
+          
+          <!-- GRUPO 1: DATOS GENERALES -->
+          <div class="indemnizacion-group">
+            <h4>📋 Datos de la PQR</h4>
+            
+            <div class="indemnizacion-row">
+              <span class="label-indem">Guía:</span>
+              <span class="value-indem view-mode" id="tcc-guia-view" style="color:var(--primary-yellow); font-weight:bold;"></span>
+              <input type="text" id="tcc-guia-edit" class="form-input edit-mode-only" 
+                    style="display:none; width:100%; font-size:13px; font-weight:bold;" 
+                    onblur="autoCompletarSeller(this)">
+            </div>
+            
+            <div class="indemnizacion-row">
+              <span class="label-indem">Seller:</span>
+              <span class="value-indem view-mode" id="tcc-seller-view"></span>
+              <input type="text" id="tcc-seller-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+
+            <div class="indemnizacion-row">
+              <span class="label-indem">Fecha Aprobación PQR:</span>
+              <span class="value-indem view-mode" id="tcc-fecha-aprob-view"></span>
+              <input type="date" id="tcc-fecha-aprob-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+
+            <div class="indemnizacion-row">
+                <span class="label-indem">Causal PQR:</span>
+                <span class="value-indem view-mode" id="tcc-causal-view"></span>
+                <select id="tcc-causal-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+                    <option value="">Seleccionar...</option>
+                    <option value="PERDIDA / HURTO">PERDIDA / HURTO</option>
+                    <option value="SERVICIO NO CONFORME">SERVICIO NO CONFORME</option>
+                    <option value="SAQUEO">SAQUEO</option>
+                    <option value="CIERRE LOGISTICO">CIERRE LOGISTICO</option>
+                    <option value="TROCADO">TROCADO</option>
+                    <option value="CIERRE LOGISTICO INTENTO DE FRAUDE">CIERRE LOGISTICO INTENTO DE FRAUDE</option>
+                    <option value="AVERÍA">AVERÍA</option>
+                </select>
+            </div>
+
+            <div class="indemnizacion-row">
+              <span class="label-indem">Número Nota Crédito:</span>
+              <span class="value-indem view-mode" id="tcc-num-nota-view"></span>
+              <input type="text" id="tcc-num-nota-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+
+            <div class="indemnizacion-row">
+              <span class="label-indem">Concepto del Pago:</span>
+              <span class="value-indem view-mode" id="tcc-concepto-view"></span>
+              <input type="text" id="tcc-concepto-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+          </div>
+
+          <!-- GRUPO 2: PAGOS Y FECHAS -->
+          <div class="indemnizacion-group" style="border-top: 2px solid #e9ecef; margin-top:15px; padding-top:15px; margin-bottom: 0;">
+            <h4>💸 Pagos y Fechas</h4>
+            
+            <div class="indemnizacion-row">
+              <span class="label-indem">Fecha NC o Pago:</span>
+              <span class="value-indem view-mode" id="tcc-fecha-nc-view"></span>
+              <input type="date" id="tcc-fecha-nc-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+
+            <div class="indemnizacion-row">
+              <span class="label-indem">Valor NC / Pagado:</span>
+              <span class="value-indem view-mode" id="tcc-val-nc-view"></span>
+              <input type="number" id="tcc-val-nc-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+
+            <div class="indemnizacion-row">
+              <span class="label-indem">Pago Destino:</span>
+              <span class="value-indem view-mode" id="tcc-pago-dest-view"></span>
+              <input type="text" id="tcc-pago-destino-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+
+            <div class="indemnizacion-row">
+              <span class="label-indem">Cobro Devolución:</span>
+              <span class="value-indem view-mode" id="tcc-cobro-devol-view"></span>
+              <input type="text" id="tcc-cobro-devol-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+          </div>
+
+          <!-- GRUPO 3: FINANCIERO DETALLADO -->
+          <div class="indemnizacion-group" style="border-top: 2px solid #e9ecef; margin-top:15px; padding-top:15px; margin-bottom: 0;">
+            <h4>💰 Desglose Financiero</h4>
+            
+            <div class="indemnizacion-row">
+              <span class="label-indem">Valor Seguro:</span>
+              <span class="value-indem view-mode" id="tcc-val-seguro-view"></span>
+              <input type="number" id="tcc-val-seguro-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+
+            <div class="indemnizacion-row">
+              <span class="label-indem">Flete Neto:</span>
+              <span class="value-indem view-mode" id="tcc-flete-neto-view"></span>
+              <input type="number" id="tcc-flete-neto-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+
+            <div class="indemnizacion-row">
+              <span class="label-indem">Comisión Heka:</span>
+              <span class="value-indem view-mode" id="tcc-com-heka-view"></span>
+              <input type="number" id="tcc-com-heka-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+
+            <div class="indemnizacion-row">
+              <span class="label-indem">Comisión Heka Adic:</span>
+              <span class="value-indem view-mode" id="tcc-com-heka-adic-view"></span>
+              <input type="number" id="tcc-com-heka-adic-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:13px;">
+            </div>
+          </div>
+
+          <!-- GRUPO 4: TOTALES Y ESTADO -->
+          <div class="indemnizacion-group" style="border-top: 2px solid #e9ecef; margin-top:15px; padding-top:15px; margin-bottom: 0;">
+            <h4>🏁 Totales y Estado</h4>
+            
+            <div class="indemnizacion-row">
+              <span class="label-indem">Valor Final a Pagar (Heka->Seller):</span>
+              <span class="value-indem highlight view-mode" id="tcc-val-pagar-view"></span>
+              <input type="number" id="tcc-val-pagar-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:14px; font-weight:bold;">
+            </div>
+
+            <div class="indemnizacion-row">
+              <span class="label-indem">Valor Final Heka:</span>
+              <span class="value-indem view-mode" id="tcc-val-final-view"></span>
+              <input type="number" id="tcc-val-final-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-size:14px; font-weight:bold;">
+            </div>
+            
+            <div class="indemnizacion-row">
+              <span class="label-indem">Estado Validado Heka (Q):</span>
+              <span class="value-indem view-mode" id="tcc-estado-view"></span>
+              <select id="tcc-estado-edit" class="form-input edit-mode-only" style="display:none; width:100%; font-weight:bold;">
+                  <option value="">Seleccionar...</option>
+                  <option value="PAGADO">PAGADO</option>
+                  <option value="PARA PAGAR">PARA PAGAR</option>
+                  <option value="NOVEDAD">NOVEDAD</option>
+                  <option value="SIN AFECTACION COBRO">SIN AFECTACION COBRO</option>
+                  <option value="EN VALIDACION">EN VALIDACION</option>
+                  <option value="PDTE PAGO TCC">PDTE PAGO TCC</option>
+                  <option value="A FAVOR DE OFFY">A FAVOR DE OFFY</option>
+              </select>
+            </div>
+
+            <div class="indemnizacion-row" style="flex-direction: column; align-items: flex-start;">
+                <span class="label-indem" style="margin-bottom: 5px;">Observaciones:</span>
+                
+                <div class="edit-mode-only" style="display:none; margin-bottom: 5px; width: 100%;">
+                    <div style="display: flex; align-items: center;">
+                        <input type="checkbox" id="tcc-cun-masivo" onchange="manejarCunMasivo('tcc-cun-masivo', 'tcc-obs-edit')">
+                        <label for="tcc-cun-masivo" style="font-size: 12px; font-weight: bold; margin-left: 5px; color: var(--primary-dark); cursor: pointer;">COMPROBANTE MASIVO</label>
+                    </div>
+                </div>
+
+                <span class="value-indem view-mode" id="tcc-obs-view" style="text-align:left; white-space: pre-wrap; font-size:13px;"></span>
+                <textarea id="tcc-obs-edit" class="form-input edit-mode-only" rows="3" style="display:none; width:100%; min-height: 60px; resize: vertical;"></textarea>
+            </div>
+          </div>  
+
+        </div>
+        
+        <!-- BOTÓN GUARDAR -->
+        <div id="footer-guardar-tcc" style="display:none; margin-top:20px; text-align:right; border-top:1px solid #eee; padding-top:20px;">
+            <button class="btn btn-secondary" onclick="cancelarEdicionTCC()" style="margin-right:10px;">Cancelar</button>
+            <button class="btn btn-primary" onclick="guardarTCCBackend()">
+                <i class="bi bi-save"></i> Guardar Cambios TCC
+            </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  
   <!-- MODAL TABLA DE REFERENCIA -->
   <div id="modal-tabla-referencia" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'modal-tabla-referencia')">
     <div class="modal-content" style="max-width: 1100px;" onclick="event.stopPropagation()">
@@ -17609,7 +17799,17 @@
                 poblarModalCoordinadora(registro); 
                 modal.classList.add('active');
             } else { showToast("No se encontró el registro en Coordinadora."); }
-        }        
+        }
+        else if (currentIndemnizationType === 'tcc') {
+            const modal = document.getElementById('modal-indemnizacion-tcc');
+            if (!modal) return showToast("Error Modal TCC");
+            const registro = datosIndemnizacionesCache.find(r => r.guia == guiaBusqueda);
+            if (registro) {
+                poblarModalTCC(registro); 
+                modal.classList.add('active');
+            } else { showToast("No se encontró el registro en TCC."); }
+        }
+        
     }
 
     // ==========================================
@@ -17782,7 +17982,257 @@
         recalcularAutomaticosCoord();
     }
 
+    // ==========================================
+    // FUNCIONES TCC
+    // ==========================================
 
+    function habilitarEdicionTCC() {
+        document.querySelectorAll('#modal-indemnizacion-tcc .view-mode').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('#modal-indemnizacion-tcc .edit-mode-only').forEach(el => el.style.display = 'block');
+        
+        document.getElementById('footer-guardar-tcc').style.display = 'block';
+        document.getElementById('btn-editar-tcc').style.display = 'none';
+
+        const btnGuardar = document.querySelector('#modal-indemnizacion-tcc #footer-guardar-tcc button.btn-primary');
+        if (btnGuardar) {
+            btnGuardar.innerHTML = '<i class="bi bi-save"></i> Guardar';
+            btnGuardar.setAttribute('onclick', 'guardarTCCBackend()');
+        }
+
+        const obsTCC = document.getElementById('tcc-obs-edit');
+        if(obsTCC) obsTCC.oninput = null;
+
+        const camposAutomaticos = [
+            'tcc-val-pagar-edit',
+            'tcc-val-final-edit'
+        ];
+
+        camposAutomaticos.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.disabled = true; 
+                el.style.backgroundColor = "#f0f0f0";
+            }
+        });
+
+        const inputsTrigger = [
+            'tcc-causal-edit',
+            'tcc-pago-destino-edit',
+            'tcc-cobro-devol-edit',
+            'tcc-val-nc-edit',
+            'tcc-val-seguro-edit',
+            'tcc-flete-neto-edit',
+            'tcc-com-heka-edit',
+            'tcc-com-heka-adic-edit'
+        ];
+
+        inputsTrigger.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.removeEventListener('input', recalcularAutomaticosTCC);
+                el.removeEventListener('change', recalcularAutomaticosTCC);
+                
+                el.addEventListener('input', recalcularAutomaticosTCC);
+                el.addEventListener('change', recalcularAutomaticosTCC);
+            }
+        });
+
+        recalcularAutomaticosTCC();
+    }
+
+    function cancelarEdicionTCC() {
+        document.querySelectorAll('#modal-indemnizacion-tcc .view-mode').forEach(el => el.style.display = 'block');
+        document.querySelectorAll('#modal-indemnizacion-tcc .edit-mode-only').forEach(el => el.style.display = 'none');
+        document.getElementById('footer-guardar-tcc').style.display = 'none';
+        document.getElementById('btn-editar-tcc').style.display = 'inline-flex';
+    }
+
+    function poblarModalTCC(data) {
+      const titleEl = document.getElementById('tcc-titulo-guia');
+      if (titleEl) titleEl.innerText = "Detalle TCC: " + (data.guia || "Sin Guía");
+
+      setDateIndem('tcc-fecha-aprob-view', 'tcc-fecha-aprob-edit', data.fechaAprob);
+      setTextIndem('tcc-causal-view', 'tcc-causal-edit', data.causal);
+      setTextIndem('tcc-seller-view', 'tcc-seller-edit', data.seller);
+      setTextIndem('tcc-guia-view', 'tcc-guia-edit', data.guia);
+
+      setDateIndem('tcc-fecha-nc-view', 'tcc-fecha-nc-edit', data.fechaNCPago);
+      setTextIndem('tcc-num-nota-view', 'tcc-num-nota-edit', data.numNota);
+      setTextIndem('tcc-concepto-view', 'tcc-concepto-edit', data.conceptoPago);
+
+      setNumberIndem('tcc-val-nc-view', 'tcc-val-nc-edit', data.valNCPago);
+      setTextIndem('tcc-pago-dest-view', 'tcc-pago-destino-edit', data.pagoDestino);
+      setTextIndem('tcc-cobro-devol-view', 'tcc-cobro-devol-edit', data.cobroDevol);
+      setNumberIndem('tcc-val-seguro-view', 'tcc-val-seguro-edit', data.valSeguro);
+
+      setNumberIndem('tcc-flete-neto-view', 'tcc-flete-neto-edit', data.fleteNeto);
+      setNumberIndem('tcc-com-heka-view', 'tcc-com-heka-edit', data.comHeka);
+      setNumberIndem('tcc-com-heka-adic-view', 'tcc-com-heka-adic-edit', data.comHekaAdic);
+
+      setNumberIndem('tcc-val-pagar-view', 'tcc-val-pagar-edit', data.valFinalPagar);
+      setNumberIndem('tcc-val-final-view', 'tcc-val-final-edit', data.valFinalHeka);
+      
+      let obsVal = data.observaciones || "";
+      const checkCunTCC = document.getElementById('tcc-cun-masivo');
+
+      if (obsVal.startsWith("COMPROBANTE MASIVO ")) {
+          if(checkCunTCC) checkCunTCC.checked = true;
+          obsVal = obsVal.replace("COMPROBANTE MASIVO ", "");
+      } else {
+          if(checkCunTCC) checkCunTCC.checked = false;
+      }
+
+      setViewIndem('tcc-obs-view', (checkCunTCC && checkCunTCC.checked) ? ("COMPROBANTE MASIVO " + obsVal) : obsVal);
+      const obsEdit = document.getElementById('tcc-obs-edit');
+      if(obsEdit) obsEdit.value = obsVal;
+
+      setTextIndem('tcc-estado-view', 'tcc-estado-edit', data.estado);
+
+      document.getElementById('tcc-guia-hidden').value = data.guia || "";
+
+      cancelarEdicionTCC();
+    }
+
+    function guardarTCCBackend() {
+        let guiaHidden = document.getElementById('tcc-guia-hidden').value;
+        let guiaVisible = document.getElementById('tcc-guia-edit').value;
+
+        if(!guiaVisible) return showToast("Error: Guía no identificada.");
+
+        const datos = {
+            fechaAprob: document.getElementById('tcc-fecha-aprob-edit').value,
+            causal: document.getElementById('tcc-causal-edit').value,
+            seller: document.getElementById('tcc-seller-edit').value,
+            guia: guiaVisible,
+            fechaNCPago: document.getElementById('tcc-fecha-nc-edit').value,
+            numNota: document.getElementById('tcc-num-nota-edit').value,
+            valNCPago: parseFloat(document.getElementById('tcc-val-nc-edit').value) || 0,
+            pagoDestino: document.getElementById('tcc-pago-destino-edit').value,
+            cobroDevol: document.getElementById('tcc-cobro-devol-edit').value,
+            valSeguro: parseFloat(document.getElementById('tcc-val-seguro-edit').value) || 0,
+            fleteNeto: parseFloat(document.getElementById('tcc-flete-neto-edit').value) || 0,
+            comHeka: parseFloat(document.getElementById('tcc-com-heka-edit').value) || 0,
+            comHekaAdic: parseFloat(document.getElementById('tcc-com-heka-adic-edit').value) || 0,
+            valFinalPagar: parseFloat(document.getElementById('tcc-val-pagar-edit').value) || 0,
+            valFinalHeka: parseFloat(document.getElementById('tcc-val-final-edit').value) || 0,
+            observaciones: (function(){
+                const val = document.getElementById('tcc-obs-edit').value;
+                const check = document.getElementById('tcc-cun-masivo');
+                if (check && check.checked && val.trim() !== "") {
+                    return "COMPROBANTE MASIVO " + val;
+                }
+                return val;
+            })(),
+            estado: document.getElementById('tcc-estado-edit').value,
+            conceptoPago: document.getElementById('tcc-concepto-edit').value
+        };
+
+        if (guiaHidden && guiaHidden !== "") {
+            showLoading(true);
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    showLoading(false);
+                    if(res.status === "success") {
+                        showToast("Datos actualizados.");
+                        closeModal('modal-indemnizacion-tcc');
+                        const idx = datosIndemnizacionesCache.findIndex(r => r.guia == guiaHidden);
+                        if(idx !== -1) {
+                            datosIndemnizacionesCache[idx] = { ...datosIndemnizacionesCache[idx], ...datos };
+                            aplicarFiltrosIndemnizaciones();
+                        }
+                    } else { showToast("Error: " + res.message); }
+                })
+                .withFailureHandler(function(err) { showLoading(false); showToast("Error: " + err); })
+                .actualizarTCC(guiaHidden, datos);
+            return;
+        }
+
+        const existeEnCache = datosIndemnizacionesCache.find(r => r.guia == guiaVisible);
+        if (existeEnCache) {
+            mostrarModalConfirmacion("Ya existe un registro para la guía " + guiaVisible + ". ¿Desea crear un NUEVO registro duplicado?", function() { ejecutarCreacionTCC(datos); });
+            return;
+        }
+        ejecutarCreacionTCC(datos);
+    }
+
+    function ejecutarCreacionTCC(datos) {
+        showLoading(true);
+        google.script.run
+            .withSuccessHandler(function(res) {
+                showLoading(false);
+                
+                if (res.status === "duplicate") {
+                    mostrarModalConfirmacion(res.message, function() {
+                        datos.forceDuplicate = true; 
+                        ejecutarCreacionTCC(datos);
+                    });
+                    return;
+                }
+
+                if(res.status === "success") {
+                    showToast("Registro TCC creado.");
+                    closeModal('modal-indemnizacion-tcc');
+                    cargarIndemnizaciones('tcc', 'TCC');
+                } else {
+                    showToast("Error: " + res.message);
+                }
+            })
+            .withFailureHandler(function(err) {
+                showLoading(false);
+                showToast("Error de conexión: " + err);
+            })
+            .agregarIndemnizacionTCC(datos);
+    }
+
+    function recalcularAutomaticosTCC() {
+        const getNum = (id) => {
+            const el = document.getElementById(id);
+            if (!el) return 0;
+            let val = el.value;
+            if (typeof val === "string") val = val.replace(/\./g, '').replace(',', '.');
+            return (val === "" || val == null || isNaN(val)) ? 0 : parseFloat(val);
+        };
+
+        const getText = (id) => {
+            const el = document.getElementById(id);
+            if (!el) return "";
+            return (el.value || "").toString().trim().toUpperCase();
+        };
+
+        const setVal = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.value = Math.round(value || 0);
+        };
+
+        const VALOR_NC = getNum('tcc-val-nc-edit');
+        const VALOR_SEGURO = getNum('tcc-val-seguro-edit');
+        const FLETE_NETO = getNum('tcc-flete-neto-edit');
+        const COMISION_HEKA = getNum('tcc-com-heka-edit');
+        const COMISION_HEKA_ADIC = getNum('tcc-com-heka-adic-edit');
+        const TIPO_PAGO = getText('tcc-pago-destino-edit');
+        const COBRO_DEVOL = getText('tcc-cobro-devol-edit');
+        const CAUSAL = getText('tcc-causal-edit');
+
+        let TOTAL_COMISIONES = COMISION_HEKA + COMISION_HEKA_ADIC;
+        let VALOR_PAGAR_SELLER = 0;
+        let VALOR_FINAL_HEKA = 0;
+
+        if (COBRO_DEVOL === "SI") {
+            VALOR_PAGAR_SELLER = VALOR_NC;
+            VALOR_FINAL_HEKA = VALOR_NC + TOTAL_COMISIONES;
+        } else {
+            VALOR_PAGAR_SELLER = VALOR_NC - TOTAL_COMISIONES;
+            VALOR_FINAL_HEKA = VALOR_NC;
+        }
+
+        if (CAUSAL === "PERDIDA / HURTO" || CAUSAL === "SAQUEO") {
+            VALOR_PAGAR_SELLER += VALOR_SEGURO;
+        }
+
+        setVal('tcc-val-pagar-edit', VALOR_PAGAR_SELLER);
+        setVal('tcc-val-final-edit', VALOR_FINAL_HEKA);
+    }
+    
     function recalcularAutomaticosCoord() {
 
         // =====================================================
