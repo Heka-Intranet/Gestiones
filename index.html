@@ -4391,6 +4391,308 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
     }
 
   </style>
+
+<style id="heka-future-ui-audit-v2">
+/* =========================================================
+   HEKA FUTURE UI v2 — AUDITORÍA VISUAL GLOBAL
+   Unifica botones, filtros, cards, contenedores, tablas,
+   estadísticas y controles que aún conservaban estilos legacy.
+   No modifica lógica JS ni backend.
+   ========================================================= */
+#appContainer{
+  --hf-bg:#060a10;
+  --hf-panel:#0b1119;
+  --hf-panel-2:#101720;
+  --hf-line:rgba(255,255,255,.085);
+  --hf-line-gold:rgba(255,196,0,.34);
+  --hf-gold:#ffc400;
+  --hf-gold-2:#ffd84d;
+  --hf-text:#eef3f8;
+  --hf-muted:#7f8da0;
+  --hf-green:#20d68a;
+  --hf-red:#ff5b68;
+  --hf-blue:#5ca8ff;
+}
+
+/* ===== CONTENEDORES PRINCIPALES ===== */
+#appContainer .content-area{
+  background:
+    radial-gradient(circle at 78% 0%,rgba(255,196,0,.025),transparent 28%),
+    linear-gradient(180deg,#070b11 0%,#05080d 100%) !important;
+}
+#appContainer .panel > .card,
+#appContainer .panel > .status-panel,
+#appContainer .panel > .future-panel,
+#appContainer .panel > .table-container{
+  position:relative;
+}
+#appContainer .panel > .card::before,
+#appContainer .panel > .status-panel::before{
+  content:"";
+  position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,196,0,.42),transparent);
+  pointer-events:none;opacity:.8;
+}
+#appContainer .card,
+#appContainer .status-panel,
+#appContainer .table-container,
+#appContainer .accordion-item,
+#appContainer .info-box,
+#appContainer .child-block,
+#appContainer .form-section,
+#appContainer .checkbox-group{
+  background:linear-gradient(145deg,rgba(14,21,30,.94),rgba(7,11,17,.94)) !important;
+  border-color:var(--hf-line) !important;
+  color:var(--hf-text) !important;
+  box-shadow:0 18px 55px rgba(0,0,0,.20),inset 0 1px rgba(255,255,255,.025) !important;
+}
+#appContainer .table-container{border-radius:14px !important;overflow:auto;}
+
+/* ===== PAGE HEADERS ===== */
+#appContainer .page-header{
+  position:relative;padding:4px 0 15px;margin-bottom:22px !important;
+}
+#appContainer .page-header::after{
+  content:"SYSTEM // HEKA CORE";
+  position:absolute;right:4px;bottom:0;
+  color:rgba(255,196,0,.38);font:700 8px/1 Inter,sans-serif;
+  letter-spacing:2px;text-transform:uppercase;
+}
+#appContainer .page-header h1{
+  text-shadow:0 0 24px rgba(255,196,0,.05) !important;
+}
+
+/* ===== BOTONERA GLOBAL ===== */
+#appContainer .btn{
+  min-height:40px;
+  border-radius:10px !important;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease !important;
+  letter-spacing:.1px;
+}
+#appContainer .btn:not(.btn-primary):not(.btn-secondary):not(.btn-success):not(.btn-warning):not(.btn-danger):not(.btn-custom-black):not(.btn-text):not(.btn-mobile-action){
+  background:linear-gradient(145deg,#131d28,#0b1119) !important;
+  color:#dbe4ed !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+}
+#appContainer .btn:hover{transform:translateY(-1px);}
+#appContainer .btn-primary,
+#appContainer .btn-success,
+#appContainer .btn-warning,
+#appContainer .btn-danger,
+#appContainer .btn-secondary,
+#appContainer .btn-outline-primary{
+  border-radius:10px !important;
+}
+#appContainer .btn-primary{
+  background:linear-gradient(135deg,#ffd21a,#e3a800) !important;
+  color:#080a0e !important;border-color:rgba(255,255,255,.20) !important;
+  box-shadow:0 8px 25px rgba(255,196,0,.13) !important;
+}
+#appContainer .btn-primary:hover{box-shadow:0 0 30px rgba(255,196,0,.26) !important;}
+#appContainer .btn-secondary{
+  background:linear-gradient(145deg,#18222e,#0d141d) !important;
+  color:#dce5ef !important;border-color:rgba(255,255,255,.10) !important;
+}
+#appContainer .btn-secondary:hover{border-color:rgba(255,196,0,.35) !important;color:#ffc400 !important;}
+#appContainer .btn-success{
+  background:linear-gradient(145deg,rgba(23,117,79,.92),rgba(10,60,43,.96)) !important;
+  color:#baffdf !important;border-color:rgba(32,214,138,.32) !important;
+  box-shadow:0 0 20px rgba(32,214,138,.07) !important;
+}
+#appContainer .btn-warning{
+  background:linear-gradient(145deg,#ffd21a,#b97f00) !important;color:#090b0f !important;
+}
+#appContainer .btn-danger{
+  background:linear-gradient(145deg,rgba(134,33,47,.95),rgba(69,16,27,.98)) !important;
+  color:#ffd9dd !important;border-color:rgba(255,91,104,.30) !important;
+}
+#appContainer .btn-outline-primary{
+  background:rgba(255,196,0,.035) !important;color:#ffc400 !important;
+  border:1px solid rgba(255,196,0,.35) !important;
+}
+#appContainer .btn-outline-primary:hover{background:rgba(255,196,0,.10) !important;box-shadow:0 0 22px rgba(255,196,0,.12) !important;}
+
+/* Botones icon-only que aún tenían estilos inline */
+#appContainer .btn[style*="background:none"],
+#appContainer .btn[style*="background: none"],
+#appContainer .btn[style*="background:transparent"],
+#appContainer .btn[style*="background: transparent"]{
+  width:42px !important;height:42px !important;min-height:42px !important;
+  padding:0 !important;background:rgba(255,255,255,.035) !important;
+  color:#ffc400 !important;border:1px solid rgba(255,196,0,.20) !important;
+  border-radius:11px !important;
+  box-shadow:inset 0 1px rgba(255,255,255,.04) !important;
+}
+#appContainer .btn[style*="background:none"]:hover,
+#appContainer .btn[style*="background: none"]:hover{background:rgba(255,196,0,.09) !important;box-shadow:0 0 22px rgba(255,196,0,.12) !important;}
+
+/* ===== INPUTS / FILTROS / SEARCH ===== */
+#appContainer .search-bar,
+#appContainer .future-header-search{
+  background:rgba(255,255,255,.028) !important;
+  border:1px solid rgba(255,255,255,.09) !important;
+  border-radius:12px !important;
+  box-shadow:inset 0 1px rgba(255,255,255,.025) !important;
+}
+#appContainer .search-bar:focus-within{border-color:rgba(255,196,0,.40) !important;box-shadow:0 0 0 3px rgba(255,196,0,.06) !important;}
+#appContainer .search-input{background:#080d14 !important;color:#eef2f7 !important;border-color:rgba(255,255,255,.10) !important;}
+#appContainer .search-input:focus{border-color:rgba(255,196,0,.55) !important;box-shadow:0 0 0 3px rgba(255,196,0,.08) !important;}
+#appContainer .suite-filter-container{
+  background:rgba(255,255,255,.018) !important;
+  border:1px solid rgba(255,255,255,.07) !important;
+  border-radius:14px !important;padding:9px !important;
+  gap:8px !important;box-shadow:inset 0 1px rgba(255,255,255,.025) !important;
+}
+#appContainer .suite-filter-btn{
+  background:linear-gradient(145deg,#111a24,#0b1119) !important;
+  color:#9caabd !important;border:1px solid rgba(255,255,255,.08) !important;
+  border-radius:10px !important;box-shadow:none !important;
+}
+#appContainer .suite-filter-btn:hover{color:#fff !important;border-color:rgba(255,196,0,.25) !important;background:#151f2b !important;}
+#appContainer .suite-filter-btn.active{
+  background:linear-gradient(135deg,#ffd21a,#dca400) !important;
+  color:#080a0e !important;border-color:#ffc400 !important;
+  box-shadow:0 0 22px rgba(255,196,0,.13) !important;
+}
+#appContainer .suite-filter-btn .filter-count{
+  background:rgba(255,255,255,.08) !important;color:#dbe3ed !important;border:1px solid rgba(255,255,255,.08);
+}
+#appContainer .suite-filter-btn.active .filter-count{background:rgba(0,0,0,.15) !important;color:#080a0e !important;border-color:rgba(0,0,0,.12) !important;}
+#appContainer .novedad-dropdown-btn{
+  background:linear-gradient(145deg,#121b26,#0b1119) !important;
+  color:#dce5ef !important;border:1px solid rgba(255,255,255,.10) !important;
+  border-radius:10px !important;
+}
+#appContainer .novedad-dropdown-btn:hover,#appContainer .novedad-dropdown-btn.active{border-color:rgba(255,196,0,.38) !important;color:#ffc400 !important;background:#151f2a !important;}
+#appContainer .novedad-dropdown-menu,
+#appContainer .dropdown-content,
+#appContainer .filter-dropdown-menu{
+  background:#0b1119 !important;border:1px solid rgba(255,255,255,.10) !important;
+  box-shadow:0 24px 60px rgba(0,0,0,.55) !important;color:#eaf0f7 !important;
+}
+#appContainer .novedad-option:hover,#appContainer .dropdown-item:hover{background:rgba(255,196,0,.08) !important;color:#fff !important;}
+
+/* ===== TARJETAS DE MÉTRICAS / STATS ===== */
+#appContainer .stat-card,
+#appContainer .recuento-card,
+#appContainer .seller-card,
+#appContainer .logistica-stat-card,
+#appContainer .overview-card{
+  position:relative;overflow:hidden;
+  background:linear-gradient(145deg,rgba(16,24,34,.96),rgba(7,11,17,.96)) !important;
+  border:1px solid rgba(255,255,255,.09) !important;
+  color:#edf2f7 !important;
+  border-radius:16px !important;
+  box-shadow:0 16px 40px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.035) !important;
+}
+#appContainer .stat-card::before,
+#appContainer .recuento-card::before,
+#appContainer .seller-card::before,
+#appContainer .logistica-stat-card::before,
+#appContainer .overview-card::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,196,0,.48),transparent);
+  opacity:.85;pointer-events:none;
+}
+#appContainer .stat-card:hover,
+#appContainer .recuento-card:hover,
+#appContainer .seller-card:hover,
+#appContainer .logistica-stat-card:hover{transform:translateY(-3px);border-color:rgba(255,196,0,.26) !important;box-shadow:0 20px 48px rgba(0,0,0,.28),0 0 24px rgba(255,196,0,.05) !important;}
+#appContainer .stat-card h3,
+#appContainer .recuento-card h3,
+#appContainer .seller-stat-header,
+#appContainer .stat-header{color:#aab7c6 !important;}
+#appContainer .stat-card .number,
+#appContainer .recuento-card .number,
+#appContainer .seller-stat-value,
+#appContainer .stat-value{color:#f7f9fb !important;text-shadow:0 0 18px rgba(255,196,0,.05);}
+#appContainer .recuento-card.selected{background:linear-gradient(145deg,rgba(255,196,0,.10),rgba(10,15,22,.96)) !important;border-color:rgba(255,196,0,.55) !important;box-shadow:0 0 0 1px rgba(255,196,0,.12),0 0 30px rgba(255,196,0,.10) !important;}
+#appContainer .card-income,#appContainer .card-delivery,#appContainer .card-return,#appContainer .card-pending,#appContainer .card-profit,
+#appContainer .stat-cost,#appContainer .stat-fixed,#appContainer .stat-income,#appContainer .stat-profit{
+  background:linear-gradient(145deg,rgba(16,24,34,.96),rgba(7,11,17,.96)) !important;
+  border-left:2px solid rgba(255,196,0,.28) !important;
+}
+
+/* ===== TABLAS ===== */
+#appContainer table{background:transparent !important;color:#dce5ef !important;}
+#appContainer table thead th{background:linear-gradient(180deg,#101923,#0b121b) !important;color:#ffc400 !important;position:sticky;top:0;z-index:2;}
+#appContainer table tbody tr{background:transparent !important;transition:background .18s ease;}
+#appContainer table tbody tr:hover{background:rgba(255,196,0,.045) !important;}
+#appContainer table td,#appContainer table th{border-color:rgba(255,255,255,.055) !important;}
+#appContainer table td{color:#cbd5e1 !important;}
+
+/* ===== ACORDEONES / INFO BOXES ===== */
+#appContainer .accordion-item{border-radius:13px !important;overflow:hidden;margin-bottom:10px;}
+#appContainer .accordion-header{background:linear-gradient(145deg,#121b26,#0b1119) !important;color:#e9eff6 !important;border-color:rgba(255,255,255,.07) !important;}
+#appContainer .accordion-header:hover,#appContainer .accordion-header.active{background:rgba(255,196,0,.055) !important;color:#ffc400 !important;}
+#appContainer .accordion-body{background:rgba(5,9,14,.72) !important;color:#cbd5e1 !important;border-color:rgba(255,255,255,.06) !important;}
+#appContainer .info-box-content{background:rgba(255,196,0,.035) !important;color:#cbd5e1 !important;border-color:rgba(255,196,0,.14) !important;}
+
+/* ===== CHECKBOX / SWITCH / FORM GROUP ===== */
+#appContainer .form-group{color:#dce5ef !important;}
+#appContainer .checkbox-item{background:rgba(255,255,255,.025) !important;border:1px solid rgba(255,255,255,.07) !important;border-radius:10px !important;}
+#appContainer .checkbox-item:hover{border-color:rgba(255,196,0,.25) !important;background:rgba(255,196,0,.035) !important;}
+#appContainer .switch .slider{background:#1b2633 !important;border:1px solid rgba(255,255,255,.08);}
+#appContainer .switch input:checked + .slider{background:#ffc400 !important;box-shadow:0 0 18px rgba(255,196,0,.16);}
+
+/* ===== CONTROLES INLINE QUE SE ESCAPABAN DEL TEMA ===== */
+#panel-dashboard-logistica .logistica-stat-card[style],
+#panel-banco-vs-pl .card[style],
+#panel-rentabilidad-seller #card-responsabilidad-15{
+  background:linear-gradient(145deg,rgba(16,24,34,.96),rgba(7,11,17,.96)) !important;
+  color:#eef2f7 !important;border-color:rgba(255,255,255,.09) !important;
+}
+#panel-dashboard-logistica .logistica-stat-card[style] .stat-header{color:#aab7c6 !important;}
+#panel-dashboard-logistica .logistica-stat-card[style]{border-left:2px solid rgba(255,196,0,.30) !important;}
+#panel-dashboard-logistica .table-container[style]{border-color:rgba(255,255,255,.08) !important;background:linear-gradient(145deg,#0e151e,#080d14) !important;}
+
+/* ===== PAGINACIÓN / CHIPS / BADGES ===== */
+#appContainer .badge,
+#appContainer .status-badge,
+#appContainer .filter-count,
+#appContainer .chip{
+  border:1px solid rgba(255,255,255,.08) !important;
+  background:rgba(255,255,255,.055) !important;color:#dce5ef !important;
+}
+#appContainer .active .badge,#appContainer .active .status-badge{border-color:rgba(255,196,0,.30) !important;color:#ffc400 !important;}
+
+/* ===== MODALES: CONTENIDO INTERNO QUE AÚN PODÍA VERSE LEGACY ===== */
+#appContainer [id^="modal"] .card,
+#appContainer [id^="modal"] .stat-card,
+#appContainer [id^="modal"] .recuento-card,
+#appContainer [id^="modal"] .form-section,
+#appContainer [id^="modal"] .info-box{
+  background:linear-gradient(145deg,rgba(18,27,38,.90),rgba(8,13,20,.90)) !important;
+  border-color:rgba(255,255,255,.08) !important;
+}
+#appContainer [id^="modal"] .modal-header .modal-title{color:#f5f7fb !important;}
+
+/* ===== SECTION-SPECIFIC: DAR IDENTIDAD A LAS SUITES ===== */
+#panel-check-recarga .card,
+#panel-suite-logistica .card,
+#panel-talento-humano .card,
+#panel-rentabilidad-seller .card,
+#panel-dashboard-logistica .card,
+#panel-pagos-pendientes .card,
+#panel-historial-certificados .card,
+#panel-historial-global .card,
+#panel-asignaciones .card,
+#panel-activaciones-inter .card,
+#panel-historial-tipo-envios .card{
+  border-radius:18px !important;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+  #appContainer .content-area{padding:16px !important;}
+  #appContainer .page-header::after{display:none;}
+  #appContainer .page-header{margin-bottom:16px !important;}
+  #appContainer .suite-filter-container{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+  #appContainer .suite-filter-btn{padding:9px 8px !important;font-size:11px !important;}
+  #appContainer .card{padding:20px !important;}
+  #appContainer .table-container{border-radius:12px !important;}
+}
+</style>
 </head>
 <body>
   
