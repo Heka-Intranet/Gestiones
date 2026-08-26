@@ -5231,6 +5231,171 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
   border-color:rgba(255,196,0,.14) !important;
 }
 </style>
+<style>
+
+/* =========================================================
+   HEKA PATCH — INDEMNIZACIONES: GUIAS + NUEVO + SCROLL
+   Corrección final de componentes legacy que todavía heredaban
+   colores claros/oscuros incorrectos.
+   ========================================================= */
+
+/* Tabla de Indemnizaciones: la guía nunca debe heredar el color
+   oscuro de --primary-dark (#0...) que la vuelve casi invisible. */
+#panel-indemnizaciones #tablaIndemnizacionesBody td,
+#panel-indemnizaciones #tablaIndemnizacionesBody td * {
+  color: #eaf0f7 !important;
+}
+#panel-indemnizaciones #tablaIndemnizacionesBody td:nth-child(2) > div:first-child {
+  color: #ffd21a !important;
+  font-weight: 800 !important;
+  letter-spacing: .35px;
+  text-shadow: 0 0 10px rgba(255,196,0,.16);
+}
+#panel-indemnizaciones #tablaIndemnizacionesBody td:nth-child(2) .badge-cun,
+#panel-indemnizaciones #tablaIndemnizacionesBody td:nth-child(2) .badge-cun * {
+  color: #fff !important;
+}
+#panel-indemnizaciones #tablaIndemnizacionesBody td:nth-child(1),
+#panel-indemnizaciones #tablaIndemnizacionesBody td:nth-child(3),
+#panel-indemnizaciones #tablaIndemnizacionesBody td:nth-child(4) {
+  color: #cbd5e1 !important;
+}
+#panel-indemnizaciones #tablaIndemnizacionesBody td:nth-child(6) .btn {
+  color: #080a0e !important;
+}
+
+/* Modal "Nuevo": tarjetas de transportadora completamente dark/glass. */
+#modal-seleccionar-transportadora .modal-content {
+  background:
+    radial-gradient(circle at 92% 0%, rgba(255,196,0,.10), transparent 30%),
+    linear-gradient(145deg,#101923,#070c12) !important;
+  color:#eaf0f7 !important;
+  overflow:hidden !important;
+}
+#modal-seleccionar-transportadora .modal-header {
+  background:linear-gradient(90deg,rgba(255,196,0,.10),rgba(9,14,21,.96)) !important;
+}
+#modal-seleccionar-transportadora .modal-body {
+  background:transparent !important;
+  color:#cbd5e1 !important;
+}
+#modal-seleccionar-transportadora .modal-body > p {
+  color:#8f9eaf !important;
+}
+#modal-seleccionar-transportadora .logos-grid {
+  border-bottom:0 !important;
+  padding:10px 0 !important;
+}
+#modal-seleccionar-transportadora .partner-showcase {
+  width:120px !important;
+  min-height:145px !important;
+  padding:14px !important;
+  background:linear-gradient(145deg,#0c141d,#111b26) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  border-radius:14px !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.025) !important;
+  color:#f1f5f9 !important;
+}
+#modal-seleccionar-transportadora .partner-showcase:hover {
+  background:linear-gradient(145deg,#121d29,#182331) !important;
+  border-color:rgba(255,196,0,.60) !important;
+  box-shadow:0 0 25px rgba(255,196,0,.13), 0 14px 34px rgba(0,0,0,.38) !important;
+  transform:translateY(-4px) !important;
+}
+#modal-seleccionar-transportadora .partner-showcase img {
+  background:rgba(255,255,255,.96) !important;
+  border-radius:10px !important;
+  padding:6px !important;
+}
+#modal-seleccionar-transportadora .partner-showcase > div {
+  color:#f5f7fb !important;
+}
+
+/* Indemnizaciones: grupos internos siempre dark, incluso en modo NUEVO. */
+#modal-indemnizacion .indemnizacion-group,
+#modal-indemnizacion-servi .indemnizacion-group,
+#modal-indemnizacion-coord .indemnizacion-group,
+#modal-indemnizacion-tcc .indemnizacion-group {
+  background:linear-gradient(145deg,#0c141d,#111b26) !important;
+  border-color:rgba(255,196,0,.18) !important;
+  color:#e7edf4 !important;
+}
+#modal-indemnizacion .indemnizacion-group h4,
+#modal-indemnizacion-servi .indemnizacion-group h4,
+#modal-indemnizacion-coord .indemnizacion-group h4,
+#modal-indemnizacion-tcc .indemnizacion-group h4 {
+  color:#ffc400 !important;
+  border-bottom-color:rgba(255,196,0,.35) !important;
+}
+#modal-indemnizacion .label-indem,
+#modal-indemnizacion-servi .label-indem,
+#modal-indemnizacion-coord .label-indem,
+#modal-indemnizacion-tcc .label-indem {
+  color:#91a0b1 !important;
+}
+#modal-indemnizacion .value-indem,
+#modal-indemnizacion-servi .value-indem,
+#modal-indemnizacion-coord .value-indem,
+#modal-indemnizacion-tcc .value-indem {
+  color:#eaf0f7 !important;
+}
+#modal-indemnizacion .value-indem.highlight,
+#modal-indemnizacion-servi .value-indem.highlight,
+#modal-indemnizacion-coord .value-indem.highlight,
+#modal-indemnizacion-tcc .value-indem.highlight {
+  color:#ffd21a !important;
+  text-shadow:0 0 12px rgba(255,196,0,.16);
+}
+
+/* Scroll interno restaurado en los modales largos de Indemnizaciones. */
+#modal-indemnizacion .modal-content,
+#modal-indemnizacion-servi .modal-content,
+#modal-indemnizacion-coord .modal-content,
+#modal-indemnizacion-tcc .modal-content {
+  overflow:hidden !important;
+  max-height:90vh !important;
+}
+#modal-indemnizacion .modal-body,
+#modal-indemnizacion-servi .modal-body,
+#modal-indemnizacion-coord .modal-body,
+#modal-indemnizacion-tcc .modal-body {
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  scrollbar-width:thin;
+  scrollbar-color:#ffc400 #080d14;
+}
+#modal-indemnizacion .modal-body::-webkit-scrollbar,
+#modal-indemnizacion-servi .modal-body::-webkit-scrollbar,
+#modal-indemnizacion-coord .modal-body::-webkit-scrollbar,
+#modal-indemnizacion-tcc .modal-body::-webkit-scrollbar {
+  width:8px;
+}
+#modal-indemnizacion .modal-body::-webkit-scrollbar-track,
+#modal-indemnizacion-servi .modal-body::-webkit-scrollbar-track,
+#modal-indemnizacion-coord .modal-body::-webkit-scrollbar-track,
+#modal-indemnizacion-tcc .modal-body::-webkit-scrollbar-track {
+  background:#080d14;
+}
+#modal-indemnizacion .modal-body::-webkit-scrollbar-thumb,
+#modal-indemnizacion-servi .modal-body::-webkit-scrollbar-thumb,
+#modal-indemnizacion-coord .modal-body::-webkit-scrollbar-thumb,
+#modal-indemnizacion-tcc .modal-body::-webkit-scrollbar-thumb {
+  background:linear-gradient(#ffc400,#9c7200);
+  border-radius:8px;
+}
+
+/* Footer de edición/nuevo también dark; evita que el inline #eee vuelva a aparecer. */
+#modal-indemnizacion [id^="footer-guardar"],
+#modal-indemnizacion-servi [id^="footer-guardar"],
+#modal-indemnizacion-coord [id^="footer-guardar"],
+#modal-indemnizacion-tcc [id^="footer-guardar"] {
+  background:rgba(7,11,17,.82) !important;
+  border-top-color:rgba(255,255,255,.08) !important;
+  color:#dce5ef !important;
+}
+</style>
 </head>
 <body>
 <!-- INICIO LOGIN OVERLAY -->
