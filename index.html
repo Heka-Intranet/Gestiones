@@ -21,7 +21,7 @@
 <style>
     :root {
       --primary-yellow: #FDB813;
-      --primary-dark: #ffffff; 
+      --primary-dark: #212529; 
       --bg-sidebar: #ffffff;       
       --bg-body: #f8f9fa;          
       --bg-card: #ffffff;
@@ -4933,6 +4933,303 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 
 /* El navegador puede optimizar estas capas sin crear cientos de capas nuevas. */
 .sidebar,.top-header{contain:paint;}
+</style>
+
+<style id="heka-visual-completeness-v2">
+/* ==========================================================
+   HEKA CORE — VISUAL COMPLETENESS / DARK DATA LAYER
+   Corrige tablas, resultados, cards y modales que aún heredaban
+   estilos Bootstrap/legacy. No modifica lógica ni CODE.GS.
+   ========================================================== */
+
+/* ---------- DATA TABLES ---------- */
+#appContainer .panel .table-container,
+#appContainer .panel .table-responsive,
+#appContainer .panel .data-table,
+#appContainer .panel table {
+  color:#e7edf4 !important;
+}
+#appContainer .panel table {
+  background:#0b1118 !important;
+  border-color:rgba(255,196,0,.12) !important;
+}
+#appContainer .panel table thead,
+#appContainer .panel table thead tr,
+#appContainer .panel table th {
+  background:linear-gradient(180deg,#17212c 0%,#101820 100%) !important;
+  color:#ffd34d !important;
+  border-color:rgba(255,196,0,.20) !important;
+}
+#appContainer .panel table tbody,
+#appContainer .panel table tbody tr {
+  background:#0b1118 !important;
+  color:#e7edf4 !important;
+}
+#appContainer .panel table tbody tr:nth-child(even) {
+  background:rgba(255,255,255,.018) !important;
+}
+#appContainer .panel table tbody tr:hover {
+  background:rgba(255,196,0,.055) !important;
+}
+#appContainer .panel table td {
+  color:#e7edf4 !important;
+  background:transparent !important;
+  border-bottom:1px solid rgba(255,255,255,.075) !important;
+}
+#appContainer .panel table td strong,
+#appContainer .panel table td b {
+  color:#f4f7fa !important;
+}
+#appContainer .panel table td small,
+#appContainer .panel table td .text-muted,
+#appContainer .panel table td .text-secondary {
+  color:#93a2b3 !important;
+}
+#appContainer .panel table input,
+#appContainer .panel table select,
+#appContainer .panel table textarea {
+  background:#080d13 !important;
+  color:#edf3f8 !important;
+  border-color:rgba(255,196,0,.18) !important;
+}
+
+/* Tablas específicas con estilos legacy que forzaban texto negro */
+#tablaRecargasBody td,
+#tablaRecargasBody th,
+#tablaHistorialRecargasBody td,
+#tablaHistorialRecargasBody th,
+#tablaColaboradores td,
+#tablaColaboradores th,
+#tablaHistorialCertificados td,
+#tablaHistorialCertificados th,
+#tablaHistorialGlobalBody td,
+#tablaHistorialGlobalBody th,
+#tablaAsignacionesBody td,
+#tablaAsignacionesBody th,
+#tablaActivacionesBody td,
+#tablaActivacionesBody th,
+#tablaSeguimientoBody td,
+#tablaSeguimientoBody th {
+  color:#e7edf4 !important;
+}
+
+/* ---------- CARDS ---------- */
+#appContainer .panel .card,
+#appContainer .panel .stat-card,
+#appContainer .panel .recuento-card,
+#appContainer .panel .partner-showcase,
+#appContainer .panel .overview-card,
+#appContainer .panel .seller-card,
+#appContainer .panel .logistica-stat-card {
+  background:linear-gradient(145deg,#0b1119 0%,#101923 100%) !important;
+  color:#e8eef5 !important;
+  border-color:rgba(255,196,0,.16) !important;
+  box-shadow:0 14px 34px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+#appContainer .panel .card h1,
+#appContainer .panel .card h2,
+#appContainer .panel .card h3,
+#appContainer .panel .card h4,
+#appContainer .panel .card h5,
+#appContainer .panel .card h6,
+#appContainer .panel .stat-card h1,
+#appContainer .panel .stat-card h2,
+#appContainer .panel .stat-card h3,
+#appContainer .panel .stat-card h4,
+#appContainer .panel .recuento-card h3,
+#appContainer .panel .partner-showcase span {
+  color:#f4f7fa !important;
+}
+#appContainer .panel .card p,
+#appContainer .panel .card label,
+#appContainer .panel .card .text-muted,
+#appContainer .panel .stat-card p {
+  color:#98a7b7 !important;
+}
+
+/* Indemnizaciones: elimina definitivamente los bloques blancos */
+#panel-indemnizaciones .indemnizacion-group,
+#modal-indemnizacion .indemnizacion-group,
+#modal-indemnizacion-tcc .indemnizacion-group,
+#modal-indemnizacion-coord .indemnizacion-group,
+#modal-indemnizacion-servi .indemnizacion-group {
+  background:linear-gradient(145deg,#0c141d,#111b26) !important;
+  border:1px solid rgba(255,196,0,.18) !important;
+  color:#e7edf4 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 10px 28px rgba(0,0,0,.20) !important;
+}
+#panel-indemnizaciones .indemnizacion-group h4,
+#modal-indemnizacion .indemnizacion-group h4,
+#modal-indemnizacion-tcc .indemnizacion-group h4,
+#modal-indemnizacion-coord .indemnizacion-group h4,
+#modal-indemnizacion-servi .indemnizacion-group h4 {
+  color:#ffd34d !important;
+  border-bottom-color:rgba(255,196,0,.28) !important;
+}
+.indemnizacion-row { border-bottom-color:rgba(255,255,255,.09) !important; }
+.label-indem { color:#91a0b0 !important; }
+.value-indem { color:#f1f5f8 !important; }
+.value-indem.highlight { color:#ff6b6b !important; }
+
+/* ---------- GENERAL FORM CONTROLS ---------- */
+#appContainer .panel input:not([type="checkbox"]):not([type="radio"]),
+#appContainer .panel select,
+#appContainer .panel textarea {
+  background:#080d13 !important;
+  color:#edf3f8 !important;
+  border-color:rgba(255,255,255,.11) !important;
+}
+#appContainer .panel input::placeholder,
+#appContainer .panel textarea::placeholder { color:#657487 !important; }
+#appContainer .panel input:focus,
+#appContainer .panel select:focus,
+#appContainer .panel textarea:focus {
+  border-color:rgba(255,196,0,.55) !important;
+  box-shadow:0 0 0 3px rgba(255,196,0,.08),0 0 18px rgba(255,196,0,.08) !important;
+}
+
+/* ---------- STANDARD MODALS ---------- */
+.modal-overlay .modal-content {
+  background:linear-gradient(145deg,#0a1017 0%,#101923 100%) !important;
+  color:#e8eef5 !important;
+  border:1px solid rgba(255,196,0,.18) !important;
+  box-shadow:0 30px 90px rgba(0,0,0,.60),0 0 40px rgba(255,196,0,.06) !important;
+  max-height:90vh !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  scrollbar-width:thin;
+  scrollbar-color:#c99b18 #080d13;
+}
+.modal-overlay .modal-header {
+  background:linear-gradient(180deg,#141e29,#0e161f) !important;
+  color:#f4f7fa !important;
+  border-bottom:1px solid rgba(255,196,0,.16) !important;
+}
+.modal-overlay .modal-body,
+.modal-overlay .modal-footer { color:#e8eef5 !important; }
+.modal-overlay .modal-body .card,
+.modal-overlay .modal-body .admin-controls {
+  background:linear-gradient(145deg,#0c141d,#111b26) !important;
+  color:#e8eef5 !important;
+  border-color:rgba(255,196,0,.14) !important;
+}
+.modal-overlay .modal-body label { color:#aab7c5 !important; }
+.modal-overlay .modal-body input,
+.modal-overlay .modal-body select,
+.modal-overlay .modal-body textarea {
+  background:#080d13 !important;
+  color:#edf3f8 !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+
+/* Modales personalizados construidos con inline styles: recuperan scroll y tema oscuro */
+#modalMetodoPago > div,
+#modalColaOffline > div,
+#modalDuplicadosLista > div,
+#modalDuplicadosInputLista > div,
+#modalValidacionBodega > div,
+#modalValidacionDuplicados > div,
+#modalValidacionRecibidas > div,
+#modalValidacionNovedad > div,
+#modalNovedadLista > div,
+#modalRecibidasLista > div,
+#modalBodegaLista > div,
+#modalWhatsAppMsg > div,
+#modalFloatingIframe > div,
+#modalRecibirHijas > div {
+  background:linear-gradient(145deg,#0a1017,#101923) !important;
+  color:#e8eef5 !important;
+  border:1px solid rgba(255,196,0,.18) !important;
+  box-shadow:0 30px 90px rgba(0,0,0,.60),0 0 40px rgba(255,196,0,.06) !important;
+}
+#modalMetodoPago > div,
+#modalColaOffline > div,
+#modalDuplicadosLista > div,
+#modalDuplicadosInputLista > div,
+#modalValidacionBodega > div,
+#modalValidacionDuplicados > div,
+#modalValidacionRecibidas > div,
+#modalValidacionNovedad > div,
+#modalNovedadLista > div,
+#modalRecibidasLista > div,
+#modalBodegaLista > div,
+#modalWhatsAppMsg > div,
+#modalFloatingIframe > div,
+#modalRecibirHijas > div {
+  max-height:90vh !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  scrollbar-width:thin;
+  scrollbar-color:#c99b18 #080d13;
+}
+
+/* El contenido interno que sí debe crecer conserva su propio scroll */
+#modalColaOffline #offlineListaPendientes,
+#modalNovedadLista > div > div,
+#modalRecibidasLista > div > div,
+#modalBodegaLista > div > div,
+#modalDuplicadosLista > div > div,
+#modalValidacionDuplicados > div > div,
+#modalValidacionRecibidas > div > div,
+#modalValidacionNovedad > div > div {
+  scrollbar-width:thin;
+  scrollbar-color:#c99b18 #080d13;
+}
+
+/* ---------- INLINE WHITE BLOCKS / LEGACY INFO BOXES ---------- */
+#appContainer .panel [style*="background: white"],
+#appContainer .panel [style*="background:#fff"],
+#appContainer .panel [style*="background: #fff"],
+#appContainer .panel [style*="background-color: white"],
+#appContainer .panel [style*="background-color:#fff"],
+#appContainer .panel [style*="background-color: #fff"] {
+  background:linear-gradient(145deg,#0b1119,#101923) !important;
+  color:#e8eef5 !important;
+  border-color:rgba(255,196,0,.14) !important;
+}
+
+/* Excepción: no oscurecer imágenes/logos con background inline */
+#appContainer .panel img { background:transparent !important; }
+
+/* ---------- SCROLLBARS HEKA ---------- */
+#appContainer ::-webkit-scrollbar,
+.modal-overlay ::-webkit-scrollbar { width:7px; height:7px; }
+#appContainer ::-webkit-scrollbar-track,
+.modal-overlay ::-webkit-scrollbar-track { background:#070b10; }
+#appContainer ::-webkit-scrollbar-thumb,
+.modal-overlay ::-webkit-scrollbar-thumb {
+  background:linear-gradient(180deg,#f0bd25,#80610e);
+  border-radius:10px;
+  border:1px solid #080b10;
+}
+#appContainer ::-webkit-scrollbar-thumb:hover,
+.modal-overlay ::-webkit-scrollbar-thumb:hover { background:#ffd34d; }
+
+/* ---------- MODAL CONTENTS THAT USED overflow:hidden ---------- */
+#modal-indemnizacion .modal-content,
+#modal-indemnizacion-tcc .modal-content,
+#modal-indemnizacion-coord .modal-content,
+#modal-indemnizacion-servi .modal-content,
+#modal-colaborador .modal-content,
+#modal-admin .modal-content,
+#modal-recarga .modal-content,
+#modal-guias-madres .modal-content,
+#modal-recibir-hijas .modal-content {
+  max-height:90vh !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+}
+
+/* Los resultados internos de formularios no deben heredar texto negro */
+#appContainer .panel .result,
+#appContainer .panel .resultado,
+#appContainer .panel .results,
+#appContainer .panel .resultado-container,
+#appContainer .panel .resultados-container {
+  color:#e8eef5 !important;
+  background:linear-gradient(145deg,#0b1119,#101923) !important;
+  border-color:rgba(255,196,0,.14) !important;
+}
 </style>
 </head>
 <body>
