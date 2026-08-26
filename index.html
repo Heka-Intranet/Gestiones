@@ -3794,6 +3794,205 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
   .holo-data{display:none;}
 }
 
+
+
+    /* =========================================================
+       HEKA FUTURE LOGIN // ACCESS TERMINAL
+       Diseño aislado al login para no alterar el panel interno.
+       ========================================================= */
+    .login-overlay{
+      --login-gold:#ffc400;
+      --login-gold-2:#ffdb4a;
+      --login-bg:#04070c;
+      --login-panel:#0a1018;
+      --login-line:rgba(255,255,255,.09);
+      background:
+        radial-gradient(circle at 18% 50%, rgba(255,196,0,.10), transparent 28%),
+        radial-gradient(circle at 82% 15%, rgba(255,196,0,.06), transparent 25%),
+        linear-gradient(135deg,#020408 0%,#070b12 48%,#03060a 100%) !important;
+      overflow:hidden;
+      isolation:isolate;
+    }
+    .login-overlay::before{
+      content:"";
+      position:absolute;inset:0;z-index:-2;pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.026) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.026) 1px,transparent 1px);
+      background-size:48px 48px;
+      mask-image:linear-gradient(to bottom,rgba(0,0,0,.95),transparent 92%);
+    }
+    .login-overlay::after{
+      content:"";
+      position:absolute;left:0;right:0;top:-10%;height:2px;z-index:20;pointer-events:none;
+      background:linear-gradient(90deg,transparent,rgba(255,196,0,.0) 12%,rgba(255,196,0,.55) 50%,rgba(255,196,0,0) 88%,transparent);
+      box-shadow:0 0 24px rgba(255,196,0,.28);
+      animation:hekaLoginScan 7s linear infinite;
+      opacity:.55;
+    }
+    @keyframes hekaLoginScan{0%{transform:translateY(0)}100%{transform:translateY(120vh)}}
+
+    .login-layout-wrapper{
+      width:min(1120px,94vw);
+      min-height:620px;
+      display:flex;
+      align-items:stretch;
+      position:relative;
+      z-index:5;
+      filter:drop-shadow(0 30px 80px rgba(0,0,0,.55));
+    }
+    .login-layout-wrapper::before{
+      content:"";
+      position:absolute;inset:-1px;border-radius:26px;z-index:-1;
+      background:linear-gradient(115deg,rgba(255,196,0,.34),rgba(255,255,255,.07) 28%,rgba(255,255,255,.03) 70%,rgba(255,196,0,.22));
+      opacity:.7;
+    }
+    .login-layout-wrapper::after{
+      content:"";
+      position:absolute;inset:1px;border-radius:25px;z-index:-1;
+      background:linear-gradient(135deg,rgba(10,16,24,.98),rgba(4,8,13,.98));
+    }
+
+    .login-card{
+      width:100% !important;max-width:none !important;min-height:620px;
+      padding:42px 46px !important;margin:0 !important;
+      border:0 !important;border-top:0 !important;border-radius:26px !important;
+      background:linear-gradient(110deg,rgba(8,13,20,.97),rgba(7,11,17,.95)) !important;
+      box-shadow:0 30px 90px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.05) !important;
+      color:#eef3f8;text-align:left;
+      backdrop-filter:blur(20px);
+    }
+    .login-card::before{
+      content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:26px 0 0 26px;
+      background:linear-gradient(180deg,transparent 0%,var(--login-gold) 30%,#ffe06a 50%,var(--login-gold) 70%,transparent 100%);
+      box-shadow:0 0 22px rgba(255,196,0,.38);
+    }
+    .login-card.login-step{position:relative;}
+
+    .login-split-content{gap:54px !important;align-items:center !important;height:100%;}
+    .split-left{width:49% !important;flex:0 0 49% !important;min-height:520px;position:relative;}
+    .split-right{width:51% !important;flex:1 !important;padding:6px 4px 0 0;}
+
+    .login-core-frame{
+      width:100%;height:100%;min-height:520px;position:relative;
+      display:flex;flex-direction:column;justify-content:space-between;
+      padding:22px 18px 18px;
+      border:1px solid rgba(255,255,255,.075);border-radius:20px;
+      background:radial-gradient(circle at 50% 45%,rgba(255,196,0,.055),transparent 45%),rgba(255,255,255,.018);
+      overflow:hidden;
+    }
+    .login-core-frame::before{
+      content:"";position:absolute;inset:12px;border:1px solid rgba(255,196,0,.08);border-radius:15px;pointer-events:none;
+    }
+    .login-core-frame::after{
+      content:"";position:absolute;right:-20%;bottom:-35%;width:70%;height:70%;
+      background:radial-gradient(circle,rgba(255,196,0,.14),transparent 65%);filter:blur(18px);pointer-events:none;
+    }
+    .login-core-topline{
+      display:flex;align-items:center;gap:8px;color:#a9b5c4;font:700 10px/1 Inter,sans-serif;letter-spacing:2px;
+      position:relative;z-index:4;
+    }
+    .login-core-topline>span:last-child{margin-left:auto;color:#596779;font-weight:600;letter-spacing:1.5px;}
+    .core-dot{width:7px;height:7px;border-radius:50%;background:#19e68a;box-shadow:0 0 12px #19e68a;animation:corePulse 1.8s ease-in-out infinite;}
+    @keyframes corePulse{50%{opacity:.35;transform:scale(.72)}}
+
+    .login-core-visual{position:relative;flex:1;display:flex;align-items:center;justify-content:center;min-height:360px;}
+    .login-core-visual video{
+      position:relative;z-index:4;width:min(74%,380px) !important;height:auto !important;max-height:350px !important;
+      object-fit:contain;display:block;border:0;border-radius:18px;filter:drop-shadow(0 0 22px rgba(255,196,0,.12));
+    }
+    .core-halo{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(255,196,0,.17),rgba(255,196,0,.03) 42%,transparent 68%);filter:blur(2px);z-index:1;}
+    .core-orbit{position:absolute;border:1px solid rgba(255,196,0,.20);border-radius:50%;z-index:2;transform:rotate(-18deg);}
+    .orbit-a{width:350px;height:115px;animation:orbitFloat 8s ease-in-out infinite;}
+    .orbit-b{width:300px;height:170px;transform:rotate(38deg);border-color:rgba(255,255,255,.10);animation:orbitFloat 11s ease-in-out infinite reverse;}
+    .orbit-c{width:220px;height:220px;border-radius:42%;transform:rotate(45deg);border-color:rgba(255,196,0,.12);animation:orbitSpin 18s linear infinite;}
+    @keyframes orbitFloat{50%{transform:rotate(-18deg) scale(1.04)}}
+    @keyframes orbitSpin{to{transform:rotate(405deg)}}
+    .login-core-caption{position:relative;z-index:4;display:flex;justify-content:space-between;align-items:end;padding:0 8px;}
+    .login-core-caption strong{font-size:22px;letter-spacing:-.5px;color:#f6f8fb;}
+    .login-core-caption strong::after{content:".";color:var(--login-gold);}
+    .login-core-caption span{font-size:9px;letter-spacing:1.7px;color:#657386;font-weight:700;}
+
+    .login-access-kicker{display:flex;align-items:center;gap:8px;color:#6f7d8f;font-size:10px;font-weight:800;letter-spacing:2px;margin-bottom:28px;}
+    .login-access-kicker span{width:22px;height:1px;background:var(--login-gold);box-shadow:0 0 12px rgba(255,196,0,.65);}
+    .login-access-kicker b{color:#c2cbd6;font-weight:700;}
+
+    .split-right .login-logo{justify-content:flex-start !important;margin:0 0 14px !important;gap:13px !important;}
+    .split-right .login-logo img{height:54px !important;width:54px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(255,196,0,.28));}
+    .split-right .login-logo span{font-size:29px !important;letter-spacing:-1px;color:#f5f7fb !important;}
+    .split-right .login-logo span::after{content:" // ACCESS";font-size:9px;letter-spacing:2px;color:#69788b;font-weight:700;vertical-align:middle;margin-left:9px;}
+    .login-subtitle{margin:0 0 34px !important;color:#7f8d9e !important;font-size:14px !important;letter-spacing:.15px;}
+
+    .split-right .form-group{margin-bottom:20px !important;}
+    .split-right .form-group label{margin-bottom:9px;color:#aeb9c7 !important;font-size:11px !important;font-weight:700 !important;letter-spacing:1.2px;text-transform:uppercase;}
+    .split-right .form-input{
+      height:54px !important;padding:0 17px !important;border-radius:12px !important;
+      background:rgba(2,6,11,.86) !important;border:1px solid rgba(255,255,255,.095) !important;
+      color:#f2f5f8 !important;font-size:14px !important;box-shadow:inset 0 1px rgba(255,255,255,.025),0 8px 20px rgba(0,0,0,.16) !important;
+    }
+    .split-right .form-input:hover{border-color:rgba(255,255,255,.16) !important;}
+    .split-right .form-input:focus{border-color:rgba(255,196,0,.62) !important;box-shadow:0 0 0 3px rgba(255,196,0,.07),0 0 28px rgba(255,196,0,.08),inset 0 1px rgba(255,255,255,.04) !important;}
+    .split-right .form-input::placeholder{color:#485669 !important;}
+    .split-right .toggle-password{color:#617084 !important;right:16px !important;}
+    .split-right .toggle-password:hover{color:var(--login-gold) !important;}
+
+    .split-right .btn-primary{
+      height:56px !important;margin-top:8px !important;width:100%;justify-content:center;
+      border-radius:12px !important;background:linear-gradient(135deg,#ffd62b,#f3b800) !important;
+      color:#05070b !important;font-size:14px !important;font-weight:800 !important;letter-spacing:.3px;
+      box-shadow:0 12px 32px rgba(255,196,0,.15),inset 0 1px rgba(255,255,255,.42) !important;
+      position:relative;overflow:hidden;
+    }
+    .split-right .btn-primary::before{content:"";position:absolute;inset:0;transform:translateX(-110%);background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transition:transform .6s ease;}
+    .split-right .btn-primary:hover{transform:translateY(-2px) !important;box-shadow:0 0 34px rgba(255,196,0,.28),0 14px 32px rgba(0,0,0,.25) !important;}
+    .split-right .btn-primary:hover::before{transform:translateX(110%);}
+    .split-right .btn-primary i{font-size:16px;}
+
+    .login-security-line{display:flex;align-items:center;gap:8px;margin-top:18px;color:#667487;font-size:8px;font-weight:800;letter-spacing:1.3px;white-space:nowrap;}
+    .security-pulse{width:5px;height:5px;border-radius:50%;background:#19e68a;box-shadow:0 0 10px #19e68a;}
+    .login-security-line b{color:#a8b4c2;font-size:8px;}
+    .security-line-fill{height:1px;flex:1;background:linear-gradient(90deg,rgba(255,255,255,.10),transparent);}
+
+    .split-right .login-footer{margin-top:27px !important;color:#657386 !important;font-size:12px !important;text-align:left;}
+    .split-right .link-text{color:#dfe5ec !important;font-weight:700 !important;text-decoration:none !important;border-bottom:1px solid rgba(255,196,0,.55);padding-bottom:2px;}
+    .split-right .link-text:hover{color:var(--login-gold) !important;}
+
+    /* Pantallas de recuperación: misma identidad futurista */
+    .login-card:not(#step-login){max-width:520px !important;min-height:auto !important;margin:auto !important;padding:44px !important;}
+    .login-card:not(#step-login) .login-logo{justify-content:flex-start !important;margin-bottom:24px;}
+    .login-card:not(#step-login) .login-logo img{height:50px;}
+    .login-card:not(#step-login) h3{font-size:26px;color:#f5f7fb;margin-bottom:12px !important;}
+    .login-card:not(#step-login) p{color:#7f8d9e !important;}
+
+    @media (max-width:900px){
+      .login-layout-wrapper{width:min(680px,94vw);min-height:0;}
+      .login-card{padding:32px !important;}
+      .login-split-content{gap:30px !important;}
+      .split-left{min-height:430px;}
+      .login-core-frame{min-height:430px;}
+      .login-core-visual{min-height:280px;}
+      .login-core-visual video{width:min(72%,300px) !important;max-height:280px !important;}
+      .orbit-a{width:280px;height:95px}.orbit-b{width:240px;height:140px}.orbit-c{width:185px;height:185px}
+    }
+    @media (max-width:700px){
+      .login-overlay{align-items:flex-start !important;overflow-y:auto !important;padding:18px 0 !important;}
+      .login-layout-wrapper{width:94vw;display:block;min-height:0;}
+      .login-card{padding:24px 20px !important;min-height:0 !important;border-radius:20px !important;}
+      .login-split-content{flex-direction:column !important;gap:24px !important;}
+      .split-left,.split-right{width:100% !important;flex:0 0 auto !important;}
+      .split-left{min-height:300px;}
+      .login-core-frame{min-height:300px;padding:17px 14px 15px;}
+      .login-core-visual{min-height:205px;}
+      .login-core-visual video{width:62% !important;max-height:205px !important;}
+      .login-core-caption strong{font-size:18px}.login-core-caption span{font-size:7px}
+      .login-access-kicker{margin-bottom:20px;}
+      .split-right .login-logo span{font-size:24px !important;}
+      .split-right .login-logo span::after{display:none;}
+      .login-subtitle{margin-bottom:24px !important;}
+      .login-security-line{font-size:7px;}
+      .login-card:not(#step-login){padding:30px 22px !important;}
+    }
+
   </style>
 </head>
 <body>
@@ -3810,18 +4009,32 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
           <!-- COLUMNA IZQUIERDA: VIDEO INTERNO DE LA TARJETA (SI QUIERES EL VIDEO DENTRO) -->
           <!-- NOTA: Si usas el video de afuera (arriba), borra esto y usa el bloque anterior -->
           <div class="split-left">
-            <video id="loginBotVideoInner" autoplay loop muted playsinline style="width:100%; height:auto; border:none; max-height:500px;">
-              <source src="https://raw.githubusercontent.com/logistica-tech/STOCK/main/heka_bot%20(1).webm" type="video/webm">
-            </video>
+            <div class="login-core-frame">
+              <div class="login-core-topline"><span class="core-dot"></span> HEKA CORE <span>SECURE NODE</span></div>
+              <div class="login-core-visual">
+                <div class="core-orbit orbit-a"></div>
+                <div class="core-orbit orbit-b"></div>
+                <div class="core-orbit orbit-c"></div>
+                <div class="core-halo"></div>
+                <video id="loginBotVideoInner" autoplay loop muted playsinline>
+                  <source src="https://raw.githubusercontent.com/logistica-tech/STOCK/main/heka_bot%20(1).webm" type="video/webm">
+                </video>
+              </div>
+              <div class="login-core-caption">
+                <strong>INTRANET HEKA</strong>
+                <span>CONTROL CENTER // ONLINE</span>
+              </div>
+            </div>
           </div>
 
           <!-- COLUMNA DERECHA: FORMULARIO -->
           <div class="split-right">
+            <div class="login-access-kicker"><span></span> ACCESS TERMINAL <b>// 01</b></div>
             <div class="login-logo">
               <img src="https://i.imgur.com/3bxAAa2.png" alt="Logo Heka">
               <span>Heka Panel</span>
             </div>
-            <p style="margin-bottom: 24px; color: var(--text-muted);">Ingresa tus credenciales</p>
+            <p class="login-subtitle">Ingresa tus credenciales para continuar</p>
             <form id="loginForm" onsubmit="handleLogin(event)">
               <div class="form-group">
                 <label>Usuario</label>
@@ -3836,6 +4049,7 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
                 <i class="bi bi-box-arrow-in-right"></i> Ingresar
               </button>
             </form>
+            <div class="login-security-line"><span class="security-pulse"></span> CONEXIÓN CIFRADA <b>256-BIT</b><span class="security-line-fill"></span><b>24/7</b></div>
             <div class="login-footer">
               ¿Olvidaste tu contraseña? <span class="link-text" onclick="goToStep('step-request-code')">Recuperar acceso</span>
             </div>
