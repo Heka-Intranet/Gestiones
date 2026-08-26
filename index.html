@@ -4885,6 +4885,56 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 }
 
 </style>
+<style id="heka-scroll-performance">
+/* ==========================================================
+   HEKA CORE - SCROLL PERFORMANCE OPTIMIZATION
+   Mantiene el diseño futurista, pero reduce repaints durante scroll.
+   ========================================================== */
+@media (prefers-reduced-motion: no-preference){
+  body.is-scrolling .sidebar,
+  body.is-scrolling .top-header,
+  body.is-scrolling .future-header,
+  body.is-scrolling .future-card,
+  body.is-scrolling .future-panel,
+  body.is-scrolling .heka-card,
+  body.is-scrolling .stat-card,
+  body.is-scrolling .card,
+  body.is-scrolling .modal-card,
+  body.is-scrolling .modal-content{
+    transition:none !important;
+  }
+
+  body.is-scrolling .sidebar,
+  body.is-scrolling .top-header{
+    -webkit-backdrop-filter:none !important;
+    backdrop-filter:none !important;
+  }
+
+  body.is-scrolling .heka-scanline,
+  body.is-scrolling .scanline,
+  body.is-scrolling .future-scan,
+  body.is-scrolling .future-pulse,
+  body.is-scrolling .pulse,
+  body.is-scrolling .glow-pulse,
+  body.is-scrolling .status-pulse{
+    animation-play-state:paused !important;
+  }
+
+  body.is-scrolling .future-glow,
+  body.is-scrolling .heka-glow,
+  body.is-scrolling .ambient-glow{
+    opacity:.45 !important;
+  }
+}
+
+/* Evita animar propiedades completas cuando sólo cambia el estado visual. */
+.nav-item,.btn,.btn-mobile-action,.support-link,.info-icon-btn,.external-link-img,.btn-custom-black{
+  transition-property:transform,opacity,background-color,border-color,color,box-shadow !important;
+}
+
+/* El navegador puede optimizar estas capas sin crear cientos de capas nuevas. */
+.sidebar,.top-header{contain:paint;}
+</style>
 </head>
 <body>
   
@@ -10902,6 +10952,34 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
     setTimeout(updateFutureHome,1200);
   });
   window.updateFutureHome=updateFutureHome;
+})();
+</script>
+
+
+<script id="heka-scroll-performance-js">
+(function(){
+  'use strict';
+  var scrollingTimer = null;
+  var active = false;
+
+  function markScrolling(){
+    if(!active){
+      active = true;
+      document.body.classList.add('is-scrolling');
+    }
+    clearTimeout(scrollingTimer);
+    scrollingTimer = setTimeout(function(){
+      active = false;
+      document.body.classList.remove('is-scrolling');
+    }, 120);
+  }
+
+  /* Passive = el navegador no tiene que esperar a JS antes de mover el scroll. */
+  window.addEventListener('scroll', markScrolling, {passive:true});
+  window.addEventListener('wheel', markScrolling, {passive:true});
+  window.addEventListener('touchmove', markScrolling, {passive:true});
+
+  /* No capturamos ArrowUp/ArrowDown: el navegador conserva su scroll nativo. */
 })();
 </script>
 
