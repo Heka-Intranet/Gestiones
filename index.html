@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#FDB813">
+  <meta name="theme-color" content="#05070b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Heka">
@@ -3352,106 +3352,448 @@
       .lo-result-card .guia-badge { grid-row: auto; justify-self: start; }
     }
 
+  
+/* =========================================================
+   HEKA FUTURE CORE — VISUAL SYSTEM 2.0
+   Rediseño integral: glass / cyber / enterprise
+   Mantiene las clases y funciones existentes.
+   ========================================================= */
+:root{
+  --primary-yellow:#ffc400;
+  --heka-gold:#ffca0a;
+  --heka-gold-soft:#ffe17a;
+  --bg-deep:#05070b;
+  --bg-mid:#080c12;
+  --bg-panel:rgba(11,16,24,.82);
+  --bg-panel-strong:#0d131d;
+  --bg-sidebar:#070a0f;
+  --bg-card:#0c121b;
+  --text-main:#f4f7fb;
+  --text-muted:#8d9aaa;
+  --text-sidebar:#cbd3df;
+  --border-color:rgba(255,255,255,.09);
+  --success-color:#27d17f;
+  --danger-color:#ff5964;
+  --sidebar-width:286px;
+  --sidebar-collapsed-width:82px;
+  --card-shadow:0 24px 70px rgba(0,0,0,.35);
+  --sidebar-shadow:20px 0 60px rgba(0,0,0,.35);
+}
 
+html{background:var(--bg-deep);}
+body{
+  background:
+    radial-gradient(circle at 75% 8%,rgba(255,196,0,.08),transparent 26%),
+    radial-gradient(circle at 35% 95%,rgba(255,196,0,.045),transparent 30%),
+    linear-gradient(135deg,#04060a 0%,#070b11 48%,#05080d 100%);
+  color:var(--text-main);
+}
+body::before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.35;
+  background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:linear-gradient(to bottom,black,transparent 90%);
+}
+::selection{background:rgba(255,196,0,.25);color:#fff;}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--heka-gold),#9c7700);border-radius:10px;}
+::-webkit-scrollbar-track{background:#05080d;}
 
-    /* ============================================================
-       HEKA UI SYSTEM v2 — capa visual no destructiva
-       No cambia IDs ni clases funcionales existentes.
-       ============================================================ */
-    :root {
-      --heka-yellow: #FDB813;
-      --heka-yellow-soft: rgba(253,184,19,.12);
-      --heka-ink: #17191c;
-      --heka-surface: #ffffff;
-      --heka-surface-2: #f7f8fa;
-      --heka-border: #e7e9ed;
-      --heka-shadow-sm: 0 2px 10px rgba(20,24,30,.05);
-      --heka-shadow-md: 0 10px 30px rgba(20,24,30,.08);
-      --heka-radius: 14px;
-      --heka-transition: 180ms cubic-bezier(.2,.7,.2,1);
-    }
+.app-container{background:transparent;}
+.sidebar{
+  background:
+    linear-gradient(180deg,rgba(8,12,18,.97),rgba(5,8,13,.985)),
+    radial-gradient(circle at 50% 0%,rgba(255,196,0,.1),transparent 35%);
+  border-right:1px solid rgba(255,255,255,.08);
+  box-shadow:var(--sidebar-shadow);
+  backdrop-filter:blur(20px);
+}
+.sidebar::after{
+  content:"";
+  position:absolute;top:0;right:-1px;width:1px;height:100%;
+  background:linear-gradient(180deg,transparent,var(--heka-gold),transparent);
+  opacity:.45;
+}
+.sidebar-content{padding:24px 14px;}
+.logo{
+  height:68px;margin:0 6px 26px;padding:0 12px;
+  border:1px solid rgba(255,255,255,.07);border-radius:18px;
+  background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.015));
+  box-shadow:inset 0 1px rgba(255,255,255,.05),0 12px 35px rgba(0,0,0,.2);
+}
+.logo img{width:36px;filter:drop-shadow(0 0 10px rgba(255,196,0,.45));}
+.logo span{color:#fff;font-size:23px;letter-spacing:.3px;}
+.logo::after{
+  content:"INTRANET 2.0";
+  color:var(--heka-gold);font-size:8px;font-weight:800;letter-spacing:2px;
+  margin-left:auto;align-self:flex-end;margin-bottom:12px;white-space:nowrap;
+}
+.sidebar.collapsed .logo::after{display:none;}
 
-    html { scroll-behavior: smooth; }
-    body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-    button, input, select, textarea { font-family: inherit; }
-    button { -webkit-tap-highlight-color: transparent; }
+.nav-accordion-item{margin:4px 0;}
+.nav-item{
+  position:relative;gap:13px;padding:12px 13px;margin-bottom:4px;
+  color:#aeb8c7;border:1px solid transparent;border-radius:13px;
+  transition:transform .2s ease,background .2s ease,border-color .2s ease,color .2s ease,box-shadow .2s ease;
+}
+.nav-item:hover{
+  color:#fff;
+  background:linear-gradient(90deg,rgba(255,196,0,.10),rgba(255,196,0,.025));
+  border-color:rgba(255,196,0,.13);
+  transform:translateX(2px);
+}
+.nav-item.active{
+  color:#fff;
+  background:linear-gradient(90deg,rgba(255,196,0,.18),rgba(255,196,0,.055));
+  border-color:rgba(255,196,0,.42);
+  box-shadow:0 0 0 1px rgba(255,196,0,.05),0 10px 30px rgba(255,196,0,.08),inset 3px 0 0 var(--heka-gold);
+}
+.nav-item.active::after{
+  content:"";position:absolute;right:11px;width:5px;height:5px;border-radius:50%;
+  background:var(--heka-gold);box-shadow:0 0 10px var(--heka-gold);
+}
+.nav-item i{font-size:17px;color:#8290a3;}
+.nav-item:hover i,.nav-item.active i{color:var(--heka-gold);}
+.nav-submenu{border-left:1px solid rgba(255,196,0,.16);margin-left:21px;padding-left:5px;}
+.nav-submenu .nav-item{font-size:13px;padding:9px 10px;}
+.accordion-arrow{margin-left:auto;font-size:12px!important;transition:transform .25s;}
+.nav-accordion-item.open .accordion-arrow{transform:rotate(180deg);}
 
-    .card, .dashboard-card, .stat-card, .info-card, .table-card,
-    [class*="card"] {
-      transition: box-shadow var(--heka-transition), transform var(--heka-transition), border-color var(--heka-transition);
-    }
-    .card:hover, .dashboard-card:hover, .stat-card:hover, .info-card:hover, .table-card:hover {
-      box-shadow: var(--heka-shadow-md);
-    }
+.main-content{
+  background:transparent;min-height:100vh;
+  padding-top:82px;
+}
+.top-header{
+  height:82px;
+  background:rgba(5,8,13,.84);
+  border-bottom:1px solid rgba(255,255,255,.075);
+  box-shadow:0 10px 35px rgba(0,0,0,.20);
+  backdrop-filter:blur(22px);
+  padding:0 26px;
+  gap:14px;
+}
+.top-header::after{
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,196,0,.35),transparent);
+}
+.future-header-search{
+  min-width:280px;max-width:520px;flex:1;height:44px;
+  display:flex;align-items:center;gap:10px;padding:0 12px 0 15px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.09);border-radius:13px;
+  box-shadow:inset 0 1px rgba(255,255,255,.03);
+}
+.future-header-search:focus-within{
+  border-color:rgba(255,196,0,.5);
+  box-shadow:0 0 0 3px rgba(255,196,0,.07),0 0 25px rgba(255,196,0,.07);
+}
+.future-header-search>i{color:var(--heka-gold);}
+.future-header-search input{
+  flex:1;min-width:0;border:0;outline:0;background:transparent;color:#fff;
+  font:500 13px Inter,sans-serif;
+}
+.future-header-search input::placeholder{color:#687486;}
+.future-header-search kbd{
+  color:#788495;border:1px solid rgba(255,255,255,.1);border-radius:6px;
+  padding:3px 7px;font:600 9px Inter,sans-serif;white-space:nowrap;
+}
+.btn-custom-black{
+  background:linear-gradient(135deg,#151b24,#080b10)!important;
+  color:#f5f7fa!important;border:1px solid rgba(255,255,255,.09)!important;
+  border-radius:12px!important;padding:11px 16px!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.04),0 8px 24px rgba(0,0,0,.22);
+}
+.btn-custom-black:hover{
+  border-color:rgba(255,196,0,.35)!important;
+  box-shadow:0 0 22px rgba(255,196,0,.10),inset 0 1px rgba(255,255,255,.05);
+  transform:translateY(-1px);
+}
+.btn-custom-black i{color:var(--heka-gold);}
 
-    .nav-item { position: relative; }
-    .nav-item::before {
-      content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px;
-      border-radius: 0 4px 4px 0; background: var(--heka-yellow); transform: scaleY(0);
-      transition: transform var(--heka-transition);
-    }
-    .nav-item.active::before { transform: scaleY(1); }
+.external-links-container{gap:9px!important;}
+.external-links-container a{
+  width:48px!important;height:48px!important;padding:5px!important;
+  border:1px solid rgba(255,255,255,.08)!important;border-radius:12px!important;
+  background:rgba(255,255,255,.035)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.04);
+  transition:.25s!important;
+}
+.external-links-container a:hover{
+  border-color:rgba(255,196,0,.4)!important;transform:translateY(-2px);
+  box-shadow:0 0 18px rgba(255,196,0,.11)!important;
+}
+.external-link-img{border-radius:8px!important;}
 
-    .form-input, select, textarea {
-      transition: border-color var(--heka-transition), box-shadow var(--heka-transition), background var(--heka-transition);
-    }
-    .form-input:hover, select:hover, textarea:hover { border-color: #cbd0d7; }
-    .form-input:focus, select:focus, textarea:focus {
-      box-shadow: 0 0 0 4px rgba(253,184,19,.14) !important;
-    }
+.user-profile-container{padding:7px 9px;border:1px solid transparent;}
+.user-profile-container:hover{
+  background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.08);
+}
+.user-name{color:#fff!important;font-size:13px;}
+.user-role{color:#7f8b9b!important;}
+.user-avatar{border-color:var(--heka-gold);box-shadow:0 0 16px rgba(255,196,0,.18);}
+.dropdown-menu{
+  background:#0b1119!important;border:1px solid rgba(255,255,255,.10)!important;
+  box-shadow:0 24px 60px rgba(0,0,0,.5)!important;border-radius:14px!important;
+  color:#fff;
+}
+.dropdown-item{color:#cbd4df!important;}
+.dropdown-item:hover{background:rgba(255,196,0,.08)!important;color:#fff!important;}
+.dropdown-divider{border-color:rgba(255,255,255,.08)!important;}
 
-    .btn, button[class*="btn"] {
-      transition: transform var(--heka-transition), box-shadow var(--heka-transition), filter var(--heka-transition);
-    }
-    .btn:hover, button[class*="btn"]:hover { filter: brightness(.99); }
-    .btn:active, button[class*="btn"]:active { transform: translateY(1px); }
-    .btn:disabled, button:disabled { cursor: not-allowed !important; opacity: .62; transform: none !important; }
+.content-area{padding:28px!important;position:relative;}
+.panel{animation:futurePanelIn .45s cubic-bezier(.2,.7,.2,1);}
+@keyframes futurePanelIn{from{opacity:0;transform:translateY(12px) scale(.995)}to{opacity:1;transform:none}}
 
-    .heka-toast-stack {
-      position: fixed; right: 22px; bottom: 22px; z-index: 200000;
-      display: flex; flex-direction: column; gap: 10px; width: min(390px, calc(100vw - 32px));
-      pointer-events: none;
-    }
-    .heka-toast {
-      pointer-events: auto; display: grid; grid-template-columns: 32px 1fr 24px; align-items: start; gap: 10px;
-      background: rgba(255,255,255,.97); border: 1px solid var(--heka-border); border-left: 4px solid var(--heka-yellow);
-      border-radius: 12px; padding: 13px 14px; box-shadow: 0 16px 45px rgba(20,24,30,.14);
-      animation: hekaToastIn .22s ease both; backdrop-filter: blur(10px);
-    }
-    .heka-toast.success { border-left-color: #198754; }
-    .heka-toast.error { border-left-color: #dc3545; }
-    .heka-toast.info { border-left-color: #0d6efd; }
-    .heka-toast.warn { border-left-color: #f59f00; }
-    .heka-toast-icon { font-size: 18px; line-height: 1.4; }
-    .heka-toast-title { font-size: 13px; font-weight: 750; color: var(--heka-ink); margin-bottom: 2px; }
-    .heka-toast-message { font-size: 12px; color: #66707b; line-height: 1.45; }
-    .heka-toast-close { border: 0; background: transparent; color: #8a929b; cursor: pointer; padding: 0; }
-    @keyframes hekaToastIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
-    @keyframes hekaToastOut { to { opacity: 0; transform: translateY(8px) scale(.98); } }
+.page-header h1{color:#fff!important;letter-spacing:-.8px;}
+.page-header p{color:#8290a2!important;}
+.card{
+  background:linear-gradient(145deg,rgba(14,20,29,.88),rgba(7,11,17,.88))!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:var(--card-shadow)!important;
+  border-radius:18px!important;
+  backdrop-filter:blur(16px);
+}
+.form-input,.form-control,.form-select,select,textarea,input[type="text"],input[type="number"],input[type="email"],input[type="password"]{
+  background:#080d14!important;color:#eef2f7!important;
+  border:1px solid rgba(255,255,255,.10)!important;border-radius:10px!important;
+}
+.form-input::placeholder,input::placeholder,textarea::placeholder{color:#647183!important;}
+.form-input:focus,.form-control:focus,.form-select:focus,select:focus,textarea:focus{
+  border-color:rgba(255,196,0,.55)!important;
+  box-shadow:0 0 0 3px rgba(255,196,0,.08)!important;outline:none!important;
+}
+label,.form-section-title{color:#e7edf5!important;}
+.btn-primary{
+  background:linear-gradient(135deg,#ffd21a,#e5a900)!important;color:#080a0e!important;
+  border:1px solid rgba(255,255,255,.2)!important;border-radius:11px!important;
+  box-shadow:0 8px 25px rgba(255,196,0,.13);
+}
+.btn-primary:hover{box-shadow:0 0 28px rgba(255,196,0,.22)!important;}
+.btn-secondary{background:#161e29!important;color:#d8e0ea!important;border:1px solid rgba(255,255,255,.08)!important;}
+table{color:#dce3ec!important;}
+thead th{background:#0d141e!important;color:#ffc400!important;border-color:rgba(255,255,255,.08)!important;}
+tbody td{border-color:rgba(255,255,255,.06)!important;}
+tbody tr:hover{background:rgba(255,196,0,.035)!important;}
+.modal-content,.modal-box,.modal-card{
+  background:linear-gradient(145deg,#101720,#080d14)!important;
+  color:#eef2f7!important;border:1px solid rgba(255,255,255,.10)!important;
+  box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 40px rgba(255,196,0,.06)!important;
+}
+.modal-header{border-color:rgba(255,255,255,.08)!important;}
+.modal-title,h1,h2,h3,h4,h5,h6{color:#f5f7fb;}
+.text-muted{color:#7f8c9d!important;}
 
-    .heka-network-badge {
-      position: fixed; left: 50%; top: 76px; transform: translate(-50%, -10px); z-index: 199999;
-      display: none; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 999px;
-      background: #212529; color: #fff; font-size: 11px; font-weight: 650; box-shadow: 0 8px 25px rgba(0,0,0,.18);
-    }
-    .heka-network-badge.show { display: flex; animation: hekaToastIn .2s ease both; }
-    .heka-network-badge i { color: var(--heka-yellow); }
+.toggle-btn{
+  width:34px;height:34px;left:calc(var(--sidebar-width) - 17px);
+  background:#101720;border:1px solid rgba(255,196,0,.55);
+  box-shadow:0 0 18px rgba(255,196,0,.20);
+}
+.toggle-btn i{color:var(--heka-gold);}
+.sidebar.collapsed ~ .toggle-btn{left:calc(var(--sidebar-collapsed-width) - 17px);}
 
-    .heka-page-progress {
-      position: fixed; top: 0; left: 0; height: 2px; width: 0; z-index: 300000;
-      background: linear-gradient(90deg, #FDB813, #ffd76a, #FDB813); box-shadow: 0 0 10px rgba(253,184,19,.55);
-      transition: width .25s ease, opacity .25s ease; pointer-events: none;
-    }
+.sidebar-overlay{background:rgba(0,0,0,.75)!important;backdrop-filter:blur(5px);}
 
-    .table-responsive, [style*="overflow-x:auto"] { scrollbar-width: thin; }
-    @media (max-width: 768px) {
-      .heka-toast-stack { right: 12px; bottom: 12px; width: calc(100vw - 24px); }
-      .heka-network-badge { top: 68px; }
-    }
+/* FUTURE HOME */
+.future-home{max-width:1600px;margin:0 auto;}
+.future-hero{
+  min-height:420px;display:grid;grid-template-columns:1.12fr .88fr;gap:24px;
+  position:relative;overflow:hidden;padding:40px 42px;
+  border:1px solid rgba(255,255,255,.09);border-radius:25px;
+  background:
+    radial-gradient(circle at 76% 46%,rgba(255,196,0,.15),transparent 25%),
+    radial-gradient(circle at 20% 20%,rgba(63,95,130,.12),transparent 30%),
+    linear-gradient(115deg,rgba(12,18,26,.98),rgba(7,11,17,.88));
+  box-shadow:0 28px 80px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.05);
+}
+.future-hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.28;
+  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:36px 36px;
+  mask-image:radial-gradient(circle at 75% 50%,black,transparent 60%);
+}
+.future-hero::after{
+  content:"";position:absolute;right:0;top:0;width:45%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,196,0,.025));
+  pointer-events:none;
+}
+.hero-copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;}
+.hero-kicker{
+  display:inline-flex;align-items:center;gap:8px;width:max-content;margin-bottom:20px;
+  color:#aab6c6;font-size:10px;font-weight:800;letter-spacing:2px;
+}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:#2be286;box-shadow:0 0 12px #2be286;animation:futurePulse 1.7s infinite;}
+@keyframes futurePulse{50%{box-shadow:0 0 3px #2be286;opacity:.55}}
+.hero-copy h1{
+  margin:0;max-width:760px;font-size:clamp(40px,4.2vw,70px);line-height:.98;
+  letter-spacing:-3px;font-weight:750;color:#f8fafc;
+}
+.hero-copy h1 span{color:#fff;}
+.hero-copy h1 strong{color:var(--heka-gold);}
+.hero-description{
+  max-width:620px;margin:22px 0 28px;color:#94a1b2;font-size:15px;line-height:1.8;
+}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;}
+.future-action{
+  min-width:165px;display:flex;align-items:center;gap:12px;padding:12px 15px;
+  text-align:left;color:#dfe7f0;background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.09);border-radius:13px;cursor:pointer;
+  transition:.25s;box-shadow:inset 0 1px rgba(255,255,255,.04);
+}
+.future-action:hover,.future-action.primary{
+  border-color:rgba(255,196,0,.42);background:rgba(255,196,0,.07);
+  box-shadow:0 0 24px rgba(255,196,0,.09),inset 0 1px rgba(255,255,255,.05);
+  transform:translateY(-2px);
+}
+.future-action>i{font-size:21px;color:var(--heka-gold);}
+.future-action b{display:block;font-size:12px;color:#f5f7fb;}
+.future-action small{display:block;color:#7f8c9d;font-size:9px;margin-top:2px;}
 
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
-    }
+.hero-visual{position:relative;min-height:330px;display:flex;align-items:center;justify-content:center;}
+.holo-grid{
+  position:absolute;inset:12% 5% 3%;opacity:.35;
+  background-image:linear-gradient(rgba(255,196,0,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(255,196,0,.14) 1px,transparent 1px);
+  background-size:28px 28px;
+  transform:perspective(500px) rotateX(62deg) scale(1.15);
+  transform-origin:center bottom;
+  mask-image:linear-gradient(to top,black,transparent 75%);
+}
+.scan-ring{position:absolute;border:1px solid rgba(255,196,0,.22);border-radius:50%;transform:rotateX(68deg);}
+.ring-a{width:310px;height:310px;box-shadow:0 0 45px rgba(255,196,0,.08),inset 0 0 45px rgba(255,196,0,.05);}
+.ring-b{width:220px;height:220px;border-color:rgba(255,196,0,.4);box-shadow:0 0 25px rgba(255,196,0,.13);}
+.holo-orb{
+  width:190px;height:190px;position:relative;border-radius:50%;
+  display:grid;place-items:center;
+  background:radial-gradient(circle,rgba(255,205,34,.22),rgba(255,196,0,.055) 45%,transparent 70%);
+  box-shadow:0 0 55px rgba(255,196,0,.16);
+  animation:orbFloat 4s ease-in-out infinite;
+}
+@keyframes orbFloat{50%{transform:translateY(-8px) scale(1.02)}}
+.holo-core{
+  width:112px;height:112px;display:grid;place-items:center;
+  border:1px solid rgba(255,196,0,.7);border-radius:25px;
+  transform:rotate(45deg);
+  background:linear-gradient(135deg,rgba(255,196,0,.16),rgba(255,196,0,.025));
+  box-shadow:0 0 35px rgba(255,196,0,.24),inset 0 0 30px rgba(255,196,0,.08);
+}
+.holo-core span{
+  transform:rotate(-45deg);font-size:74px;font-weight:900;color:var(--heka-gold);
+  text-shadow:0 0 22px rgba(255,196,0,.75);
+}
+.holo-label{
+  position:absolute;bottom:6%;padding:6px 10px;border:1px solid rgba(255,196,0,.24);
+  border-radius:8px;background:rgba(5,8,12,.65);color:#e0b100;font-size:9px;font-weight:800;letter-spacing:1.5px;
+}
+.holo-data{position:absolute;color:#68788c;font-size:8px;letter-spacing:1.2px;}
+.holo-data b{display:block;color:#d9e2ec;font-size:10px;margin-top:3px;}
+.data-one{left:2%;top:25%;}.data-two{right:2%;top:33%;}.data-three{right:8%;bottom:25%;}
+
+.future-overview{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0;}
+.overview-card{
+  min-height:82px;display:flex;align-items:center;gap:12px;padding:14px;
+  border:1px solid rgba(255,255,255,.08);border-radius:15px;
+  background:rgba(10,15,22,.78);box-shadow:inset 0 1px rgba(255,255,255,.03);
+}
+.overview-card.accent{border-color:rgba(255,196,0,.25);}
+.overview-icon{
+  width:42px;height:42px;display:grid;place-items:center;border-radius:11px;
+  color:var(--heka-gold);background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.12);
+}
+.overview-card small{display:block;color:#667487;font-size:8px;font-weight:800;letter-spacing:1.1px;}
+.overview-card strong{display:block;color:#edf2f7;font-size:14px;margin-top:4px;}
+.overview-status{margin-left:auto;color:#c7a600;font-size:8px;font-weight:800;letter-spacing:.8px;}
+.overview-status.green{color:#29d982;}
+
+.future-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:14px;}
+.future-panel{
+  border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px;
+  background:linear-gradient(145deg,rgba(12,18,27,.9),rgba(7,11,17,.86));
+  box-shadow:0 18px 50px rgba(0,0,0,.25);
+}
+.future-panel-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.section-eyebrow{display:block;color:#6f7e91;font-size:8px;font-weight:800;letter-spacing:1.7px;margin-bottom:4px;}
+.future-panel h2{font-size:18px;margin:0;color:#f1f5f9;letter-spacing:-.3px;}
+.head-chip,.live-badge{
+  padding:6px 9px;border-radius:8px;font-size:8px;font-weight:800;letter-spacing:.8px;
+  color:#8997a9;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);
+}
+.live-badge{color:#2ad985;display:flex;gap:6px;align-items:center;}
+.live-badge span{width:5px;height:5px;border-radius:50%;background:#2ad985;box-shadow:0 0 8px #2ad985;}
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.quick-tile{
+  min-height:98px;text-align:left;padding:15px;border-radius:13px;cursor:pointer;
+  background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);color:#fff;
+  transition:.22s;
+}
+.quick-tile:hover{transform:translateY(-3px);border-color:rgba(255,196,0,.35);background:rgba(255,196,0,.06);}
+.quick-tile i{display:block;color:var(--heka-gold);font-size:19px;margin-bottom:10px;}
+.quick-tile span{display:block;font-size:11px;font-weight:700;}
+.quick-tile small{display:block;color:#6e7d90;font-size:8px;margin-top:4px;}
+.session-visual{
+  display:flex;align-items:center;gap:14px;padding:15px;border-radius:13px;
+  background:rgba(255,196,0,.035);border:1px solid rgba(255,196,0,.10);
+}
+.session-orbit{
+  width:58px;height:58px;display:grid;place-items:center;border-radius:50%;
+  border:1px solid rgba(255,196,0,.35);color:var(--heka-gold);
+  box-shadow:0 0 22px rgba(255,196,0,.1);
+}
+.session-visual strong{font-size:14px;color:#f4f7fa;}
+.session-visual p{margin:3px 0;color:#728094;font-size:9px;}
+.session-visual small{color:#8492a4;font-size:8px;}
+.session-lines{margin-top:14px;}
+.session-lines div{display:flex;justify-content:space-between;padding:9px 2px;border-bottom:1px solid rgba(255,255,255,.05);}
+.session-lines span{font-size:9px;color:#778699;}
+.session-lines b{font-size:8px;color:#2bd985;letter-spacing:.8px;}
+.future-footer-card{
+  margin-top:14px;padding:14px 17px;display:flex;align-items:center;gap:13px;
+  border:1px solid rgba(255,255,255,.07);border-radius:14px;background:rgba(255,255,255,.025);
+}
+.footer-signal{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;color:var(--heka-gold);background:rgba(255,196,0,.07);}
+.future-footer-card strong{display:block;color:#dce4ed;font-size:11px;}
+.future-footer-card span{display:block;color:#667588;font-size:8px;margin-top:2px;}
+.footer-time{margin-left:auto;text-align:right;}
+.footer-time span{display:block;color:#8794a5;font-size:8px;}
+.footer-time b{display:block;color:#b88f00;font-size:8px;letter-spacing:1px;margin-top:2px;}
+
+@media (max-width:1100px){
+  .future-header-search{max-width:none;}
+  .external-links-container{display:none!important;}
+  .future-hero{grid-template-columns:1fr .7fr;}
+  .future-overview{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:900px){
+  :root{--sidebar-width:270px;}
+  .top-header{display:none!important;}
+  .main-content{margin-left:0!important;padding-top:60px!important;}
+  .content-area{padding:15px!important;}
+  .mobile-nav-bar{
+    display:flex!important;background:rgba(5,8,13,.94)!important;
+    border-bottom:1px solid rgba(255,255,255,.08)!important;
+    box-shadow:0 10px 30px rgba(0,0,0,.3)!important;backdrop-filter:blur(18px);
+  }
+  .hamburger-btn,.mobile-brand{color:#fff!important;}
+  .mobile-brand{font-size:13px;letter-spacing:1px;}
+  .future-hero{grid-template-columns:1fr;min-height:auto;padding:28px 22px;}
+  .hero-copy h1{font-size:42px;letter-spacing:-2px;}
+  .hero-visual{min-height:260px;}
+  .future-grid{grid-template-columns:1fr;}
+  .quick-grid{grid-template-columns:repeat(2,1fr);}
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.mobile-open{transform:translateX(0);}
+  .toggle-btn{display:none!important;}
+}
+@media (max-width:560px){
+  .future-overview{grid-template-columns:1fr;}
+  .quick-grid{grid-template-columns:1fr;}
+  .hero-actions{flex-direction:column;}
+  .future-action{width:100%;}
+  .hero-copy h1{font-size:36px;}
+  .future-footer-card{align-items:flex-start;}
+  .footer-time{display:none;}
+  .holo-data{display:none;}
+}
+
   </style>
 </head>
 <body>
@@ -3947,24 +4289,130 @@
 
       <div class="content-area">
 
-        <div id="panel-welcome" class="panel active">
-          <div class="welcome-wrapper">
-            
-            <!-- EL VIDEO OCUPA EL LUGAR DEL LOGO -->
-            <!-- Usamos la misma clase 'welcome-logo-large' para mantener la posición -->
-            <video id="hekaBotVideo" class="welcome-logo-large" autoplay loop muted playsinline>
-              <source src="https://raw.githubusercontent.com/logistica-tech/STOCK/main/heka_bot_register.webm" type="video/webm">
-              Tu navegador no soporta videos HTML5.
-            </video>
+        
+<div id="panel-welcome" class="panel active">
+  <div class="future-home">
+    <section class="future-hero">
+      <div class="hero-copy">
+        <div class="hero-kicker"><span class="pulse-dot"></span> INTRANET HEKA · SISTEMA ACTIVO</div>
+        <h1>Hola, <span id="welcome-user-name">Usuario</span><strong>!</strong></h1>
+        <p class="hero-description">
+          Tu centro inteligente de operaciones. Accede a módulos, gestiona procesos
+          y consulta información desde un solo espacio.
+        </p>
 
-            <h1 class="welcome-title">¡Hola, <span id="welcome-user-name">Usuario</span>!</h1>
-            <div class="welcome-decoration"></div>
-            <p class="welcome-subtitle">
-              Bienvenido a la Intranet Heka.<br>
-              Selecciona una opción del menú lateral para comenzar tus actividades.
-            </p>
+        <div class="hero-actions">
+          <button class="future-action primary" type="button" onclick="openModalRecarga()">
+            <i class="bi bi-lightning-charge-fill"></i>
+            <span><b>Recargar</b><small>Saldo y movimientos</small></span>
+          </button>
+          <button class="future-action" type="button" onclick="openModalReferidos()">
+            <i class="bi bi-people-fill"></i>
+            <span><b>Referidos</b><small>Registrar nuevo</small></span>
+          </button>
+          <button class="future-action" type="button" onclick="openModalRegistros()">
+            <i class="bi bi-clipboard2-check-fill"></i>
+            <span><b>Registros</b><small>Crear registro</small></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="scan-ring ring-a"></div>
+        <div class="scan-ring ring-b"></div>
+        <div class="holo-grid"></div>
+        <div class="holo-orb">
+          <div class="holo-core">
+            <span>H</span>
           </div>
-        </div>      
+        </div>
+        <div class="holo-label"><i class="bi bi-cpu"></i> HEKA CORE</div>
+        <div class="holo-data data-one">OPS <b>ONLINE</b></div>
+        <div class="holo-data data-two">SECURE <b>24/7</b></div>
+        <div class="holo-data data-three">SYNC <b>LIVE</b></div>
+      </div>
+    </section>
+
+    <section class="future-overview">
+      <div class="overview-card accent">
+        <div class="overview-icon"><i class="bi bi-grid-1x2-fill"></i></div>
+        <div><small>MÓDULOS DISPONIBLES</small><strong id="home-module-count">—</strong></div>
+        <span class="overview-status">ACTIVOS</span>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon"><i class="bi bi-shield-check"></i></div>
+        <div><small>SEGURIDAD</small><strong>PROTEGIDO</strong></div>
+        <span class="overview-status green">OK</span>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon"><i class="bi bi-cloud-check"></i></div>
+        <div><small>PLATAFORMA</small><strong>ONLINE</strong></div>
+        <span class="overview-status green">LIVE</span>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon"><i class="bi bi-person-badge"></i></div>
+        <div><small>PERFIL</small><strong id="home-user-role">COLABORADOR</strong></div>
+        <span class="overview-status">SESSION</span>
+      </div>
+    </section>
+
+    <section class="future-grid">
+      <div class="future-panel quick-panel">
+        <div class="future-panel-head">
+          <div><span class="section-eyebrow">NAVEGACIÓN</span><h2>Accesos rápidos</h2></div>
+          <span class="head-chip"><i class="bi bi-command"></i> HEKA</span>
+        </div>
+        <div class="quick-grid">
+          <button type="button" class="quick-tile" onclick="goToPanel('panel-gestion-inter')">
+            <i class="bi bi-box-seam"></i><span>Operaciones</span><small>Gestión y seguimiento</small>
+          </button>
+          <button type="button" class="quick-tile" onclick="goToPanel('panel-gerencial')">
+            <i class="bi bi-graph-up-arrow"></i><span>Gerencial</span><small>Indicadores y reportes</small>
+          </button>
+          <button type="button" class="quick-tile" onclick="goToPanel('panel-recuentos')">
+            <i class="bi bi-calculator"></i><span>Contable</span><small>Control financiero</small>
+          </button>
+          <button type="button" class="quick-tile" onclick="goToPanel('panel-comisiones-pablo')">
+            <i class="bi bi-cash-stack"></i><span>Comisiones</span><small>Gestión de pagos</small>
+          </button>
+          <button type="button" class="quick-tile" onclick="goToPanel('panel-dashboard-logistica')">
+            <i class="bi bi-truck"></i><span>Logística</span><small>Dashboard operativo</small>
+          </button>
+          <button type="button" class="quick-tile" onclick="goToPanel('panel-talento-humano')">
+            <i class="bi bi-people"></i><span>Talento Humano</span><small>Colaboradores</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="future-panel session-panel">
+        <div class="future-panel-head">
+          <div><span class="section-eyebrow">CENTRO DE CONTROL</span><h2>Estado de sesión</h2></div>
+          <span class="live-badge"><span></span> EN VIVO</span>
+        </div>
+        <div class="session-visual">
+          <div class="session-orbit"><i class="bi bi-person-check-fill"></i></div>
+          <div>
+            <strong id="home-session-name">Usuario</strong>
+            <p>Conexión segura establecida</p>
+            <small><i class="bi bi-clock"></i> Hora local: <span id="home-clock">--:--</span></small>
+          </div>
+        </div>
+        <div class="session-lines">
+          <div><span>Autenticación</span><b>VERIFICADA</b></div>
+          <div><span>Conexión</span><b>ESTABLE</b></div>
+          <div><span>Acceso</span><b>AUTORIZADO</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="future-footer-card">
+      <div class="footer-signal"><i class="bi bi-activity"></i></div>
+      <div><strong>Todo listo para trabajar</strong><span>Selecciona un módulo del menú lateral o utiliza los accesos rápidos.</span></div>
+      <div class="footer-time"><span id="home-date">--</span><b>HEKA CORE</b></div>
+    </section>
+  </div>
+</div>
+      
                 
         <!-- PANEL GESTION INTER (EXISTENTE) -->
         <div id="panel-gestion-inter" class="panel">
@@ -9214,7 +9662,72 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- MODAL GUIAS MADRES (PEGAR AL FINAL ANTES DE </body>) -->
+  <!-- MODAL GUIAS MADRES (PEGAR AL FINAL ANTES DE 
+<script>
+(function(){
+  function updateFutureHome(){
+    try{
+      var nameEl=document.getElementById('welcome-user-name');
+      var name=(nameEl && nameEl.textContent.trim()) || document.getElementById('headerUserName')?.textContent?.trim() || 'Usuario';
+      var role=document.getElementById('headerUserRole')?.textContent?.trim() || 'Colaborador';
+      var sessionName=document.getElementById('home-session-name');
+      var roleEl=document.getElementById('home-user-role');
+      if(sessionName) sessionName.textContent=name;
+      if(roleEl) roleEl.textContent=role.toUpperCase();
+
+      var count=document.querySelectorAll('.sidebar .nav-accordion-item').length;
+      var countEl=document.getElementById('home-module-count');
+      if(countEl) countEl.textContent=count;
+
+      var clock=document.getElementById('home-clock');
+      var date=document.getElementById('home-date');
+      var tick=function(){
+        var now=new Date();
+        if(clock) clock.textContent=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+        if(date) date.textContent=now.toLocaleDateString('es-CO',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+      };
+      tick(); clearInterval(window.__hekaFutureClock); window.__hekaFutureClock=setInterval(tick,30000);
+    }catch(e){ console.warn('HEKA Future UI:',e); }
+  }
+
+  function setupFutureSearch(){
+    var input=document.getElementById('futureGlobalSearch');
+    if(!input) return;
+    var go=function(){
+      var q=input.value.trim().toLowerCase();
+      if(!q) return;
+      var items=[].slice.call(document.querySelectorAll('.sidebar .nav-item'));
+      var hit=items.find(function(el){
+        return (el.innerText||'').trim().toLowerCase().includes(q);
+      });
+      if(hit){
+        var parent=hit.closest('.nav-accordion-item');
+        if(parent && !parent.classList.contains('open')){
+          var target=parent.querySelector('.nav-item');
+          if(target) target.click();
+        }
+        hit.scrollIntoView({behavior:'smooth',block:'center'});
+        setTimeout(function(){hit.click();},120);
+      }
+    };
+    input.addEventListener('keydown',function(e){ if(e.key==='Enter') go(); });
+    document.addEventListener('keydown',function(e){
+      if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){
+        e.preventDefault();input.focus();input.select();
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    updateFutureHome();
+    setupFutureSearch();
+    setTimeout(updateFutureHome,1200);
+  });
+  window.updateFutureHome=updateFutureHome;
+})();
+</script>
+
+</body>) -->
   <!-- ========================================== -->
   <div id="modal-guias-madres" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'modal-guias-madres')">
     <div class="modal-content" style="max-width: 500px; position: relative; z-index: 10001;" onclick="event.stopPropagation()">
@@ -9443,74 +9956,6 @@
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbwFz1K8o2Oau3TUd8oJiHK5RL0IOLLkGwlVlK2aMSQiNSVinJWNA07hKXTtOcKZVzs8/exec';
 
     // ============================================================
-    // HEKA UX / NETWORK LAYER v2
-    // Capa adicional: no cambia nombres de funciones ni llamadas existentes.
-    // ============================================================
-    (function() {
-      var toastStack, progressBar, networkBadge;
-      function ensureUi() {
-        if (!toastStack) {
-          toastStack = document.createElement('div');
-          toastStack.className = 'heka-toast-stack';
-          toastStack.id = 'hekaToastStack';
-          document.body.appendChild(toastStack);
-        }
-        if (!progressBar) {
-          progressBar = document.createElement('div');
-          progressBar.className = 'heka-page-progress';
-          progressBar.id = 'hekaPageProgress';
-          document.body.appendChild(progressBar);
-        }
-        if (!networkBadge) {
-          networkBadge = document.createElement('div');
-          networkBadge.className = 'heka-network-badge';
-          networkBadge.id = 'hekaNetworkBadge';
-          networkBadge.innerHTML = '<i class="bi bi-cloud-slash-fill"></i><span>Sin conexión con Heka</span>';
-          document.body.appendChild(networkBadge);
-        }
-      }
-      window.hekaToast = function(message, type, title) {
-        ensureUi();
-        type = type || 'info';
-        var titles = {success:'Operación completada', error:'No fue posible completar la operación', warn:'Atención', info:'Información'};
-        var icons = {success:'bi-check-circle-fill', error:'bi-x-circle-fill', warn:'bi-exclamation-triangle-fill', info:'bi-info-circle-fill'};
-        var el = document.createElement('div');
-        el.className = 'heka-toast ' + type;
-        el.innerHTML = '<div class="heka-toast-icon"><i class="bi '+(icons[type]||icons.info)+'"></i></div>' +
-          '<div><div class="heka-toast-title">'+escapeHtml_(title || titles[type] || titles.info)+'</div><div class="heka-toast-message">'+escapeHtml_(message == null ? '' : String(message))+'</div></div>' +
-          '<button class="heka-toast-close" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>';
-        el.querySelector('.heka-toast-close').onclick = function(){ removeToast_(el); };
-        toastStack.appendChild(el);
-        setTimeout(function(){ removeToast_(el); }, type === 'error' ? 6500 : 4200);
-        return el;
-      };
-      function removeToast_(el) {
-        if (!el || !el.parentNode) return;
-        el.style.animation = 'hekaToastOut .18s ease both';
-        setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 180);
-      }
-      function escapeHtml_(value) {
-        return value.replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
-      }
-      window.hekaNetworkStart = function() {
-        ensureUi();
-        progressBar.style.opacity = '1';
-        progressBar.style.width = '35%';
-        setTimeout(function(){ if(progressBar) progressBar.style.width='68%'; }, 250);
-      };
-      window.hekaNetworkDone = function(ok) {
-        ensureUi();
-        progressBar.style.width = '100%';
-        setTimeout(function(){ if(progressBar){ progressBar.style.opacity='0'; progressBar.style.width='0'; } }, 260);
-        if (networkBadge) networkBadge.classList.toggle('show', ok === false);
-      };
-      window.addEventListener('online', function(){ ensureUi(); networkBadge.classList.remove('show'); });
-      window.addEventListener('offline', function(){ ensureUi(); networkBadge.classList.add('show'); });
-      document.addEventListener('DOMContentLoaded', function(){ ensureUi(); if(!navigator.onLine) networkBadge.classList.add('show'); });
-    })();
-
-
-    // ============================================================
     // 🔌 SHIM: google.script.run → fetch POST
     //
     // Usa POST con Content-Type: text/plain.
@@ -9538,16 +9983,12 @@
             // prop = nombre de la función GAS a ejecutar
             return function() {
               var args = Array.prototype.slice.call(arguments);
-              var payload = JSON.stringify({ fn: prop, args: args, client: { requestId: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(16).slice(2) } });
+              var payload = JSON.stringify({ fn: prop, args: args });
 
-              if (window.hekaNetworkStart) window.hekaNetworkStart();
-              var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-              var timeoutId = controller ? setTimeout(function(){ controller.abort(); }, 60000) : null;
               fetch(GAS_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain' },
-                body: payload,
-                signal: controller ? controller.signal : undefined
+                body: payload
               })
               .then(function(r) {
                 if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -9556,14 +9997,10 @@
               .then(function(text) {
                 var data;
                 try { data = JSON.parse(text); } catch(e) { data = text; }
-                if (timeoutId) clearTimeout(timeoutId);
-                if (window.hekaNetworkDone) window.hekaNetworkDone(true);
                 if (successCb) successCb(data);
               })
               .catch(function(err) {
-                if (timeoutId) clearTimeout(timeoutId);
-                if (window.hekaNetworkDone) window.hekaNetworkDone(false);
-                var errMsg = (err && err.name === 'AbortError') ? 'La solicitud tardó demasiado. Intenta nuevamente.' : (err.message || String(err));
+                var errMsg = err.message || String(err);
                 if (failureCb) failureCb({ message: errMsg });
                 else if (successCb) successCb({ status: 'error', message: errMsg });
               });
