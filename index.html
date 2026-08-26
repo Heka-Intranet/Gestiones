@@ -3993,6 +3993,403 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
       .login-card:not(#step-login){padding:30px 22px !important;}
     }
 
+
+
+    /* =========================================================
+       HEKA FUTURE UI — MODALES + TOASTS
+       Unifica todos los diálogos del sistema con el lenguaje
+       visual del dashboard futurista.
+       ========================================================= */
+    .modal-overlay,
+    #modal-aviso,
+    #modal-anulacion,
+    #modal-seleccion-fecha,
+    #modalColaOffline,
+    #modalMetodoPago,
+    #modalNovedadLista,
+    #modalValidacionBodega,
+    #modalValidacionDuplicados,
+    #modalValidacionDuplicadosInput,
+    #modalValidacionNovedad,
+    #modalValidacionRecibidas,
+    #modalDuplicadosInputLista,
+    #modalDuplicadosLista,
+    #modalRecibidasLista,
+    #modalBodegaLista,
+    #modalWhatsAppMsg,
+    #modalWhatsAppOverlay {
+      background:
+        radial-gradient(circle at 50% 15%, rgba(255,196,0,.07), transparent 32%),
+        rgba(2,5,9,.82) !important;
+      backdrop-filter: blur(10px) saturate(120%);
+      -webkit-backdrop-filter: blur(10px) saturate(120%);
+    }
+
+    .modal-overlay.active {
+      animation: hekaModalOverlayIn .28s ease both;
+    }
+    @keyframes hekaModalOverlayIn {
+      from { opacity:0; }
+      to { opacity:1; }
+    }
+
+    .modal-content,
+    .modal-box,
+    .modal-card,
+    .floating-window {
+      position: relative;
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 92% 0%, rgba(255,196,0,.09), transparent 28%),
+        linear-gradient(145deg, rgba(16,23,32,.98), rgba(6,10,16,.98)) !important;
+      color:#eaf0f7 !important;
+      border:1px solid rgba(255,255,255,.10) !important;
+      border-radius:18px !important;
+      box-shadow:
+        0 30px 100px rgba(0,0,0,.68),
+        0 0 0 1px rgba(255,196,0,.025) inset,
+        0 0 42px rgba(255,196,0,.075) !important;
+      overflow:hidden;
+    }
+
+    .modal-content::before,
+    .modal-box::before,
+    .modal-card::before,
+    .floating-window::before {
+      content:"";
+      position:absolute;
+      left:0; right:0; top:0;
+      height:2px;
+      background:linear-gradient(90deg, transparent, #ffc400 18%, #ffd83d 50%, #ffc400 82%, transparent);
+      box-shadow:0 0 16px rgba(255,196,0,.5);
+      z-index:30;
+      pointer-events:none;
+    }
+
+    .modal-header,
+    .floating-header {
+      background:
+        linear-gradient(90deg, rgba(255,196,0,.055), transparent 45%),
+        rgba(9,14,21,.94) !important;
+      border-bottom:1px solid rgba(255,255,255,.08) !important;
+      color:#f5f7fb !important;
+      position:relative;
+    }
+    .modal-header::after,
+    .floating-header::after {
+      content:"SYSTEM // SECURE";
+      position:absolute;
+      right:22px;
+      bottom:7px;
+      font-size:8px;
+      letter-spacing:2px;
+      color:rgba(255,196,0,.48);
+      pointer-events:none;
+    }
+    .modal-title h2,
+    .modal-title,
+    .modal-header h1,
+    .modal-header h2,
+    .modal-header h3,
+    .modal-header h4,
+    .modal-header h5,
+    .modal-header h6,
+    .floating-header h3 {
+      color:#f5f7fb !important;
+      letter-spacing:.1px;
+    }
+    .modal-title h2::before,
+    .modal-header h2::before,
+    .modal-header h3::before {
+      content:"";
+      display:inline-block;
+      width:7px;
+      height:7px;
+      margin:0 10px 3px 0;
+      border-radius:50%;
+      background:#ffc400;
+      box-shadow:0 0 12px rgba(255,196,0,.85);
+    }
+
+    .close-modal-btn,
+    .floating-btn {
+      color:#8d9bad !important;
+      background:rgba(255,255,255,.035) !important;
+      border:1px solid rgba(255,255,255,.08) !important;
+      border-radius:9px !important;
+      width:36px;
+      height:36px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      transition:.2s ease;
+    }
+    .close-modal-btn:hover,
+    .floating-btn:hover {
+      color:#ffc400 !important;
+      border-color:rgba(255,196,0,.45) !important;
+      background:rgba(255,196,0,.08) !important;
+      box-shadow:0 0 18px rgba(255,196,0,.12);
+      transform:translateY(-1px);
+    }
+
+    .modal-body,
+    .modal-content .card-body,
+    .modal-content .modal-body,
+    .floating-window .floating-body {
+      color:#cbd5e1 !important;
+      background:transparent !important;
+    }
+    .modal-body p,
+    .modal-body small,
+    .modal-body .text-muted,
+    .modal-content .text-muted {
+      color:#8492a5 !important;
+    }
+    .modal-body .card,
+    .modal-body .child-block,
+    .modal-body .stat-card,
+    .modal-body .form-section,
+    .modal-body .info-card {
+      background:linear-gradient(145deg,rgba(18,26,36,.82),rgba(8,13,20,.82)) !important;
+      border-color:rgba(255,255,255,.075) !important;
+      color:#e5ebf3 !important;
+      box-shadow:0 12px 30px rgba(0,0,0,.18);
+    }
+
+    .modal-footer,
+    .modal-content > .card-footer,
+    .modal-content > div[style*="border-top"] {
+      background:rgba(7,11,17,.78) !important;
+      border-top:1px solid rgba(255,255,255,.08) !important;
+      color:#cbd5e1 !important;
+    }
+
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea,
+    #modal-aviso input,
+    #modal-aviso select,
+    #modal-aviso textarea,
+    #modal-anulacion input,
+    #modal-anulacion select,
+    #modal-anulacion textarea,
+    #modal-seleccion-fecha input,
+    #modal-seleccion-fecha select,
+    [id^="modal"] input,
+    [id^="modal"] select,
+    [id^="modal"] textarea {
+      background:#080d14 !important;
+      color:#eef2f7 !important;
+      border:1px solid rgba(255,255,255,.10) !important;
+      border-radius:10px !important;
+    }
+    .modal-content input:focus,
+    .modal-content select:focus,
+    .modal-content textarea:focus,
+    [id^="modal"] input:focus,
+    [id^="modal"] select:focus,
+    [id^="modal"] textarea:focus {
+      border-color:rgba(255,196,0,.58) !important;
+      box-shadow:0 0 0 3px rgba(255,196,0,.075), 0 0 18px rgba(255,196,0,.06) !important;
+      outline:none !important;
+    }
+    [id^="modal"] label { color:#dce4ed !important; }
+    [id^="modal"] input::placeholder,
+    [id^="modal"] textarea::placeholder { color:#647183 !important; }
+
+    .modal-content table,
+    [id^="modal"] table {
+      background:rgba(5,9,14,.55) !important;
+      color:#dce5ef !important;
+    }
+    [id^="modal"] th {
+      background:#0d141e !important;
+      color:#ffc400 !important;
+      border-color:rgba(255,255,255,.08) !important;
+    }
+    [id^="modal"] td {
+      border-color:rgba(255,255,255,.065) !important;
+      color:#cbd5e1 !important;
+    }
+    [id^="modal"] tbody tr:hover { background:rgba(255,196,0,.035) !important; }
+
+    /* Modales antiguos con estilos inline: los llevamos al mismo lenguaje visual. */
+    #modal-aviso > div,
+    #modal-anulacion > div,
+    #modal-seleccion-fecha > div,
+    #modalColaOffline > div,
+    #modalMetodoPago > div,
+    #modalNovedadLista > div,
+    #modalValidacionBodega > div,
+    #modalValidacionDuplicados > div,
+    #modalValidacionDuplicadosInput > div,
+    #modalValidacionNovedad > div,
+    #modalValidacionRecibidas > div,
+    #modalDuplicadosInputLista > div,
+    #modalDuplicadosLista > div,
+    #modalRecibidasLista > div,
+    #modalBodegaLista > div,
+    #modalWhatsAppMsg > div {
+      background:
+        radial-gradient(circle at 90% 0%,rgba(255,196,0,.09),transparent 28%),
+        linear-gradient(145deg,#101720,#080d14) !important;
+      color:#eaf0f7 !important;
+      border:1px solid rgba(255,255,255,.10) !important;
+      border-radius:18px !important;
+      box-shadow:0 30px 90px rgba(0,0,0,.68),0 0 40px rgba(255,196,0,.075) !important;
+      position:relative;
+      overflow:hidden;
+    }
+    #modal-aviso > div::before,
+    #modal-anulacion > div::before,
+    #modal-seleccion-fecha > div::before,
+    #modalColaOffline > div::before,
+    #modalMetodoPago > div::before,
+    #modalNovedadLista > div::before,
+    #modalValidacionBodega > div::before,
+    #modalValidacionDuplicados > div::before,
+    #modalValidacionDuplicadosInput > div::before,
+    #modalValidacionNovedad > div::before,
+    #modalValidacionRecibidas > div::before,
+    #modalDuplicadosInputLista > div::before,
+    #modalDuplicadosLista > div::before,
+    #modalRecibidasLista > div::before,
+    #modalBodegaLista > div::before,
+    #modalWhatsAppMsg > div::before {
+      content:"";position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,transparent,#ffc400,#ffe06a,#ffc400,transparent);
+      box-shadow:0 0 16px rgba(255,196,0,.5);z-index:20;
+    }
+    #modal-aviso h3,
+    #modal-anulacion h3,
+    #modal-seleccion-fecha h5,
+    #modalColaOffline span,
+    #modalMetodoPago h3,
+    #modalNovedadLista h3,
+    #modalValidacionBodega h3,
+    #modalValidacionDuplicados h3,
+    #modalValidacionNovedad h3,
+    #modalValidacionRecibidas h3 { color:#f5f7fb !important; }
+    #modal-aviso p,
+    #modal-anulacion p,
+    #modal-seleccion-fecha p { color:#8492a5 !important; }
+
+    /* Botones dentro de cualquier modal */
+    [id^="modal"] .btn-primary,
+    [id^="modal"] .btn-custom-black,
+    [id^="modal"] button.btn-success,
+    [id^="modal"] button.btn-warning,
+    [id^="modal"] button[type="submit"] {
+      background:linear-gradient(135deg,#ffd21a,#e5a900) !important;
+      color:#080a0e !important;
+      border:1px solid rgba(255,255,255,.18) !important;
+      box-shadow:0 8px 26px rgba(255,196,0,.14);
+      border-radius:10px !important;
+    }
+    [id^="modal"] .btn-primary:hover,
+    [id^="modal"] .btn-custom-black:hover,
+    [id^="modal"] button.btn-success:hover,
+    [id^="modal"] button[type="submit"]:hover {
+      box-shadow:0 0 28px rgba(255,196,0,.24) !important;
+      transform:translateY(-1px);
+    }
+    [id^="modal"] .btn-secondary,
+    [id^="modal"] button[onclick*="Cancelar"],
+    [id^="modal"] button[onclick*="Cerrar"] {
+      background:#121b26 !important;
+      color:#cbd5e1 !important;
+      border:1px solid rgba(255,255,255,.09) !important;
+      border-radius:10px !important;
+    }
+    [id^="modal"] .btn-secondary:hover,
+    [id^="modal"] button[onclick*="Cancelar"]:hover,
+    [id^="modal"] button[onclick*="Cerrar"]:hover {
+      border-color:rgba(255,196,0,.3) !important;
+      color:#ffc400 !important;
+      background:#17212d !important;
+    }
+
+    /* Toast futurista */
+    .toast {
+      top:24px !important;
+      right:24px !important;
+      min-width:320px;
+      max-width:420px !important;
+      min-height:64px;
+      padding:13px 18px !important;
+      border:1px solid rgba(255,255,255,.10) !important;
+      border-left:3px solid #ffc400 !important;
+      border-radius:14px !important;
+      background:
+        radial-gradient(circle at 100% 0%,rgba(255,196,0,.10),transparent 35%),
+        linear-gradient(145deg,rgba(15,23,33,.98),rgba(6,10,16,.98)) !important;
+      color:#eef2f7 !important;
+      box-shadow:0 22px 60px rgba(0,0,0,.55),0 0 28px rgba(255,196,0,.08) !important;
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      overflow:hidden;
+    }
+    .toast::before {
+      content:"HEKA // SYSTEM NOTIFICATION";
+      position:absolute;
+      top:6px; right:14px;
+      font-size:7px;
+      letter-spacing:1.7px;
+      color:rgba(255,196,0,.45);
+      pointer-events:none;
+    }
+    .toast::after {
+      content:"";
+      position:absolute;
+      left:0; bottom:0;
+      height:2px; width:100%;
+      background:linear-gradient(90deg,#ffc400,#ffe36d);
+      transform-origin:left;
+      transform:scaleX(1);
+    }
+    .toast.show::after { animation:hekaToastLife var(--toast-duration,4s) linear forwards; }
+    @keyframes hekaToastLife { to { transform:scaleX(0); } }
+    .toast i {
+      width:34px;height:34px;flex:0 0 34px;
+      display:inline-flex !important;align-items:center;justify-content:center;
+      border-radius:10px;
+      background:rgba(255,196,0,.09);
+      color:#ffc400 !important;
+      font-size:17px !important;
+      box-shadow:0 0 18px rgba(255,196,0,.07) inset;
+    }
+    #toastMessage { color:#eaf0f7 !important; line-height:1.35; padding-top:6px; }
+    .toast.success { border-left-color:#19d17f !important; }
+    .toast.success i { color:#19d17f !important; background:rgba(25,209,127,.09); }
+    .toast.success::after { background:linear-gradient(90deg,#19d17f,#7dffc2); }
+    .toast.error { border-left-color:#ff5c69 !important; }
+    .toast.error i { color:#ff5c69 !important; background:rgba(255,92,105,.09); }
+    .toast.error::after { background:linear-gradient(90deg,#ff5c69,#ff9aa2); }
+    .toast.warning { border-left-color:#ffc400 !important; }
+    .toast.info { border-left-color:#62a8ff !important; }
+    .toast.info i { color:#62a8ff !important; background:rgba(98,168,255,.09); }
+    .toast.info::after { background:linear-gradient(90deg,#62a8ff,#a8d0ff); }
+
+    .loading {
+      background:rgba(2,5,9,.82) !important;
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+    }
+    .spinner {
+      border-color:rgba(255,255,255,.08) !important;
+      border-top-color:#ffc400 !important;
+      box-shadow:0 0 28px rgba(255,196,0,.16);
+    }
+
+    @media (max-width: 640px) {
+      .toast { left:14px !important; right:14px !important; min-width:0; max-width:none !important; }
+      .modal-content { width:94% !important; max-height:88vh !important; border-radius:15px !important; }
+      .modal-header { padding:18px 20px !important; }
+      .modal-body { padding:20px !important; }
+      .modal-header::after { display:none; }
+    }
+
   </style>
 </head>
 <body>
@@ -10330,11 +10727,47 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
       document.getElementById('loading').style.display = show ? 'flex' : 'none';
     }
 
-    function showToast(msg) {
+    function showToast(msg, duration = 4000) {
       const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').innerText = msg;
+      const icon = toast ? toast.querySelector('i') : null;
+      if (!toast) return;
+
+      const text = String(msg ?? '');
+      const lower = text.toLowerCase();
+      let type = 'info';
+      let iconClass = 'bi-info-circle-fill';
+
+      if (/[❌⛔]|error|fall[oó]|incorrect|no se pudo|problema/.test(lower)) {
+        type = 'error';
+        iconClass = 'bi-x-octagon-fill';
+      } else if (/[⚠️⚠]|warning|advert|debes |selecciona |falta |obligatorio|no hay |no se detectaron/.test(lower)) {
+        type = 'warning';
+        iconClass = 'bi-exclamation-triangle-fill';
+      } else if (/[✅✔]|éxito|exitosamente|correctamente|guardado|actualizado|creado|sincronizado/.test(lower)) {
+        type = 'success';
+        iconClass = 'bi-check-circle-fill';
+      } else {
+        type = 'info';
+        iconClass = 'bi-info-circle-fill';
+      }
+
+      toast.classList.remove('success', 'error', 'warning', 'info', 'show');
+      toast.classList.add(type);
+      toast.style.setProperty('--toast-duration', `${duration}ms`);
+      document.getElementById('toastMessage').innerText = text;
+
+      if (icon) {
+        icon.className = `bi ${iconClass}`;
+      }
+
+      // Reinicia la animación de vida del indicador inferior.
+      void toast.offsetWidth;
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 4000);
+
+      clearTimeout(window.__hekaToastTimer);
+      window.__hekaToastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, Number(duration) || 4000);
     }
 
     function goToStep(stepId) {
