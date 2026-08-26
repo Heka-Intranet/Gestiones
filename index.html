@@ -3715,6 +3715,195 @@ table tbody tr.row-selected { background: rgba(253,184,19,.09) !important; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 }
 
+
+/* ================================================================
+   HEKA // FUTURE REALISM v2 — HOLOGRAPHIC / HUD MOTION LAYER
+   Visual-only enhancement. No IDs, handlers, functions or backend logic changed.
+   White background preserved; yellow/black identity preserved.
+   ================================================================ */
+:root{
+  --fx-yellow:#FDB813;
+  --fx-yellow-2:#ffd95a;
+  --fx-ink:#0a0d12;
+  --fx-line:rgba(10,13,18,.09);
+  --fx-glow:rgba(253,184,19,.28);
+  --fx-cyan:#36d9ff;
+  --fx-ease:cubic-bezier(.16,1,.3,1);
+}
+
+/* Ambient technology grid — extremely subtle so the canvas remains white */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:-1;
+  background-image:linear-gradient(rgba(10,13,18,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(10,13,18,.018) 1px,transparent 1px);
+  background-size:42px 42px; mask-image:linear-gradient(to bottom,rgba(0,0,0,.7),transparent 75%);
+}
+
+/* Premium motion language */
+@keyframes fxFloat{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-3px,0)}}
+@keyframes fxPulse{0%,100%{opacity:.35;transform:scale(.92)}50%{opacity:.95;transform:scale(1.04)}}
+@keyframes fxScan{0%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+@keyframes fxShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes fxModalIn{0%{opacity:0;transform:translate3d(0,22px,0) scale(.965);filter:blur(7px)}65%{opacity:1;filter:blur(0)}100%{transform:translate3d(0,0,0) scale(1)}}
+@keyframes fxOverlayIn{from{opacity:0}to{opacity:1}}
+@keyframes fxBorder{0%,100%{box-shadow:0 0 0 1px rgba(253,184,19,.10),0 20px 70px rgba(8,12,18,.14)}50%{box-shadow:0 0 0 1px rgba(253,184,19,.30),0 20px 70px rgba(8,12,18,.18),0 0 34px rgba(253,184,19,.10)}}
+@keyframes fxButtonGlow{0%,100%{box-shadow:0 5px 16px rgba(8,12,18,.10)}50%{box-shadow:0 8px 25px rgba(8,12,18,.14),0 0 22px rgba(253,184,19,.15)}}
+
+/* Interactive controls: tactile, precise, futuristic */
+button,.btn,.suite-filter-btn,.novedad-dropdown-btn,.dropdown-item,.close-modal-btn,.toggle-btn,
+input[type=button],input[type=submit],input[type=reset],select{
+  transition:transform .22s var(--fx-ease),box-shadow .22s var(--fx-ease),border-color .22s var(--fx-ease),background-color .22s var(--fx-ease),color .22s var(--fx-ease),filter .22s var(--fx-ease) !important;
+}
+button:hover,.btn:hover,.suite-filter-btn:hover,.novedad-dropdown-btn:hover,.toggle-btn:hover,input[type=button]:hover,input[type=submit]:hover{
+  transform:translateY(-2px); filter:saturate(1.06);
+}
+button:active,.btn:active,.suite-filter-btn:active,.novedad-dropdown-btn:active,.toggle-btn:active,input[type=button]:active,input[type=submit]:active{
+  transform:translateY(0) scale(.975);
+}
+button:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:none !important; box-shadow:0 0 0 3px rgba(253,184,19,.16),0 0 0 1px rgba(253,184,19,.75) !important;
+}
+
+/* Yellow primary buttons get a moving light sweep */
+.btn-primary,.btn-success,.btn-warning,.btn-dark,.primary-btn,[class*="btn-primary"]{
+  position:relative; overflow:hidden;
+}
+.btn-primary::after,.btn-success::after,.btn-warning::after,.btn-dark::after,.primary-btn::after,[class*="btn-primary"]::after{
+  content:""; position:absolute; inset:0; width:34%; transform:translateX(-150%) skewX(-18deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);
+  pointer-events:none; animation:fxScan 4.8s ease-in-out infinite;
+}
+
+/* Cards become precision surfaces */
+.card,.dashboard-card,.stat-card,.metric-card,.panel,.content-card,.lo-panel-card,.result-card{
+  position:relative; border-color:var(--fx-line) !important;
+  box-shadow:0 12px 35px rgba(8,12,18,.055),0 2px 8px rgba(8,12,18,.035) !important;
+  transition:transform .28s var(--fx-ease),box-shadow .28s var(--fx-ease),border-color .28s ease !important;
+}
+.card:hover,.dashboard-card:hover,.stat-card:hover,.metric-card:hover,.panel:hover,.content-card:hover,.lo-panel-card:hover,.result-card:hover{
+  transform:translateY(-3px); border-color:rgba(253,184,19,.24) !important;
+  box-shadow:0 20px 45px rgba(8,12,18,.075),0 0 0 1px rgba(253,184,19,.05) !important;
+}
+.card::before,.dashboard-card::before,.stat-card::before,.metric-card::before,.panel::before,.content-card::before{
+  content:""; position:absolute; top:0; left:18px; right:18px; height:1px; opacity:.65; pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(253,184,19,.65),transparent);
+}
+
+/* Tables: scanning hover + sharper hierarchy */
+table thead th{position:relative !important;}
+table thead th::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(253,184,19,.45),transparent);opacity:.7}
+table tbody tr{transition:background-color .18s ease,transform .18s ease !important}
+table tbody tr:hover{background:linear-gradient(90deg,rgba(253,184,19,.055),rgba(253,184,19,.012),transparent) !important}
+
+/* Inputs and filters: instrument-panel feel */
+input,select,textarea,.form-control,.form-select,.search-input{
+  border-color:#e2e5e9 !important; box-shadow:inset 0 1px 2px rgba(8,12,18,.025) !important;
+  transition:border-color .22s ease,box-shadow .22s ease,background .22s ease,transform .22s var(--fx-ease) !important;
+}
+input:hover,select:hover,textarea:hover,.form-control:hover,.form-select:hover{border-color:#cfd4db !important}
+input:focus,select:focus,textarea:focus,.form-control:focus,.form-select:focus,.search-input:focus{
+  border-color:rgba(253,184,19,.82) !important; background:#fff !important;
+  box-shadow:0 0 0 3px rgba(253,184,19,.10),0 8px 24px rgba(8,12,18,.05) !important;
+  transform:translateY(-1px);
+}
+
+/* Filters */
+.suite-filter-container,.filters-container,.filter-bar,.search-bar{
+  border:1px solid rgba(8,12,18,.07) !important; border-radius:16px !important;
+  background:rgba(255,255,255,.82) !important; box-shadow:0 8px 28px rgba(8,12,18,.045) !important;
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+}
+.suite-filter-btn,.filter-btn{
+  position:relative; overflow:hidden; border-radius:11px !important;
+}
+.suite-filter-btn::before,.filter-btn::before{
+  content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent,rgba(255,255,255,.7),transparent);
+  transform:translateX(-120%);transition:transform .45s var(--fx-ease);pointer-events:none;
+}
+.suite-filter-btn:hover::before,.filter-btn:hover::before{transform:translateX(120%)}
+
+/* Modal system — futuristic glass/HUD shell, including inline-styled legacy modals */
+.modal,.modal-backdrop,[id^="modal"]{
+  animation:fxOverlayIn .22s ease both;
+}
+.modal-content,[id^="modal"] > div{
+  position:relative !important;
+  border:1px solid rgba(8,12,18,.10) !important;
+  border-radius:20px !important;
+  box-shadow:0 30px 100px rgba(5,8,12,.20),0 0 0 1px rgba(253,184,19,.05) !important;
+  overflow:hidden !important;
+  animation:fxModalIn .42s var(--fx-ease) both,fxBorder 3.8s ease-in-out 1s infinite !important;
+}
+/* Do not alter actual modal display semantics; only style visible surfaces */
+.modal.show .modal-content{animation:fxModalIn .42s var(--fx-ease) both,fxBorder 3.8s ease-in-out 1s infinite !important}
+[id^="modal"] > div::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;z-index:5;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,rgba(253,184,19,.2) 15%,#FDB813 50%,rgba(253,184,19,.2) 85%,transparent 100%);
+  background-size:200% 100%;animation:fxShimmer 4s linear infinite;
+}
+[id^="modal"] > div::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:4;
+  background:linear-gradient(115deg,transparent 0%,rgba(255,255,255,.22) 46%,transparent 52%);
+  transform:translateX(-120%);animation:fxScan 6.5s ease-in-out 1.2s infinite;
+}
+.modal-header,[id^="modal"] > div > :first-child{
+  position:relative; z-index:6;
+}
+.modal-body,.modal-footer,[id^="modal"] > div > :not(:first-child){position:relative;z-index:6}
+.modal-header{
+  border-bottom:1px solid rgba(8,12,18,.07) !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(250,251,252,.92)) !important;
+}
+.modal-footer{border-top:1px solid rgba(8,12,18,.07) !important;background:#fbfcfd !important}
+
+/* Legacy inline modal headers: preserve their semantic colors while adding HUD sheen */
+[id^="modal"] > div > div:first-child{position:relative;overflow:hidden}
+[id^="modal"] > div > div:first-child::after{
+  content:"";position:absolute;top:0;bottom:0;left:-40%;width:24%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.30),transparent);
+  transform:skewX(-18deg);animation:fxScan 5.5s ease-in-out infinite;pointer-events:none;
+}
+
+/* Modal close buttons */
+.modal .btn-close,[id^="modal"] button[aria-label*="errar"],[id^="modal"] button[title*="errar"]{
+  border-radius:10px !important; transition:transform .22s var(--fx-ease),background .22s ease !important;
+}
+.modal .btn-close:hover,[id^="modal"] button[aria-label*="errar"]:hover,[id^="modal"] button[title*="errar"]:hover{
+  transform:rotate(90deg) scale(1.08) !important; background:rgba(253,184,19,.12) !important;
+}
+
+/* Loading overlay: futuristic scanner */
+.loading{backdrop-filter:blur(10px) !important;-webkit-backdrop-filter:blur(10px) !important}
+.loading::before{
+  content:"";position:absolute;width:180px;height:180px;border:1px solid rgba(253,184,19,.22);border-radius:50%;animation:fxPulse 2.1s ease-in-out infinite;pointer-events:none;
+}
+.loading::after{
+  content:"";position:absolute;width:240px;height:1px;background:linear-gradient(90deg,transparent,#FDB813,transparent);animation:fxScan 1.8s linear infinite;pointer-events:none;
+}
+.spinner{position:relative;z-index:2 !important;animation:spin 1s linear infinite,fxPulse 1.8s ease-in-out infinite !important}
+
+/* Sidebar active item = illuminated navigation node */
+.nav-item.active,.sidebar .active{
+  position:relative !important; box-shadow:inset 3px 0 0 #FDB813,0 5px 18px rgba(253,184,19,.08) !important;
+}
+.nav-item.active::after{
+  content:"";position:absolute;right:12px;top:50%;width:5px;height:5px;border-radius:50%;background:#FDB813;box-shadow:0 0 0 4px rgba(253,184,19,.08),0 0 12px rgba(253,184,19,.8);transform:translateY(-50%);animation:fxPulse 2s ease-in-out infinite;
+}
+
+/* Login: cinematic technology without abandoning white */
+.login-overlay{background:radial-gradient(circle at 50% 25%,#fff 0%,#f7f8fa 52%,#edf0f3 100%) !important}
+.login-overlay::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(10,13,18,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(10,13,18,.022) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(circle at 50% 35%,#000,transparent 72%);pointer-events:none}
+.login-card{position:relative;overflow:hidden !important}
+.login-card::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,rgba(253,184,19,.07) 50%,transparent 80%);background-size:220% 100%;animation:fxShimmer 6s linear infinite;pointer-events:none}
+
+/* Toasts */
+.toast{animation:fxModalIn .4s var(--fx-ease) both !important}
+
+/* Respect users who disable motion */
+@media (prefers-reduced-motion:reduce){
+  body::before,.btn-primary::after,.btn-success::after,.btn-warning::after,.btn-dark::after,[class*="btn-primary"]::after,
+  [id^="modal"] > div::before,[id^="modal"] > div::after,[id^="modal"] > div > div:first-child::after,
+  .loading::before,.loading::after,.spinner,.nav-item.active::after,.login-card::before{animation:none !important}
+}
+
 </style>
 </head>
 <body>
