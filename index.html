@@ -5450,47 +5450,98 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
   border-top-color:rgba(255,255,255,.08) !important;
   color:#dce5ef !important;
 }
-</style>
 
-<style id="heka-profile-dropdown-overlay-fix">
-/* HEKA PROFILE DROPDOWN — OVERLAY FIX DESKTOP
-   Mantiene el menú del perfil por encima del contenido, paneles y tablas. */
-.top-header{
-  z-index: 120000 !important;
-  overflow: visible !important;
-}
-.top-header .user-profile-container{
-  z-index: 120010 !important;
-  isolation: isolate;
-}
-.top-header .user-profile-container .dropdown-menu{
-  z-index: 120020 !important;
-  position: absolute !important;
-  top: calc(100% + 10px) !important;
-  right: 0 !important;
-  visibility: visible;
-}
-/* Evita que un contenedor superior recorte el dropdown. */
-.header-actions,.header-right,.top-header > *{
-  overflow: visible !important;
-}
-/* El menú abierto debe crear su propia capa visual. */
-.top-header .user-profile-container .dropdown-menu.show{
-  display: block !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  transform: translateY(0) scale(1) !important;
-}
-/* En escritorio, el contenido principal nunca debe pintar por encima del header. */
-@media (min-width:769px){
-  .top-header{
+/* =========================================================
+   HEKA - DROPDOWN PERFIL DESKTOP: CAPA SUPERIOR
+   El menú de nombre/rol/avatar debe quedar por encima de
+   tablas, cards, paneles y cualquier contenido del dashboard.
+   ========================================================= */
+@media (min-width: 769px) {
+  .main-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .top-header {
     position: fixed !important;
-    z-index: 120000 !important;
+    z-index: 100000 !important;
+    overflow: visible !important;
+    isolation: isolate;
   }
-  .top-header .user-profile-container{
+
+  .top-header .user-profile-container {
     position: relative !important;
+    z-index: 100001 !important;
+    isolation: isolate;
+  }
+
+  .top-header #userDropdown {
+    position: absolute !important;
+    top: calc(100% + 10px) !important;
+    right: 0 !important;
+    z-index: 100002 !important;
+    min-width: 230px;
+    max-height: min(70vh, 520px);
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    display: none;
+    pointer-events: none;
+    background: #080b10 !important;
+    color: #f5f7fa !important;
+    border: 1px solid rgba(253,184,19,.55) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 18px 55px rgba(0,0,0,.65), 0 0 28px rgba(253,184,19,.14) !important;
+  }
+
+  .top-header #userDropdown.show {
+    display: block !important;
+    pointer-events: auto;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  .top-header #userDropdown::before {
+    content: "";
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #FDB813, transparent);
+  }
+
+  .top-header #userDropdown .dropdown-item {
+    color: #eef1f5 !important;
+    background: transparent !important;
+  }
+
+  .top-header #userDropdown .dropdown-item:hover {
+    color: #FDB813 !important;
+    background: rgba(253,184,19,.10) !important;
+  }
+
+  .top-header #userDropdown .dropdown-divider {
+    border-color: rgba(255,255,255,.10) !important;
+  }
+
+  .top-header #userDropdown .dropdown-item.text-danger:hover {
+    color: #ff6b6b !important;
+    background: rgba(220,53,69,.10) !important;
   }
 }
+
+/* Evita que capas visuales del contenido creen una pila por encima del header. */
+@media (min-width: 769px) {
+  .content-area,
+  .panel,
+  .card,
+  .table-container,
+  .status-panel,
+  [class*="stat-card"],
+  [class*="result"],
+  [class*="filter"] {
+    position: relative;
+    z-index: 0;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -11427,9 +11478,17 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 
       targetDropdown.classList.toggle('show');
     }
-    window.addEventListener('click', () => {
-      document.getElementById('userDropdown').classList.remove('show');
-      document.getElementById('mobileUserDropdown').classList.remove('show');
+    window.addEventListener('click', (event) => {
+      const desktop = document.getElementById('userDropdown');
+      const mobile = document.getElementById('mobileUserDropdown');
+      const desktopProfile = document.querySelector('.top-header .user-profile-container');
+      const mobileProfile = document.querySelector('.mobile-profile-wrapper');
+
+      if (desktopProfile && desktopProfile.contains(event.target)) return;
+      if (mobileProfile && mobileProfile.contains(event.target)) return;
+
+      if (desktop) desktop.classList.remove('show');
+      if (mobile) mobile.classList.remove('show');
     });
 
     function handleRequestCode(e) {
