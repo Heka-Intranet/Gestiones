@@ -4445,6 +4445,42 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 }
 /* El click del menú no debe cerrar/rebotar por el contenedor padre. */
 .user-profile-container .dropdown-menu{isolation:isolate;}
+
+/* ================================================================
+   PROFILE DROPDOWN PORTAL - ESCRITORIO
+   Se renderiza sobre el content-area, sin depender de su stacking context.
+   ================================================================ */
+@media (min-width: 769px) {
+  body > #userDropdown.heka-portal-dropdown {
+    position: fixed !important;
+    z-index: 2147483647 !important;
+    display: block !important;
+    min-width: 230px !important;
+    max-height: min(70vh, 520px) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    background: #080b10 !important;
+    color: #f5f7fa !important;
+    border: 1px solid rgba(253,184,19,.60) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 22px 70px rgba(0,0,0,.82), 0 0 32px rgba(253,184,19,.18) !important;
+    isolation: isolate !important;
+  }
+  body > #userDropdown.heka-portal-dropdown.show {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
+  }
+  body > #userDropdown.heka-portal-dropdown .dropdown-item {
+    color: #eef1f5 !important;
+    background: transparent !important;
+  }
+  body > #userDropdown.heka-portal-dropdown .dropdown-item:hover {
+    color: #FDB813 !important;
+    background: rgba(253,184,19,.10) !important;
+  }
+}
+
 </style>
 <style id="heka-future-ui-audit-v2">
 /* =========================================================
@@ -11457,27 +11493,89 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
       if(mobileImg) mobileImg.src = src;
     }
 
+    // Dropdown de perfil: en escritorio se monta directamente en <body> para
+    // escapar de cualquier stacking-context/overflow del content-area.
+    let desktopDropdownHome = null;
+    let desktopDropdownOpen = false;
+
+    function positionDesktopUserDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      const profile = document.querySelector('.top-header .user-profile-container');
+      if (!dropdown || !profile || !desktopDropdownOpen || window.innerWidth < 769) return;
+
+      const r = profile.getBoundingClientRect();
+      const gap = 10;
+      const width = Math.max(dropdown.offsetWidth || 240, 230);
+      const margin = 12;
+      let left = r.right - width;
+      left = Math.max(margin, Math.min(left, window.innerWidth - width - margin));
+
+      dropdown.style.position = 'fixed';
+      dropdown.style.top = Math.round(r.bottom + gap) + 'px';
+      dropdown.style.left = Math.round(left) + 'px';
+      dropdown.style.right = 'auto';
+      dropdown.style.zIndex = '2147483647';
+    }
+
+    function closeDesktopUserDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      if (!dropdown) return;
+      dropdown.classList.remove('show');
+      desktopDropdownOpen = false;
+      dropdown.classList.remove('heka-portal-dropdown');
+      dropdown.style.position = '';
+      dropdown.style.top = '';
+      dropdown.style.left = '';
+      dropdown.style.right = '';
+      dropdown.style.zIndex = '';
+
+      if (desktopDropdownHome && desktopDropdownHome.parentNode) {
+        desktopDropdownHome.appendChild(dropdown);
+      }
+      desktopDropdownHome = null;
+    }
+
+    function openDesktopUserDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      const profile = document.querySelector('.top-header .user-profile-container');
+      if (!dropdown || !profile) return;
+
+      if (!desktopDropdownHome) desktopDropdownHome = profile;
+      if (dropdown.parentNode !== document.body) document.body.appendChild(dropdown);
+
+      dropdown.classList.add('heka-portal-dropdown');
+      dropdown.classList.add('show');
+      desktopDropdownOpen = true;
+      positionDesktopUserDropdown();
+    }
+
     function toggleUserDropdown(e) {
-      // Abrir únicamente el menú del perfil que fue pulsado.
-      // La versión anterior alternaba simultáneamente los dos dropdowns
-      // (desktop + móvil), lo que podía provocar que uno se ocultara
-      // inmediatamente por reglas de responsive/posicionamiento.
       if (e) e.stopPropagation();
 
       const desktopDropdown = document.getElementById('userDropdown');
       const mobileDropdown = document.getElementById('mobileUserDropdown');
       const trigger = e && e.currentTarget ? e.currentTarget : null;
       const isMobileProfile = !!(trigger && trigger.classList.contains('mobile-profile-wrapper'));
-      const targetDropdown = isMobileProfile ? mobileDropdown : desktopDropdown;
 
-      if (!targetDropdown) return;
+      if (isMobileProfile) {
+        closeDesktopUserDropdown();
+        if (!mobileDropdown) return;
+        mobileDropdown.classList.toggle('show');
+        return;
+      }
 
-      // Cerrar el otro menú antes de abrir el seleccionado.
-      if (desktopDropdown && desktopDropdown !== targetDropdown) desktopDropdown.classList.remove('show');
-      if (mobileDropdown && mobileDropdown !== targetDropdown) mobileDropdown.classList.remove('show');
-
-      targetDropdown.classList.toggle('show');
+      if (!desktopDropdown) return;
+      if (desktopDropdownOpen) {
+        closeDesktopUserDropdown();
+      } else {
+        if (mobileDropdown) mobileDropdown.classList.remove('show');
+        openDesktopUserDropdown();
+      }
     }
+
+    window.addEventListener('resize', positionDesktopUserDropdown, { passive: true });
+    window.addEventListener('scroll', positionDesktopUserDropdown, { passive: true });
+
     window.addEventListener('click', (event) => {
       const desktop = document.getElementById('userDropdown');
       const mobile = document.getElementById('mobileUserDropdown');
@@ -11486,8 +11584,9 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 
       if (desktopProfile && desktopProfile.contains(event.target)) return;
       if (mobileProfile && mobileProfile.contains(event.target)) return;
+      if (desktop && desktop.contains(event.target)) return;
 
-      if (desktop) desktop.classList.remove('show');
+      closeDesktopUserDropdown();
       if (mobile) mobile.classList.remove('show');
     });
 
