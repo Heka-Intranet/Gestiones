@@ -4390,7 +4390,62 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
       .modal-header::after { display:none; }
     }
 
-  </style>
+  
+/* ===== HEKA PROFILE DROPDOWN FIX ===== */
+.user-profile-container{position:relative;z-index:10020;}
+.user-profile-container .dropdown-menu{
+  display:none !important;
+  position:absolute !important;
+  top:calc(100% + 10px) !important;
+  right:0 !important;
+  width:230px !important;
+  min-width:230px !important;
+  max-height:calc(100vh - 100px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  background:linear-gradient(145deg,#0d141e,#070b11) !important;
+  border:1px solid rgba(255,196,0,.22) !important;
+  border-radius:14px !important;
+  box-shadow:0 20px 55px rgba(0,0,0,.62),0 0 28px rgba(255,196,0,.08) !important;
+  padding:8px !important;
+  opacity:0;
+  transform:translateY(-6px) scale(.98);
+  pointer-events:none;
+  transition:opacity .16s ease,transform .16s ease !important;
+}
+.user-profile-container .dropdown-menu.show{
+  display:block !important;
+  opacity:1 !important;
+  transform:translateY(0) scale(1) !important;
+  pointer-events:auto !important;
+}
+.user-profile-container .dropdown-item{
+  color:#dbe3ec !important;
+  background:transparent !important;
+  border-radius:9px !important;
+  padding:11px 13px !important;
+}
+.user-profile-container .dropdown-item:hover{
+  background:rgba(255,196,0,.09) !important;
+  color:#fff !important;
+}
+.user-profile-container .dropdown-divider{border-color:rgba(255,255,255,.08) !important;}
+.mobile-profile-wrapper .dropdown-menu{
+  top:calc(100% + 8px) !important;
+  right:0 !important;
+  left:auto !important;
+}
+@media(max-width:768px){
+  .mobile-profile-wrapper .dropdown-menu{
+    position:absolute !important;
+    right:0 !important;
+    width:235px !important;
+    max-width:calc(100vw - 24px) !important;
+  }
+}
+/* El click del menú no debe cerrar/rebotar por el contenedor padre. */
+.user-profile-container .dropdown-menu{isolation:isolate;}
+</style>
 <style id="heka-future-ui-audit-v2">
 /* =========================================================
    HEKA FUTURE UI v2 — AUDITORÍA VISUAL GLOBAL
@@ -11311,9 +11366,25 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
     }
 
     function toggleUserDropdown(e) {
-      e.stopPropagation();
-      document.getElementById('userDropdown').classList.toggle('show');
-      document.getElementById('mobileUserDropdown').classList.toggle('show');
+      // Abrir únicamente el menú del perfil que fue pulsado.
+      // La versión anterior alternaba simultáneamente los dos dropdowns
+      // (desktop + móvil), lo que podía provocar que uno se ocultara
+      // inmediatamente por reglas de responsive/posicionamiento.
+      if (e) e.stopPropagation();
+
+      const desktopDropdown = document.getElementById('userDropdown');
+      const mobileDropdown = document.getElementById('mobileUserDropdown');
+      const trigger = e && e.currentTarget ? e.currentTarget : null;
+      const isMobileProfile = !!(trigger && trigger.classList.contains('mobile-profile-wrapper'));
+      const targetDropdown = isMobileProfile ? mobileDropdown : desktopDropdown;
+
+      if (!targetDropdown) return;
+
+      // Cerrar el otro menú antes de abrir el seleccionado.
+      if (desktopDropdown && desktopDropdown !== targetDropdown) desktopDropdown.classList.remove('show');
+      if (mobileDropdown && mobileDropdown !== targetDropdown) mobileDropdown.classList.remove('show');
+
+      targetDropdown.classList.toggle('show');
     }
     window.addEventListener('click', () => {
       document.getElementById('userDropdown').classList.remove('show');
