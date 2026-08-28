@@ -5451,6 +5451,47 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
   color:#dce5ef !important;
 }
 </style>
+
+<style id="heka-profile-dropdown-overlay-fix">
+/* HEKA PROFILE DROPDOWN — OVERLAY FIX DESKTOP
+   Mantiene el menú del perfil por encima del contenido, paneles y tablas. */
+.top-header{
+  z-index: 120000 !important;
+  overflow: visible !important;
+}
+.top-header .user-profile-container{
+  z-index: 120010 !important;
+  isolation: isolate;
+}
+.top-header .user-profile-container .dropdown-menu{
+  z-index: 120020 !important;
+  position: absolute !important;
+  top: calc(100% + 10px) !important;
+  right: 0 !important;
+  visibility: visible;
+}
+/* Evita que un contenedor superior recorte el dropdown. */
+.header-actions,.header-right,.top-header > *{
+  overflow: visible !important;
+}
+/* El menú abierto debe crear su propia capa visual. */
+.top-header .user-profile-container .dropdown-menu.show{
+  display: block !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateY(0) scale(1) !important;
+}
+/* En escritorio, el contenido principal nunca debe pintar por encima del header. */
+@media (min-width:769px){
+  .top-header{
+    position: fixed !important;
+    z-index: 120000 !important;
+  }
+  .top-header .user-profile-container{
+    position: relative !important;
+  }
+}
+</style>
 </head>
 <body>
 <!-- INICIO LOGIN OVERLAY -->
