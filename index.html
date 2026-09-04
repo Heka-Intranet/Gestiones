@@ -23539,7 +23539,7 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
         const valorIndem = parseFloat(row.valIndemnizar || row.valPagarHeka || 0);
         // HTML para la columna de CHECK
         const checkHTML = `<td style="text-align:center;">
-            <input type="checkbox" class="chk-pago-row" data-guia="${row.guia}" data-valor="${valorIndem}" onchange="actualizarContadorSeleccionGerencial()">
+            <input type="checkbox" class="chk-pago-row" data-guia="${String(row.guia || '').replace(/"/g, '&quot;')}" data-sheet-row="${row._sheetRow || ''}" data-valor="${valorIndem}" onchange="actualizarContadorSeleccionGerencial()">
         </td>`;
 
         let cellsHTML = checkHTML; // Empezamos con el check
@@ -23969,19 +23969,24 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
         return;
       }
 
-      const guiasAPagar = [];
-      checks.forEach(chk => guiasAPagar.push(chk.getAttribute('data-guia')));
+      const registrosAPagar = [];
+      checks.forEach(chk => {
+        registrosAPagar.push({
+          guia: chk.getAttribute('data-guia') || '',
+          sheetRow: parseInt(chk.getAttribute('data-sheet-row') || '0', 10)
+        });
+      });
 
       // Pasamos una función que recibe 'modalRef'
       mostrarConfirmacionPago(`¿Marcar ${checks.length} registros como PAGADOS?`, function(modalRef) {
         
         // Llamamos al backend pasando el modal
-        ejecutarPagoBackend(guiasAPagar, modalRef);
+        ejecutarPagoBackend(registrosAPagar, modalRef);
       });
     }
 
     // Lógica que llama a Google y refresca (SIN location.reload)
-    function ejecutarPagoBackend(guias, modalRef) {
+    function ejecutarPagoBackend(registros, modalRef) {
       // Ya no mostramos el loadingGerencial (el de la tabla), porque el modal ya es el loading.
       // Pero si quieres, déjalo. Yo lo comentaré para que no se vea doble:
       // const loading = document.getElementById('loadingGerencial');
@@ -24008,7 +24013,7 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
           if(modalRef) modalRef.remove(); // Cerrar modal también si falla
           showToast("Error de conexión: " + err.message, 4000);
         })
-        .actualizarEstadoPagado(guias, currentGerencialType);
+        .actualizarEstadoPagado(registros, currentGerencialType);
     }
 
     // ============================================================
