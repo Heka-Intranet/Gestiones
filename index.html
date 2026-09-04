@@ -5578,6 +5578,239 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
   }
 }
 
+
+/* ==========================================================
+   HEKA UI PATCH — FILTROS GERENCIAL + MODALES
+   Tema unificado: negro / grafito / dorado.
+   Evita texto negro sobre fondos oscuros y respeta el estilo Heka.
+   ========================================================== */
+#temp-filter-menu {
+  --hf-gold:#ffc400;
+  --hf-gold-2:#ffd84d;
+  --hf-bg:#0a1017;
+  --hf-panel:#101923;
+  --hf-panel-2:#141e29;
+  --hf-line:rgba(255,255,255,.10);
+  --hf-text:#eef3f8;
+  --hf-muted:#8f9dad;
+  background:linear-gradient(145deg,#0a1017 0%,#101923 100%) !important;
+  color:var(--hf-text) !important;
+  border:1px solid rgba(255,196,0,.25) !important;
+  border-radius:12px !important;
+  box-shadow:0 22px 55px rgba(0,0,0,.55),0 0 28px rgba(255,196,0,.06) !important;
+  padding:10px !important;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif !important;
+  overflow:hidden !important;
+}
+#temp-filter-menu * { box-sizing:border-box; }
+#temp-filter-menu > div:first-child {
+  color:#ffd34d !important;
+  background:linear-gradient(180deg,#141e29,#0e161f) !important;
+  border-bottom:1px solid rgba(255,196,0,.18) !important;
+  border-radius:8px 8px 0 0 !important;
+  font-weight:700 !important;
+}
+#temp-filter-menu input[type="text"] {
+  width:100% !important;
+  height:38px !important;
+  padding:8px 10px !important;
+  margin:8px 0 !important;
+  background:#080d13 !important;
+  color:#edf3f8 !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:8px !important;
+  outline:none !important;
+}
+#temp-filter-menu input[type="text"]::placeholder { color:#657487 !important; }
+#temp-filter-menu input[type="text"]:focus {
+  border-color:rgba(255,196,0,.55) !important;
+  box-shadow:0 0 0 3px rgba(255,196,0,.08) !important;
+}
+#temp-filter-menu button {
+  min-height:34px !important;
+  padding:6px 9px !important;
+  border-radius:8px !important;
+  border:1px solid rgba(255,255,255,.11) !important;
+  background:linear-gradient(145deg,#18222e,#0d141d) !important;
+  color:#dce5ef !important;
+  font-weight:600 !important;
+  cursor:pointer !important;
+}
+#temp-filter-menu button:hover {
+  border-color:rgba(255,196,0,.38) !important;
+  color:#ffd34d !important;
+  background:#151f2b !important;
+}
+#temp-filter-menu button:last-child {
+  background:linear-gradient(135deg,#ffd21a,#dca400) !important;
+  color:#080a0e !important;
+  border-color:#ffc400 !important;
+  box-shadow:0 6px 18px rgba(255,196,0,.12) !important;
+}
+#temp-filter-menu button:last-child:hover { color:#000 !important; }
+#temp-filter-menu > div:nth-of-type(3) {
+  background:#080d13 !important;
+  border-top:1px solid rgba(255,255,255,.08) !important;
+  border-bottom:1px solid rgba(255,255,255,.08) !important;
+  border-radius:8px !important;
+}
+#temp-filter-menu .gerencial-filter-option {
+  color:#e7edf4 !important;
+  background:transparent !important;
+  border-radius:7px !important;
+  transition:background .15s ease,color .15s ease !important;
+}
+#temp-filter-menu .gerencial-filter-option:hover {
+  background:rgba(255,196,0,.08) !important;
+  color:#fff !important;
+}
+#temp-filter-menu .gerencial-filter-option span { color:inherit !important; }
+#temp-filter-menu input[type="checkbox"] {
+  width:16px !important;
+  height:16px !important;
+  min-width:16px !important;
+  margin:0 !important;
+  accent-color:#ffc400 !important;
+  cursor:pointer !important;
+}
+#temp-filter-menu > div:last-child { color:#e7edf4 !important; }
+
+/* Indicador claro cuando una columna del Gerencial tiene filtro activo */
+#theadGerencial th[data-filter-active="true"],
+#theadGerencial th.filter-active-gerencial {
+  color:#080a0e !important;
+  background:linear-gradient(135deg,#ffd21a,#dca400) !important;
+  border-color:#ffc400 !important;
+}
+#theadGerencial th.filter-active-gerencial * { color:#080a0e !important; }
+
+/* ==========================================================
+   TODOS LOS MODALES — TEMA HEKA Y CONTRASTE
+   ========================================================== */
+.modal-overlay,
+#modalWhatsAppOverlay,
+#modalProgresoOverlay {
+  background:rgba(0,0,0,.78) !important;
+  backdrop-filter:blur(3px);
+}
+.modal-overlay .modal-content,
+#modalWhatsAppOverlay > div,
+#modalProgresoOverlay > div,
+#modalMetodoPago > div,
+#modalColaOffline > div,
+#modalDuplicadosLista > div,
+#modalDuplicadosInputLista > div,
+#modalValidacionBodega > div,
+#modalValidacionDuplicados > div,
+#modalValidacionDuplicadosInput > div,
+#modalValidacionRecibidas > div,
+#modalValidacionNovedad > div,
+#modalNovedadLista > div,
+#modalRecibidasLista > div,
+#modalBodegaLista > div,
+#modalFloatingIframe > div,
+#modalRecibirHijas > div {
+  background:linear-gradient(145deg,#0a1017 0%,#101923 100%) !important;
+  color:#e8eef5 !important;
+  border:1px solid rgba(255,196,0,.18) !important;
+  box-shadow:0 30px 90px rgba(0,0,0,.62),0 0 40px rgba(255,196,0,.06) !important;
+}
+.modal-overlay .modal-header,
+.modal-overlay .modal-footer {
+  background:linear-gradient(180deg,#141e29,#0e161f) !important;
+  color:#f4f7fa !important;
+  border-color:rgba(255,196,0,.16) !important;
+}
+.modal-overlay .modal-title,
+.modal-overlay .modal-title h1,
+.modal-overlay .modal-title h2,
+.modal-overlay .modal-title h3,
+.modal-overlay .modal-title h4,
+.modal-overlay h1,
+.modal-overlay h2,
+.modal-overlay h3,
+.modal-overlay h4,
+#modalWhatsAppOverlay h1,#modalWhatsAppOverlay h2,#modalWhatsAppOverlay h3,
+#modalProgresoOverlay h1,#modalProgresoOverlay h2,#modalProgresoOverlay h3 {
+  color:#f4f7fa !important;
+}
+.modal-overlay .modal-body,
+.modal-overlay .modal-body p,
+.modal-overlay .modal-body span,
+.modal-overlay .modal-body div,
+.modal-overlay .modal-body td,
+.modal-overlay .modal-body th,
+.modal-overlay .modal-footer,
+#modalWhatsAppOverlay p,#modalWhatsAppOverlay span,
+#modalProgresoOverlay p,#modalProgresoOverlay span {
+  color:#dfe7ef !important;
+}
+.modal-overlay .modal-body label,
+.modal-overlay label { color:#aab7c5 !important; }
+.modal-overlay input:not([type="checkbox"]):not([type="radio"]),
+.modal-overlay select,
+.modal-overlay textarea,
+#modalWhatsAppOverlay input,
+#modalWhatsAppOverlay select,
+#modalWhatsAppOverlay textarea,
+#modalProgresoOverlay input,
+#modalProgresoOverlay select,
+#modalProgresoOverlay textarea {
+  background:#080d13 !important;
+  color:#edf3f8 !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+}
+.modal-overlay input::placeholder,
+.modal-overlay textarea::placeholder { color:#657487 !important; }
+.modal-overlay input:focus,
+.modal-overlay select:focus,
+.modal-overlay textarea:focus {
+  border-color:rgba(255,196,0,.55) !important;
+  box-shadow:0 0 0 3px rgba(255,196,0,.08) !important;
+  outline:none !important;
+}
+.modal-overlay table,
+.modal-overlay table tbody,
+.modal-overlay table tr,
+.modal-overlay table td {
+  background:#0b1118 !important;
+  color:#e7edf4 !important;
+  border-color:rgba(255,255,255,.08) !important;
+}
+.modal-overlay table th {
+  background:linear-gradient(180deg,#17212c,#101820) !important;
+  color:#ffd34d !important;
+  border-color:rgba(255,196,0,.20) !important;
+}
+.modal-overlay .close-modal-btn,
+.modal-overlay button[aria-label*="Cerrar"],
+.modal-overlay button[title*="Cerrar"] {
+  color:#aab7c5 !important;
+  background:transparent !important;
+}
+.modal-overlay .close-modal-btn:hover { color:#ff5b68 !important; }
+
+/* Controles con estilos inline: impedir que el navegador los vuelva negros */
+.modal-overlay button,
+#modalWhatsAppOverlay button,
+#modalProgresoOverlay button {
+  color:#dce5ef !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+.modal-overlay button.btn-primary,
+.modal-overlay button[style*="background: #FDB813"],
+.modal-overlay button[style*="background:#FDB813"] {
+  background:linear-gradient(135deg,#ffd21a,#dca400) !important;
+  color:#080a0e !important;
+}
+
+/* Móvil: el filtro de columna nunca debe salirse de la pantalla */
+@media (max-width:768px) {
+  #temp-filter-menu { width:min(290px,calc(100vw - 20px)) !important; max-height:75vh !important; }
+  #temp-filter-menu > div:nth-of-type(3) { max-height:45vh !important; }
+  .modal-overlay .modal-content { width:95% !important; max-height:90vh !important; }
+}
+
 </style>
 </head>
 <body>
