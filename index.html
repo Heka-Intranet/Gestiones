@@ -5812,6 +5812,212 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 }
 
 </style>
+
+<style id="heka-final-contrast-audit">
+/* ==========================================================
+   HEKA FINAL CONTRAST AUDIT
+   Normaliza TODOS los filtros/desplegables y evita texto negro
+   sobre fondos oscuros. No altera la lógica JavaScript.
+   ========================================================== */
+
+/* Filtros / dropdowns principales */
+#appContainer .novedad-dropdown-menu,
+#appContainer .dropdown-content,
+#appContainer .filter-dropdown-menu,
+#appContainer .dropdown-menu,
+#appContainer .heka-portal-dropdown,
+#appContainer .heka-date-filter,
+.novedad-dropdown-menu,
+.dropdown-content,
+.filter-dropdown-menu,
+.heka-portal-dropdown {
+  background: #0b1119 !important;
+  color: #eaf0f7 !important;
+  border-color: rgba(255,255,255,.10) !important;
+}
+
+/* Opciones de filtros: NUNCA negro por herencia */
+.novedad-option,
+.novedad-option span,
+.novedad-option label,
+#appContainer .novedad-option,
+#appContainer .novedad-option span,
+#appContainer .novedad-option label,
+#appContainer .dropdown-item,
+#appContainer .filter-dropdown-menu option,
+#appContainer .dropdown-menu .dropdown-item,
+.gerencial-filter-option,
+.gerencial-filter-option span {
+  color: #eaf0f7 !important;
+  background-color: transparent !important;
+}
+
+/* Hover / seleccionado */
+.novedad-option:hover,
+#appContainer .novedad-option:hover,
+#appContainer .dropdown-item:hover,
+.gerencial-filter-option:hover {
+  background: rgba(255,196,0,.10) !important;
+  color: #ffffff !important;
+}
+
+.novedad-option.selected,
+#appContainer .novedad-option.selected,
+.gerencial-filter-option.selected,
+.gerencial-filter-option input:checked + span {
+  background: rgba(255,196,0,.14) !important;
+  color: #ffd34d !important;
+}
+
+/* Controles internos de filtros */
+#temp-filter-menu,
+#temp-filter-menu * {
+  color-scheme: dark;
+}
+#temp-filter-menu .gerencial-filter-option,
+#temp-filter-menu .gerencial-filter-option * {
+  color: #eaf0f7 !important;
+}
+#temp-filter-menu .gerencial-filter-option:hover,
+#temp-filter-menu .gerencial-filter-option:hover * {
+  color: #fff !important;
+}
+#temp-filter-menu input[type="text"],
+#temp-filter-menu input[type="search"],
+#temp-filter-menu select {
+  background: #080d13 !important;
+  color: #edf3f8 !important;
+}
+#temp-filter-menu select option,
+#appContainer select option,
+.novedad-dropdown-menu option,
+.filter-dropdown-menu option {
+  background: #0b1119 !important;
+  color: #edf3f8 !important;
+}
+
+/* Botones del filtro: contraste consistente */
+#temp-filter-menu button:not(:last-child) {
+  color: #eaf0f7 !important;
+}
+#temp-filter-menu button:last-child {
+  color: #080a0e !important;
+}
+
+/* Títulos/encabezados de filtros */
+.novedad-dropdown-menu > *,
+.filter-dropdown-menu > *,
+.dropdown-content > * {
+  color: inherit;
+}
+
+/* ==========================================================
+   MODALES: neutraliza estilos inline antiguos que dejan texto
+   negro sobre paneles oscuros. Los estados de alerta mantienen
+   sus colores en encabezados cuando corresponda.
+   ========================================================== */
+.modal-overlay .modal-content,
+#modalProgresoOverlay > div,
+#modalWhatsAppOverlay > div,
+#modalValidacionNovedad > div,
+#modalValidacionBodega > div,
+#modalValidacionDuplicadosInput > div,
+#modalValidacionRecibidas > div,
+#modalValidacionDuplicados > div,
+#modalMetodoPago > div,
+#modalColaOffline > div {
+  background: linear-gradient(145deg,#0f1721,#070c12) !important;
+  color: #eef2f7 !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+}
+
+.modal-overlay .modal-content h1,
+.modal-overlay .modal-content h2,
+.modal-overlay .modal-content h3,
+.modal-overlay .modal-content h4,
+.modal-overlay .modal-content h5,
+.modal-overlay .modal-content h6,
+.modal-overlay .modal-content p,
+.modal-overlay .modal-content label,
+.modal-overlay .modal-content span,
+.modal-overlay .modal-content small,
+.modal-overlay .modal-content strong,
+.modal-overlay .modal-content td,
+.modal-overlay .modal-content th {
+  color: #eef2f7;
+}
+
+.modal-overlay .modal-content input,
+.modal-overlay .modal-content select,
+.modal-overlay .modal-content textarea,
+.modal-overlay .modal-content .form-control,
+.modal-overlay .modal-content .form-input,
+.modal-overlay .modal-content .form-select {
+  background: #080d14 !important;
+  color: #eef2f7 !important;
+  border-color: rgba(255,255,255,.12) !important;
+}
+
+.modal-overlay .modal-content input::placeholder,
+.modal-overlay .modal-content textarea::placeholder {
+  color: #748397 !important;
+}
+
+.modal-overlay .modal-content select option {
+  background: #0b1119 !important;
+  color: #eef2f7 !important;
+}
+
+/* Encabezados de modal: solo títulos claros; conserva botones/iconos */
+.modal-overlay .modal-header,
+.modal-overlay .modal-title,
+.modal-overlay .modal-title h2,
+.modal-overlay .modal-title h3 {
+  color: #eef2f7 !important;
+}
+.modal-overlay .close-modal-btn {
+  color: #eef2f7 !important;
+}
+.modal-overlay .close-modal-btn:hover {
+  color: #ffc400 !important;
+}
+
+/* Cajas de información antiguas blancas dentro de modales */
+.modal-overlay [style*="background: #fff"],
+.modal-overlay [style*="background:#fff"],
+.modal-overlay [style*="background: white"],
+.modal-overlay [style*="background-color: #fff"],
+.modal-overlay [style*="background-color:#fff"],
+.modal-overlay [style*="background-color: white"] {
+  color: #eef2f7 !important;
+}
+
+/* EXCEPCIÓN: badges de alerta mantienen legibilidad */
+.modal-overlay .alert,
+.modal-overlay .badge {
+  color: inherit;
+}
+
+/* Menús flotantes generados fuera de #appContainer */
+body > .dropdown-menu,
+body > .dropdown-content,
+body > .filter-dropdown-menu,
+body > .novedad-dropdown-menu {
+  background: #0b1119 !important;
+  color: #eaf0f7 !important;
+}
+body > .dropdown-menu .dropdown-item,
+body > .dropdown-content *,
+body > .filter-dropdown-menu *,
+body > .novedad-dropdown-menu .novedad-option {
+  color: #eaf0f7 !important;
+}
+body > .dropdown-menu .dropdown-item:hover,
+body > .filter-dropdown-menu *:hover,
+body > .novedad-dropdown-menu .novedad-option:hover {
+  color: #fff !important;
+}
+</style>
 </head>
 <body>
 <!-- INICIO LOGIN OVERLAY -->
