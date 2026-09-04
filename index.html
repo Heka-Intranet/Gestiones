@@ -23632,286 +23632,222 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
     }
 
     // ==========================================
-    // 3. SISTEMA DE FILTRADO GERENCIAL
+    // 3. SISTEMA DE FILTRADO GERENCIAL - TIPO EXCEL
     // ==========================================
-
-    // Filtros activos por columna.
-    // Se mantienen mientras el usuario trabaja dentro de la misma vista.
     let activeFilters = {};
+
+    function normalizarValorFiltroGerencial(valor) {
+      if (valor === null || valor === undefined) return '';
+      return String(valor).trim();
+    }
 
     function getBusquedaGerencial() {
       const input = document.getElementById('search_gerencial');
       return input ? input.value.trim().toLowerCase() : '';
     }
 
+    // Un filtro puede contener uno o varios valores, igual que Excel.
     function filaCumpleFiltrosGerencial(row, filtros = activeFilters) {
       for (const key in filtros) {
-        const filtro = filtros[key];
-        const valorFila = row[key];
+        const seleccionados = Array.isArray(filtros[key]) ? filtros[key] : [filtros[key]];
+        if (!seleccionados.length) continue;
 
-        // Permite filtrar explícitamente valores vacíos.
-        if (filtro === '__EMPTY__') {
-          if (valorFila !== null && valorFila !== undefined && String(valorFila).trim() !== '') {
-            return false;
+        const valorFila = normalizarValorFiltroGerencial(row[key]);
+        let coincide = false;
+
+        for (const filtro of seleccionados) {
+          if (filtro === '__EMPTY__') {
+            if (valorFila === '') {
+              coincide = true;
+              break;
+            }
+          } else if (valorFila.toLowerCase() === normalizarValorFiltroGerencial(filtro).toLowerCase()) {
+            coincide = true;
+            break;
           }
-          continue;
         }
 
-        const valorNormalizado =
-          valorFila === null || valorFila === undefined
-            ? ''
-            : String(valorFila).trim();
-
-        if (valorNormalizado !== String(filtro).trim()) {
-          return false;
-        }
+        if (!coincide) return false;
       }
-
       return true;
     }
 
     function filaCoincideBusquedaGerencial(row, termino) {
       if (!termino) return true;
-
-      return Object.values(row).some(val => {
-        if (val === null || val === undefined) return false;
-        return String(val).toLowerCase().includes(termino);
-      });
+      return Object.values(row).some(val =>
+        val !== null && val !== undefined && String(val).toLowerCase().includes(termino)
+      );
     }
 
-    // ÚNICO MOTOR DE FILTRADO:
-    // primero filtros de columna y después búsqueda general.
     function aplicarTodosLosFiltrosGerencial() {
-      if (!Array.isArray(datosBaseGerencial)) {
-        renderizarFilasGerencial([]);
-        return;
-      }
-
       const termino = getBusquedaGerencial();
-
-      const resultado = datosBaseGerencial.filter(row => {
-        if (!filaCumpleFiltrosGerencial(row)) return false;
-        if (!filaCoincideBusquedaGerencial(row, termino)) return false;
-        return true;
-      });
-
+      const resultado = (Array.isArray(datosBaseGerencial) ? datosBaseGerencial : []).filter(row =>
+        filaCoincideBusquedaGerencial(row, termino) && filaCumpleFiltrosGerencial(row)
+      );
       renderizarFilasGerencial(resultado);
-      actualizarContadorSeleccionGerencial();
     }
 
     function filtrarTablaGerencial() {
       aplicarTodosLosFiltrosGerencial();
     }
 
-    // Para construir las opciones de una columna se respetan
-    // los demás filtros, pero NO el filtro de la columna actual.
     function obtenerBaseParaFiltroGerencial(keyActual) {
       if (!Array.isArray(datosBaseGerencial)) return [];
-
       const filtrosOtros = {};
-
-      for (const key in activeFilters) {
-        if (key !== keyActual) {
-          filtrosOtros[key] = activeFilters[key];
-        }
-      }
-
+      Object.keys(activeFilters).forEach(key => {
+        if (key !== keyActual) filtrosOtros[key] = activeFilters[key];
+      });
+      const termino = getBusquedaGerencial();
       return datosBaseGerencial.filter(row =>
-        filaCumpleFiltrosGerencial(row, filtrosOtros)
+        filaCoincideBusquedaGerencial(row, termino) && filaCumpleFiltrosGerencial(row, filtrosOtros)
       );
     }
 
     function toggleFiltroColumna(key, index) {
-      const existingMenu = document.getElementById('temp-filter-menu');
-
-      if (existingMenu) {
-        const menuKey = existingMenu.dataset.filterKey;
-
-        // Misma columna: cerrar.
-        if (menuKey === key) {
-          existingMenu.remove();
+      const oldMenu = document.getElementById('temp-filter-menu');
+      if (oldMenu) {
+        if (oldMenu.dataset.filterKey === key) {
+          oldMenu.remove();
           return;
         }
-
-        // Otra columna: cerrar el anterior y abrir el nuevo.
-        existingMenu.remove();
+        oldMenu.remove();
       }
 
-      const baseFiltro = obtenerBaseParaFiltroGerencial(key);
+      const base = obtenerBaseParaFiltroGerencial(key);
       const valoresMap = new Map();
 
-      baseFiltro.forEach(row => {
-        const rawValue = row[key];
-
-        if (rawValue === null || rawValue === undefined || String(rawValue).trim() === '') {
-          valoresMap.set('__EMPTY__', '__EMPTY__');
-        } else {
-          const valor = String(rawValue).trim();
-          if (!valoresMap.has(valor)) valoresMap.set(valor, valor);
-        }
+      base.forEach(row => {
+        const raw = normalizarValorFiltroGerencial(row[key]);
+        const value = raw === '' ? '__EMPTY__' : raw;
+        if (!valoresMap.has(value)) valoresMap.set(value, value);
       });
 
-      const uniqueValues = Array.from(valoresMap.values()).sort((a, b) => {
+      const valores = Array.from(valoresMap.values()).sort((a, b) => {
         if (a === '__EMPTY__') return 1;
         if (b === '__EMPTY__') return -1;
-        return String(a).localeCompare(String(b), 'es', {
-          numeric: true,
-          sensitivity: 'base'
-        });
+        return String(a).localeCompare(String(b), 'es', { numeric: true, sensitivity: 'base' });
       });
+
+      const seleccionadosActuales = Array.isArray(activeFilters[key])
+        ? [...activeFilters[key]]
+        : (activeFilters[key] !== undefined ? [activeFilters[key]] : []);
 
       const menu = document.createElement('div');
       menu.id = 'temp-filter-menu';
       menu.dataset.filterKey = key;
-      menu.style.position = 'absolute';
-      menu.style.background = '#fff';
-      menu.style.border = '1px solid #ccc';
-      menu.style.borderRadius = '8px';
-      menu.style.boxShadow = '0 6px 20px rgba(0,0,0,0.20)';
-      menu.style.zIndex = '10000';
-      menu.style.minWidth = '220px';
-      menu.style.maxWidth = '280px';
-      menu.style.maxHeight = '350px';
-      menu.style.overflow = 'hidden';
-      menu.style.padding = '6px';
-      menu.style.fontSize = '13px';
-
-      const header = document.createElement('div');
-      header.style.padding = '6px 8px';
-      header.style.fontWeight = '700';
-      header.style.borderBottom = '1px solid #eee';
-      header.style.marginBottom = '5px';
-      header.style.color = '#333';
-      header.textContent = 'Filtrar columna';
-      menu.appendChild(header);
-
-      const inputSearch = document.createElement('input');
-      inputSearch.type = 'text';
-      inputSearch.placeholder = 'Buscar valor...';
-      inputSearch.style.width = '100%';
-      inputSearch.style.padding = '7px';
-      inputSearch.style.marginBottom = '5px';
-      inputSearch.style.border = '1px solid #ddd';
-      inputSearch.style.borderRadius = '5px';
-      inputSearch.style.boxSizing = 'border-box';
-      inputSearch.style.outline = 'none';
-      menu.appendChild(inputSearch);
-
-      const optionsContainer = document.createElement('div');
-      optionsContainer.style.maxHeight = '250px';
-      optionsContainer.style.overflowY = 'auto';
-      menu.appendChild(optionsContainer);
-
-      const optAll = document.createElement('div');
-      optAll.className = 'col-filter-option';
-      optAll.dataset.value = '__ALL__';
-      optAll.innerText = '(Todos)';
-      optAll.style.padding = '7px 10px';
-      optAll.style.cursor = 'pointer';
-      optAll.style.borderBottom = '1px solid #eee';
-      optAll.style.fontWeight = '700';
-      optAll.style.color = '#555';
-
-      optAll.onmouseover = () => optAll.style.background = '#f0f0f0';
-      optAll.onmouseout = () => optAll.style.background = '#fff';
-      optAll.onclick = () => {
-        delete activeFilters[key];
-        menu.remove();
-        aplicarTodosLosFiltrosGerencial();
-      };
-      optionsContainer.appendChild(optAll);
-
-      uniqueValues.forEach(valor => {
-        const opt = document.createElement('div');
-        opt.className = 'col-filter-option';
-        opt.dataset.value = valor;
-
-        const textoMostrar = valor === '__EMPTY__' ? '(Vacío)' : valor;
-        opt.innerText = textoMostrar;
-        opt.style.padding = '7px 10px';
-        opt.style.cursor = 'pointer';
-        opt.style.borderBottom = '1px solid #f5f5f5';
-        opt.style.whiteSpace = 'nowrap';
-        opt.style.overflow = 'hidden';
-        opt.style.textOverflow = 'ellipsis';
-
-        if (activeFilters[key] === valor) {
-          opt.style.fontWeight = '700';
-          opt.style.background = '#e8f0fe';
-          opt.innerHTML = '<span style="margin-right:6px;">✓</span>' + textoMostrar;
-        }
-
-        opt.onmouseover = () => {
-          if (activeFilters[key] !== valor) opt.style.background = '#f5f8ff';
-        };
-        opt.onmouseout = () => {
-          if (activeFilters[key] !== valor) opt.style.background = '#fff';
-        };
-        opt.onclick = () => {
-          activeFilters[key] = valor;
-          menu.remove();
-          aplicarTodosLosFiltrosGerencial();
-        };
-
-        optionsContainer.appendChild(opt);
+      Object.assign(menu.style, {
+        position:'absolute', background:'#fff', border:'1px solid #cfcfcf',
+        borderRadius:'8px', boxShadow:'0 8px 24px rgba(0,0,0,.20)', zIndex:'10000',
+        width:'270px', maxHeight:'430px', overflow:'hidden', padding:'8px',
+        fontSize:'13px', boxSizing:'border-box'
       });
 
-      inputSearch.addEventListener('input', () => {
-        const term = inputSearch.value.trim().toLowerCase();
-        const options = optionsContainer.querySelectorAll('.col-filter-option');
+      const title = document.createElement('div');
+      title.textContent = 'Filtrar por: ' + key;
+      Object.assign(title.style, {fontWeight:'700', padding:'5px 7px 8px', borderBottom:'1px solid #eee'});
+      menu.appendChild(title);
 
-        options.forEach(opt => {
-          if (opt.dataset.value === '__ALL__') {
-            opt.style.display = 'block';
-            return;
-          }
+      const search = document.createElement('input');
+      search.type='text';
+      search.placeholder='Buscar...';
+      Object.assign(search.style, {width:'100%', boxSizing:'border-box', padding:'7px 8px', margin:'7px 0', border:'1px solid #ddd', borderRadius:'5px'});
+      menu.appendChild(search);
 
-          const text = opt.innerText.replace('✓', '').trim().toLowerCase();
-          opt.style.display = text.includes(term) ? 'block' : 'none';
+      const actions = document.createElement('div');
+      actions.style.display='flex'; actions.style.gap='5px'; actions.style.marginBottom='6px';
+
+      const btnTodos = document.createElement('button');
+      btnTodos.type='button'; btnTodos.textContent='Seleccionar todos';
+      Object.assign(btnTodos.style,{flex:'1',padding:'6px',cursor:'pointer',border:'1px solid #ddd',background:'#f7f7f7',borderRadius:'5px'});
+      actions.appendChild(btnTodos);
+
+      const btnNinguno = document.createElement('button');
+      btnNinguno.type='button'; btnNinguno.textContent='Ninguno';
+      Object.assign(btnNinguno.style,{flex:'1',padding:'6px',cursor:'pointer',border:'1px solid #ddd',background:'#f7f7f7',borderRadius:'5px'});
+      actions.appendChild(btnNinguno);
+      menu.appendChild(actions);
+
+      const list = document.createElement('div');
+      Object.assign(list.style,{maxHeight:'270px',overflowY:'auto',borderTop:'1px solid #eee',borderBottom:'1px solid #eee'});
+      menu.appendChild(list);
+
+      const checks = [];
+      valores.forEach(valor => {
+        const label = document.createElement('label');
+        label.className='gerencial-filter-option';
+        label.dataset.text=(valor==='__EMPTY__'?'(Vacío)':valor).toLowerCase();
+        Object.assign(label.style,{display:'flex',alignItems:'center',gap:'7px',padding:'7px 8px',cursor:'pointer'});
+
+        const cb=document.createElement('input');
+        cb.type='checkbox'; cb.value=valor;
+        cb.checked=seleccionadosActuales.some(v => String(v).toLowerCase() === String(valor).toLowerCase());
+        cb.style.cursor='pointer';
+        checks.push(cb);
+
+        const span=document.createElement('span');
+        span.textContent=valor==='__EMPTY__'?'(Vacío)':valor;
+        span.style.wordBreak='break-word';
+        label.appendChild(cb); label.appendChild(span); list.appendChild(label);
+      });
+
+      btnTodos.onclick=()=>checks.forEach(cb=>cb.checked=true);
+      btnNinguno.onclick=()=>checks.forEach(cb=>cb.checked=false);
+
+      search.addEventListener('input',()=>{
+        const t=search.value.trim().toLowerCase();
+        list.querySelectorAll('.gerencial-filter-option').forEach(el=>{
+          el.style.display=el.dataset.text.includes(t)?'flex':'none';
         });
       });
 
-      const headers = document.getElementById('theadGerencial').querySelectorAll('th');
-      const th = headers[index];
-      if (!th) return;
+      const footer=document.createElement('div');
+      Object.assign(footer.style,{display:'flex',justifyContent:'flex-end',gap:'6px',paddingTop:'8px'});
 
-      const rect = th.getBoundingClientRect();
-      let leftPos = rect.left + window.scrollX;
-      const menuWidth = 250;
+      const cancel=document.createElement('button');
+      cancel.type='button'; cancel.textContent='Cancelar';
+      Object.assign(cancel.style,{padding:'7px 11px',cursor:'pointer',border:'1px solid #ddd',background:'#fff',borderRadius:'5px'});
+      cancel.onclick=()=>menu.remove();
 
-      if (leftPos + menuWidth > window.innerWidth + window.scrollX) {
-        leftPos = window.innerWidth + window.scrollX - menuWidth - 10;
-      }
-      if (leftPos < 5) leftPos = 5;
+      const apply=document.createElement('button');
+      apply.type='button'; apply.textContent='Aplicar';
+      Object.assign(apply.style,{padding:'7px 14px',cursor:'pointer',border:'1px solid #999',background:'#eee',fontWeight:'700',borderRadius:'5px'});
+      apply.onclick=()=>{
+        const values=checks.filter(cb=>cb.checked).map(cb=>cb.value);
+        if(values.length===0 || values.length===valores.length) delete activeFilters[key];
+        else activeFilters[key]=values;
+        menu.remove();
+        aplicarTodosLosFiltrosGerencial();
+      };
 
-      menu.style.top = (rect.bottom + window.scrollY + 2) + 'px';
-      menu.style.left = leftPos + 'px';
+      footer.appendChild(cancel); footer.appendChild(apply); menu.appendChild(footer);
 
+      const headers=document.getElementById('theadGerencial')?.querySelectorAll('th') || [];
+      const th=headers[index];
+      if(!th) return;
+      const rect=th.getBoundingClientRect();
+      let left=rect.left+window.scrollX;
+      const width=270;
+      if(left+width>window.innerWidth+window.scrollX) left=window.innerWidth+window.scrollX-width-10;
+      if(left<5) left=5;
+      menu.style.top=(rect.bottom+window.scrollY+2)+'px';
+      menu.style.left=left+'px';
       document.body.appendChild(menu);
-
-      setTimeout(() => inputSearch.focus(), 50);
+      setTimeout(()=>search.focus(),50);
     }
 
-    // Compatibilidad con cualquier llamada existente.
+    // Compatibilidad con llamadas antiguas.
     function applyColumnFilter(key, value) {
-      if (value === null || value === undefined || value === '') {
-        delete activeFilters[key];
-      } else {
-        activeFilters[key] = value;
-      }
-
+      if(value===null || value===undefined || value==='' || value==='__ALL__') delete activeFilters[key];
+      else activeFilters[key]=Array.isArray(value)?value:[value];
       aplicarTodosLosFiltrosGerencial();
     }
 
     function limpiarFiltrosGerencial() {
-      activeFilters = {};
-
-      const search = document.getElementById('search_gerencial');
-      if (search) search.value = '';
-
-      const menu = document.getElementById('temp-filter-menu');
-      if (menu) menu.remove();
-
+      activeFilters={};
+      const search=document.getElementById('search_gerencial');
+      if(search) search.value='';
+      const menu=document.getElementById('temp-filter-menu');
+      if(menu) menu.remove();
       aplicarTodosLosFiltrosGerencial();
     }
 
