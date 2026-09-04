@@ -23357,7 +23357,10 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
       
       currentGerencialType = tipo; 
       document.getElementById('search_gerencial').value = ""; 
-      activeFilters = {}; 
+      activeFilters = {};
+
+      const menuFiltro = document.getElementById('temp-filter-menu');
+      if (menuFiltro) menuFiltro.remove();
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -23628,277 +23631,138 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
       });
     }
 
+    // ==========================================
+    // 3. SISTEMA DE FILTRADO GERENCIAL
+    // ==========================================
 
-    // ============================================================
-    // SISTEMA DE FILTRADO GERENCIAL - PAGOS INDEMNIZACIONES
-    // ============================================================
-    
+    // Filtros activos por columna.
+    // Se mantienen mientras el usuario trabaja dentro de la misma vista.
     let activeFilters = {};
-    
-    /**
-     * Obtiene el texto del buscador general.
-     */
+
     function getBusquedaGerencial() {
       const input = document.getElementById('search_gerencial');
       return input ? input.value.trim().toLowerCase() : '';
     }
-    
-    
-    /**
-     * Comprueba si una fila cumple TODOS los filtros de columna.
-     *
-     * activeFilters puede contener:
-     *
-     *   { plata: "P1" }
-     *   { tipoPqr: "PÉRDIDA" }
-     *
-     * Para valores vacíos usamos:
-     *
-     *   { tipoPqr: "__EMPTY__" }
-     */
+
     function filaCumpleFiltrosGerencial(row, filtros = activeFilters) {
-    
       for (const key in filtros) {
-    
         const filtro = filtros[key];
-    
         const valorFila = row[key];
-    
-        // Filtro por valor vacío
+
+        // Permite filtrar explícitamente valores vacíos.
         if (filtro === '__EMPTY__') {
-    
-          if (
-            valorFila !== null &&
-            valorFila !== undefined &&
-            String(valorFila).trim() !== ''
-          ) {
+          if (valorFila !== null && valorFila !== undefined && String(valorFila).trim() !== '') {
             return false;
           }
-    
           continue;
         }
-    
-        // Comparación normal
+
         const valorNormalizado =
           valorFila === null || valorFila === undefined
             ? ''
             : String(valorFila).trim();
-    
+
         if (valorNormalizado !== String(filtro).trim()) {
           return false;
         }
       }
-    
+
       return true;
     }
-    
-    
-    /**
-     * Comprueba si una fila coincide con el buscador general.
-     *
-     * Busca en TODAS las propiedades de la fila.
-     */
+
     function filaCoincideBusquedaGerencial(row, termino) {
-    
-      if (!termino) {
-        return true;
-      }
-    
-      return Object.values(row).some(valor => {
-    
-        if (valor === null || valor === undefined) {
-          return false;
-        }
-    
-        return String(valor)
-          .toLowerCase()
-          .includes(termino);
+      if (!termino) return true;
+
+      return Object.values(row).some(val => {
+        if (val === null || val === undefined) return false;
+        return String(val).toLowerCase().includes(termino);
       });
     }
-    
-    
-    /**
-     * MOTOR ÚNICO DE FILTRADO
-     *
-     * Este es ahora el único lugar donde se decide
-     * qué registros aparecen en la tabla.
-     *
-     * Orden:
-     *
-     * 1. Base "PARA PAGAR"
-     * 2. Filtros de columnas
-     * 3. Buscador general
-     */
+
+    // ÚNICO MOTOR DE FILTRADO:
+    // primero filtros de columna y después búsqueda general.
     function aplicarTodosLosFiltrosGerencial() {
-    
       if (!Array.isArray(datosBaseGerencial)) {
         renderizarFilasGerencial([]);
         return;
       }
-    
+
       const termino = getBusquedaGerencial();
-    
+
       const resultado = datosBaseGerencial.filter(row => {
-    
-        // 1. Filtros de columnas
-        if (!filaCumpleFiltrosGerencial(row)) {
-          return false;
-        }
-    
-        // 2. Buscador general
-        if (!filaCoincideBusquedaGerencial(row, termino)) {
-          return false;
-        }
-    
+        if (!filaCumpleFiltrosGerencial(row)) return false;
+        if (!filaCoincideBusquedaGerencial(row, termino)) return false;
         return true;
       });
-    
+
       renderizarFilasGerencial(resultado);
-    
-      // Actualizamos también el checkbox maestro
-      actualizarEstadoCheckboxMaestroGerencial();
-    
-      // Actualizamos contador
       actualizarContadorSeleccionGerencial();
     }
-    
-    
-    /**
-     * BUSCADOR GENERAL
-     *
-     * Antes filtraba directamente sobre datosBaseGerencial
-     * e ignoraba activeFilters.
-     *
-     * Ahora utiliza el motor único.
-     */
+
     function filtrarTablaGerencial() {
       aplicarTodosLosFiltrosGerencial();
     }
-    
-    
-    /**
-     * Devuelve los registros que deben utilizarse
-     * para construir las opciones de un filtro.
-     *
-     * IMPORTANTE:
-     *
-     * Cuando abrimos, por ejemplo, el filtro "Plata",
-     * se respetan los otros filtros activos pero NO
-     * el filtro actual de "Plata".
-     *
-     * Esto permite un comportamiento similar a Excel.
-     */
+
+    // Para construir las opciones de una columna se respetan
+    // los demás filtros, pero NO el filtro de la columna actual.
     function obtenerBaseParaFiltroGerencial(keyActual) {
-    
-      if (!Array.isArray(datosBaseGerencial)) {
-        return [];
-      }
-    
+      if (!Array.isArray(datosBaseGerencial)) return [];
+
       const filtrosOtros = {};
-    
+
       for (const key in activeFilters) {
-    
         if (key !== keyActual) {
           filtrosOtros[key] = activeFilters[key];
         }
       }
-    
-      return datosBaseGerencial.filter(row => {
-        return filaCumpleFiltrosGerencial(row, filtrosOtros);
-      });
+
+      return datosBaseGerencial.filter(row =>
+        filaCumpleFiltrosGerencial(row, filtrosOtros)
+      );
     }
-    
-    
-    /**
-     * Abre el menú de filtro de una columna.
-     */
+
     function toggleFiltroColumna(key, index) {
-    
       const existingMenu = document.getElementById('temp-filter-menu');
-    
-      // Si ya hay un menú abierto:
-      //
-      // - Si pertenece a la MISMA columna -> cerrar.
-      // - Si pertenece a OTRA columna -> quitarlo y abrir el nuevo.
+
       if (existingMenu) {
-    
         const menuKey = existingMenu.dataset.filterKey;
-    
+
+        // Misma columna: cerrar.
         if (menuKey === key) {
           existingMenu.remove();
           return;
         }
-    
+
+        // Otra columna: cerrar el anterior y abrir el nuevo.
         existingMenu.remove();
       }
-    
-    
-      // ============================================================
-      // BASE PARA ESTE FILTRO
-      // ============================================================
-    
+
       const baseFiltro = obtenerBaseParaFiltroGerencial(key);
-    
-    
-      // ============================================================
-      // VALORES ÚNICOS
-      // ============================================================
-    
       const valoresMap = new Map();
-    
+
       baseFiltro.forEach(row => {
-    
         const rawValue = row[key];
-    
-        if (
-          rawValue === null ||
-          rawValue === undefined ||
-          String(rawValue).trim() === ''
-        ) {
-    
+
+        if (rawValue === null || rawValue === undefined || String(rawValue).trim() === '') {
           valoresMap.set('__EMPTY__', '__EMPTY__');
-    
         } else {
-    
           const valor = String(rawValue).trim();
-    
-          if (!valoresMap.has(valor)) {
-            valoresMap.set(valor, valor);
-          }
+          if (!valoresMap.has(valor)) valoresMap.set(valor, valor);
         }
       });
-    
-    
-      const uniqueValues = Array.from(valoresMap.values());
-    
-    
-      // Ordenar:
-      // primero valores normales y al final vacío
-      uniqueValues.sort((a, b) => {
-    
+
+      const uniqueValues = Array.from(valoresMap.values()).sort((a, b) => {
         if (a === '__EMPTY__') return 1;
         if (b === '__EMPTY__') return -1;
-    
-        return String(a).localeCompare(
-          String(b),
-          'es',
-          {
-            numeric: true,
-            sensitivity: 'base'
-          }
-        );
+        return String(a).localeCompare(String(b), 'es', {
+          numeric: true,
+          sensitivity: 'base'
+        });
       });
-    
-    
-      // ============================================================
-      // CREAR MENÚ
-      // ============================================================
-    
+
       const menu = document.createElement('div');
-    
       menu.id = 'temp-filter-menu';
       menu.dataset.filterKey = key;
-    
       menu.style.position = 'absolute';
       menu.style.background = '#fff';
       menu.style.border = '1px solid #ccc';
@@ -23911,34 +23775,19 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
       menu.style.overflow = 'hidden';
       menu.style.padding = '6px';
       menu.style.fontSize = '13px';
-    
-    
-      // ============================================================
-      // CABECERA
-      // ============================================================
-    
+
       const header = document.createElement('div');
-    
       header.style.padding = '6px 8px';
       header.style.fontWeight = '700';
       header.style.borderBottom = '1px solid #eee';
       header.style.marginBottom = '5px';
       header.style.color = '#333';
-    
       header.textContent = 'Filtrar columna';
-    
       menu.appendChild(header);
-    
-    
-      // ============================================================
-      // BUSCADOR INTERNO
-      // ============================================================
-    
+
       const inputSearch = document.createElement('input');
-    
       inputSearch.type = 'text';
       inputSearch.placeholder = 'Buscar valor...';
-    
       inputSearch.style.width = '100%';
       inputSearch.style.padding = '7px';
       inputSearch.style.marginBottom = '5px';
@@ -23946,324 +23795,125 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
       inputSearch.style.borderRadius = '5px';
       inputSearch.style.boxSizing = 'border-box';
       inputSearch.style.outline = 'none';
-    
       menu.appendChild(inputSearch);
-    
-    
-      // ============================================================
-      // CONTENEDOR DE OPCIONES
-      // ============================================================
-    
+
       const optionsContainer = document.createElement('div');
-    
       optionsContainer.style.maxHeight = '250px';
       optionsContainer.style.overflowY = 'auto';
-    
       menu.appendChild(optionsContainer);
-    
-    
-      // ============================================================
-      // OPCIÓN "TODOS"
-      // ============================================================
-    
+
       const optAll = document.createElement('div');
-    
       optAll.className = 'col-filter-option';
       optAll.dataset.value = '__ALL__';
-    
       optAll.innerText = '(Todos)';
-    
       optAll.style.padding = '7px 10px';
       optAll.style.cursor = 'pointer';
       optAll.style.borderBottom = '1px solid #eee';
       optAll.style.fontWeight = '700';
       optAll.style.color = '#555';
-    
-      optAll.onmouseover = () => {
-        optAll.style.background = '#f0f0f0';
-      };
-    
-      optAll.onmouseout = () => {
-        optAll.style.background = '#fff';
-      };
-    
+
+      optAll.onmouseover = () => optAll.style.background = '#f0f0f0';
+      optAll.onmouseout = () => optAll.style.background = '#fff';
       optAll.onclick = () => {
-    
         delete activeFilters[key];
-    
         menu.remove();
-    
         aplicarTodosLosFiltrosGerencial();
       };
-    
       optionsContainer.appendChild(optAll);
-    
-    
-      // ============================================================
-      // VALORES
-      // ============================================================
-    
+
       uniqueValues.forEach(valor => {
-    
         const opt = document.createElement('div');
-    
         opt.className = 'col-filter-option';
-    
         opt.dataset.value = valor;
-    
-        let textoMostrar = valor;
-    
-        if (valor === '__EMPTY__') {
-          textoMostrar = '(Vacío)';
-        }
-    
+
+        const textoMostrar = valor === '__EMPTY__' ? '(Vacío)' : valor;
         opt.innerText = textoMostrar;
-    
         opt.style.padding = '7px 10px';
         opt.style.cursor = 'pointer';
         opt.style.borderBottom = '1px solid #f5f5f5';
         opt.style.whiteSpace = 'nowrap';
         opt.style.overflow = 'hidden';
         opt.style.textOverflow = 'ellipsis';
-    
-    
-        // Marcar filtro actualmente seleccionado
-    
-        const filtroActual = activeFilters[key];
-    
-        if (filtroActual === valor) {
-    
+
+        if (activeFilters[key] === valor) {
           opt.style.fontWeight = '700';
           opt.style.background = '#e8f0fe';
-    
-          opt.innerHTML =
-            '<span style="margin-right:6px;">✓</span>' +
-            textoMostrar;
+          opt.innerHTML = '<span style="margin-right:6px;">✓</span>' + textoMostrar;
         }
-    
-    
+
         opt.onmouseover = () => {
-    
-          if (activeFilters[key] !== valor) {
-            opt.style.background = '#f5f8ff';
-          }
+          if (activeFilters[key] !== valor) opt.style.background = '#f5f8ff';
         };
-    
         opt.onmouseout = () => {
-    
-          if (activeFilters[key] !== valor) {
-            opt.style.background = '#fff';
-          }
+          if (activeFilters[key] !== valor) opt.style.background = '#fff';
         };
-    
-    
         opt.onclick = () => {
-    
           activeFilters[key] = valor;
-    
           menu.remove();
-    
           aplicarTodosLosFiltrosGerencial();
         };
-    
-    
+
         optionsContainer.appendChild(opt);
       });
-    
-    
-      // ============================================================
-      // BUSCADOR DEL MENÚ
-      // ============================================================
-    
+
       inputSearch.addEventListener('input', () => {
-    
-        const term = inputSearch.value
-          .trim()
-          .toLowerCase();
-    
-        const options =
-          optionsContainer.querySelectorAll(
-            '.col-filter-option'
-          );
-    
+        const term = inputSearch.value.trim().toLowerCase();
+        const options = optionsContainer.querySelectorAll('.col-filter-option');
+
         options.forEach(opt => {
-    
           if (opt.dataset.value === '__ALL__') {
             opt.style.display = 'block';
             return;
           }
-    
-          const text = opt.innerText
-            .replace('✓', '')
-            .trim()
-            .toLowerCase();
-    
-          opt.style.display =
-            text.includes(term)
-              ? 'block'
-              : 'none';
+
+          const text = opt.innerText.replace('✓', '').trim().toLowerCase();
+          opt.style.display = text.includes(term) ? 'block' : 'none';
         });
       });
-    
-    
-      // ============================================================
-      // POSICIONAMIENTO
-      // ============================================================
-    
-      const headers =
-        document
-          .getElementById('theadGerencial')
-          .querySelectorAll('th');
-    
+
+      const headers = document.getElementById('theadGerencial').querySelectorAll('th');
       const th = headers[index];
-    
-      if (!th) {
-        return;
-      }
-    
+      if (!th) return;
+
       const rect = th.getBoundingClientRect();
-    
-      let leftPos =
-        rect.left + window.scrollX;
-    
+      let leftPos = rect.left + window.scrollX;
       const menuWidth = 250;
-    
-      if (
-        leftPos + menuWidth >
-        window.innerWidth + window.scrollX
-      ) {
-    
-        leftPos =
-          window.innerWidth +
-          window.scrollX -
-          menuWidth -
-          10;
+
+      if (leftPos + menuWidth > window.innerWidth + window.scrollX) {
+        leftPos = window.innerWidth + window.scrollX - menuWidth - 10;
       }
-    
-      if (leftPos < 5) {
-        leftPos = 5;
-      }
-    
-      menu.style.top =
-        (rect.bottom + window.scrollY + 2) +
-        'px';
-    
-      menu.style.left =
-        leftPos +
-        'px';
-    
-    
-      // ============================================================
-      // INSERTAR
-      // ============================================================
-    
+      if (leftPos < 5) leftPos = 5;
+
+      menu.style.top = (rect.bottom + window.scrollY + 2) + 'px';
+      menu.style.left = leftPos + 'px';
+
       document.body.appendChild(menu);
-    
-    
-      // Enfocar buscador
-      setTimeout(() => {
-        inputSearch.focus();
-      }, 50);
+
+      setTimeout(() => inputSearch.focus(), 50);
     }
-    
-    
-    /**
-     * Compatibilidad con llamadas antiguas.
-     *
-     * Si alguna otra parte del código todavía llama:
-     *
-     *     applyColumnFilter(key, value)
-     *
-     * seguirá funcionando.
-     */
+
+    // Compatibilidad con cualquier llamada existente.
     function applyColumnFilter(key, value) {
-    
-      if (
-        value === '' ||
-        value === null ||
-        value === undefined
-      ) {
-    
+      if (value === null || value === undefined || value === '') {
         delete activeFilters[key];
-    
       } else {
-    
         activeFilters[key] = value;
       }
-    
+
       aplicarTodosLosFiltrosGerencial();
     }
-    
-    
-    /**
-     * Limpia TODOS los filtros gerenciales.
-     *
-     * Se puede utilizar desde cualquier parte del sistema.
-     */
+
     function limpiarFiltrosGerencial() {
-    
       activeFilters = {};
-    
-      const search =
-        document.getElementById('search_gerencial');
-    
-      if (search) {
-        search.value = '';
-      }
-    
-      const menu =
-        document.getElementById('temp-filter-menu');
-    
-      if (menu) {
-        menu.remove();
-      }
-    
+
+      const search = document.getElementById('search_gerencial');
+      if (search) search.value = '';
+
+      const menu = document.getElementById('temp-filter-menu');
+      if (menu) menu.remove();
+
       aplicarTodosLosFiltrosGerencial();
     }
-    
-    
-    /**
-     * Actualiza visualmente el checkbox maestro.
-     *
-     * Solo considera los registros actualmente visibles.
-     */
-    function actualizarEstadoCheckboxMaestroGerencial() {
-    
-      const master =
-        document.getElementById('chk-all-gerencial');
-    
-      if (!master) {
-        return;
-      }
-    
-      const checks =
-        document.querySelectorAll(
-          '#tbodyGerencial .chk-pago-row'
-        );
-    
-      if (checks.length === 0) {
-    
-        master.checked = false;
-        master.indeterminate = false;
-    
-        return;
-      }
-    
-      const marcados =
-        Array.from(checks)
-          .filter(chk => chk.checked)
-          .length;
-    
-      master.checked =
-        marcados === checks.length;
-    
-      master.indeterminate =
-        marcados > 0 &&
-        marcados < checks.length;
-    }
-
-
-
 
     // Marcar/Desmarcar todos
     function toggleAllChecks(source) {
