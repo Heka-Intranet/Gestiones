@@ -1,3 +1,292 @@
+</style>
+</head>
+<body>
+<!-- INICIO LOGIN OVERLAY -->
+<div class="login-overlay" id="loginOverlay">
+<div class="login-layout-wrapper">
+<!-- . TU TARJETA DE LOGIN (A la Derecha) -->
+<div class="login-card login-step active" id="step-login">
+<div class="login-split-content">
+<!-- COLUMNA IZQUIERDA: VIDEO INTERNO DE LA TARJETA (SI QUIERES EL VIDEO DENTRO) -->
+<!-- NOTA: Si usas el video de afuera (arriba), borra esto y usa el bloque anterior -->
+<div class="split-left">
+<div class="login-core-frame">
+<div class="login-core-topline"><span class="core-dot"></span> HEKA CORE <span>SECURE NODE</span></div>
+<div class="login-core-visual">
+<div class="core-orbit orbit-a"></div>
+<div class="core-orbit orbit-b"></div>
+<div class="core-orbit orbit-c"></div>
+<div class="core-halo"></div>
+<video autoplay="" id="loginBotVideoInner" loop="" muted="" playsinline="">
+<source src="https://raw.githubusercontent.com/logistica-tech/STOCK/main/heka_bot%20(1).webm" type="video/webm"/>
+</video>
+</div>
+<div class="login-core-caption">
+<strong>INTRANET HEKA</strong>
+<span>CONTROL CENTER // ONLINE</span>
+</div>
+</div>
+</div>
+<!-- COLUMNA DERECHA: FORMULARIO -->
+<div class="split-right">
+<div class="login-access-kicker"><span></span> ACCESS TERMINAL <b>// 01</b></div>
+<div class="login-logo">
+<img alt="Logo Heka" src="https://i.imgur.com/3bxAAa2.png"/>
+<span>Heka Panel</span>
+</div>
+<p class="login-subtitle">Ingresa tus credenciales para continuar</p>
+<form id="loginForm" onsubmit="handleLogin(event)">
+<div class="form-group">
+<label>Usuario</label>
+<input class="form-input" id="loginUser" placeholder="Ej: usuario123" required="" type="text"/>
+</div>
+<div class="form-group password-wrapper">
+<label>Contraseña</label>
+<input class="form-input has-icon" id="loginPass" placeholder="••••" required="" type="password"/>
+<i class="bi bi-eye-slash toggle-password" id="icon-loginPass" onclick="togglePassword('loginPass', 'icon-loginPass')"></i>
+</div>
+<button class="btn btn-primary btn-full" type="submit">
+<i class="bi bi-box-arrow-in-right"></i> Ingresar
+              </button>
+</form>
+<div class="login-security-line"><span class="security-pulse"></span> CONEXIÓN CIFRADA <b>256-BIT</b><span class="security-line-fill"></span><b>24/7</b></div>
+<div class="login-footer">
+              ¿Olvidaste tu contraseña? <span class="link-text" onclick="goToStep('step-request-code')">Recuperar acceso</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Resto de pasos de recuperación (Mantener igual) -->
+<div class="login-card login-step" id="step-request-code">
+<div class="login-logo">
+<img alt="Logo Heka" src="https://i.imgur.com/3bxAAa2.png"/>
+<span>Heka Panel</span>
+</div>
+<h3 style="margin-bottom: 15px;">Recuperar Contraseña</h3>
+<p style="margin-bottom: 20px; color: var(--text-muted); font-size: 14px;">
+          Te enviaremos un código a tu correo registrado.
+        </p>
+<form id="requestCodeForm" onsubmit="handleRequestCode(event)">
+<div class="form-group">
+<label>Usuario</label>
+<input class="form-input" id="recoverUser" required="" type="text"/>
+</div>
+<button class="btn btn-primary btn-full" type="submit">Enviar Código</button>
+</form>
+<button class="btn btn-text btn-full" onclick="goToStep('step-login')">Volver al Login</button>
+</div>
+<div class="login-card login-step" id="step-change-pass">
+<div class="login-logo">
+<img alt="Logo Heka" src="https://i.imgur.com/3bxAAa2.png"/>
+<span>Heka Panel</span>
+</div>
+<h3 style="margin-bottom: 15px;">Establecer Nueva Contraseña</h3>
+<form id="changePassForm" onsubmit="handleChangePassword(event)">
+<div class="form-group">
+<label>Código recibido por correo</label>
+<input class="form-input" id="verifyCode" placeholder="Código de 6 dígitos" required="" type="text"/>
+</div>
+<div class="form-group password-wrapper">
+<label>Nueva Contraseña</label>
+<input class="form-input has-icon" id="newPassword" placeholder="Nueva contraseña" required="" type="password"/>
+<i class="bi bi-eye-slash toggle-password" id="icon-newPassword" onclick="togglePassword('newPassword', 'icon-newPassword')"></i>
+</div>
+<button class="btn btn-primary btn-full" type="submit">Actualizar Contraseña</button>
+</form>
+<button class="btn btn-text btn-full" onclick="goToStep('step-login')">Cancelar</button>
+</div>
+</div>
+</div>
+<!-- FIN LOGIN OVERLAY -->
+<div class="app-container" id="appContainer">
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-content">
+<div class="logo">
+<img alt="Logo Heka" src="https://i.imgur.com/3bxAAa2.png"/>
+<span>Heka</span>
+</div>
+<div class="nav-accordion-item" id="nav-operations-wrapper">
+<div class="nav-item" onclick="toggleSubmenu('submenu-operaciones')">
+<i class="bi bi-gear-fill"></i>
+<span>Operaciones</span>
+<i class="bi bi-chevron-down accordion-arrow"></i>
+</div>
+<div class="nav-submenu" id="submenu-operaciones">
+<a class="nav-item sub-item" data-target="gestion_inter" href="#" onclick="goToPanel('panel-gestion-inter', this)">
+<i class="bi bi-box-seam"></i>
+<span>Gestión Inter</span>
+</a>
+<a class="nav-item sub-item" data-target="estado_inter" href="#" onclick="goToPanel('panel-estado-inter', this)">
+<i class="bi bi-search"></i>
+<span>Estado Inter</span>
+</a>
+<a class="nav-item sub-item" data-target="gestion_servi" href="#" onclick="goToPanel('panel-gestion-servi', this)">
+<i class="bi bi-box-seam-fill"></i>
+<span>Gestión Servi</span>
+</a>
+<!-- NUEVO ENLACE AGREGADO AQUÍ -->
+<a class="nav-item sub-item" data-target="estado_servi" href="#" onclick="goToPanel('panel-estado-servi', this)">
+<i class="bi bi-search"></i>
+<span>Estado Servi</span>
+</a>
+<a class="nav-item sub-item" data-target="gestion_anular" href="#" onclick="goToPanel('panel-gestion-anular', this)">
+<i class="bi bi-trash"></i>
+<span>Gestion Anular</span>
+</a>
+<a class="nav-item sub-item" data-target="estado_anular" href="#" onclick="goToPanel('panel-estado-anular', this)">
+<i class="bi bi-search"></i>
+<span>Estado Anulación</span>
+</a>
+<a class="nav-item sub-item" data-target="panel-notificar-ro" href="#" onclick="goToPanel('panel-notificar-ro', this)">
+<i class="bi bi-whatsapp"></i>
+<span>Notificar RO</span>
+</a>
+</div>
+</div>
+<!-- MENU GERENCIAL -->
+<div class="nav-accordion-item" id="nav-gerencial-wrapper">
+<div class="nav-item" onclick="toggleSubmenu('submenu-gerencial')">
+<i class="bi bi-graph-up-arrow"></i><span>Gerencial</span><i class="bi bi-chevron-down accordion-arrow"></i>
+</div>
+<div class="nav-submenu" id="submenu-gerencial">
+<a class="nav-item sub-item" data-target="panel-gerencial" href="#" onclick="goToPanel('panel-gerencial', this)">
+<i class="bi bi-wallet2"></i><span>Pago Indemnizacion</span>
+</a>
+</div>
+</div>
+<!-- NUEVO MENU CONTABLE -->
+<div class="nav-accordion-item" id="nav-contable-wrapper">
+<div class="nav-item" onclick="toggleSubmenu('submenu-contable')">
+<i class="bi bi-calculator"></i><span>Contable</span><i class="bi bi-chevron-down accordion-arrow"></i>
+</div>
+<div class="nav-submenu" id="submenu-contable">
+<a class="nav-item sub-item" data-target="recuentos" href="#" onclick="goToPanel('panel-recuentos', this)">
+<i class="bi bi-cash-coin"></i><span>Recuentos</span>
+</a>
+<a class="nav-item sub-item" data-target="panel-indemnizaciones" href="#" onclick="goToPanel('panel-indemnizaciones', this)">
+<i class="bi bi-file-earmark-spreadsheet-fill"></i>
+<span>Indemnizaciones</span>
+</a>
+<a class="nav-item sub-item" data-target="recuento_contable" href="#" onclick="abrirModalRecuentoContable(); return false;">
+<i class="bi bi-calculator"></i>
+<span>Recuento Contable</span>
+</a>
+<a class="nav-item sub-item" data-target="check_recarga" href="#" onclick="goToPanel('panel-check-recarga', this)">
+<i class="bi bi-check-circle"></i><span>Check Recarga</span>
+</a>
+<a class="nav-item sub-item" data-target="panel-historial-recargas" href="#" onclick="goToPanel('panel-historial-recargas', this)">
+<i class="bi bi-clock-history"></i>
+<span>Historial Recargas</span>
+</a>
+<a class="nav-item sub-item" data-target="panel-banco-vs-pl" href="#" onclick="goToPanel('panel-banco-vs-pl', this)">
+<i class="bi bi-bank"></i>
+<span>Banco vs Pl</span>
+</a>
+
+</div>
+</div>
+<!-- MENU COMISIONES -->
+
+<!-- NUEVO MENU CONTROL GUIAS -->
+<div class="nav-accordion-item" id="nav-control-wrapper">
+<div class="nav-item" onclick="toggleSubmenu('submenu-control-guias')">
+<i class="bi bi-box-seam"></i>
+<span>Control Guias</span>
+<i class="bi bi-chevron-down accordion-arrow"></i>
+</div>
+<div class="nav-submenu" id="submenu-control-guias">
+<a class="nav-item sub-item" data-target="panel-anula-masiva" href="#" onclick="goToPanel('panel-anula-masaiva', this)">
+<i class="bi bi-x-octagon"></i>
+<span>Anula Masiva</span>
+</a>
+</div>
+</div>
+<!-- NUEVO MENU PLATAFORMA DRIVE -->
+
+<!-- NUEVO MENU TALENTO HUMANO -->
+<div class="nav-accordion-item" id="nav-talento-wrapper">
+<div class="nav-item" onclick="toggleSubmenu('submenu-talento')">
+<i class="bi bi-people-fill"></i>
+<span>Talento Humano</span>
+<i class="bi bi-chevron-down accordion-arrow"></i>
+</div>
+<div class="nav-submenu" id="submenu-talento">
+<a class="nav-item sub-item" data-target="panel-talento-humano" href="#" onclick="goToPanel('panel-talento-humano', this)">
+<i class="bi bi-person-badge"></i>
+<span>Colaboradores</span>
+</a>
+<a class="nav-item sub-item" data-target="panel-historial-certificados" href="#" onclick="goToPanel('panel-historial-certificados', this)">
+<i class="bi bi-clock-history"></i>
+<span>Historial Certificados</span>
+</a>
+</div>
+</div>
+<!-- NUEVO MENU LOGÍSTICA PROPIA -->
+<!-- NUEVO MENU LOGÍSTICA PROPIA -->
+<div class="nav-accordion-item" id="nav-logistica-wrapper">
+<div class="nav-item" onclick="toggleSubmenu('submenu-logistica')">
+<i class="bi bi-graph-up-arrow"></i>
+<span>Logística Propia</span>
+<i class="bi bi-chevron-down accordion-arrow"></i>
+</div>
+<div class="nav-submenu" id="submenu-logistica">
+<!-- Dashboard -->
+<a class="nav-item sub-item" data-target="panel-dashboard-logistica" href="#" onclick="goToPanel('panel-dashboard-logistica', this)">
+<i class="bi bi-speedometer2"></i>
+<span>Dashboard</span>
+</a>
+<!-- Guías Madres -->
+<a class="nav-item sub-item" data-target="panel-guias-madres" href="#" onclick="goToPanel('panel-guias-madres', this)">
+<i class="bi bi-arrow-repeat"></i>
+<span>Guías Madres</span>
+</a>
+<!-- Seguimiento -->
+<a class="nav-item sub-item" data-target="panel-seguimiento-logistica" href="#" onclick="goToPanel('panel-seguimiento-logistica', this)">
+<i class="bi bi-arrow-repeat"></i>
+<span>Seguimiento</span>
+</a>
+<!-- Pagos Pendientes -->
+<a class="nav-item sub-item" data-target="panel-pagos-pendientes" href="#" onclick="goToPanel('panel-pagos-pendientes', this)">
+<i class="bi bi-wallet2"></i>
+<span>Pagos Pendientes</span>
+</a>
+<!-- Rentabilidad Seller -->
+<a class="nav-item sub-item" data-target="panel-rentabilidad-seller" href="#" onclick="goToPanel('panel-rentabilidad-seller', this)">
+<i class="bi bi-cash-coin"></i>
+<span>Rentabilidad Seller</span>
+</a>
+<!-- 👇 NUEVOS SUBMENÚS 👇 -->
+<!-- Ingreso Origen -->
+<a class="nav-item sub-item" data-target="panelIngresoOrigen" href="#" onclick="goToPanel('panelIngresoOrigen', this)">
+<i class="bi bi-box-arrow-in-down"></i>
+<span>Ingreso Origen</span>
+</a>
+<!-- Gestión Mensajero -->
+<a class="nav-item sub-item" data-target="panelGestionMensajero" href="#" onclick="goToPanel('panelGestionMensajero', this)">
+<i class="bi bi-person-check"></i>
+<span>Gestión Mensajero</span>
+</a>
+</div>
+</div>
+<!-- En la sección del Menú COMERCIAL -->
+<div class="nav-accordion-item" id="nav-comercial-wrapper">
+<div class="nav-item" onclick="toggleSubmenu('submenu-comercial')">
+<i class="bi bi-cart4"></i>
+<span>Comercial</span>
+<i class="bi bi-chevron-down accordion-arrow"></i>
+</div>
+<div class="nav-submenu" id="submenu-comercial">
+<a class="nav-item sub-item" data-target="panel-historial-global" href="#" onclick="goToPanel('panel-historial-global', this)">
+<i class="bi bi-clock-history"></i>
+<span>Historial Global</span>
+</a>
+<a class="nav-item sub-item" data-target="panel-asignaciones" href="#" onclick="goToPanel('panel-asignaciones', this)">
+<i class="bi bi-clipboard-check"></i>
+<span>Asignación</span>
+</a>
+<a class="nav-item sub-item" data-target="panel-activaciones-inter" href="#" onclick="goToPanel('panel-activaciones-inter', this)">
+<i class="bi bi-box-seam"></i>
 <!DOCTYPE html>
 
 <html lang="es">
@@ -6306,6 +6595,131 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </a>
 <a class="nav-item sub-item" data-target="panel-activaciones-inter" href="#" onclick="goToPanel('panel-activaciones-inter', this)">
 <i class="bi bi-box-seam"></i>
+<!-- NUEVO MENÚ PERSONAL -->
+<div class="nav-accordion-item" id="nav-personal-wrapper">
+<div class="nav-item" onclick="toggleSubmenu('submenu-personal')">
+<i class="bi bi-person-badge"></i>
+<span>Personal</span>
+<i class="bi bi-chevron-down accordion-arrow"></i>
+</div>
+<div class="nav-submenu" id="submenu-personal">
+<a class="nav-item sub-item" data-target="panel-funciones" href="#" onclick="goToPanel('panel-funciones', this)">
+<i class="bi bi-list-check"></i>
+<span>Funciones</span>
+</a>
+</div>
+</div>
+<span>Activaciones Inter</span>
+</a>
+</div>
+</div>
+</div>
+</aside>
+<div class="toggle-btn" id="toggleSidebar"><i class="bi bi-chevron-left"></i></div>
+<main class="main-content">
+<div class="top-header">
+<button class="btn btn-custom-black" id="btn-header-recarga" onclick="openModalRecarga()" style="margin-left: 20px;">
+<i class="bi bi-cash-stack"></i> Recargar
+        </button>
+<!-- BOTÓN REFERIDOS -->
+<!-- AGREGA id="btn-header-referidos" -->
+<button class="btn btn-custom-black" id="btn-header-referidos" onclick="openModalReferidos()" style="margin-left: 10px;">
+<i class="bi bi-person-plus"></i> Referidos
+        </button>
+<!-- BOTÓN REGISTROS -->
+<!-- AGREGA id="btn-header-registros" -->
+<button class="btn btn-custom-black" id="btn-header-registros" onclick="openModalRegistros()" style="margin-left: 10px;">
+<i class="bi bi-clipboard-check"></i> Registros
+        </button>
+<div class="external-links-container">
+<!-- 1. Heka Entrega -->
+<a href="https://www.hekaentrega.co/ingreso" target="_blank" title="Ir a Heka Entrega">
+<img alt="Heka Entrega" class="external-link-img" src="https://i.postimg.cc/1tMgvXr1/boton1.png"/>
+</a>
+<!-- 2. Recogidas y Suministros -->
+<a href="#" onclick="openFloatingIframe('https://recogidas-suministros.heka-e.workers.dev/', 'Recogidas y Suministros')" title="Ir a Recogidas y Suministros">
+<img alt="Recogidas y Suministros" class="external-link-img" src="https://i.postimg.cc/7ZcfHWjm/RECOGIDAS.png"/>
+</a>
+<!-- 3. Rastreo Inter (NUEVO) -->
+<a href="https://www3.interrapidisimo.com/SitioLogin/auth/login" target="_blank" title="Ir a Rastreo Inter">
+<img alt="Rastreo Inter" class="external-link-img" src="https://i.postimg.cc/x8CXhQ6J/boton2-2.png"/>
+</a>
+<!-- 4. Suite Logística (NUEVO) -->
+
+<!-- 5. Sisclinet (NUEVO) -->
+<a href="https://canales.servientrega.com/sisclinet/login.aspx" target="_blank" title="Ir a Sisclinet">
+<img alt="Sisclinet" class="external-link-img" src="https://i.postimg.cc/3RPjH9cF/robot-sisclient.png"/>
+</a>
+</div>
+<div class="user-profile-container" onclick="toggleUserDropdown(event)">
+<div class="user-info">
+<div class="user-name" id="headerUserName">Usuario</div>
+<div class="user-role" id="headerUserRole">Colaborador</div>
+</div>
+<img alt="Perfil" class="user-avatar" id="headerUserImg" src="https://ui-avatars.com/api/?name=Usuario&amp;background=random"/>
+<i class="bi bi-chevron-down dropdown-icon"></i>
+<div class="dropdown-menu" id="userDropdown">
+<a class="dropdown-item" href="#" onclick="openMyData()">
+<i class="bi bi-person"></i> Mis Datos
+            </a>
+<div class="dropdown-divider"></div>
+<a class="dropdown-item" href="#" onclick="openCertificadoModal()">
+<i class="bi bi-file-earmark-text"></i> Certificado Laboral
+            </a>
+<div class="dropdown-divider"></div>
+<a class="dropdown-item" data-target="admin_panel" href="#" id="adminLink" onclick="goToAdminPanel()">
+<i class="bi bi-sliders"></i> Configuración
+            </a>
+<div class="dropdown-divider"></div>
+<a class="dropdown-item text-danger" href="#" onclick="logout(event)">
+<i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+            </a>
+</div>
+</div>
+</div>
+<!-- BARRA MÓVIL MODIFICADA CON PERFIL -->
+<div class="mobile-nav-bar">
+<button class="hamburger-btn" id="hamburgerMenu"><i class="bi bi-list"></i></button>
+<div class="mobile-brand">HEKA PANEL</div>
+<!-- CONTENEDOR DE ACCIONES Y PERFIL MÓVIL -->
+<div class="mobile-actions">
+<!-- AGREGA id="btn-mobile-recarga" -->
+<button class="btn-mobile-action" id="btn-mobile-recarga" onclick="openModalRecarga()" title="Recargar Saldo">
+<i class="bi bi-cash-stack"></i>
+</button>
+<!-- Botón Referidos -->
+<!-- AGREGA id="btn-mobile-referidos" -->
+<button class="btn-mobile-action" id="btn-mobile-referidos" onclick="openModalReferidos()" title="Registrar Referido">
+<i class="bi bi-person-plus"></i>
+</button>
+<!-- Botón Registros -->
+<!-- AGREGA id="btn-mobile-registros" -->
+<button class="btn-mobile-action" id="btn-mobile-registros" onclick="openModalRegistros()" title="Hacer Registro">
+<i class="bi bi-clipboard-check"></i>
+</button>
+<!-- Botón Links (Abrir Modal) -->
+<button class="btn-mobile-action" onclick="toggleMobileLinks()" title="Links Directos">
+<i class="bi bi-grid-3x3-gap-fill"></i>
+</button>
+<!-- PERFIL EN MÓVIL -->
+<div class="mobile-profile-wrapper user-profile-container" onclick="toggleUserDropdown(event)">
+<img alt="Perfil Móvil" class="mobile-user-avatar" id="mobileUserImg" src="https://ui-avatars.com/api/?name=Usuario&amp;background=random"/>
+<!-- Dropdown replicado para móvil para asegurar posicionamiento correcto -->
+<div class="dropdown-menu" id="mobileUserDropdown">
+<a class="dropdown-item" href="#" onclick="openMyData()">
+<i class="bi bi-person"></i> Mis Datos
+              </a>
+<div class="dropdown-divider"></div>
+<a class="dropdown-item" href="#" onclick="openCertificadoModal()">
+<i class="bi bi-file-earmark-text"></i> Certificado
+              </a>
+<div class="dropdown-divider"></div>
+<a class="dropdown-item" data-target="admin_panel" href="#" id="mobileAdminLink" onclick="goToAdminPanel()">
+<i class="bi bi-sliders"></i> Configuración
+              </a>
+<div class="dropdown-divider"></div>
+<a class="dropdown-item text-danger" href="#" onclick="logout(event)">
+<i class="bi bi-box-arrow-right"></i> Salir
 <span>Activaciones Inter</span>
 </a>
 </div>
@@ -8315,6 +8729,65 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div id="loadingActivaciones" style="text-align:center; padding:20px; display:none;">
 <div class="spinner" style="margin: 0 auto 10px auto;"></div>
 <p>Cargando activaciones...</p>
+</div>
+</div>
+<!-- PANEL FUNCIONES DE PERSONAL -->
+<div class="panel" id="panel-funciones">
+<div class="card">
+<div class="page-header">
+<h2><i class="bi bi-list-check" style="margin-right: 10px; color: var(--primary-yellow);"></i>Funciones de Personal</h2>
+<button class="btn btn-edits" onclick="abrirModalNuevaFuncion()">
+<i class="bi bi-plus-lg"></i> Nueva Función
+</button>
+</div>
+
+<!-- Filtros -->
+<div class="suite-filter-container">
+<button class="btn suite-filter-btn filter-active" onclick="filtrarFunciones('todas')" data-filter="todas">
+<i class="bi bi-grid"></i> Todas <span class="filter-count" id="count-todas">0</span>
+</button>
+<button class="btn suite-filter-btn" onclick="filtrarFunciones('diaria')" data-filter="diaria">
+<i class="bi bi-calendar-check"></i> Diarias <span class="filter-count" id="count-diaria">0</span>
+</button>
+<button class="btn suite-filter-btn" onclick="filtrarFunciones('personalizada')" data-filter="personalizada">
+<i class="bi bi-calendar-range"></i> Personalizadas <span class="filter-count" id="count-personalizada">0</span>
+</button>
+<button class="btn suite-filter-btn" onclick="filtrarFunciones('improviso')" data-filter="improviso">
+<i class="bi bi-lightning"></i> Improvisos <span class="filter-count" id="count-improviso">0</span>
+</button>
+<button class="btn suite-filter-btn" onclick="filtrarFunciones('pendientes')" data-filter="pendientes">
+<i class="bi bi-clock"></i> Pendientes <span class="filter-count" id="count-pendientes">0</span>
+</button>
+<button class="btn suite-filter-btn" onclick="filtrarFunciones('realizadas')" data-filter="realizadas">
+<i class="bi bi-check-circle"></i> Realizadas <span class="filter-count" id="count-realizadas">0</span>
+</button>
+</div>
+
+<!-- Tabla de Funciones -->
+<div class="table-container">
+<table class="table">
+<thead>
+<tr>
+<th style="width: 60px;">Estado</th>
+<th style="width: 120px;">ID</th>
+<th>Nombre Función</th>
+<th style="width: 130px;">Tipo</th>
+<th>Fechas</th>
+<th>Asignado A</th>
+<th style="width: 140px;">Fecha Creación</th>
+<th style="width: 120px;">Acciones</th>
+</tr>
+</thead>
+<tbody id="tabla-funciones-body">
+<tr>
+<td colspan="8" style="text-align: center; padding: 40px;">
+<i class="bi bi-hourglass-split" style="font-size: 48px; color: #adb5bd;"></i>
+<p style="margin-top: 15px; color: #6c757d;">Cargando funciones...</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -10838,6 +11311,69 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     updateFutureHome();
     setupFutureSearch();
     setTimeout(updateFutureHome,1200);
+<!-- MODAL NUEVA FUNCIÓN -->
+<div id="modal-nueva-funcion" class="modal" style="display: none;">
+<div class="modal-content">
+<div class="modal-header">
+<h3><i class="bi bi-plus-circle" style="margin-right: 10px; color: var(--primary-yellow);"></i>Nueva Función</h3>
+<button class="btn-close" onclick="cerrarModalNuevaFuncion()">
+<i class="bi bi-x-lg"></i>
+</button>
+</div>
+<div class="modal-body">
+<form id="form-nueva-funcion">
+<div class="form-group">
+<label>Nombre de la Función *</label>
+<input type="text" id="func-nombre" class="form-control" placeholder="Ej: Revisar inventario" required>
+</div>
+
+<div class="form-group">
+<label>Tipo de Función *</label>
+<select id="func-tipo" class="form-control" onchange="mostrarCamposFecha()" required>
+<option value="">Seleccionar...</option>
+<option value="Diaria">Diaria (se repite todos los días)</option>
+<option value="Personalizada">Personalizada (rango de fechas)</option>
+<option value="Improviso">Improviso (fecha específica)</option>
+</select>
+</div>
+
+<!-- Campos para tipo Personalizada -->
+<div id="campos-personalizada" style="display: none;">
+<div class="form-grid-2cols">
+<div class="form-group">
+<label>Fecha Inicio *</label>
+<input type="date" id="func-fecha-inicio" class="form-control">
+</div>
+<div class="form-group">
+<label>Fecha Fin *</label>
+<input type="date" id="func-fecha-fin" class="form-control">
+</div>
+</div>
+</div>
+
+<!-- Campos para tipo Improviso -->
+<div id="campos-improviso" style="display: none;">
+<div class="form-group">
+<label>Fecha Específica *</label>
+<input type="date" id="func-dia-especifico" class="form-control">
+</div>
+</div>
+
+<div class="form-group">
+<label>Asignado A *</label>
+<input type="text" id="func-asignado" class="form-control" placeholder="Nombre del colaborador" required>
+</div>
+
+<div class="form-actions">
+<button type="button" class="btn" onclick="cerrarModalNuevaFuncion()">Cancelar</button>
+<button type="submit" class="btn btn-edits">
+<i class="bi bi-check-lg"></i> Crear Función
+</button>
+</div>
+</form>
+</div>
+</div>
+</div>
   });
   window.updateFutureHome=updateFutureHome;
 })();
@@ -26882,5 +27418,326 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     const obs=new MutationObserver(()=>{ if(window.__hekaDateApplying)return; apply(key); }); obs.observe(tb,{childList:true,subtree:true});
   });
 })();
+
+// ============================================================
+// MÓDULO DE FUNCIONES DE PERSONAL - JAVASCRIPT
+// ============================================================
+
+let funcionesData = [];
+let filtroActual = 'todas';
+
+// Cargar todas las funciones
+function cargarFunciones() {
+  mostrarCarga();
+  
+  callGAS({
+    fn: 'obtenerFuncionesBackend'
+  }, function(response) {
+    if (response.status === 'success') {
+      funcionesData = response.data || [];
+      renderizarFunciones();
+      actualizarContadores();
+    } else {
+      mostrarErrorFunciones(response.message);
+    }
+  });
+}
+
+// Renderizar tabla de funciones
+function renderizarFunciones() {
+  const tbody = document.getElementById('tabla-funciones-body');
+  
+  if (!funcionesData || funcionesData.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 40px;">
+          <i class="bi bi-inbox" style="font-size: 48px; color: #adb5bd;"></i>
+          <p style="margin-top: 15px; color: #6c757d;">No hay funciones registradas</p>
+          <button class="btn btn-edits" onclick="abrirModalNuevaFuncion()" style="margin-top: 10px;">
+            <i class="bi bi-plus-lg"></i> Crear Primera Función
+          </button>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+  
+  let funcionesFiltradas = [...funcionesData];
+  
+  // Aplicar filtro
+  if (filtroActual === 'diaria' || filtroActual === 'personalizada' || filtroActual === 'improviso') {
+    funcionesFiltradas = funcionesData.filter(f => f.tipo === filtroActual);
+  } else if (filtroActual === 'pendientes') {
+    funcionesFiltradas = funcionesData.filter(f => f.estado === 'Pendiente');
+  } else if (filtroActual === 'realizadas') {
+    funcionesFiltradas = funcionesData.filter(f => f.estado === 'Realizada');
+  }
+  
+  tbody.innerHTML = funcionesFiltradas.map(funcion => {
+    const estaRealizada = funcion.estado === 'Realizada';
+    const tipoClass = `tipo-${funcion.tipo.toLowerCase()}`;
+    const estadoClass = estaRealizada ? 'estado-realizada' : 'estado-pendiente';
+    const filaClass = estaRealizada ? 'fila-realizada' : '';
+    
+    // Formatear fechas según tipo
+    let fechasTexto = '';
+    if (funcion.tipo === 'Diaria') {
+      fechasTexto = '<span style="color: #6c757d; font-size: 13px;">Todos los días</span>';
+    } else if (funcion.tipo === 'Personalizada') {
+      fechasTexto = `<span style="font-size: 13px;">Del ${funcion.fechaInicio} al ${funcion.fechaFin}</span>`;
+    } else if (funcion.tipo === 'Improviso') {
+      fechasTexto = `<span style="font-size: 13px;">Día: ${funcion.diaEspecifico}</span>`;
+    }
+    
+    return `
+      <tr class="${filaClass}" id="fila-${funcion.id}">
+        <td style="text-align: center;">
+          <input type="checkbox" 
+                 class="estado-checkbox" 
+                 ${estaRealizada ? 'checked' : ''} 
+                 onchange="toggleEstadoFuncion('${funcion.id}', ${!estaRealizada})"
+                 title="Marcar como ${estaRealizada ? 'pendiente' : 'realizada'}">
+        </td>
+        <td><strong style="font-size: 12px;">${funcion.id}</strong></td>
+        <td>${funcion.nombre}</td>
+        <td><span class="tipo-badge ${tipoClass}">${funcion.tipo}</span></td>
+        <td>${fechasTexto}</td>
+        <td>${funcion.asignadoA || '-'}</td>
+        <td style="font-size: 13px;">${funcion.fechaCreacion || '-'}</td>
+        <td>
+          <div class="acciones-funcion">
+            ${estaRealizada ? `
+              <button class="btn-icon btn-icon-undo" onclick="toggleEstadoFuncion('${funcion.id}', false)" title="Marcar como pendiente">
+                <i class="bi bi-arrow-counterclockwise"></i>
+              </button>
+            ` : ''}
+            <button class="btn-icon btn-icon-delete" onclick="eliminarFuncion('${funcion.id}')" title="Eliminar">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Filtrar funciones
+function filtrarFunciones(filtro) {
+  filtroActual = filtro;
+  
+  // Actualizar botones activos
+  document.querySelectorAll('.suite-filter-btn').forEach(btn => {
+    btn.classList.remove('filter-active');
+    if (btn.dataset.filter === filtro) {
+      btn.classList.add('filter-active');
+    }
+  });
+  
+  renderizarFunciones();
+}
+
+// Actualizar contadores
+function actualizarContadores() {
+  const hoyStr = hoy();
+  
+  document.getElementById('count-todas').textContent = funcionesData.length;
+  document.getElementById('count-diaria').textContent = funcionesData.filter(f => f.tipo === 'Diaria' && f.estado === 'Pendiente').length;
+  document.getElementById('count-personalizada').textContent = funcionesData.filter(f => f.tipo === 'Personalizada' && f.estado === 'Pendiente').length;
+  document.getElementById('count-improviso').textContent = funcionesData.filter(f => f.tipo === 'Improviso' && f.estado === 'Pendiente').length;
+  document.getElementById('count-pendientes').textContent = funcionesData.filter(f => f.estado === 'Pendiente').length;
+  document.getElementById('count-realizadas').textContent = funcionesData.filter(f => f.estado === 'Realizada').length;
+}
+
+// Toggle estado de función
+function toggleEstadoFuncion(funcionId, realizada) {
+  callGAS({
+    fn: 'marcarFuncionRealizadaBackend',
+    args: [funcionId, realizada]
+  }, function(response) {
+    if (response.status === 'success') {
+      // Actualizar datos locales
+      const funcion = funcionesData.find(f => f.id === funcionId);
+      if (funcion) {
+        funcion.estado = response.estado;
+        funcion.fechaRealizacion = realizada ? hoyStr : '';
+      }
+      renderizarFunciones();
+      actualizarContadores();
+      mostrarToastFunciones(response.message, 'success');
+    } else {
+      mostrarErrorFunciones(response.message);
+    }
+  });
+}
+
+// Eliminar función
+function eliminarFuncion(funcionId) {
+  if (!confirm('¿Estás seguro de eliminar esta función? Esta acción no se puede deshacer.')) return;
+  
+  callGAS({
+    fn: 'eliminarFuncionBackend',
+    args: [funcionId]
+  }, function(response) {
+    if (response.status === 'success') {
+      funcionesData = funcionesData.filter(f => f.id !== funcionId);
+      renderizarFunciones();
+      actualizarContadores();
+      mostrarToastFunciones(response.message, 'success');
+    } else {
+      mostrarErrorFunciones(response.message);
+    }
+  });
+}
+
+// Mostrar campos de fecha según tipo
+function mostrarCamposFecha() {
+  const tipo = document.getElementById('func-tipo').value;
+  const camposPersonalizada = document.getElementById('campos-personalizada');
+  const camposImproviso = document.getElementById('campos-improviso');
+  
+  camposPersonalizada.style.display = 'none';
+  camposImproviso.style.display = 'none';
+  
+  if (tipo === 'Personalizada') {
+    camposPersonalizada.style.display = 'block';
+  } else if (tipo === 'Improviso') {
+    camposImproviso.style.display = 'block';
+  }
+}
+
+// Modal Nueva Función
+function abrirModalNuevaFuncion() {
+  document.getElementById('modal-nueva-funcion').style.display = 'flex';
+  document.getElementById('form-nueva-funcion').reset();
+  document.getElementById('func-tipo').value = '';
+  mostrarCamposFecha();
+}
+
+function cerrarModalNuevaFuncion() {
+  document.getElementById('modal-nueva-funcion').style.display = 'none';
+}
+
+// Crear nueva función
+document.getElementById('form-nueva-funcion').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const tipo = document.getElementById('func-tipo').value;
+  const nombre = document.getElementById('func-nombre').value.trim();
+  const asignadoA = document.getElementById('func-asignado').value.trim();
+  
+  // Validaciones
+  if (tipo === 'Personalizada') {
+    const fechaInicio = document.getElementById('func-fecha-inicio').value;
+    const fechaFin = document.getElementById('func-fecha-fin').value;
+    if (!fechaInicio || !fechaFin) {
+      mostrarErrorFunciones('Debes ingresar fecha inicio y fin para funciones personalizadas');
+      return;
+    }
+    if (fechaInicio > fechaFin) {
+      mostrarErrorFunciones('La fecha inicio no puede ser mayor que la fecha fin');
+      return;
+    }
+  } else if (tipo === 'Improviso') {
+    const diaEspecifico = document.getElementById('func-dia-especifico').value;
+    if (!diaEspecifico) {
+      mostrarErrorFunciones('Debes ingresar la fecha específica para funciones de improviso');
+      return;
+    }
+  }
+  
+  const funcion = {
+    nombre: nombre,
+    tipo: tipo,
+    asignadoA: asignadoA,
+    creadoPor: 'usuario' // Aquí puedes usar el usuario logueado si está disponible
+  };
+  
+  if (tipo === 'Personalizada') {
+    funcion.fechaInicio = document.getElementById('func-fecha-inicio').value;
+    funcion.fechaFin = document.getElementById('func-fecha-fin').value;
+  } else if (tipo === 'Improviso') {
+    funcion.diaEspecifico = document.getElementById('func-dia-especifico').value;
+  }
+  
+  callGAS({
+    fn: 'crearFuncionBackend',
+    args: [funcion]
+  }, function(response) {
+    if (response.status === 'success') {
+      cerrarModalNuevaFuncion();
+      cargarFunciones();
+      mostrarToastFunciones(response.message, 'success');
+    } else {
+      mostrarErrorFunciones(response.message);
+    }
+  });
+});
+
+// Helper functions
+function hoy() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return year + '-' + month + '-' + day;
+}
+
+function hoyStr() {
+  return hoy();
+}
+
+function mostrarCarga() {
+  document.getElementById('tabla-funciones-body').innerHTML = `
+    <tr>
+      <td colspan="8" style="text-align: center; padding: 40px;">
+        <i class="bi bi-hourglass-split" style="font-size: 48px; color: #adb5bd;"></i>
+        <p style="margin-top: 15px; color: #6c757d;">Cargando funciones...</p>
+      </td>
+    </tr>
+  `;
+}
+
+function mostrarErrorFunciones(mensaje) {
+  alert('Error: ' + mensaje);
+}
+
+function mostrarToastFunciones(mensaje, tipo) {
+  // Crear toast
+  const toast = document.createElement('div');
+  toast.className = 'toast-funciones ' + tipo;
+  toast.innerHTML = `
+    <i class="bi ${tipo === 'success' ? 'bi-check-circle' : 'bi-exclamation-circle'}" style="margin-right: 10px;"></i>
+    ${mensaje}
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Remover después de 3 segundos
+  setTimeout(() => {
+    toast.style.animation = 'slideOutRight 0.3s ease forwards';
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 3000);
+}
+
+// Asegurarse de que callGAS exista (si no existe en el código original)
+// Si ya existe, esta función no se sobrescribe
+if (typeof window.callGAS === 'undefined') {
+  window.callGAS = function(payload, callback) {
+    const SCRIPT_URL = 'https://script.google.com/macros/s/TU_SCRIPT_ID/exec';
+    
+    fetch(SCRIPT_URL + '?p=' + encodeURIComponent(JSON.stringify(payload)))
+      .then(response => response.json())
+      .then(data => callback(data))
+      .catch(error => {
+        console.error('Error:', error);
+        callback({ status: 'error', message: 'Error de comunicación con el servidor' });
+      });
+  };
+}
+
+console.log('✓ Módulo de Funciones de Personal cargado correctamente');
 </script>
-</body></html>
+</body>
+</html>
