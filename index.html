@@ -15,9 +15,11 @@
 <meta content="Heka" name="apple-mobile-web-app-title"/>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<!-- Librería Excel para Comisiones Pablo -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<!-- Librería Excel para Comisiones Pablo (xlsx-js-style incluye estilos de celda).
+     NOTA: se eliminó sheetjs xlsx.full.min.js — cargaba 2 librerías que exportan el
+     mismo global XLSX y la segunda pisaba a la primera, dejando sin efecto los
+     estilos .s de Comisiones Pablo y añadiendo ~950 KB de descarga. -->
+<script defer src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <style>
     :root {
       --primary-yellow: #FDB813;
@@ -12032,6 +12034,12 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     };
 
     (function() {
+      // Reintentos SOLO cuando el servidor respondió 429/5xx (la operación no llegó
+      // a ejecutarse). Nunca se reintenta tras timeout o error de red: la petición
+      // pudo haberse procesado y reenviarla duplicaría escrituras.
+      var GAS_TIMEOUT_MS = 45000;
+      var GAS_MAX_REINTENTOS = 2;
+
       function createCallableProxy(successCb, failureCb) {
         return new Proxy({}, {
           get: function(target, prop) {
@@ -12044,26 +12052,55 @@ body > .novedad-dropdown-menu .novedad-option:hover {
             return function() {
               var args = Array.prototype.slice.call(arguments);
               var payload = JSON.stringify({ fn: prop, args: args });
+              var intento = 0;
 
-              fetch(GAS_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain' },
-                body: payload
-              })
-              .then(function(r) {
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                return r.text();
-              })
-              .then(function(text) {
-                var data;
-                try { data = JSON.parse(text); } catch(e) { data = text; }
-                if (successCb) successCb(data);
-              })
-              .catch(function(err) {
-                var errMsg = err.message || String(err);
-                if (failureCb) failureCb({ message: errMsg });
-                else if (successCb) successCb({ status: 'error', message: errMsg });
-              });
+              function reportarError(mensaje) {
+                if (failureCb) failureCb({ message: mensaje });
+                else if (successCb) successCb({ status: 'error', message: mensaje });
+              }
+
+              function enviar() {
+                var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+                var timer = ctrl ? setTimeout(function() { ctrl.abort(); }, GAS_TIMEOUT_MS) : null;
+
+                fetch(GAS_URL, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'text/plain' },
+                  body: payload,
+                  signal: ctrl ? ctrl.signal : undefined
+                })
+                .then(function(r) {
+                  if (timer) clearTimeout(timer);
+                  if (r.status === 429 || r.status >= 500) {
+                    if (intento < GAS_MAX_REINTENTOS) {
+                      intento++;
+                      setTimeout(enviar, 1500 * intento); // backoff 1.5s, 3s
+                      return null;
+                    }
+                    throw new Error('El servidor está saturado (HTTP ' + r.status + '). Intenta de nuevo en unos segundos.');
+                  }
+                  if (!r.ok) throw new Error('HTTP ' + r.status);
+                  return r.text();
+                })
+                .then(function(text) {
+                  if (text === null) return; // ya se agendó un reintento
+                  var data;
+                  try { data = JSON.parse(text); } catch(e) {
+                    throw new Error('Respuesta no válida del servidor (¿sesión de Google expirada?). Recarga la página e intenta de nuevo.');
+                  }
+                  if (successCb) successCb(data);
+                })
+                .catch(function(err) {
+                  if (timer) clearTimeout(timer);
+                  var errMsg = err.message || String(err);
+                  if (err && err.name === 'AbortError') {
+                    errMsg = 'El servidor tardó demasiado en responder (más de ' + Math.round(GAS_TIMEOUT_MS/1000) + 's). Verifica si la operación se completó antes de reintentar.';
+                  }
+                  reportarError(errMsg);
+                });
+              }
+
+              enviar();
             };
           }
         });
@@ -12092,7 +12129,9 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       log.innerHTML = '';
       btnOk.style.display = 'none';
       overlay.style.display = 'flex';
-      // Animar barra de progreso
+      // Animar barra de progreso (limpiando primero cualquier intervalo previo
+      // que hubiera quedado huérfano de una apertura sin cerrar)
+      if (_modalProgresoIntervalo) { clearInterval(_modalProgresoIntervalo); _modalProgresoIntervalo = null; }
       var progreso = 0;
       _modalProgresoIntervalo = setInterval(function() {
         if (progreso < 85) { progreso += Math.random() * 8; if (progreso > 85) progreso = 85; }
@@ -12100,9 +12139,14 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       }, 600);
     }
 
+    // appendModalProgreso: se usa appendChild en un nodo de texto en vez de
+    // innerHTML += (que re-parseaba todo el log acumulado en cada línea → O(N²))
     function appendModalProgreso(msg) {
       var log = document.getElementById('modalProgresoLog');
-      if (log) { log.innerHTML += msg + '\n'; log.scrollTop = log.scrollHeight; }
+      if (log) {
+        log.appendChild(document.createTextNode(msg + '\n'));
+        log.scrollTop = log.scrollHeight;
+      }
     }
 
     function clearModalProgreso() {
@@ -12269,17 +12313,8 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     }
 
 
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.remove('active');
-    }
-
-
-
-    function closeModalOnOutsideClick(event, modalId) {
-      if (event.target.id === modalId) {
-        closeModal(modalId);
-      }
-    }
+    // closeModal y closeModalOnOutsideClick se definen una sola vez, más abajo
+    // (versiones null-safe). Estas copias eran código muerto pisado por las segundas.
 
     function loadMyDataForm() {
       // --- LIMPIEZA INICIAL ---
@@ -13024,6 +13059,20 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       parent.classList.toggle('open');
     }
 
+    // Caché de navegación: los paneles de listas de solo lectura no se re-fetchean
+    // del backend si se visitaron hace menos de 5 minutos (entrar y salir 5 veces
+    // del mismo panel ya no dispara 5 peticiones idénticas). Se excluye
+    // check-recarga (cola de trabajo en vivo) y los paneles con init de UI.
+    var _panelLastLoad = {};
+    var PANEL_TTL_MS = 5 * 60 * 1000;
+    function panelDatosRecientes(panelId) {
+      var t = _panelLastLoad[panelId];
+      return !!(t && (Date.now() - t) < PANEL_TTL_MS);
+    }
+    function marcarPanelCargado(panelId) {
+      _panelLastLoad[panelId] = Date.now();
+    }
+
     function goToPanel(panelId, clickedElement) {
       document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
       document.getElementById(panelId).classList.add('active');
@@ -13048,20 +13097,23 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         document.getElementById('anular_asesor').value = currentUser.name;
       }
 
-      if (panelId === 'panel-talento-humano') {
+      if (panelId === 'panel-talento-humano' && !panelDatosRecientes(panelId)) {
+        marcarPanelCargado(panelId);
         cargarColaboradores();
-      }      
+      }
 
       if (panelId === 'panel-comisiones-pablo') {
         initComisionesPablo();
-      }      
+      }
 
-      if (panelId === 'panel-historial-certificados') {
+      if (panelId === 'panel-historial-certificados' && !panelDatosRecientes(panelId)) {
+        marcarPanelCargado(panelId);
         cargarHistorialCertificados();
       }
 
 
-      if (panelId === 'panel-historial-global') {
+      if (panelId === 'panel-historial-global' && !panelDatosRecientes(panelId)) {
+        marcarPanelCargado(panelId);
         cargarHistorialGlobal();
       }
 
@@ -13075,19 +13127,22 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         initPanelGestionMensajero();
       }
 
-      if (panelId === 'panel-activaciones-inter') {
+      if (panelId === 'panel-activaciones-inter' && !panelDatosRecientes(panelId)) {
+        marcarPanelCargado(panelId);
         cargarActivacionesInter();
       }
 
-      if (panelId === 'panel-historial-recargas') {
+      if (panelId === 'panel-historial-recargas' && !panelDatosRecientes(panelId)) {
+        marcarPanelCargado(panelId);
         cargarHistorialRecargas();
       }
 
       if (panelId === 'panel-check-recarga') {
         cargarCheckRecarga(); // <--- AGREGA ESTO PARA QUE CARGUE SOLO
-      }      
+      }
 
-      if (panelId === 'panel-asignaciones') {
+      if (panelId === 'panel-asignaciones' && !panelDatosRecientes(panelId)) {
+        marcarPanelCargado(panelId);
         cargarAsignaciones(); // <--- AGREGA ESTO PARA QUE CARGUE AL ENTRAR
       }
 
@@ -13903,55 +13958,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     let tempRecargaData = null;
     let tempRecargaFiles = null;
 
-    function openModalRecarga() {
-      // 1. ABRIR EL MODAL VISUALMENTE
-      document.getElementById('modal-recarga').classList.add('active');
-      
-      // 2. CRUCIAL: Asignar el nombre del usuario al campo oculto inmediatamente
-      // Esto asegura que al guardar, sepa quién es el asesor.
-      if (document.getElementById('rec_asesor')) {
-        document.getElementById('rec_asesor').value = currentUser.name;
-      }
-
-      // 3. Limpiar campos visibles del formulario
-      document.getElementById('rec_fecha').value = "";
-      document.getElementById('rec_valor').value = "";
-      document.getElementById('rec_seller').value = "";
-      
-      // 4. Resetear estado visual de saldo (limpiar mensaje anterior)
-      if (document.getElementById('res-saldo-display')) {
-        document.getElementById('res-saldo-display').style.display = 'none';
-        document.getElementById('res-saldo-display').innerText = "";
-      }
-      
-      // 5. Deshabilitar botón guardar hasta que verifique saldo
-      if (document.getElementById('btn_guardar_recarga')) {
-        document.getElementById('btn_guardar_recarga').disabled = true;
-      }
-
-      // 6. Limpiar variables temporales globales (para que no queden datos viejos)
-      tempRecargaData = null;
-      tempRecargaFiles = null;
-    }
-
-
-
-    function formatCurrencyInput(input) {
-      var value = input.value.replace(/\D/g, '');
-      if (value === "") {
-        input.value = "";
-        return;
-      }
-      var number = parseInt(value, 10);
-      var formatted = number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      input.value = "$ " + formatted;
-    }
-
-    function parseCurrencyValue(formattedString) {
-      if (!formattedString) return 0;
-      return parseInt(formattedString.replace(/[\$\s\.]/g, ''), 10);
-    }
-
     function enviarRecarga() {
       //1. OBTENER VALORES
       var fecha = document.getElementById('rec_fecha').value;
@@ -14089,12 +14095,14 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       var container = document.getElementById('lista_duplicados_container');
       container.innerHTML = ''; // Limpiar lista anterior
 
-      // Recorremos la lista de duplicados
+      // Recorremos la lista de duplicados (acumulando en un string y asignando
+      // una sola vez: innerHTML += dentro del bucle re-parseaba todo en cada vuelta)
+      var htmlAcumulado = '';
       res.duplicates.forEach(function(dup, index) {
         var valorFormateado = "$ " + dup.valor.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         
         // HTML de cada tarjeta de duplicado
-        var tarjetaHTML = `
+        htmlAcumulado += `
           <div style="background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin-bottom: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: start;">
               <div>
@@ -14110,9 +14118,8 @@ body > .novedad-dropdown-menu .novedad-option:hover {
             </div>
           </div>
         `;
-        
-        container.innerHTML += tarjetaHTML;
       });
+      container.innerHTML = htmlAcumulado;
 
       // Si la lista es muy larga, hacer scroll al inicio
       container.scrollTop = 0;
@@ -16072,48 +16079,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       updateBadge('badge-asig-ges', gestionados);
     }
 
-    function confirmarGuardarAsignaciones() {
-      const filasDOM = document.querySelectorAll('#tablaAsignacionesBody tr');
-      if (filasDOM.length === 0) return showToast("No hay registros para guardar.");
-
-      const updates = [];
-      let checkedCount = 0;
-      
-      filasDOM.forEach(tr => {
-        // Buscamos el checkbox en esta fila
-        const checkbox = tr.querySelector('.check-edicion');
-        
-        // SOLO procesamos si el checkbox está marcado
-        if (checkbox && checkbox.checked) {
-          checkedCount++;
-          
-          const rowIndex = tr.getAttribute('data-row');
-          const inputs = tr.querySelectorAll('.input-edicion');
-          const medio = inputs[0].value.trim();
-          const obs = inputs[1].value.trim();
-
-          updates.push({
-            rowIndex: rowIndex,
-            medio: medio,
-            obs: obs
-          });
-        }
-      });
-
-      if (checkedCount === 0) {
-        return showToast("Debes marcar el chulito (checkbox) en las filas que deseas editar.");
-      }
-
-      // Usamos el modal de confirmación
-      window.tempUpdates = updates;
-      window.tempSaveFunction = "ejecutarGuardadoAsignaciones";
-      document.getElementById('modal-confirm-guardado').classList.add('active');
-    }
-
-
-    // ---------------------------------------------------------
-    // FUNCIÓN RENDERIZAR TABLA (CON CHECKBOX AL FINAL - NO MUEVE OTRAS COLUMNAS)
-    // ---------------------------------------------------------
+    // --- FUNCIÓN RENDERIZAR TABLA (CON CHECKBOX AL FINAL - NO MUEVE OTRAS COLUMNAS) ---
     function renderizarTablaAsignaciones(data) {
       const tbody = document.getElementById('tablaAsignacionesBody');
       tbody.innerHTML = ''; // Limpieza total de la tabla anterior
@@ -16245,80 +16211,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       updateBotonGuardar();
     }
 
-    // --- LÓGICA FINAL DE GUARDADO (ACTUALIZADA) ---
-    function confirmarGuardarAsignaciones() {
-      const filasDOM = document.querySelectorAll('#tablaAsignacionesBody tr');
-      if (filasDOM.length === 0) return showToast("No hay registros para guardar.");
-
-      const updates = [];
-      
-      filasDOM.forEach(tr => {
-        const rowIndex = tr.getAttribute('data-row'); // Leemos el atributo
-        const inputs = tr.querySelectorAll('input');
-        const medio = inputs[0].value.trim();
-        const obs = inputs[1].value.trim();
-
-        updates.push({
-          rowIndex: rowIndex,
-          medio: medio,
-          obs: obs
-        });
-      });
-
-      // Usamos el mismo Modal de Confirmación que usamos para Recarga
-      // Necesitamos guardar temporalmente los datos y la función a ejecutar
-      window.tempUpdates = updates;
-      window.tempSaveFunction = "ejecutarGuardadoAsignaciones"; // Nueva función específica
-      
-      // Mostramos el modal
-      document.getElementById('modal-confirm-guardado').classList.add('active');
-    }
-
-    // --- FUNCIÓN EJECUTORA (Backend) ---
-    function ejecutarGuardadoAsignaciones() {
-      closeModal('modal-confirm-guardado');
-      showLoading(true);
-
-      google.script.run
-        .withSuccessHandler(function(res) {
-          showLoading(false);
-          if (res.status === "success") {
-            showToast(res.message);
-            cargarAsignaciones(); // Recargamos para ver cambios
-          } else {
-            showToast("Error: " + res.message);
-          }
-        })
-        .withFailureHandler(function(err) {
-          showLoading(false);
-          showToast("Error: " + err);
-        })
-        .guardarBatchAsignaciones(window.tempUpdates);
-    }
-
-
-
-
-    function toggleEdicionFila(checkbox) {
-      // Buscamos la fila padre (TR)
-      const tr = checkbox.closest('tr');
-      
-      // Buscamos todos los inputs de texto dentro de esa fila (excluimos el checkbox)
-      const inputs = tr.querySelectorAll('.input-edicion');
-      
-      // Si el checkbox está marcado, desbloqueamos y ponemos blanco. Si no, bloqueamos y ponemos gris.
-      inputs.forEach(function(input) {
-        input.disabled = !checkbox.checked; // Si checked -> false (editable), Si no -> true (bloqueado)
-        
-        if (checkbox.checked) {
-          input.style.backgroundColor = "#fff";
-          input.style.cursor = "text";
-        } else {
-          input.style.backgroundColor = "#e9ecef";
-          input.style.cursor = "not-allowed";
-        }
-      });
-    }
 
 
 
@@ -17463,56 +17355,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     }
 
 
-    function guardarBatchAsignaciones(updatesArray) {
-      const ID_HOJA = "1Z2mKKx-Rsib2UGo-Hae6OVNxKpltXZyipXcVpae2AkE";
-      const sheetName = "Activación Envíos Plataforma"; 
-      
-      Logger.log("=== INICIO GUARDADO ASIGNACIONES ===");
-      
-      try {
-        const ss = SpreadsheetApp.openById(ID_HOJA);
-        const sheet = ss.getSheetByName(sheetName);
-        
-        if (!sheet) {
-          Logger.log("ERROR: Hoja no encontrada.");
-          return { status: "error", message: "Hoja no encontrada." };
-        }
-
-        const lock = LockService.getScriptLock();
-        
-        if (lock.tryLock(10000)) {
-          try {
-            for (var i = 0; i < updatesArray.length; i++) {
-              const u = updatesArray[i];
-              const r = parseInt(u.rowIndex); 
-              
-              Logger.log("Fila a actualizar: " + r);
-              Logger.log("Datos: Medio=" + u.medio + ", Obs=" + u.obs);
-
-              // ESCRITURA EN H E I
-              var valoresAEscribir = [[u.medio, u.obs]];
-              sheet.getRange(r, 8, 1, 2).setValues(valoresAEscribir);
-
-              // VERIFICACIÓN: Leemos lo que acabamos de escribir
-              var verificacion = sheet.getRange(r, 8, 1, 2).getValues()[0];
-              Logger.log("VERIFICACIÓN (Lo que hay en la hoja): Medio=" + verificacion[0] + ", Obs=" + verificacion[1]);
-            }
-            
-            Logger.log("=== FIN GUARDADO EXITOSO ===");
-            return { status: "success", message: updatesArray.length + " registros actualizados correctamente." };
-          } finally {
-            lock.releaseLock();
-          }
-        } else {
-          return { status: "error", message: "Sistema ocupado." };
-        }
-      } catch (error) {
-        Logger.log("ERROR CRÍTICO: " + error);
-        return { status: "error", message: error.toString() };
-      }
-    }    
-
-
     function guardarBatchAsignacionesHandler() {
       // 1. Seleccionamos todas las filas (TR) que están dentro del cuerpo de la tabla
       const filasDOM = document.querySelectorAll('#tablaAsignacionesBody tr');
@@ -18291,32 +18133,59 @@ body > .novedad-dropdown-menu .novedad-option:hover {
           const stats = document.getElementById("anulacion-stats");
 
           container.style.display = "block";
-          
+
           let total = paths.length;
           let actual = 0;
+          let fallidas = 0;
 
-          function procesarSiguiente() {
+          // Se procesa por bloques (10 guías por llamada al backend) en vez de una
+          // llamada HTTP por guía: 100 guías pasan de 100 requests a 10, y cada
+          // bloque queda muy por debajo del timeout de 45s del shim.
+          const TAMANO_BLOQUE = 10;
+
+          function procesarBloque() {
             if (actual >= total) {
               bar.style.width = "100%";
               stats.innerText = "100% Completado";
-              mostrarAlerta("Proceso Terminado", `¡Todas las guías fueron ${accion.verbo.toLowerCase()}s correctamente! 🚀`, "success");
+              if (fallidas > 0) {
+                mostrarAlerta("Proceso Terminado", `Se procesaron ${total - fallidas} de ${total} guías. ${fallidas} fallaron (revisa e inténtalas de nuevo).`, "warning");
+              } else {
+                mostrarAlerta("Proceso Terminado", `¡Todas las guías fueron ${accion.verbo.toLowerCase()}s correctamente! 🚀`, "success");
+              }
               resultadosAnulacionActual = [];
               document.getElementById("resultado").innerHTML = `<p style='text-align:center; color:green; padding:20px;'>Lote procesado con éxito.</p>`;
               return;
             }
 
+            const bloque = paths.slice(actual, actual + TAMANO_BLOQUE);
+
             google.script.run
-              .withSuccessHandler(() => {
-                actual++;
-                let porcentaje = Math.round((actual / total) * 100);
+              .withSuccessHandler((res) => {
+                // res puede ser el objeto {total, procesadas, errores} del batch
+                // o un string (respuesta de la versión antigua por guía)
+                if (res && typeof res === 'object' && Array.isArray(res.errores)) {
+                  fallidas += res.errores.length;
+                  actual += bloque.length;
+                } else {
+                  actual += bloque.length;
+                }
+                let porcentaje = Math.min(100, Math.round((actual / total) * 100));
                 bar.style.width = porcentaje + "%";
                 stats.innerText = `${porcentaje}% (${actual}/${total})`;
-                procesarSiguiente();
+                procesarBloque();
               })
-              .actualizarGuiaCompleta(paths[actual], estadoSeleccionado);
+              .withFailureHandler(() => {
+                fallidas += bloque.length;
+                actual += bloque.length;
+                let porcentaje = Math.min(100, Math.round((actual / total) * 100));
+                bar.style.width = porcentaje + "%";
+                stats.innerText = `${porcentaje}% (${actual}/${total})`;
+                procesarBloque();
+              })
+              .actualizarMultiples(bloque, estadoSeleccionado);
           }
 
-          procesarSiguiente();
+          procesarBloque();
         }
       );
     }
