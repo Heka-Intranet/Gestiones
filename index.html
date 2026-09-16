@@ -6022,6 +6022,31 @@ body > .novedad-dropdown-menu .novedad-option:hover {
    👤 PERSONAL → FUNCIONES
    ============================================================ */
 
+/* =========================================================
+   PERSONAL → FUNCIONES — CONTENEDOR VISUAL
+   Evita que esta sección quede pegada a los laterales.
+   ========================================================= */
+#panel-funciones-personal {
+  width: calc(100% - 40px) !important;
+  max-width: 1450px !important;
+  margin: 0 auto !important;
+  padding: 0 0 30px !important;
+  box-sizing: border-box !important;
+}
+
+#panel-funciones-personal .funciones-stats {
+  width: 100%;
+}
+
+#panel-funciones-personal .funciones-toolbar {
+  width: 100%;
+}
+
+#panel-funciones-personal .funciones-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 #panel-funciones-personal .page-header {
   display: flex;
   justify-content: space-between;
@@ -6429,6 +6454,12 @@ body > .novedad-dropdown-menu .novedad-option:hover {
    ========================= */
 
 @media (max-width: 768px) {
+
+  #panel-funciones-personal {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
 
   #panel-funciones-personal .page-header {
     flex-direction: column;
