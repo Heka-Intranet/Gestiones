@@ -6477,6 +6477,61 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     justify-content: center;
   }
 } 
+
+
+/* =========================================================
+   PERSONAL → NUEVA FUNCIÓN — MODAL INDEPENDIENTE
+   Se mantiene fuera de .main-content para que ocupe
+   correctamente toda la ventana sin deformarse.
+   ========================================================= */
+#modal-nueva-funcion-personal {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 20px !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 99999 !important;
+  overflow: hidden !important;
+}
+
+#modal-nueva-funcion-personal.active {
+  display: flex !important;
+}
+
+#modal-nueva-funcion-personal > .modal-content {
+  width: min(700px, 94vw) !important;
+  max-width: 700px !important;
+  max-height: calc(100vh - 40px) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  flex: 0 1 auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+#modal-nueva-funcion-personal .modal-header {
+  flex-shrink: 0 !important;
+}
+
+#modal-nueva-funcion-personal .modal-body {
+  overflow: visible !important;
+}
+
+@media (max-width: 768px) {
+  #modal-nueva-funcion-personal {
+    padding: 12px !important;
+  }
+
+  #modal-nueva-funcion-personal > .modal-content {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    max-height: calc(100vh - 24px) !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -8960,6 +9015,8 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 
 
+</main>
+</div>
 <!-- =========================================================
      MODAL NUEVA FUNCIÓN
      ========================================================= -->
@@ -9191,8 +9248,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 
   </div>
 
-</div>    
-</main>
 </div>
 <!-- MODAL DE AVISO/CONFIRMACIÓN (Nuevo) -->
 <div id="modal-aviso" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 99999; justify-content: center; align-items: center;">
