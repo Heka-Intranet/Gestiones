@@ -7499,6 +7499,12 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </button>
 <div class="novedad-dropdown-menu" id="menu-indem"></div>
 </div>
+<!-- BOTÓN CUN MASIVO -->
+<div class="novedad-dropdown-container">
+<button class="btn btn-primary" onclick="abrirModalCunMasivo()" style="display: flex; align-items: center; gap: 5px; background-color: #6f42c1;">
+<i class="bi bi-clipboard-plus"></i> CUN Masivo
+                </button>
+</div>
 <!-- BOTÓN NUEVO (EXTREMO DERECHO) -->
 <div class="novedad-dropdown-container" style="margin-left: auto;">
 <button class="btn btn-primary" onclick="abrirModalSeleccionTransportadora()" style="display: flex; align-items: center; gap: 5px;">
@@ -10570,6 +10576,60 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div style="font-size: 12px; margin-top: 5px; font-weight: bold;">TCC</div>
 </div>
 </div>
+</div>
+</div>
+</div>
+<!-- MODAL CUN / COMPROBANTE MASIVO -->
+<div class="modal-overlay" id="modal-cun-masivo" onclick="closeModalOnOutsideClick(event, 'modal-cun-masivo')">
+<div class="modal-content" onclick="event.stopPropagation()" style="max-width: 560px;">
+<div class="modal-header" style="background-color: #6f42c1;">
+<div class="modal-title">
+<h2 style="color: #fff; font-size: 18px;">📋 CUN / Comprobante Masivo</h2>
+</div>
+<button class="close-modal-btn" onclick="closeModal('modal-cun-masivo')" style="color: #fff;">×</button>
+</div>
+<div class="modal-body" style="padding: 20px;">
+<p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se actualiza; si no existe se crea con la fecha de hoy, el CUN y el estado seleccionado — igual que el registro uno a uno.
+</p>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+<div>
+<label style="font-size: 12px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 4px;">Transportadora</label>
+<select class="form-input" id="cunmasivo-tipo" style="width: 100%;">
+<option value="inter">Inter Rapidísimo (CUN MASIVO)</option>
+<option value="servi">Servientrega (CUN MASIVO)</option>
+<option value="coord">Coordinadora (COMPROBANTE MASIVO)</option>
+<option value="tcc">TCC (COMPROBANTE MASIVO)</option>
+</select>
+</div>
+<div>
+<label style="font-size: 12px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 4px;">Número de CUN / Comprobante</label>
+<input class="form-input" id="cunmasivo-numero" placeholder="Ej: 123456" style="width: 100%;" type="text"/>
+</div>
+</div>
+<div style="margin-bottom: 12px;">
+<label style="font-size: 12px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 4px;">Estado a aplicar</label>
+<select class="form-input" id="cunmasivo-estado" style="width: 100%;">
+<option value="">(No cambiar el estado de las existentes)</option>
+<option value="En Validacion" selected="selected">En Validacion</option>
+<option value="PARA PAGAR">PARA PAGAR</option>
+<option value="PAGADO">PAGADO</option>
+<option value="NOVEDAD">NOVEDAD</option>
+<option value="SIN AFECTACION COBRO">SIN AFECTACION COBRO</option>
+<option value="VERSION 2">VERSION 2</option>
+</select>
+</div>
+<div style="margin-bottom: 8px;">
+<label style="font-size: 12px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 4px;">Guías (separadas por espacio, coma o salto de línea)</label>
+<textarea class="form-input" id="cunmasivo-guias" placeholder="200123456, 200123457 200123458..." rows="6" style="width: 100%; font-family: monospace; font-size: 13px;"></textarea>
+</div>
+<div id="cunmasivo-resultado" style="display: none; font-size: 13px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 10px; margin-top: 10px; max-height: 160px; overflow-y: auto; white-space: pre-wrap;"></div>
+</div>
+<div class="modal-footer" style="padding: 15px 20px; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 10px;">
+<button class="btn" onclick="closeModal('modal-cun-masivo')" style="background-color: #6c757d; color: white;">Cancelar</button>
+<button class="btn btn-primary" id="btn-ejecutar-cunmasivo" onclick="ejecutarCunMasivo()" style="background-color: #6f42c1; color: white;">
+<i class="bi bi-clipboard-check"></i> Procesar
+</button>
 </div>
 </div>
 </div>
@@ -16079,24 +16139,75 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       updateBadge('badge-asig-ges', gestionados);
     }
 
-    // --- FUNCIÓN RENDERIZAR TABLA (CON CHECKBOX AL FINAL - NO MUEVE OTRAS COLUMNAS) ---
-    function renderizarTablaAsignaciones(data) {
-      const tbody = document.getElementById('tablaAsignacionesBody');
-      tbody.innerHTML = ''; // Limpieza total de la tabla anterior
+    // ---------------------------------------------------------
+    // RENDER PAGINADO (compartido por las tablas grandes)
+    // Antes las tablas de Asignaciones / Indemnizaciones / Comisiones pintaban
+    // TODAS las filas del backend en cada render (3.000 filas = UI congelada
+    // varios segundos). Ahora se pinta la primera página (150 filas) y un botón
+    // "Cargar más". Cada render nuevo (datos o filtro cambiado) reinicia solo
+    // a la página 1 porque el estado vive dentro de la llamada.
+    // ---------------------------------------------------------
+    function renderPaginado(tbody, data, crearFila, opciones) {
+      opciones = opciones || {};
+      const TAMANO = opciones.tamano || 150;
+      const COLSPAN = opciones.colspan || 8;
+      const MENSAJE_VACIO = opciones.mensajeVacio || 'No hay registros para mostrar.';
 
-      // Si no hay datos, mostramos mensaje
+      tbody.innerHTML = '';
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">No hay registros para mostrar.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="' + COLSPAN + '" style="text-align:center; padding:20px;">' + MENSAJE_VACIO + '</td></tr>';
+        if (typeof opciones.alPintar === 'function') opciones.alPintar(0, 0);
         return;
       }
 
+      let mostradas = 0;
+
+      function quitarBotonCargarMas() {
+        const btn = tbody.querySelector('tr.fila-cargar-mas');
+        if (btn) btn.remove();
+      }
+
+      function pintarPagina() {
+        quitarBotonCargarMas();
+        const fin = Math.min(mostradas + TAMANO, data.length);
+        const fragmento = document.createDocumentFragment();
+        for (let i = mostradas; i < fin; i++) {
+          fragmento.appendChild(crearFila(data[i], i));
+        }
+        mostradas = fin;
+        tbody.appendChild(fragmento);
+
+        if (mostradas < data.length) {
+          const trBtn = document.createElement('tr');
+          trBtn.className = 'fila-cargar-mas';
+          const td = document.createElement('td');
+          td.colSpan = COLSPAN;
+          td.style.textAlign = 'center';
+          td.style.padding = '10px';
+          const btn = document.createElement('button');
+          btn.className = 'btn btn-primary';
+          btn.type = 'button';
+          btn.textContent = 'Cargar más (' + (data.length - mostradas) + ' restantes de ' + data.length + ')';
+          btn.onclick = pintarPagina;
+          td.appendChild(btn);
+          trBtn.appendChild(td);
+          tbody.appendChild(trBtn);
+        }
+        if (typeof opciones.alPintar === 'function') opciones.alPintar(mostradas, data.length);
+      }
+
+      pintarPagina();
+    }
+
+    // --- FUNCIÓN RENDERIZAR TABLA (CON CHECKBOX AL FINAL - NO MUEVE OTRAS COLUMNAS) ---
+    function renderizarTablaAsignaciones(data) {
+      const tbody = document.getElementById('tablaAsignacionesBody');
       const palabrasClave = ['whatsapp', 'correo', 'llamada', 'meet'];
 
-      // Recorremos cada fila de datos
-      data.forEach(row => {
+      function crearFilaAsignacion(row) {
         // 1. Crear el elemento fila (TR)
         const tr = document.createElement('tr');
-        
+
         // 2. Asignamos el índice de la fila de la hoja al atributo data-row
         // Esto es CRÍTICO para que el botón guardar sepa dónde escribir
         if (row.rowIndex) {
@@ -16104,7 +16215,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         } else {
           console.error("Error Crítico: La fila no tiene rowIndex (ID de hoja de cálculo)", row);
         }
-        
+
         // 3. Lógica de Auto-Selección (Visual - Fondo Amarillo)
         // Si el medio actual contiene una palabra clave (ej. "Whatsapp"), marcamos la fila visualmente
         const medioActual = (row.medio || "").toLowerCase().trim();
@@ -16117,7 +16228,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         // 4. Estilos de Plataforma (Colores Heka / Loggy)
         let estiloPlataforma = "font-size:13px; font-weight:500;";
         const plataforma = row.plataforma ? row.plataforma.toLowerCase().trim() : "";
-        
+
         if (plataforma === "hekaentrega") {
             estiloPlataforma += " color: #FF8F00; font-weight:bold;";
             estiloPlataforma += " -webkit-text-stroke: 0.2px black;";
@@ -16131,36 +16242,36 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         // 5. Lógica de Teléfonos (Enlaces de WhatsApp + Icono Copiar)
         let telefonosHTML = '<span style="color:#ccc; font-size:10px;">No hay</span>';
         let rawTelefonos = String(row.telefonos || "");
-        
-        if (rawTelefonos.trim() !== "") { 
+
+        if (rawTelefonos.trim() !== "") {
           const phoneList = rawTelefonos.split(',');
-          
+
           telefonosHTML = phoneList.map(function(num) {
             // Usamos tu regex para limpiar
-            const cleanNum = num.trim().replace(/[^0-9+]/g, ''); 
-            
+            const cleanNum = num.trim().replace(/[^0-9+]/g, '');
+
             if (cleanNum) {
               // 1. Link de WhatsApp
               var waLink = `<a href="https://wa.me/${cleanNum}" target="_blank" style="color: #FDB813; text-decoration: none; font-weight:600; display:block; margin-bottom:2px;"><i class="bi bi-whatsapp"></i> ${num.trim()}</a>`;
-              
+
               // 2. Icono de Copiar
-              var copyIcon = `<i class="bi bi-clipboard" 
-                                onclick="copiarTexto('${cleanNum}')" 
-                                title="Copiar número" 
+              var copyIcon = `<i class="bi bi-clipboard"
+                                onclick="copiarTexto('${cleanNum}')"
+                                title="Copiar número"
                                 style="margin-left: 5px; cursor: pointer; color: #6c757d; font-size: 14px;"></i>`;
-              
+
               // 3. Envolver en un span para alinear icono y link
               return `<span style="display:inline-flex; align-items:center;">${waLink} ${copyIcon}</span>`;
             }
-            return ''; 
+            return '';
           }).join('<br>');
         }
 
         // 6. Generación del Select (Dropdown) de Medios
         const opcionesMedio = ["", "Whatsapp", "Correo", "Llamada", "Meet"];
-        
+
         let selectMedioHTML = `<select class="form-input suite-select" style="width:100%; font-size:12px;" onchange="verificarSeleccionAsignacion(event);">`;
-        
+
         opcionesMedio.forEach(function(opt) {
           // Comparamos en minúsculas para evitar problemas de mayúsculas
           const selected = (medioActual === opt.toLowerCase()) ? 'selected' : '';
@@ -16172,43 +16283,47 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         tr.innerHTML = `
           <!-- FECHA -->
           <td>${row.fecha || ''}</td>
-          
+
           <!-- PLATAFORMA -->
           <td style="${estiloPlataforma}">${row.plataforma || '-'}</td>
-          
+
           <!-- SELLER -->
           <td style="font-weight:bold;">${row.seller || ''}</td>
-          
+
           <!-- TELÉFONOS (CON ICONO DE COPIAR AGREGADO) -->
           <td style="font-size:13px;">${telefonosHTML}</td>
-          
+
           <!-- EMAIL -->
           <td style="font-size:13px;">${row.email || '-'}</td>
-          
+
           <!-- MEDIO (SELECT) -->
           <td style="padding: 4px;">
             ${selectMedioHTML}
           </td>
-          
+
           <!-- OBSERVACIONES -->
           <td style="padding: 4px;">
-            <input type="text" class="form-input input-data" 
-                    style="width:100%;; font-size:12px;" 
+            <input type="text" class="form-input input-data"
+                    style="width:100%;; font-size:12px;"
                     value="${row.obs || ''}" placeholder="Observación...">
           </td>
 
           <!-- SELECCIONAR (CHECKBOX) - AL FINAL -->
           <td style="text-align: center; width: 50px; vertical-align: middle;">
-            <input type="checkbox" class="check-row-asignacion" 
-                  ${esAutoSeleccionado ? 'checked' : ''} 
+            <input type="checkbox" class="check-row-asignacion"
+                  ${esAutoSeleccionado ? 'checked' : ''}
                   onchange="verificarSeleccionAsignacion()">
           </td>
         `;
-        tbody.appendChild(tr);
+        return tr;
+      }
+
+      // Render con paginación (150 filas por página + botón "Cargar más");
+      // el botón Gestionar se actualiza tras cada página pintada
+      renderPaginado(tbody, data, crearFilaAsignacion, {
+        colspan: 8,
+        alPintar: function() { updateBotonGuardar(); }
       });
-      
-      // 8. Llamada final: Actualizar estado del botón Gestionar
-      updateBotonGuardar();
     }
 
 
@@ -17358,9 +17473,16 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     function guardarBatchAsignacionesHandler() {
       // 1. Seleccionamos todas las filas (TR) que están dentro del cuerpo de la tabla
       const filasDOM = document.querySelectorAll('#tablaAsignacionesBody tr');
-      
+
       if (filasDOM.length === 0) {
         return showToast("No hay registros para guardar.");
+      }
+
+      // Con paginación puede haber filas sin cargar todavía: avisar para que
+      // nadie guarde "todo" sin darse cuenta de que faltan páginas por cargar
+      const filaCargarMas = document.querySelector('#tablaAsignacionesBody tr.fila-cargar-mas');
+      if (filaCargarMas && !confirm('Hay filas aún no cargadas (usa el botón "Cargar más" para verlas).\n¿Guardar SOLO las filas visibles en pantalla?')) {
+        return;
       }
 
       const updates = [];
@@ -20365,20 +20487,14 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     // --- FUNCIÓN MODIFICADA ---
     function renderizarTablaIndemnizaciones(data) {
       const tbody = document.getElementById('tablaIndemnizacionesBody');
-      tbody.innerHTML = '';
 
-      if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#888;">No hay registros en este estado.</td></tr>';
-        return;
-      }
-
-      data.forEach(row => {
+      function crearFilaIndemnizacion(row) {
         const tr = document.createElement('tr');
 
         // 1. Fecha: Busca fechaGen (Inter), si no hay, busca fechaAprob (Servi/Coord)
         const fechaDisplay = row.fechaGen || row.fechaAprob || '-';
-        
-        // 2. Info Extra (Donde iba Ticket): 
+
+        // 2. Info Extra (Donde iba Ticket):
         const infoDisplay = row.ticket || row.numNota || row.cun || '-';
 
         // 3. Estados con colores dinámicos
@@ -20399,18 +20515,18 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 
         // 4. LÓGICA VISUAL (CUN MASIVO / COMPROBANTE MASIVO)
         let cunHtml = "";
-        
+
         // --- CASO INTER / SERVI: Busca "CUN MASIVO" ---
         if (
-            (row.observaciones && row.observaciones.startsWith("CUN MASIVO ")) || 
+            (row.observaciones && row.observaciones.startsWith("CUN MASIVO ")) ||
             (row.colT && row.colT.startsWith("CUN MASIVO "))
         ) {
             let rawObs = row.observaciones || row.colT || "";
             let num = rawObs.split("CUN MASIVO ")[1] || "";
-            
+
             let cunClass = "";
-            if (currentIndemnizationType === 'inter') cunClass = "badge-cun-inter"; 
-            else if (currentIndemnizationType === 'servi') cunClass = "badge-cun-servi"; 
+            if (currentIndemnizationType === 'inter') cunClass = "badge-cun-inter";
+            else if (currentIndemnizationType === 'servi') cunClass = "badge-cun-servi";
 
             cunHtml = `<div class="badge-cun ${cunClass}">CUN ${num}</div>`;
         }
@@ -20420,7 +20536,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         ) {
             let rawObs = row.observaciones || "";
             let num = rawObs.split("COMPROBANTE MASIVO ")[1] || "";
-            
+
             // Usamos el estilo azul de coordinadora
             let cunClass = "badge-cun-coord";
 
@@ -20431,22 +20547,22 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         tr.innerHTML = `
           <!-- Columna 1: FECHA -->
           <td>${fechaDisplay}</td>
-          
+
           <!-- Columna 2: GUÍA -->
           <td>
             <div style="font-weight:bold; color:var(--primary-dark);">${row.guia || ''}</div>
             ${cunHtml}
           </td>
-          
+
           <!-- Columna 3: SELLER -->
           <td>${row.seller || ''}</td>
-          
+
           <!-- Columna 4: INFO -->
           <td style="font-family:monospace;">${infoDisplay}</td>
-          
+
           <!-- Columna 5: ESTADO -->
           <td>${estadoBadge}</td>
-          
+
           <!-- Columna 6: DETALLE -->
           <td style="text-align:center;">
             <button class="btn btn-sm btn-secondary" onclick="abrirModalGenerico('${row.guia}')" title="Ver detalle completo">
@@ -20454,7 +20570,13 @@ body > .novedad-dropdown-menu .novedad-option:hover {
             </button>
           </td>
         `;
-        tbody.appendChild(tr);
+        return tr;
+      }
+
+      // Render paginado (150 por página): antes pintaba todo el dataset en cada filtro
+      renderPaginado(tbody, data, crearFilaIndemnizacion, {
+        colspan: 6,
+        mensajeVacio: 'No hay registros en este estado.'
       });
     }
 
@@ -21430,6 +21552,99 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     function abrirModalSeleccionTransportadora() {
         const modal = document.getElementById('modal-seleccionar-transportadora');
         if(modal) modal.classList.add('active');
+    }
+
+    // ==========================================
+    // CUN / COMPROBANTE MASIVO (registro masivo por transportadora)
+    // ==========================================
+    function abrirModalCunMasivo() {
+        // Preseleccionar la transportadora de la pestaña activa (si hay)
+        const sel = document.getElementById('cunmasivo-tipo');
+        if (sel && currentIndemnizationType) sel.value = currentIndemnizationType;
+        const res = document.getElementById('cunmasivo-resultado');
+        if (res) { res.style.display = 'none'; res.textContent = ''; }
+        const btn = document.getElementById('btn-ejecutar-cunmasivo');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-clipboard-check"></i> Procesar'; }
+        const modal = document.getElementById('modal-cun-masivo');
+        if (modal) modal.classList.add('active');
+    }
+
+    function ejecutarCunMasivo() {
+        const tipo = document.getElementById('cunmasivo-tipo').value;
+        const numero = document.getElementById('cunmasivo-numero').value.replace(/\D/g, '');
+        const estado = document.getElementById('cunmasivo-estado').value;
+        const textoGuias = document.getElementById('cunmasivo-guias').value.trim();
+
+        if (!numero) return showToast("Escribe el número de CUN / Comprobante.");
+        if (!textoGuias) return showToast("Pega al menos una guía.");
+
+        const guias = textoGuias.split(/[\s,;]+/).filter(function(g) { return g; });
+        if (guias.length === 0) return showToast("No se detectaron guías válidas.");
+
+        const esComprobante = (tipo === 'coord' || tipo === 'tcc');
+        const unicas = guias.filter(function(g, i) { return guias.indexOf(g) === i; });
+
+        mostrarModalConfirmacion(
+            '¿Aplicar ' + (esComprobante ? 'COMPROBANTE' : 'CUN') + ' ' + numero +
+            ' a ' + unicas.length + ' guía(s) en ' + tipo.toUpperCase() + '?\n\n' +
+            'Las guías existentes se actualizan; las que no existan se crean con la fecha de hoy' +
+            (estado ? ' y estado "' + estado + '"' : '') + '.',
+            function() { procesarCunMasivoBloques(tipo, unicas, numero, estado); }
+        );
+    }
+
+    function procesarCunMasivoBloques(tipo, guias, numero, estado) {
+        const btn = document.getElementById('btn-ejecutar-cunmasivo');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...'; }
+        showLoading(true);
+
+        // Bloques de 50: cada llamada lee la hoja y escribe; así ninguna supera
+        // con seguridad el timeout de 45s del shim
+        const TAMANO = 50;
+        const bloques = [];
+        for (let i = 0; i < guias.length; i += TAMANO) bloques.push(guias.slice(i, i + TAMANO));
+
+        const totales = { actualizadas: 0, creadas: 0, errores: [] };
+        let bi = 0;
+
+        function siguienteBloque() {
+            if (bi >= bloques.length) {
+                showLoading(false);
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-clipboard-check"></i> Procesar'; }
+                const res = document.getElementById('cunmasivo-resultado');
+                let resumen = '✅ Actualizadas: ' + totales.actualizadas + '  |  Creadas: ' + totales.creadas;
+                if (totales.errores.length > 0) {
+                    resumen += '\n⚠ Errores (' + totales.errores.length + '):\n• ' + totales.errores.join('\n• ');
+                }
+                if (res) { res.textContent = resumen; res.style.display = 'block'; }
+                showToast('CUN masivo aplicado a ' + guias.length + ' guía(s).');
+                // Recargar la tabla de la transportadora procesada
+                const hojas = { inter: 'INTER RAPIDISIMO', servi: 'SERVIENTREGA', coord: 'COORDINADORA', tcc: 'TCC' };
+                if (hojas[tipo]) cargarIndemnizaciones(tipo, hojas[tipo]);
+                return;
+            }
+
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    if (res && res.status === 'success') {
+                        totales.actualizadas += res.actualizadas || 0;
+                        totales.creadas += res.creadas || 0;
+                        if (Array.isArray(res.errores)) totales.errores = totales.errores.concat(res.errores);
+                    } else {
+                        totales.errores.push('Bloque ' + (bi + 1) + ': ' + ((res && res.message) || 'error'));
+                    }
+                    bi++;
+                    siguienteBloque();
+                })
+                .withFailureHandler(function(e) {
+                    totales.errores.push('Bloque ' + (bi + 1) + ': ' + (e.message || e));
+                    bi++;
+                    siguienteBloque();
+                })
+                .procesarCunMasivo(tipo, bloques[bi].join(' '), numero, estado);
+        }
+
+        siguienteBloque();
     }
 
     function abrirFormularioNuevo(tipo) {
@@ -25418,18 +25633,12 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 
     function renderTablaComisiones(data) {
       const tbody = document.getElementById('comisiones_tbodyResultados');
-      tbody.innerHTML = '';
 
-      if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:30px; color:#adb5bd;">No se encontraron pagos ENTREGADOS para los criterios seleccionados.</td></tr>';
-        return;
-      }
-
-      data.forEach(function(pago) {
+      function crearFilaComision(pago) {
         const tr = document.createElement('tr');
         const badgeClass = pago.plataforma === 'P1' ? 'comisiones-badge-p1' : 'comisiones-badge-p2';
-        
-        tr.innerHTML = 
+
+        tr.innerHTML =
           '<td><span class="' + badgeClass + '">' + pago.plataforma + '</span></td>' +
           '<td style="font-weight:600;">' + (pago.guia || '-') + '</td>' +
           '<td>' + (pago.estado || '-') + '</td>' +
@@ -25440,8 +25649,14 @@ body > .novedad-dropdown-menu .novedad-option:hover {
           '<td>' + comisionesFormatMoney(pago.total) + '</td>' +
           '<td>' + comisionesFormatMoney(pago.comision) + '</td>' +
           '<td>' + comisionesFormatMoney(pago.recaudo) + '</td>';
-        
-        tbody.appendChild(tr);
+        return tr;
+      }
+
+      // Render paginado (150 por página): antes pintaba todos los pagos del rango
+      renderPaginado(tbody, data, crearFilaComision, {
+        colspan: 10,
+        tamano: 150,
+        mensajeVacio: 'No se encontraron pagos ENTREGADOS para los criterios seleccionados.'
       });
     }
 
@@ -25968,6 +26183,82 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     var OFFLINE_QUEUE_KEY = 'heka_offline_queue';
     var OFFLINE_SYNCING = false;
 
+    // ---------- IMÁGENES DE LA COLA EN IndexedDB ----------
+    // Antes las evidencias (base64) vivían dentro del JSON de localStorage:
+    // con 10-15 fotos (~200KB c/u ya comprimidas) se superaba la cuota de 5MB
+    // y la cola se perdía silenciosamente. IndexedDB no tiene ese límite.
+    // En la cola solo queda una referencia (imagenId); si IndexedDB no está
+    // disponible se vuelve al comportamiento antiguo (inline).
+    var OFFLINE_IMG_DB = 'hekaOfflineImages';
+    var OFFLINE_IMG_STORE = 'images';
+
+    function idbAbrirImagenes() {
+      return new Promise(function(resolve, reject) {
+        try {
+          var open = indexedDB.open(OFFLINE_IMG_DB, 1);
+          open.onupgradeneeded = function() {
+            if (!open.result.objectStoreNames.contains(OFFLINE_IMG_STORE)) {
+              open.result.createObjectStore(OFFLINE_IMG_STORE);
+            }
+          };
+          open.onsuccess = function() { resolve(open.result); };
+          open.onerror = function() { reject(open.error); };
+        } catch (e) { reject(e); }
+      });
+    }
+
+    function idbGuardarImagen(id, base64) {
+      return idbAbrirImagenes().then(function(db) {
+        return new Promise(function(resolve, reject) {
+          try {
+            var tx = db.transaction(OFFLINE_IMG_STORE, 'readwrite');
+            tx.objectStore(OFFLINE_IMG_STORE).put(base64, id);
+            tx.oncomplete = function() { db.close(); resolve(true); };
+            tx.onerror = function() { db.close(); reject(tx.error); };
+          } catch (e) { db.close(); reject(e); }
+        });
+      });
+    }
+
+    function idbObtenerImagen(id) {
+      return idbAbrirImagenes().then(function(db) {
+        return new Promise(function(resolve, reject) {
+          try {
+            var tx = db.transaction(OFFLINE_IMG_STORE, 'readonly');
+            var req = tx.objectStore(OFFLINE_IMG_STORE).get(id);
+            req.onsuccess = function() { db.close(); resolve(req.result !== undefined ? req.result : null); };
+            req.onerror = function() { db.close(); reject(req.error); };
+          } catch (e) { db.close(); reject(e); }
+        });
+      });
+    }
+
+    function idbEliminarImagen(id) {
+      return idbAbrirImagenes().then(function(db) {
+        return new Promise(function(resolve) {
+          try {
+            var tx = db.transaction(OFFLINE_IMG_STORE, 'readwrite');
+            tx.objectStore(OFFLINE_IMG_STORE)['delete'](id);
+            tx.oncomplete = function() { db.close(); resolve(true); };
+            tx.onerror = function() { db.close(); resolve(false); };
+          } catch (e) { try { db.close(); } catch (ex) {} resolve(false); }
+        });
+      });
+    }
+
+    function idbEliminarTodasImagenes() {
+      return idbAbrirImagenes().then(function(db) {
+        return new Promise(function(resolve) {
+          try {
+            var tx = db.transaction(OFFLINE_IMG_STORE, 'readwrite');
+            tx.objectStore(OFFLINE_IMG_STORE).clear();
+            tx.oncomplete = function() { db.close(); resolve(true); };
+            tx.onerror = function() { db.close(); resolve(false); };
+          } catch (e) { try { db.close(); } catch (ex) {} resolve(false); }
+        });
+      });
+    }
+
     function obtenerColaOffline() {
       try {
         return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
@@ -25989,8 +26280,20 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     }
 
     function eliminarDeColaOffline(id) {
-      var cola = obtenerColaOffline().filter(function(item) { return item.id !== id; });
+      var cola = obtenerColaOffline();
+      var eliminado = cola.find(function(item) { return item.id === id && item.imagenId; });
+      cola = cola.filter(function(item) { return item.id !== id; });
       guardarColaOffline(cola);
+      if (eliminado) idbEliminarImagen(eliminado.imagenId); // liberar la imagen
+    }
+
+    // Vaciar toda la cola (botón "Eliminar todas"): limpia localStorage Y las
+    // imágenes huérfanas de IndexedDB
+    function limpiarColaOffline() {
+      localStorage.removeItem(OFFLINE_QUEUE_KEY);
+      idbEliminarTodasImagenes();
+      cerrarColaOffline();
+      actualizarBadgeOffline();
     }
 
     function actualizarBadgeOffline() {
@@ -26052,21 +26355,46 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     }
 
     // ========== GUARDAR OPERACI\u00d3N OFFLINE ==========
+    // La imagen se guarda en IndexedDB (clave imagenId) para no inflar el JSON
+    // de localStorage; si IndexedDB falla, vuelve al modo inline antiguo.
     function guardarOperacionOffline(estadoData, guias, imagenBase64, imagenNombre, idPunto) {
       var item = {
         estadoData: estadoData,
         guias: guias.map(function(env) {
           return { fullPath: env.fullPath, data: env.data };
         }),
-        imagenBase64: imagenBase64 || null,
+        imagenId: null,
+        imagenBase64: null,
         imagenNombre: imagenNombre || '',
         idPunto: idPunto
       };
-      agregarAColaOffline(item);
-      mostrarNotificacionOffline('Guardado offline. Se sincronizar\u00e1 al recuperar se\u00f1al.', 'sync');
+
+      var finalizarEncolado = function() {
+        agregarAColaOffline(item);
+        mostrarNotificacionOffline('Guardado offline. Se sincronizar\u00e1 al recuperar se\u00f1al.', 'sync');
+      };
+
+      if (imagenBase64) {
+        item.imagenId = 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        idbGuardarImagen(item.imagenId, imagenBase64)
+          .then(finalizarEncolado)
+          .catch(function() {
+            // IndexedDB no disponible: comportarse como antes (inline)
+            item.imagenId = null;
+            item.imagenBase64 = imagenBase64;
+            finalizarEncolado();
+          });
+      } else {
+        finalizarEncolado();
+      }
     }
 
     // ========== SINCRONIZAR COLA OFFLINE ==========
+    // Fase 1: subir TODAS las imágenes pendientes en lotes (1 llamada al backend
+    //         por cada 10 imágenes; antes: 1 llamada HTTP por imagen).
+    // Fase 2: procesar las operaciones (pasos) por item.
+    // Si la imagen de un item falla, la operación SE APLICA IGUAL sin el enlace
+    // de evidencia (antes se descartaba la operación completa: pérdida de datos).
     function sincronizarColaOffline() {
       if (OFFLINE_SYNCING || !navigator.onLine) return;
       var cola = obtenerColaOffline();
@@ -26080,7 +26408,107 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       appendLogLmensajero('SINCRONIZACI\u00d3N OFFLINE - ' + pendientes.length + ' pendiente(s)');
       appendLogLmensajero('========================================');
 
-      procesarSiguienteOffline(pendientes, 0);
+      prepararImagenesOffline(pendientes)
+        .then(function() {
+          procesarSiguienteOffline(pendientes, 0);
+        })
+        .catch(function(err) {
+          appendLogLmensajero('\u274c No se pudieron preparar las im\u00e1genes: ' + (err && err.message ? err.message : err));
+          appendLogLmensajero('\u2139 Se continuar\u00e1 sin im\u00e1genes.');
+          procesarSiguienteOffline(pendientes, 0);
+        });
+    }
+
+    // Carga las imágenes (IndexedDB o inline antiguas), las sube en lotes de 10
+    // y deja la URL anexada en las observaciones de cada item.
+    function prepararImagenesOffline(pendientes) {
+      var conImagen = pendientes.filter(function(item) { return item.imagenId || item.imagenBase64; });
+      if (conImagen.length === 0) return Promise.resolve();
+
+      appendLogLmensajero('\n\u2b07 Preparando ' + conImagen.length + ' imagen(es)...');
+
+      // Persiste la URL del soporte en el item de la COLA (localStorage), no solo
+      // en memoria: si un paso falla y la operación queda en cola para reintentar,
+      // el reintento ya incluye la evidencia (la imagen se borra de IndexedDB
+      // tras subirse, así que esta es la única copia de la referencia).
+      function persistirUrlSoporteOffline(itemId, url) {
+        try {
+          var cola = obtenerColaOffline();
+          var it = cola.find(function(x) { return x.id === itemId; });
+          if (it) {
+            it.estadoData.observaciones = it.estadoData.observaciones
+              ? it.estadoData.observaciones + ' Soporte: ' + url
+              : 'Soporte: ' + url;
+            guardarColaOffline(cola);
+          }
+        } catch (e) { /* best effort */ }
+      }
+
+      // 1. Resolver los base64 de todos los items (IndexedDB → promesa)
+      return Promise.all(conImagen.map(function(item) {
+        if (item.imagenId) {
+          return idbObtenerImagen(item.imagenId).then(function(b64) {
+            return { item: item, base64: b64 };
+          }).catch(function() {
+            return { item: item, base64: null };
+          });
+        }
+        return Promise.resolve({ item: item, base64: item.imagenBase64 });
+      })).then(function(resueltos) {
+        // 2. Subir en bloques de 10 (1 round-trip por bloque)
+        var subibles = resueltos.filter(function(r) { return r.base64; });
+        resueltos.filter(function(r) { return !r.base64; }).forEach(function(r) {
+          appendLogLmensajero('   \u26a0\ufe0f Imagen no encontrada para la operaci\u00f3n (se aplicar\u00e1 sin evidencia).');
+        });
+        if (subibles.length === 0) return Promise.resolve();
+
+        var bloques = [];
+        for (var i = 0; i < subibles.length; i += 10) bloques.push(subibles.slice(i, i + 10));
+
+        return new Promise(function(resolve) {
+          var bi = 0;
+          function subirBloque() {
+            if (bi >= bloques.length) { resolve(); return; }
+            var bloque = bloques[bi];
+            appendLogLmensajero('   \u2191 Subiendo im\u00e1genes ' + (bi + 1) + '/' + bloques.length + ' (' + bloque.length + ' archivo(s))...');
+            google.script.run
+              .withSuccessHandler(function(res) {
+                var resultados = (res && res.resultados) || [];
+                bloque.forEach(function(entry, idx) {
+                  var r = resultados[idx];
+                  if (r && r.ok && r.url) {
+                    entry.item.estadoData.observaciones = entry.item.estadoData.observaciones
+                      ? entry.item.estadoData.observaciones + ' Soporte: ' + r.url
+                      : 'Soporte: ' + r.url;
+                    persistirUrlSoporteOffline(entry.item.id, r.url);
+                  } else {
+                    appendLogLmensajero('   \u26a0\ufe0f Fall\u00f3 una imagen (' + ((r && r.error) || 'sin detalle') + '). La operaci\u00f3n se aplicar\u00e1 sin evidencia.');
+                  }
+                  // Liberar la imagen de IndexedDB (ya está en GitHub o se perdió)
+                  if (entry.item.imagenId) idbEliminarImagen(entry.item.imagenId);
+                  entry.item.imagenId = null;
+                  entry.item.imagenBase64 = null;
+                });
+                bi++;
+                subirBloque();
+              })
+              .withFailureHandler(function(e) {
+                appendLogLmensajero('   \u26a0\ufe0f Error subiendo bloque de im\u00e1genes (' + (e.message || e) + '). Se aplicar\u00e1n sin evidencia.');
+                bloque.forEach(function(entry) {
+                  if (entry.item.imagenId) idbEliminarImagen(entry.item.imagenId);
+                  entry.item.imagenId = null;
+                  entry.item.imagenBase64 = null;
+                });
+                bi++;
+                subirBloque();
+              })
+              .subirImagenesAGithubBatch(bloque.map(function(entry) {
+                return { nombre: entry.item.imagenNombre || 'evidencia.jpg', base64: entry.base64 };
+              }));
+          }
+          subirBloque();
+        });
+      });
     }
 
     function procesarSiguienteOffline(pendientes, index) {
@@ -26111,32 +26539,8 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       var barra = document.getElementById('modalProgresoBarra');
       if (barra) barra.style.width = Math.round((index / total) * 100) + '%';
 
-      if (item.imagenBase64) {
-        // Subir imagen primero
-        appendLogLmensajero('   \u2191 Subiendo imagen (' + (item.imagenBase64.length * 0.75 / 1024).toFixed(1) + 'KB)...');
-        google.script.run
-          .withSuccessHandler(function(res) {
-            if (!res.ok) {
-              appendLogLmensajero('   \u274c Error imagen: ' + (res.error || ''));
-              appendLogLmensajero('   \u23ed Saltando a la siguiente...');
-              eliminarDeColaOffline(item.id);
-              procesarSiguienteOffline(pendientes, index + 1);
-              return;
-            }
-            appendLogLmensajero('   \u2705 Imagen subida.');
-            item.estadoData.observaciones = item.estadoData.observaciones ? item.estadoData.observaciones + ' Soporte: ' + res.url : 'Soporte: ' + res.url;
-            ejecutarPasosOffline(item, pendientes, index);
-          })
-          .withFailureHandler(function(e) {
-            appendLogLmensajero('   \u274c Error imagen: ' + (e.message || ''));
-            appendLogLmensajero('   \u23ed Saltando a la siguiente...');
-            eliminarDeColaOffline(item.id);
-            procesarSiguienteOffline(pendientes, index + 1);
-          })
-          .subirImagenAGithub(item.imagenNombre, item.imagenBase64);
-      } else {
-        ejecutarPasosOffline(item, pendientes, index);
-      }
+      // Las imágenes ya se subieron (y sus URLs anexadas) en la fase 1
+      ejecutarPasosOffline(item, pendientes, index);
     }
 
     function ejecutarPasosOffline(item, pendientes, index) {
@@ -26217,7 +26621,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       } else {
         container.innerHTML = pendientes.map(function(item, i) {
           var guias = item.guias.map(function(g) { return g.data.numeroGuia; }).join(', ');
-          var imgInfo = item.imagenBase64 ? ' \u{1F4F7}' : '';
+          var imgInfo = (item.imagenId || item.imagenBase64) ? ' \u{1F4F7}' : '';
           return '<div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; padding:12px 16px; margin-bottom:10px;">' +
             '<div style="display:flex; justify-content:space-between; align-items:start;">' +
               '<div>' +
@@ -28517,7 +28921,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <button onclick="sincronizarColaOffline(); cerrarColaOffline();" style="flex:1; padding:12px; background:#0d6efd; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
 <i class="bi bi-cloud-arrow-up-fill"></i> Sincronizar Todo
         </button>
-<button onclick="if(confirm('\u00bfEliminar todas las operaciones pendientes?')){localStorage.removeItem('heka_offline_queue'); cerrarColaOffline(); actualizarBadgeOffline();}" style="padding:12px 16px; background:#f8f9fa; color:#dc3545; border:1px solid #dee2e6; border-radius:6px; cursor:pointer; font-size:14px; font-weight:600;">
+<button onclick="if(confirm('\u00bfEliminar todas las operaciones pendientes?')){limpiarColaOffline();}" style="padding:12px 16px; background:#f8f9fa; color:#dc3545; border:1px solid #dee2e6; border-radius:6px; cursor:pointer; font-size:14px; font-weight:600;">
 <i class="bi bi-trash3"></i> Limpiar
         </button>
 </div>
