@@ -1832,14 +1832,7 @@
       border-left: 4px solid var(--primary-yellow); /* Borde izquierdo amarillo */
     }
 
-    /* Estilo para el botón de Guardar Centralizado cuando está desactivado */
-    #btn-batch-save-asignaciones:disabled {
-      background-color: #e9ecef;
-      color: #adb5bd;
-      cursor: not-allowed;
-      border: 1px solid #dee2e6;
-    }
-    
+
 
     /* =========================================
       1. ESTADO NORMAL (Como se ve siempre)
@@ -4767,9 +4760,6 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 #panel-dashboard-logistica .card,
 #panel-pagos-pendientes .card,
 #panel-historial-certificados .card,
-#panel-historial-global .card,
-#panel-asignaciones .card,
-#panel-activaciones-inter .card,
 #panel-historial-tipo-envios .card{
   border-radius:18px !important;
 }
@@ -4962,10 +4952,10 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 #panel-check-recarga > .card > div:first-child input[type=date]{background:#080d13!important;color:#edf3f9!important;border:1px solid rgba(255,255,255,.10)!important;color-scheme:dark;}
 
 /* General cleanup of missed light controls inside data panels */
-#panel-historial-recargas .card,#panel-suite-logistica .card,#panel-talento-humano .card,#panel-historial-global .card,#panel-asignaciones .card,#panel-activaciones-inter .card,#panel-seguimiento-logistica .card,#panel-pagos-pendientes .card,#panel-historial-certificados .card{background:linear-gradient(145deg,#0b1119,#0e1721)!important;}
-#panel-historial-recargas table,#panel-suite-logistica table,#panel-talento-humano table,#panel-historial-global table,#panel-asignaciones table,#panel-activaciones-inter table,#panel-seguimiento-logistica table,#panel-historial-certificados table{color:#dbe5ef!important;}
-#panel-historial-recargas thead,#panel-suite-logistica thead,#panel-talento-humano thead,#panel-historial-global thead,#panel-asignaciones thead,#panel-activaciones-inter thead,#panel-seguimiento-logistica thead,#panel-historial-certificados thead{background:linear-gradient(180deg,#151f2b,#101821)!important;color:#aebdcd!important;}
-#panel-historial-recargas tbody tr:hover,#panel-suite-logistica tbody tr:hover,#panel-talento-humano tbody tr:hover,#panel-historial-global tbody tr:hover,#panel-asignaciones tbody tr:hover,#panel-activaciones-inter tbody tr:hover,#panel-seguimiento-logistica tbody tr:hover,#panel-historial-certificados tbody tr:hover{background:rgba(255,196,0,.035)!important;}
+#panel-historial-recargas .card,#panel-suite-logistica .card,#panel-talento-humano .card,#panel-seguimiento-logistica .card,#panel-pagos-pendientes .card,#panel-historial-certificados .card{background:linear-gradient(145deg,#0b1119,#0e1721)!important;}
+#panel-historial-recargas table,#panel-suite-logistica table,#panel-talento-humano table,#panel-seguimiento-logistica table,#panel-historial-certificados table{color:#dbe5ef!important;}
+#panel-historial-recargas thead,#panel-suite-logistica thead,#panel-talento-humano thead,#panel-seguimiento-logistica thead,#panel-historial-certificados thead{background:linear-gradient(180deg,#151f2b,#101821)!important;color:#aebdcd!important;}
+#panel-historial-recargas tbody tr:hover,#panel-suite-logistica tbody tr:hover,#panel-talento-humano tbody tr:hover,#panel-seguimiento-logistica tbody tr:hover,#panel-historial-certificados tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 
 @media(max-width:720px){
  .heka-date-filter{align-items:stretch;}
@@ -5095,12 +5085,6 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 #tablaColaboradores th,
 #tablaHistorialCertificados td,
 #tablaHistorialCertificados th,
-#tablaHistorialGlobalBody td,
-#tablaHistorialGlobalBody th,
-#tablaAsignacionesBody td,
-#tablaAsignacionesBody th,
-#tablaActivacionesBody td,
-#tablaActivacionesBody th,
 #tablaSeguimientoBody td,
 #tablaSeguimientoBody th {
   color:#e7edf4 !important;
@@ -6859,28 +6843,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <a class="nav-item sub-item" data-target="panelGestionMensajero" href="#" onclick="goToPanel('panelGestionMensajero', this)">
 <i class="bi bi-person-check"></i>
 <span>Gestión Mensajero</span>
-</a>
-</div>
-</div>
-<!-- En la sección del Menú COMERCIAL -->
-<div class="nav-accordion-item" id="nav-comercial-wrapper">
-<div class="nav-item" onclick="toggleSubmenu('submenu-comercial')">
-<i class="bi bi-cart4"></i>
-<span>Comercial</span>
-<i class="bi bi-chevron-down accordion-arrow"></i>
-</div>
-<div class="nav-submenu" id="submenu-comercial">
-<a class="nav-item sub-item" data-target="panel-historial-global" href="#" onclick="goToPanel('panel-historial-global', this)">
-<i class="bi bi-clock-history"></i>
-<span>Historial Global</span>
-</a>
-<a class="nav-item sub-item" data-target="panel-asignaciones" href="#" onclick="goToPanel('panel-asignaciones', this)">
-<i class="bi bi-clipboard-check"></i>
-<span>Asignación</span>
-</a>
-<a class="nav-item sub-item" data-target="panel-activaciones-inter" href="#" onclick="goToPanel('panel-activaciones-inter', this)">
-<i class="bi bi-box-seam"></i>
-<span>Activaciones Inter</span>
 </a>
 </div>
 </div>
@@ -8735,170 +8697,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 </div>
-<!-- PANEL HISTORIAL GLOBAL -->
-<div class="panel" id="panel-historial-global">
-<div class="page-header">
-<h1>Historial Global</h1>
-<p>Historial unificado de Registros y Asignaciones de Comercial.</p>
-</div>
-<div class="heka-date-filter" id="dateFilterHistorialGlobal">
-<div class="heka-date-filter-title"><i class="bi bi-calendar3"></i><span>Rango de fechas</span></div>
-<div class="heka-date-field"><label>Desde</label><input id="global-fecha-desde" type="date"/></div>
-<div class="heka-date-field"><label>Hasta</label><input id="global-fecha-hasta" type="date"/></div>
-<button class="btn btn-primary" onclick="applyHekaDateFilter('historialGlobal')" type="button"><i class="bi bi-funnel"></i> Filtrar</button>
-<button class="btn btn-ghost-tech" onclick="clearHekaDateFilter('historialGlobal')" type="button"><i class="bi bi-x-circle"></i> Limpiar</button>
-</div>
-<div class="card">
-<div class="search-bar">
-<input class="search-input" id="search_historial_global" onkeyup="filtrarHistorialGlobal()" placeholder="Buscar por Centro Costo, Teléfono o Asesor..." type="text"/>
-<button class="btn btn-primary" onclick="cargarHistorialGlobal()">
-<i class="bi bi-arrow-clockwise"></i> Actualizar
-              </button>
-</div>
-<div class="table-container" style="max-height: 70vh; overflow-y: auto;">
-<table>
-<thead>
-<tr>
-<th><i class="bi bi-calendar3"></i> Fecha</th>
-<th><i class="bi bi-building"></i> Centro Costo</th>
-<th><i class="bi bi-telephone"></i> Número Contacto</th>
-<th><i class="bi bi-person-badge"></i> Asesor</th>
-<!-- NUEVA COLUMNA AQUÍ -->
-<th><i class="bi bi-tag"></i> Tipo</th>
-</tr>
-</thead>
-<tbody id="tablaHistorialGlobalBody">
-<!-- Se llena con JS -->
-</tbody>
-</table>
-<div id="loadingHistorialGlobal" style="text-align:center; padding:20px; display:none;">
-<div class="spinner" style="margin: 0 auto 10px auto;"></div>
-<p>Cargando historial...</p>
-</div>
-</div>
-</div>
-</div>
-<!-- PANEL ASIGNACIONES COMERCIAL -->
-<div class="panel" id="panel-asignaciones">
-<div class="page-header">
-<h1>Gestión de Asignaciones</h1>
-<p>Visualiza y actualiza el medio de notificación de tus registros.</p>
-</div>
-<div class="heka-date-filter" id="dateFilterAsignaciones">
-<div class="heka-date-filter-title"><i class="bi bi-calendar3"></i><span>Rango de fechas</span></div>
-<div class="heka-date-field"><label>Desde</label><input id="asig-fecha-desde" type="date"/></div>
-<div class="heka-date-field"><label>Hasta</label><input id="asig-fecha-hasta" type="date"/></div>
-<button class="btn btn-primary" onclick="applyHekaDateFilter('asignaciones')" type="button"><i class="bi bi-funnel"></i> Filtrar</button>
-<button class="btn btn-ghost-tech" onclick="clearHekaDateFilter('asignaciones')" type="button"><i class="bi bi-x-circle"></i> Limpiar</button>
-</div>
-<div class="card">
-<!-- BARRA DE HERRAMIENTAS: BUSCADOR Y FILTROS -->
-<div id="contenedor-filtros-plataforma" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
-<!-- Los botones se generarán aquí con JavaScript -->
-</div>
-<div class="search-bar">
-<div style="display: flex; gap: 10px; flex-grow: 1; max-width: 600px;">
-<!-- AGREGA EL EVENTO onkeypress AQUÍ -->
-<input class="form-input" id="search-asignaciones" onkeypress="if(event.key === 'Enter') handleEnterAsignaciones(event)" placeholder="Buscar por Seller o Email..." type="text"/>
-<button class="btn btn-secondary" onclick="abrirTablaReferencia()" title="Ver Tabla de Referencia">
-<i class="bi bi-table"></i>
-</button>
-<button class="btn btn-custom-black" onclick="abrirModalDescargaAsignaciones()">
-<i class="bi bi-file-earmark-excel-fill"></i>
-</button>
-</div>
-<div style="display:flex; gap:10px;">
-<button class="suite-filter-btn active" id="btn-asig-all" onclick="setFiltroAsignaciones('all', this)">Todos <span class="filter-count" id="badge-asig-all">0</span></button>
-<button class="suite-filter-btn" id="btn-asig-pend" onclick="setFiltroAsignaciones('pendiente', this)">Pendientes <span class="filter-count" id="badge-asig-pend">0</span></button>
-<button class="suite-filter-btn" id="btn-asig-ges" onclick="setFiltroAsignaciones('gestionado', this)">Gestionados <span class="filter-count" id="badge-asig-ges">0</span></button>
-<button class="btn btn-success" disabled="" id="btn-batch-save-asignaciones" onclick="guardarBatchAsignacionesHandler()">
-<i class="bi bi-check-circle-fill"></i> Gestionar
-                </button>
-</div>
-</div>
-<!-- TABLA -->
-<div class="table-container" style="max-height: 70vh; overflow-y: auto;">
-<table>
-<thead>
-<tr>
-<th><i class="bi bi-calendar3"></i> Fecha</th>
-<th><i class="bi bi-hash"></i> Plataforma</th>
-<th><i class="bi bi-person-badge"></i> Centro Costo</th>
-<th><i class="bi bi-gear-wide-connected"></i> Contacto</th>
-<th><i class="bi bi-chat-text"></i> Correo</th>
-<th><i class="bi bi-box-seam"></i> Medio</th>
-<th><i class="bi bi-paperclip"></i> Obser.</th>
-<th><i class="bi bi-check-circle"></i> Acciones</th> <!-- AGREGADO AQUÍ AL FINAL -->
-</tr>
-</thead>
-<tbody id="tablaAsignacionesBody">
-<!-- Se llena con JS -->
-</tbody>
-</table>
-<div id="loadingAsignaciones" style="display: none; text-align: center; padding: 40px 20px;">
-<div class="spinner" style="margin: 0 auto 10px auto;"></div>
-<!-- Agregué el ID="msg-loading-asignaciones" aquí -->
-<p id="msg-loading-asignaciones" style="color: var(--text-muted); margin: 0;">Cargando Asignaciones...</p>
-</div>
-</div>
-</div>
-</div>
-<!-- PANEL ACTIVACIONES INTER -->
-<div class="panel" id="panel-activaciones-inter">
-<div class="page-header">
-<h1>Activaciones Inter</h1>
-<p>Gestión de activaciones y novedades por transportadora.</p>
-</div>
-<div class="heka-date-filter" id="dateFilterActivaciones">
-<div class="heka-date-filter-title"><i class="bi bi-calendar3"></i><span>Rango de fechas</span></div>
-<div class="heka-date-field"><label>Desde</label><input id="act-fecha-desde" type="date"/></div>
-<div class="heka-date-field"><label>Hasta</label><input id="act-fecha-hasta" type="date"/></div>
-<button class="btn btn-primary" onclick="applyHekaDateFilter('activaciones')" type="button"><i class="bi bi-funnel"></i> Filtrar</button>
-<button class="btn btn-ghost-tech" onclick="clearHekaDateFilter('activaciones')" type="button"><i class="bi bi-x-circle"></i> Limpiar</button>
-</div>
-<!-- DENTRO DE panel-activaciones-inter -->
-<div class="card">
-<!-- BARRA DE HERRAMIENTAS Y FILTROS (CON BUSCADOR) -->
-<div class="search-bar">
-<!-- INPUT DE BÚSQUEDA (NUEVO) -->
-<input class="search-input" id="search-activaciones" onkeyup="filtrarActivaciones()" placeholder="Buscar Centro Costo o Celular..." type="text"/>
-<!-- CONTENEDOR DE BOTONES (DERECHA) -->
-<div style="display:flex; gap:10px;">
-<button class="suite-filter-btn active" id="btn-act-all" onclick="setFiltroActivaciones('all', this)">Todos <span class="filter-count" id="badge-act-all">0</span></button>
-<button class="suite-filter-btn" id="btn-act-pend" onclick="setFiltroActivaciones('pendiente', this)">Pendientes <span class="filter-count" id="badge-act-pend">0</span></button>
-<button class="suite-filter-btn" id="btn-act-ges" onclick="setFiltroActivaciones('gestionado', this)">Gestionados <span class="filter-count" id="badge-act-ges">0</span></button>
-<button class="btn btn-primary" onclick="cargarActivacionesInter()">
-<i class="bi bi-arrow-clockwise"></i> Actualizar
-                </button>
-</div>
-</div>
-<!-- TABLA -->
-<div class="table-container" style="max-height: 70vh; overflow-y: auto;">
-<table>
-<thead>
-<tr>
-<th>Centro Costo</th>
-<th>Bodegas</th>
-<th>Celular</th>
-<th>Correo</th>
-<th>Fecha</th>
-<th>Gestión <span style="color:red;">*</span></th>
-<th>Novedad</th>
-<th style="text-align: center;">Acción</th>
-</tr>
-</thead>
-<tbody id="tablaActivacionesBody">
-<!-- Se llena con JS -->
-</tbody>
-</table>
-<!-- LOADING LOCAL -->
-<div id="loadingActivaciones" style="text-align:center; padding:20px; display:none;">
-<div class="spinner" style="margin: 0 auto 10px auto;"></div>
-<p>Cargando activaciones...</p>
-</div>
-</div>
-</div>
-</div>
 <!-- PANEL HISTORIAL TIPO ENVIOS -->
 
 </div>
@@ -9880,39 +9678,10 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="checkbox-group">
 <label class="checkbox-item">
 <div class="switch">
-<input class="perm-check" type="checkbox" value="panel-asignaciones"/>
-<span class="slider round"></span>
-</div>
-<span>Gestión de Asignaciones</span>
-</label>
-<label class="checkbox-item">
-<div class="switch">
 <input class="perm-check" type="checkbox" value="panel-registros"/>
 <span class="slider round"></span>
 </div>
 <span>Registros</span>
-</label>
-<label class="checkbox-item">
-<div class="switch">
-<input class="perm-check" type="checkbox" value="panel-historial-global"/>
-<span class="slider round"></span>
-</div>
-<span>Historial Global</span>
-</label>
-<!-- NUEVO PERMISO: ACTIVACIONES INTER -->
-<label class="checkbox-item">
-<div class="switch">
-<input class="perm-check" type="checkbox" value="panel-activaciones-inter"/>
-<span class="slider round"></span>
-</div>
-<span>Activaciones Inter</span>
-</label>
-<label class="checkbox-item">
-<div class="switch">
-<input class="perm-check" type="checkbox" value="permiso_forzar_registro"/>
-<span class="slider round"></span>
-</div>
-<span>Permitir Reemplazo Forzado (Registros)</span>
 </label>
 <label class="checkbox-item">
 <div class="switch">
@@ -10450,8 +10219,9 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <button class="btn btn-secondary" onclick="closeModal('modal-confirm-guardado')">
               Cancelar
             </button>
-<!-- CORRECCIÓN AQUÍ: AGREGADO ONCLICK -->
-<button class="btn btn-primary" id="btn-ejecutar-guardado" onclick="ejecutarGuardadoAsignacionesBackend()">
+<!-- (onclick eliminado: el guardado lo maneja el addEventListener de
+     btn-ejecutar-guardado en el flujo de Validación Banco; antes se ejecutaban ambos) -->
+<button class="btn btn-primary" id="btn-ejecutar-guardado">
 <i class="bi bi-save"></i> Sí, Actualizar
             </button>
 </div>
@@ -11360,35 +11130,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 </div>
 </div>
 </div>
-<!-- MODAL TABLA DE REFERENCIA -->
-<div class="modal-overlay" id="modal-tabla-referencia" onclick="closeModalOnOutsideClick(event, 'modal-tabla-referencia')">
-<div class="modal-content" onclick="event.stopPropagation()" style="max-width: 1100px;">
-<div class="modal-header">
-<div class="modal-title">
-<h2 style="color: #000000; font-size: 18px;"><i class="bi bi-table"></i> Tabla de Referencia</h2>
-</div>
-<button class="close-modal-btn" onclick="closeModal('modal-tabla-referencia')" style="color: #000000;">×</button>
-</div>
-<div class="modal-body">
-<div class="table-container" style="max-height: 80vh; overflow-y: auto;">
-<table>
-<thead>
-<tr>
-<th>Centro Costo</th>
-<th>Celular</th>
-<th>Celular 2</th>
-<th>Correo</th>
-<th>Fecha Creación</th>
-</tr>
-</thead>
-<tbody id="tablaReferenciaBody">
-<!-- Se llena con JS -->
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
 <!-- MODAL ELIMINAR Y ASIGNAR (SIN TIMER) -->
 <div class="modal-overlay" id="modal-eliminar-y-asignar">
 <div class="modal-content" style="border-top: 4px solid #dc3545; max-width: 500px;">
@@ -11481,40 +11222,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 <div class="card-footer p-3 text-end" style="background: #f1f1f1; border-radius: 0 0 8px 8px;">
 <button class="btn btn-secondary" onclick="cerrarModalFecha()">Cancelar</button>
 <button class="btn btn-primary" onclick="confirmarFechaAuditoria()">Confirmar Fecha</button>
-</div>
-</div>
-</div>
-<!-- MODAL DESCARGAR EXCEL ASIGNACIONES -->
-<div class="modal-overlay" id="modal-descargar-asignaciones" onclick="closeModalOnOutsideClick(event, 'modal-descargar-asignaciones')">
-<div class="modal-content" onclick="event.stopPropagation()" style="max-width: 450px;">
-<div class="modal-header" style="background-color: var(--primary-dark);">
-<div class="modal-title">
-<h2 style="color: #fff; font-size: 18px;"><i class="bi bi-download"></i> Descargar Reporte Asignaciones</h2>
-</div>
-<button class="close-modal-btn" onclick="closeModal('modal-descargar-asignaciones')" style="color: #fff;">×</button>
-</div>
-<div class="modal-body">
-<p style="margin-bottom: 20px; color: #495057;">¿Qué información deseas incluir en el Excel?</p>
-<!-- Botones de opción (Radio Buttons) -->
-<div style="display: flex; flex-direction: column; gap: 15px;">
-<label class="checkbox-item" style="display: flex; align-items: center; cursor: pointer; background: #f8f9fa; padding: 10px; border-radius: 8px;">
-<input checked="" name="filtro_asignaciones_excel" type="radio" value="all"/>
-<span style="margin-left: 10px; font-weight: 500;">Descargar TODOS</span>
-</label>
-<label class="checkbox-item" style="display: flex; align-items: center; cursor: pointer; background: #f8f9fa; padding: 10px; border-radius: 8px;">
-<input name="filtro_asignaciones_excel" type="radio" value="pendiente"/>
-<span style="margin-left: 10px; font-weight: 500;">PENDIENTES</span>
-</label>
-<label class="checkbox-item" style="display: flex; align-items: center; cursor: pointer; background: #f8f9fa; padding: 10px; border-radius: 8px;">
-<input name="filtro_asignaciones_excel" type="radio" value="gestionado"/>
-<span style="margin-left: 10px; font-weight: 500;">GESTIONADOS</span>
-</label>
-</div>
-<div style="margin-top: 25px; text-align: right;">
-<button class="btn btn-primary" onclick="ejecutarDescargaAsignaciones()">
-<i class="bi bi-file-earmark-arrow-down"></i> Generar y Descargar
-          </button>
-</div>
 </div>
 </div>
 </div>
@@ -13172,11 +12879,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
       }
 
 
-      if (panelId === 'panel-historial-global' && !panelDatosRecientes(panelId)) {
-        marcarPanelCargado(panelId);
-        cargarHistorialGlobal();
-      }
-
       // DENTRO DE LA FUNCIÓN goToPanel(panelId, clickedElement) { ... }
 
       if (panelId === 'panelIngresoOrigen') {
@@ -13187,11 +12889,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
         initPanelGestionMensajero();
       }
 
-      if (panelId === 'panel-activaciones-inter' && !panelDatosRecientes(panelId)) {
-        marcarPanelCargado(panelId);
-        cargarActivacionesInter();
-      }
-
       if (panelId === 'panel-historial-recargas' && !panelDatosRecientes(panelId)) {
         marcarPanelCargado(panelId);
         cargarHistorialRecargas();
@@ -13199,11 +12896,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 
       if (panelId === 'panel-check-recarga') {
         cargarCheckRecarga(); // <--- AGREGA ESTO PARA QUE CARGUE SOLO
-      }
-
-      if (panelId === 'panel-asignaciones' && !panelDatosRecientes(panelId)) {
-        marcarPanelCargado(panelId);
-        cargarAsignaciones(); // <--- AGREGA ESTO PARA QUE CARGUE AL ENTRAR
       }
 
       if (clickedElement) {
@@ -15939,214 +15631,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
     }
 
 
-    // --- VARIABLES GLOBALES ASIGNACIONES ---
-    let datosAsignacionesCache = []; // Para guardar datos en memoria
-    let plataformasUnicasUsuario = []; // Para guardar la lista de plataformas del usuario
-    let plataformaSeleccionada = ""; // Para saber cuál plataforma está activa
-    let currentFiltroAsignaciones = 'all'; // 'all', 'pendiente', 'gestionado'
-
-    // --- FUNCIÓN DE CARGA ---
-    function cargarAsignaciones(plataformaForzada) {
-      const esPrimeraCarga = !plataformaForzada;
-      
-      // 1. Elementos UI y Loading
-      const loadingEl = document.getElementById('loadingAsignaciones');
-      const textoLoadingEl = document.getElementById('msg-loading-asignaciones');
-      const tbody = document.getElementById('tablaAsignacionesBody');
-
-      if (!currentUser.name) {
-        loadingEl.style.display = 'none';
-        return showToast("Error: Usuario no identificado.");
-      }
-
-      loadingEl.style.display = 'block';
-      tbody.innerHTML = ''; 
-
-      // 2. Texto del loading
-      if (plataformaForzada) {
-        actualizarBotonesPlataformaVisual(plataformaForzada);
-        if (textoLoadingEl) {
-          textoLoadingEl.innerText = "Filtrando plataforma: " + plataformaForzada.toUpperCase();
-        }
-      } else {
-        if (textoLoadingEl) {
-          textoLoadingEl.innerText = "Cargando Asignaciones...";
-        }
-      }
-
-      // 3. Llamada al Backend
-      google.script.run
-        .withSuccessHandler(function(res) {
-          if (res.status === "success") {
-            const datosRecibidos = res.data;
-            
-            // 4. Guardamos TODO en caché primero
-            datosAsignacionesCache = datosRecibidos;
-            
-            // ---------------------------------------------------------
-            // 5. APLICAMOS EL FILTRO DE ESTADO (PENDIENTE/GESTIONADO)
-            // ---------------------------------------------------------
-            let datosFiltrados = datosRecibidos;
-
-            if (currentFiltroAsignaciones === 'pendiente') {
-              // Solo filas donde el MEDIO esté vacío
-              datosFiltrados = datosRecibidos.filter(row => {
-                const medio = (row.medio || "").trim();
-                return medio === ""; 
-              });
-            } 
-            else if (currentFiltroAsignaciones === 'gestionado') {
-              // Solo filas donde el MEDIO tenga texto
-              datosFiltrados = datosRecibidos.filter(row => {
-                const medio = (row.medio || "").trim();
-                return medio !== "";
-              });
-            }
-            // Si es 'all', datosFiltrados sigue siendo datosRecibidos (todos)
-
-            // 6. PINTAR LA TABLA CON LOS DATOS FILTRADOS
-            renderizarTablaAsignaciones(datosFiltrados);
-            
-            // 7. ACTUALIZAR CONTADORES (USANDO DATOS FILTRADOS)
-            actualizarContadoresAsignaciones(datosAsignacionesCache);
-
-            // 8. Manejo de Visualización y Plataformas
-            if (esPrimeraCarga) {
-              const plataformasSet = new Set(datosRecibidos.map(item => item.plataforma).filter(p => p));
-              plataformasUnicasUsuario = Array.from(plataformasSet);
-              
-              if (plataformasUnicasUsuario.length === 1) {
-                const unicaPlataforma = plataformasUnicasUsuario[0];
-                if (textoLoadingEl) textoLoadingEl.innerText = "Cargando datos: " + unicaPlataforma.toUpperCase();
-                // Llamada recursiva para auto-seleccionar la única plataforma
-                cargarAsignaciones(unicaPlataforma);
-              } 
-              else if (plataformasUnicasUsuario.length > 1) {
-                generarBotonesPlataformas(plataformasUnicasUsuario);
-                
-                setTimeout(function() {
-                  loadingEl.style.display = 'none';
-                  if (textoLoadingEl) textoLoadingEl.innerText = "Cargando Asignaciones...";
-                }, 800); 
-              }
-            } 
-            else {
-              // ES UN CLIC EN BOTÓN DE PLATAFORMA O FILTRO
-              loadingEl.style.display = 'none';
-              
-              // Si se seleccionó una plataforma, actualizamos visualmente los botones
-              if (plataformaForzada) {
-                actualizarBotonesPlataformaVisual(plataformaForzada);
-              }
-            }
-            
-          } else {
-            loadingEl.style.display = 'none';
-            if (textoLoadingEl) textoLoadingEl.innerText = "Cargando Asignaciones...";
-            showToast("Error: " + res.message);
-          }
-        })
-        .withFailureHandler(function(err) {
-          loadingEl.style.display = 'none';
-          if (textoLoadingEl) textoLoadingEl.innerText = "Cargando Asignaciones...";
-          showToast("Error de conexión: " + err);
-        })
-        // AQUÍ IMPORTANTE: Si no se fuerza plataforma, se manda vacío para que el backend traiga TODO (del usuario)
-        .getAsignacionesData(currentUser.name, plataformaForzada || "");
-    }
-
-
-
-    function aplicarFiltrosAsignaciones() {
-      if (!datosAsignacionesCache || datosAsignacionesCache.length === 0) return;
-
-      let datosFiltrados = datosAsignacionesCache;
-
-      // 1. Filtro por Estado (Botones)
-      if (currentFiltroAsignaciones === 'pendiente') {
-        datosFiltrados = datosFiltrados.filter(row => {
-          const medio = (row.medio || "").trim();
-          return medio === ""; 
-        });
-      } 
-      else if (currentFiltroAsignaciones === 'gestionado') {
-        datosFiltrados = datosFiltrados.filter(row => {
-          const medio = (row.medio || "").trim();
-          return medio !== "";
-        });
-      }
-
-      // 2. Filtro por Búsqueda de Texto (Input)
-      const termino = document.getElementById('search-asignaciones').value.toLowerCase().trim();
-      if (termino !== "") {
-        datosFiltrados = datosFiltrados.filter(row => {
-          const seller = (row.seller || "").toLowerCase();
-          const email = (row.email || "").toLowerCase();
-          return seller.includes(termino) || email.includes(termino);
-        });
-      }
-
-      // 3. Renderizar Tabla
-      renderizarTablaAsignaciones(datosFiltrados);
-      
-      // IMPORTANTE: NO LLAMAMOS A actualizarContadoresAsignaciones AQUÍ.
-      // Queremos que los números de arriba se mantengan fijos al total.
-    }
-
-
-    // --- LÓGICA DE BOTONES DE FILTRO ---
-    function setFiltroAsignaciones(tipo, btnElement) {
-      // 1. ACTUALIZAR LA VARIABLE GLOBAL (CRÍTICO)
-      currentFiltroAsignaciones = tipo;
-      
-      // 2. Actualizar estilo visual de botones
-      document.querySelectorAll('#panel-asignaciones .suite-filter-btn').forEach(b => b.classList.remove('active'));
-      btnElement.classList.add('active');
-
-      // 3. AQUÍ ESTÁ EL CAMBIO CLAVE:
-      // Filtramos los datos en memoria (Cliente) en lugar de pedir al servidor.
-      // NO actualizamos contadores, para que sigan mostrando el total.
-      aplicarFiltrosAsignaciones(); 
-    }
-
-    function actualizarContadoresAsignaciones(dataFiltrada) {
-      // 1. Validación de seguridad
-      if (!dataFiltrada) return; 
-
-      let total = dataFiltrada.length;
-      let pendientes = 0;
-      let gestionados = 0;
-
-      dataFiltrada.forEach(row => {
-        // 2. Limpieza de espacios en blanco (ej: "   " -> "")
-        const medioLimpio = (row.medio || "").toString().trim();
-        
-        // 3. Lógica de conteo
-        if (medioLimpio === "") {
-          pendientes++;
-        } else {
-          gestionados++;
-        }
-      });
-
-      const updateBadge = (id, val) => {
-        const el = document.getElementById(id);
-        if(el) el.innerText = val;
-      };
-
-      updateBadge('badge-asig-all', total);
-      updateBadge('badge-asig-pend', pendientes);
-      updateBadge('badge-asig-ges', gestionados);
-    }
-
-    // ---------------------------------------------------------
-    // RENDER PAGINADO (compartido por las tablas grandes)
-    // Antes las tablas de Asignaciones / Indemnizaciones / Comisiones pintaban
-    // TODAS las filas del backend en cada render (3.000 filas = UI congelada
-    // varios segundos). Ahora se pinta la primera página (150 filas) y un botón
-    // "Cargar más". Cada render nuevo (datos o filtro cambiado) reinicia solo
-    // a la página 1 porque el estado vive dentro de la llamada.
-    // ---------------------------------------------------------
     function renderPaginado(tbody, data, crearFila, opciones) {
       opciones = opciones || {};
       const TAMANO = opciones.tamano || 150;
@@ -16200,156 +15684,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
     }
 
     // --- FUNCIÓN RENDERIZAR TABLA (CON CHECKBOX AL FINAL - NO MUEVE OTRAS COLUMNAS) ---
-    function renderizarTablaAsignaciones(data) {
-      const tbody = document.getElementById('tablaAsignacionesBody');
-      const palabrasClave = ['whatsapp', 'correo', 'llamada', 'meet'];
-
-      function crearFilaAsignacion(row) {
-        // 1. Crear el elemento fila (TR)
-        const tr = document.createElement('tr');
-
-        // 2. Asignamos el índice de la fila de la hoja al atributo data-row
-        // Esto es CRÍTICO para que el botón guardar sepa dónde escribir
-        if (row.rowIndex) {
-          tr.setAttribute('data-row', row.rowIndex);
-        } else {
-          console.error("Error Crítico: La fila no tiene rowIndex (ID de hoja de cálculo)", row);
-        }
-
-        // 3. Lógica de Auto-Selección (Visual - Fondo Amarillo)
-        // Si el medio actual contiene una palabra clave (ej. "Whatsapp"), marcamos la fila visualmente
-        const medioActual = (row.medio || "").toLowerCase().trim();
-        const esAutoSeleccionado = palabrasClave.some(palabra => medioActual.includes(palabra));
-
-        if (esAutoSeleccionado) {
-          tr.classList.add('row-selected');
-        }
-
-        // 4. Estilos de Plataforma (Colores Heka / Loggy)
-        let estiloPlataforma = "font-size:13px; font-weight:500;";
-        const plataforma = row.plataforma ? row.plataforma.toLowerCase().trim() : "";
-
-        if (plataforma === "hekaentrega") {
-            estiloPlataforma += " color: #FF8F00; font-weight:bold;";
-            estiloPlataforma += " -webkit-text-stroke: 0.2px black;";
-        } else if (plataforma === "loggy24") {
-            estiloPlataforma += " color: #9C27B0; font-weight:bold;";
-            estiloPlataforma += " - -webkit-text-stroke: 0.2px white;";
-        } else if (plataforma === "heka - h") {
-            estiloPlataforma += " color: #ffc640; font-weight:bold;";
-        }
-
-        // 5. Lógica de Teléfonos (Enlaces de WhatsApp + Icono Copiar)
-        let telefonosHTML = '<span style="color:#ccc; font-size:10px;">No hay</span>';
-        let rawTelefonos = String(row.telefonos || "");
-
-        if (rawTelefonos.trim() !== "") {
-          const phoneList = rawTelefonos.split(',');
-
-          telefonosHTML = phoneList.map(function(num) {
-            // Usamos tu regex para limpiar
-            const cleanNum = num.trim().replace(/[^0-9+]/g, '');
-
-            if (cleanNum) {
-              // 1. Link de WhatsApp
-              var waLink = `<a href="https://wa.me/${cleanNum}" target="_blank" style="color: #FDB813; text-decoration: none; font-weight:600; display:block; margin-bottom:2px;"><i class="bi bi-whatsapp"></i> ${num.trim()}</a>`;
-
-              // 2. Icono de Copiar
-              var copyIcon = `<i class="bi bi-clipboard"
-                                onclick="copiarTexto('${cleanNum}')"
-                                title="Copiar número"
-                                style="margin-left: 5px; cursor: pointer; color: #6c757d; font-size: 14px;"></i>`;
-
-              // 3. Envolver en un span para alinear icono y link
-              return `<span style="display:inline-flex; align-items:center;">${waLink} ${copyIcon}</span>`;
-            }
-            return '';
-          }).join('<br>');
-        }
-
-        // 6. Generación del Select (Dropdown) de Medios
-        const opcionesMedio = ["", "Whatsapp", "Correo", "Llamada", "Meet"];
-
-        let selectMedioHTML = `<select class="form-input suite-select" style="width:100%; font-size:12px;" onchange="verificarSeleccionAsignacion(event);">`;
-
-        opcionesMedio.forEach(function(opt) {
-          // Comparamos en minúsculas para evitar problemas de mayúsculas
-          const selected = (medioActual === opt.toLowerCase()) ? 'selected' : '';
-          selectMedioHTML += `<option value="${opt}" ${selected}>${opt}</option>`;
-        });
-        selectMedioHTML += `</select>`;
-
-        // 7. Construcción del HTML de la fila final
-        tr.innerHTML = `
-          <!-- FECHA -->
-          <td>${row.fecha || ''}</td>
-
-          <!-- PLATAFORMA -->
-          <td style="${estiloPlataforma}">${row.plataforma || '-'}</td>
-
-          <!-- SELLER -->
-          <td style="font-weight:bold;">${row.seller || ''}</td>
-
-          <!-- TELÉFONOS (CON ICONO DE COPIAR AGREGADO) -->
-          <td style="font-size:13px;">${telefonosHTML}</td>
-
-          <!-- EMAIL -->
-          <td style="font-size:13px;">${row.email || '-'}</td>
-
-          <!-- MEDIO (SELECT) -->
-          <td style="padding: 4px;">
-            ${selectMedioHTML}
-          </td>
-
-          <!-- OBSERVACIONES -->
-          <td style="padding: 4px;">
-            <input type="text" class="form-input input-data"
-                    style="width:100%;; font-size:12px;"
-                    value="${row.obs || ''}" placeholder="Observación...">
-          </td>
-
-          <!-- SELECCIONAR (CHECKBOX) - AL FINAL -->
-          <td style="text-align: center; width: 50px; vertical-align: middle;">
-            <input type="checkbox" class="check-row-asignacion"
-                  ${esAutoSeleccionado ? 'checked' : ''}
-                  onchange="verificarSeleccionAsignacion()">
-          </td>
-        `;
-        return tr;
-      }
-
-      // Render con paginación (150 filas por página + botón "Cargar más");
-      // el botón Gestionar se actualiza tras cada página pintada
-      renderPaginado(tbody, data, crearFilaAsignacion, {
-        colspan: 8,
-        alPintar: function() { updateBotonGuardar(); }
-      });
-    }
-
-
-
-
-
-
-    function handleEnterAsignaciones(e) {
-      if (e.key === "Enter") {
-        // 1. Obtenemos el botón "Todos"
-        const btnTodos = document.getElementById('btn-asig-all');
-        
-        // 2. Llamamos a setFiltroAsignaciones con 'all'
-        // Esto hace dos cosas:
-        //   a. Cambia el botón activo visualmente.
-        //   b. Carga los datos desde el servidor (limpiando la caché vieja).
-        setFiltroAsignaciones('all', btnTodos);
-      }
-    }
-
-
-    /* -------------------------------------------------------------------------
-       FUNCIONES COLABORADORES (CREAR Y EDITAR)
-       ------------------------------------------------------------------------- */
-
-    // 1. FUNCIÓN PARA ABRIR EL MODAL DE NUEVO COLABORADOR
     function abrirModalColaborador() {
       // Mostrar el modal
       document.getElementById('modal-colaborador').classList.add('active');
@@ -16505,337 +15839,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 
 
     // Función para abrir el modal y cargar datos
-    function abrirTablaReferencia() {
-      document.getElementById('modal-tabla-referencia').classList.add('active');
-      document.getElementById('tablaReferenciaBody').innerHTML = ''; // Limpiar tabla anterior
-      
-      showLoading(true);
-
-      google.script.run
-        .withSuccessHandler(function(res) {
-          showLoading(false);
-          
-          if (res.status === "success") {
-            renderizarTablaReferencia(res.data);
-          } else {
-            document.getElementById('tablaReferenciaBody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error: ' + res.message + '</td></tr>';
-          }
-        })
-        .withFailureHandler(function(err) {
-          showLoading(false);
-          document.getElementById('tablaReferenciaBody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error de conexión</td></tr>';
-        })
-        .getTablaReferenciaData();
-    }
-
-
-    // Función para dibujar la tabla con links de WhatsApp
-    function renderizarTablaReferencia(data) {
-      const tbody = document.getElementById('tablaReferenciaBody');
-      tbody.innerHTML = '';
-
-      if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">No hay datos en la tabla de referencia.</td></tr>';
-        return;
-      }
-
-      data.forEach(row => {
-        const tr = document.createElement('tr');
-        
-        // --- LÓGICA WHATSAPP CELULAR 1 ---
-        let htmlCelular1 = row.celular || '-';
-        if (row.celular && row.celular.trim() !== "") {
-          const cleanNum = row.celular.replace(/[^0-9+]/g, ''); 
-          
-          // 1. Link de WhatsApp
-          // IMPORTANTE: He cambiado ${numero} por ${row.celular} para que salga el número real
-          var waLink = `<a href="https://wa.me/${cleanNum}" target="_blank" 
-                            style="color: #198754; text-decoration: none; font-weight:600; display:flex; align-items:center; gap:5px;">
-                            <i class="bi bi-whatsapp"></i> ${row.celular}
-                          </a>`;
-          
-          // 2. Icono Copiar
-          var copyIcon = `<i class="bi-clipboard" 
-                            onclick="copiarTexto('${cleanNum}')" 
-                            title="Copiar" 
-                            style="margin-left: 8px; cursor: pointer; color: #6c757d; font-size: 14px;"></i>`;
-          
-          // 3. Envolver
-          htmlCelular1 = `<div style="display:flex; align-items:center;">${waLink} ${copyIcon}</div>`;
-        }
-
-        // --- LÓGICA WHATSAPP CELULAR 2 ---
-        let htmlCelular2 = row.celular2 || '-';
-        if (row.celular2 && row.celular2.trim() !== "") {
-          const cleanNum = row.celular2.replace(/[^0-9+]/g, ''); 
-          
-          var waLink = `<a href="https://wa.me/${cleanNum}" target="_blank" 
-                            style="color: #198754; text-decoration: none; font-weight:600; display:flex; align-items:center; gap:5px;">
-                            <i class="bi bi-whatsapp"></i> ${row.celular2}
-                          </a>`;
-          
-          var copyIcon = `<i class="bi-clipboard" 
-                            onclick="copiarTexto('${cleanNum}')" 
-                            title="Copiar" 
-                            style="margin-left: 8px; cursor: pointer; color: #6c757d; font-size: 14px;"></i>`;
-          
-          htmlCelular2 = `<div style="display:flex; align-items:center;">${waLink} ${copyIcon}</div>`;
-        }
-
-        tr.innerHTML = `
-          <td><strong>${row.centroCosto}</strong></td>
-          <td>${htmlCelular1}</td>
-          <td>${htmlCelular2}</td>
-          <td>${row.correo}</td>
-          <td>${row.fecha}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // Función auxiliar para crear el enlace de WhatsApp
-    function generarLinkWhatsapp(numero) {
-      // Limpiamos dejando solo números y el signo +
-      var cleanNum = numero.replace(/[^0-9+]/g, ''); 
-      
-      if (cleanNum) {
-        return `<a href="https://wa.me/${cleanNum}" target="_blank" 
-                  style="color: #198754; text-decoration: none; font-weight:600; display:flex; align-items:center; gap:5px;">
-                  <i class="bi bi-whatsapp"></i> ${numero}
-                </a>`;
-      }
-      return numero; // Si no es válido, devolvemos el texto plano
-    }
-
-
-    let datosActivacionesCache = [];
-    let currentFiltroActivaciones = 'all';
-
-    // 1. Cargar Datos
-    function cargarActivacionesInter() {
-      // Mostramos el cargador local
-      const loadingEl = document.getElementById('loadingActivaciones');
-      const tbody = document.getElementById('tablaActivacionesBody');
-      
-      loadingEl.style.display = 'block';
-      tbody.innerHTML = '';
-
-      if (!currentUser.name) {
-        loadingEl.style.display = 'none';
-        return showToast("Error: Usuario no identificado.");
-      }
-
-      google.script.run
-        .withSuccessHandler(function(res) {
-          loadingEl.style.display = 'none';
-          
-          if (res.status === "success") {
-            datosActivacionesCache = res.data;
-            renderizarTablaActivaciones(res.data);
-            actualizarContadoresActivaciones(res.data);
-          } else {
-            showToast("Error: " + res.message);
-          }
-        })
-        .withFailureHandler(function(err) {
-          loadingEl.style.display = 'none';
-          showToast("Error de conexión: " + err);
-        })
-        .getActivacionesInterData(currentUser.name, currentFiltroActivaciones);
-    }
-
-    // 2. Renderizar Tabla
-    function renderizarTablaActivaciones(data) {
-      const tbody = document.getElementById('tablaActivacionesBody');
-      tbody.innerHTML = ''; // LIMPIAR LA TABLA ANTES DE PINTAR NUEVA
-
-      // Si no llegan datos por parámetro, usamos la caché (caso raro de seguridad)
-      const lista = data || datosActivacionesCache;
-
-      if (!lista || lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">No tienes registros asignados.</td></tr>';
-        return;
-      }
-
-      lista.forEach(row => {
-        // --- LÓGICA DE SOLO LECTURA ---
-        // Si ya tiene datos en "Gestión", consideramos que está gestionado
-        const isGestionado = (row.gestion && row.gestion.trim() !== "");
-
-        const tr = document.createElement('tr');
-        tr.setAttribute('data-row', row.rowIndex);
-        
-        // Estilos para inputs bloqueados (Gris)
-        const styleDisabled = 'background-color: #e9ecef; cursor: not-allowed; border-color: #ced4da;';
-        const disabledAttr = 'disabled';
-        const styleEnabled = 'background-color: #fff; border-color: #dee2e6;';
-
-        // --- CELULAR (SOLO LECTURA + WHATSAPP) ---
-        let celularDisplay = row.celular || '-';
-        
-        if (row.celular && row.celular !== "") {
-          const cleanNum = row.celular.replace(/[^0-9+]/g, '');
-          
-          // 1. Link de WhatsApp (Estilo Amarillo Heka)
-          var waLink = `<a href="https://wa.me/${cleanNum}" target="_blank" 
-              style="color: #FDB813; text-decoration: none; font-weight:600; display:block; margin-bottom:2px;">
-              <i class="bi bi-whatsapp"></i> ${row.celular}
-            </a>`;
-          
-          // 2. Icono de Copiar
-          var copyIcon = `<i class="bi-clipboard" 
-                            onclick="copiarTexto('${cleanNum}')" 
-                            title="Copiar número" 
-                            style="margin-left: 5px; cursor: pointer; color: #6c757d; font-size: 14px;"></i>`;
-          
-          celularDisplay = `<span>${waLink} ${copyIcon}</span>`;
-        }
-
-        tr.innerHTML = `
-          <td style="font-weight:bold;">${row.centroCosto}</td>
-          
-          <!-- BODEGAS (EDITABLE) -->
-          <td style="padding: 4px;">
-            <input type="text" id="bod-${row.rowIndex}" class="form-input input-activaciones" 
-                  style="width:100%; font-size:12px; ${isGestionado ? styleDisabled : styleEnabled}" 
-                  value="${row.bodegas}" placeholder="Bodegas..." ${isGestionado ? disabledAttr : ""}>
-          </td>
-          
-          <!-- CELULAR (SOLO LECTURA - CON LINK AMARILLO) -->
-          <td style="font-size:13px;">
-            ${celularDisplay}
-          </td>
-          
-          <td>${row.correo}</td>
-          <td>${row.fecha}</td>
-          
-          <!-- GESTIÓN (EDITABLE O BLOQUEADA) -->
-          <td style="padding: 4px;">
-            <input type="text" id="ges-${row.rowIndex}" class="form-input input-activaciones" 
-                  style="width:100%; font-size:12px; ${isGestionado ? styleDisabled : styleEnabled}" 
-                  value="${row.gestion}" placeholder="Gestión..." ${isGestionado ? disabledAttr : ""}>
-          </td>
-          
-          <!-- NOVEDAD (EDITABLE O BLOQUEADA) -->
-          <td style="padding: 4px;">
-            <input type="text" id="nov-${row.rowIndex}" class="form-input input-activaciones" 
-                  style="width:100%; font-size:12px; ${isGestionado ? styleDisabled : styleEnabled}" 
-                  value="${row.novedad}" placeholder="Novedad..." ${isGestionado ? disabledAttr : ""}>
-          </td>
-          
-          <!-- BOTÓN GUARDAR -->
-          <td style="text-align: center; vertical-align: middle;">
-            ${isGestionado 
-              ? '<span style="color:#aaa; font-size:18px;"><i class="bi bi-lock-fill"></i></span>' 
-              : `<button class="btn btn-sm btn-success" onclick="guardarFilaActivacionesInter(${row.rowIndex})" title="Guardar Cambios">
-                  <i class="bi bi-check-circle-fill"></i>
-                </button>`
-            }
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-
-
-    // 3. Función Guardar Fila (FRONTEND) - ACTUALIZADA
-    function guardarFilaActivacionesInter(rowIndex) {
-      // Buscar inputs dentro de la fila (Solo Bodegas, Gestión, Novedad)
-      // El celular ya NO se busca porque no es editable
-      const row = document.querySelector(`tr[data-row='${rowIndex}']`);
-      if (!row) return;
-
-      const inputs = row.querySelectorAll('input');
-      
-      // inputs[0] = Bodegas, inputs[1] = Gestión, inputs[2] = Novedad
-      const bodegas = inputs[0].value.trim();
-      const gestion = inputs[1].value.trim();
-      const novedad = inputs[2].value.trim();
-
-      // Validación: Gestión es obligatoria
-      if (!gestion) {
-        return showToast("El campo Gestión es obligatorio para guardar.");
-      }
-
-      // Llamamos al Backend SIN el parámetro celular
-      showLoading(true); 
-
-      google.script.run
-        .withSuccessHandler(function(res) {
-          showLoading(false);
-          if (res.status === "success") {
-            showToast(res.message);
-            cargarActivacionesInter(); // Recargar
-          } else {
-            showToast("Error: " + res.message);
-          }
-        })
-        .withFailureHandler(function(err) {
-          showLoading(false);
-          showToast("Error de conexión: " + err);
-        })
-        // ENVIAMOS SOLO 4 PARÁMETROS (Quitamos celular)
-        .guardarFilaActivacionesInter(rowIndex, bodegas, gestion, novedad);
-    }
-
-    function actualizarContadoresActivaciones(data) {
-      if(!data) return;
-      const total = data.length;
-      const pendientes = data.filter(row => row.gestion === "").length;
-      const gestionados = data.filter(row => row.gestion !== "").length;
-
-      const updateBadge = (id, val) => {
-        const el = document.getElementById(id);
-        if(el) el.innerText = val;
-      };
-
-      updateBadge('badge-act-all', total);
-      updateBadge('badge-act-pend', pendientes);
-      updateBadge('badge-act-ges', gestionados);
-    }
-
-
-    // Función para filtrar mientras escribes
-    function filtrarActivaciones() {
-      // 1. Capturar el texto
-      const termino = document.getElementById('search-activaciones').value.toLowerCase().trim();
-      
-      // 2. Filtrar la memoria caché global (datosActivacionesCache)
-      // Esto permite buscar en TODOS los registros, no solo en los que ves por el botón seleccionado
-      const resultado = datosActivacionesCache.filter(function(row) {
-        const centro = (row.centroCosto || "").toLowerCase();
-        const cel = (row.celular || "").toLowerCase();
-        // Buscamos si el texto está en Centro Costo o en Celular
-        return centro.includes(termino) || cel.includes(termino);
-      });
-
-      // 3. Renderizar la tabla con los resultados filtrados
-      renderizarTablaActivaciones(resultado);
-    }
-
-    // Función para limpiar el buscador (Opcional)
-    function limpiarBusquedaActivaciones() {
-      document.getElementById('search-activaciones').value = "";
-      // Al vaciar el input, volvemos a renderizar la caché completa (o podrías recargar los datos del botón activo)
-      // Por simplicidad, renderizamos todo lo que tenemos en memoria:
-      renderizarTablaActivaciones(datosActivacionesCache);
-    }
-
-    // Función auxiliar para copiar texto al portapapeles
-    function copiarTexto(texto) {
-      navigator.clipboard.writeText(texto).then(function() {
-        showToast("Número copiado al portapapeles");
-      }, function(err) {
-        showToast("Error al copiar: " + err);
-      });
-    }
-
-
-
-    let tempRegistroData = null; // Para guardar los datos temporalmente
-
-    // Función para abrir el modal "Eliminar y Asignar"
     function mostrarModalEliminarYAsignar(mensaje) {
       const modal = document.getElementById('modal-eliminar-y-asignar');
       const texto = document.getElementById('texto-eliminar-y-asignar');
@@ -16864,8 +15867,8 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
             if (res.status === "success") {
               showToast(res.message);
               closeModal('modal-registros');
-              // Recarga la tabla de asignaciones para ver que desapareció
-              if (document.getElementById('panel-asignaciones').classList.contains('active')) cargarAsignaciones();
+              // (Antes aquí se intentaba refrescar el panel de Asignaciones/Registros;
+              //  el panel Comercial fue retirado y no hay tabla que recargar aquí.)
             } else {
               showToast("Error: " + res.message);
             }
@@ -17032,26 +16035,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
     }
 
 
-    function setFiltroActivaciones(tipo, btnElement) {
-      currentFiltroActivaciones = tipo;
-      
-      // Actualizar botones visuales
-      const buttons = document.querySelectorAll('#panel-activaciones-inter .suite-filter-btn');
-      buttons.forEach(b => b.classList.remove('active'));
-      btnElement.classList.add('active');
-
-      // AQUÍ ESTÁ EL SECRETO: Filtramos los datos EN MEMORIA y los pasamos al renderizador
-      const datosFiltrados = datosActivacionesCache.filter(row => {
-        if (tipo === 'all') return true;
-        if (tipo === 'pendiente') return (row.gestion === "");
-        if (tipo === 'gestionado') return (row.gestion !== "");
-      });
-
-      // Pasamos los datos filtrados a la función de pintado
-      renderizarTablaActivaciones(datosFiltrados);
-    }
-
-
     function openModalUpdateAdvisor() {
       // 1. Abrir el modal visualmente
       const modal = document.getElementById('modal-update-advisor');
@@ -17181,13 +16164,8 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
           if (res.status === "success") {
             showToast(res.message);
             closeModal('modal-update-advisor'); // Cerramos el modal de actualización
-            
-            // Recargamos la tabla del panel actual para ver el cambio
-            if(document.getElementById('panel-registros').classList.contains('active')) {
-                cargarRegistros();
-            } else if(document.getElementById('panel-asignaciones').classList.contains('active')) {
-                cargarAsignaciones();
-            }
+            // (Antes aquí se refrescaban los paneles de Registros/Asignaciones;
+            //  el panel Comercial fue retirado y no hay tabla que recargar aquí.)
           } else {
             showToast("Error: " + res.message);
           }
@@ -17309,260 +16287,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
     // ---------------------------------------------------------
     // FUNCIÓN PARA GENERAR LOS BOTONES (SWITCHES)
     // ---------------------------------------------------------
-    function generarBotonesPlataformas(listaPlataformas) {
-      const container = document.getElementById('contenedor-filtros-plataforma');
-      container.innerHTML = ''; // Limpiar anteriores
-
-      if (listaPlataformas.length === 0) {
-        container.innerHTML = '<small style="color:#888;">No hay plataformas asignadas.</small>';
-        return;
-      }
-
-      // Botón "Todos" (Opcional, si quieres ver todo mezclado)
-      const btnTodos = document.createElement('button');
-      btnTodos.className = 'suite-filter-btn'; // Usamos tu estilo existente
-      btnTodos.innerHTML = `<i class="bi bi-list-ul"></i> Ver Todas`;
-      btnTodos.onclick = function() {
-        // Al hacer clic en "Todas", forzamos carga SIN filtro
-        cargarAsignaciones(null); 
-        actualizarBotonesPlataformaVisual(null);
-      };
-      container.appendChild(btnTodos);
-
-      // Separador visual
-      const separador = document.createElement('div');
-      separador.style.borderLeft = "1px solid #dee2e6";
-      separador.style.height = "20px";
-      separador.style.margin = "0 10px";
-      container.appendChild(separador);
-
-      // Botones de Plataformas
-      listaPlataformas.forEach(function(plataforma) {
-        const btn = document.createElement('button');
-        // Usamos la clase de tus filtros existentes para que se vea igual
-        btn.className = 'suite-filter-btn'; 
-        // Ponemos el nombre en mayúsculas para estética
-        btn.innerText = plataforma.toUpperCase(); 
-        
-        // Evento Click
-        btn.onclick = function() {
-          cargarAsignaciones(plataforma); // Dispara la carga con filtro
-        };
-
-        // Guardamos referencia en el botón para poder activarlo visualmente después
-        btn.setAttribute('data-plataforma', plataforma);
-        
-        container.appendChild(btn);
-      });
-    }
-
-
-    function actualizarBotonesPlataformaVisual(plataformaActiva) {
-      const container = document.getElementById('contenedor-filtros-plataforma');
-      if(!container) return;
-      
-      const botones = container.querySelectorAll('button');
-      botones.forEach(function(btn) {
-        // Primero quitamos la clase activa de todos
-        btn.classList.remove('active'); 
-        
-        // Obtenemos el valor guardado en el atributo data-plataforma
-        const dataPlat = btn.getAttribute('data-plataforma');
-        
-        // Verificamos si es el botón "Ver Todas" (si existe)
-        const isVerTodas = btn.innerText.includes("Ver Todas");
-        
-        // COMPARACIÓN ROBUSTA (Case Insensitive)
-        // Si no hay plataforma activa, activamos "Ver Todas"
-        if (!plataformaActiva && isVerTodas) {
-          btn.classList.add('active');
-        } 
-        // Si el atributo del botón coincide con la seleccionada (ignorando mayúsculas)
-        else if (dataPlat && plataformaActiva && dataPlat.toLowerCase() === plataformaActiva.toLowerCase()) {
-          btn.classList.add('active');
-        }
-      });
-    }
-
-
-    function verificarSeleccionAsignacion(event) {
-      // ---------------------------------------------------------
-      // BLOQUEO DE SEGURIDAD: EVITAR BUCLE INFINITO
-      // Si no hay evento (se llama al renderizar la tabla), solo actualizamos botones y salimos.
-      // ---------------------------------------------------------
-      if (!event) {
-        updateBotonGuardar();
-        return;
-      }
-
-      // ---------------------------------------------------------
-      // PARTE A: ACTIVAR/DESACTIVAR BOTÓN GUARDAR (Si vino de un clic)
-      // ---------------------------------------------------------
-      const checkboxes = document.querySelectorAll('.check-row-asignacion');
-      const btnGuardar = document.getElementById('btn-batch-save-asignaciones');
-      
-      let count = 0;
-      checkboxes.forEach(chk => {
-        if (chk.checked) count++;
-      });
-
-      if (count > 0) {
-        btnGuardar.removeAttribute('disabled');
-      } else {
-        btnGuardar.setAttribute('disabled', 'true');
-      }
-
-      // ---------------------------------------------------------
-      // PARTE B: AUTO-MARCAR CHULITO AL CAMBIAR MEDIO
-      // ---------------------------------------------------------
-      
-      const target = event.target;
-      
-      // Verificamos si el elemento fue un SELECT (Desplegable)
-      if (target && target.tagName === 'SELECT') {
-        const selectedValue = target.value.toLowerCase().trim();
-        const magicWords = ['whatsapp', 'correo', 'llamada', 'meet'];
-        
-        // Buscamos la fila padre (TR) para encontrar el checkbox de esa fila
-        const row = target.closest('tr');
-        
-        if (row) {
-          const checkbox = row.querySelector('.check-row-asignacion');
-          
-          if (checkbox) {
-            // Si el valor seleccionado contiene alguna palabra mágica, marcamos
-            const shouldCheck = magicWords.some(word => selectedValue.includes(word));
-            
-            checkbox.checked = shouldCheck;
-            
-            // AHORA LLAMAMOS A LA FUNCIÓN AUXILIAR (NO A SÍ MISMA)
-            updateBotonGuardar();
-          }
-        }
-      }
-    }
-
-
-
-    // ---------------------------------------------------------
-    // FUNCIÓN QUE LLAMA AL BACKEND (YA EXISTE EN TU CÓDIGO, SOLO LA LLAMO AQUÍ)
-    // ---------------------------------------------------------
-    function ejecutarGuardadoAsignacionesBackend() {
-      closeModal('modal-confirm-guardado');
-      showLoading(true);
-
-      google.script.run
-        .withSuccessHandler(function(res) {
-          showLoading(false);
-          if (res.status === "success") {
-            showToast(res.message);
-            cargarAsignaciones(); // Recargamos para ver cambios
-          } else {
-            showToast("Error: " + res.message);
-          }
-        })
-        .withFailureHandler(function(err) {
-          showLoading(false);
-          showToast("Error: " + err);
-        })
-        // Asegúrate que tu función .GS se llame así:
-        .guardarBatchAsignaciones(window.tempUpdates);
-    }
-
-
-    function guardarBatchAsignacionesHandler() {
-      // 1. Seleccionamos todas las filas (TR) que están dentro del cuerpo de la tabla
-      const filasDOM = document.querySelectorAll('#tablaAsignacionesBody tr');
-
-      if (filasDOM.length === 0) {
-        return showToast("No hay registros para guardar.");
-      }
-
-      // Con paginación puede haber filas sin cargar todavía: avisar para que
-      // nadie guarde "todo" sin darse cuenta de que faltan páginas por cargar
-      const filaCargarMas = document.querySelector('#tablaAsignacionesBody tr.fila-cargar-mas');
-      if (filaCargarMas && !confirm('Hay filas aún no cargadas (usa el botón "Cargar más" para verlas).\n¿Guardar SOLO las filas visibles en pantalla?')) {
-        return;
-      }
-
-      const updates = [];
-      
-      // 2. Recorremos cada fila encontrada
-      filasDOM.forEach(tr => {
-        // Buscamos el checkbox (input type="checkbox") con la clase específica dentro de esta fila
-        const checkbox = tr.querySelector('.check-row-asignacion');
-        
-        // SOLO procesamos si el checkbox está marcado (checked)
-        if (checkbox && checkbox.checked) {
-          // Obtenemos el número de fila real de la hoja de cálculo (data-row)
-          // Este atributo se creó en la función renderizarTablaAsignaciones
-          const rowIndex = tr.getAttribute('data-row');
-          
-          // Buscamos el elemento Select (Desplegable) para obtener el "Medio"
-          const selectMedio = tr.querySelector('select'); 
-          
-          // Buscamos el elemento Input de Texto para obtener las "Observaciones"
-          // NOTA: Asegúrate de que en tu HTML el input tenga class="input-data"
-          const inputObs = tr.querySelector('.input-data'); 
-          
-          // Extraemos los valores y eliminamos espacios en blanco al inicio/final (trim)
-          const medio = selectMedio ? selectMedio.value.trim() : "";
-          const obs = inputObs ? inputObs.value.trim() : "";
-
-          // Agregamos el objeto al array de actualizaciones
-          updates.push({
-            rowIndex: rowIndex,
-            medio: medio,
-            obs: obs
-          });
-        }
-      });
-
-      // 3. Validación: Si el array está vacío, significa que no marcaron ningún chulito
-      if (updates.length === 0) {
-        return showToast("Debes marcar al menos un registro (chulito) para guardar.");
-      }
-
-      // 4. Guardamos los datos recolectados en una variable global temporal (window.tempUpdates)
-      // Esto es necesario porque el modal de confirmación usará estos datos
-      window.tempUpdates = updates;
-      
-      // 5. Indicamos al modal qué función de Backend debe ejecutar al confirmar
-      // Esto permite reutilizar el mismo modal para diferentes acciones
-      window.tempSaveFunction = "ejecutarGuardadoAsignacionesBackend";
-      
-      // 6. Mostramos el modal de confirmación visualmente
-      document.getElementById('modal-confirm-guardado').classList.add('active');
-    }
-
-
-    function updateBotonGuardar() {
-      // Buscamos todos los checkboxes de la tabla
-      const checkboxes = document.querySelectorAll('.check-row-asignacion');
-      // Buscamos el botón grande de "Gestionar"
-      const btnGuardar = document.getElementById('btn-batch-save-asignaciones');
-      
-      let count = 0;
-      checkboxes.forEach(chk => {
-        // Si el checkbox tiene la propiedad "checked" en true, sumamos
-        if (chk.checked) count++;
-      });
-
-      // Si hay al menos uno marcado, habilitamos el botón. Si no, lo deshabilitamos.
-      if (count > 0) {
-        btnGuardar.removeAttribute('disabled');
-      } else {
-        btnGuardar.setAttribute('disabled', 'true');
-      }
-    }
-
-
-
-    // --- FUNCIONES RECUENTO CONTABLE ---
-
-    // --- FUNCIONES RECUENTO CONTABLE (LISTO PARA USAR) ---
-
-    // Función para abrir el modal
     function abrirModalRecuentoContable() {
       document.getElementById('modal-recuento-contable').classList.add('active');
       document.getElementById('input_recuento-contable').value = "";
@@ -17634,162 +16358,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
     let datosHistorialGlobalCache = [];
 
     // 1. Función para cargar datos
-    function cargarHistorialGlobal() {
-      const tbody = document.getElementById('tablaHistorialGlobalBody');
-      const loadingEl = document.getElementById('loadingHistorialGlobal');
-      
-      tbody.innerHTML = '';
-      loadingEl.style.display = 'block';
-
-      google.script.run
-        .withSuccessHandler(function(res) {
-          loadingEl.style.display = 'none';
-          
-          if (res.status === "success") {
-            datosHistorialGlobalCache = res.data;
-            renderizarTablaHistorialGlobal(res.data);
-          } else {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Error: ' + res.message + '</td></tr>';
-          }
-        })
-        .withFailureHandler(function(err) {
-          loadingEl.style.display = 'none';
-          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:20px;">Error de conexión</td></tr>';
-        })
-        .getHistorialGlobalData();
-    }
-
-    // 2. Función para renderizar la tabla
-    // 2. Función para renderizar la tabla (ACTUALIZADA CON COLUMNA TIPO)
-    function renderizarTablaHistorialGlobal(data) {
-      const tbody = document.getElementById('tablaHistorialGlobalBody');
-      tbody.innerHTML = '';
-
-      if (!data || data.length === 0) {
-        // IMPORTANTE: Actualizar el colspan a 5 porque ahora tenemos 5 columnas (agregamos Tipo)
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">No hay registros en el historial.</td></tr>';
-        return;
-      }
-
-      data.forEach(row => {
-        const tr = document.createElement('tr');
-        
-        // --- LÓGICA DE TELÉFONOS (WHATSAPP + COPIAR) ---
-        let htmlContacto = '-';
-        
-        if (row.contacto && row.contacto.trim() !== "") {
-          const listaTelefonos = row.contacto.split(',');
-          
-          htmlContacto = listaTelefonos.map(function(numero) {
-            const cleanNum = numero.replace(/[^0-9+]/g, ''); 
-            
-            if (cleanNum) {
-              var waLink = `<a href="https://wa.me/${cleanNum}" target="_blank" 
-                                style="color: #198754; text-decoration: none; font-weight:600; display:inline-flex; align-items:center; gap:5px; margin-right:10px;">
-                                <i class="bi bi-whatsapp"></i> ${numero.trim()}
-                              </a>`;
-              
-              var copyIcon = `<i class="bi bi-clipboard" 
-                                onclick="copiarTexto('${cleanNum}')" 
-                                title="Copiar número" 
-                                style="cursor: pointer; color: #6c757d; font-size: 14px;"></i>`;
-              
-              return `<span style="display:inline-flex; align-items:center;">${waLink} ${copyIcon}</span>`;
-            }
-            return ''; 
-          }).join('<br>');
-        }
-
-        // --- LÓGICA DE COLOR PARA EL TIPO ---
-        // Usamos las clases de badge que ya tienes definidas en tu CSS (badge-warning, badge-success)
-        let tipoBadge = "";
-        if (row.tipo === "REGISTROS") {
-          tipoBadge = '<span class="badge badge-warning">REGISTROS</span>';
-        } else if (row.tipo === "ASIGNACIONES") {
-          tipoBadge = '<span class="badge badge-success">ASIGNACIONES</span>';
-        } else {
-          tipoBadge = row.tipo || "-"; // Por seguridad si viene vacío
-        }
-
-        tr.innerHTML = `
-          <td>${row.fecha}</td>
-          <td style="font-weight:bold;">${row.centroCosto}</td>
-          <td style="font-size:13px;">${htmlContacto}</td>
-          <td>${row.asesor}</td>
-          <!-- NUEVA COLUMNA TIPO AQUÍ -->
-          <td>${tipoBadge}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // 3. Función de búsqueda (Filtro Instantáneo)
-    function filtrarHistorialGlobal() {
-      const termino = document.getElementById('search_historial_global').value.toLowerCase().trim();
-      
-      // Filtramos la caché en memoria
-      const resultado = datosHistorialGlobalCache.filter(function(row) {
-        const centro = (row.centroCosto || "").toLowerCase();
-        const asesor = (row.asesor || "").toLowerCase();
-        const telf = (row.contacto || "").toLowerCase();
-        
-        return centro.includes(termino) || asesor.includes(termino) || telf.includes(termino);
-      });
-
-      renderizarTablaHistorialGlobal(resultado);
-    }
-
-
-    /* -------------------------------------------------------------------------
-      LÓGICA DESCARGA EXCEL ASIGNACIONES
-      ------------------------------------------------------------------------- */
-
-    // 1. Función para abrir el modal
-    function abrirModalDescargaAsignaciones() {
-      document.getElementById('modal-descargar-asignaciones').classList.add('active');
-    }
-
-    // 2. Función para ejecutar la descarga (CORREGIDA PARA DESCARGAR ARCHIVO)
-    function ejecutarDescargaAsignaciones() {
-      // Obtener el valor seleccionado (Todos, Pendientes, Gestionados)
-      const radios = document.getElementsByName('filtro_asignaciones_excel');
-      let filtroSeleccionado = 'all';
-      
-      for (const radio of radios) {
-        if (radio.checked) {
-          filtroSeleccionado = radio.value;
-          break;
-        }
-      }
-
-      // Mostrar loading
-      showLoading(true);
-
-      // Llamamos al backend. 
-      // NOTA: La función generarExcelAsignaciones ahora RETORNA el texto del CSV directamente.
-      google.script.run
-        .withSuccessHandler(function(csvContent) {
-          showLoading(false);
-          
-          // 1. Si el backend devuelve un error (texto que empieza con "Error")
-          if (csvContent && csvContent.startsWith("Error")) {
-            showToast(csvContent); 
-          } 
-          // 2. Si todo está bien, el csvContent es el archivo CSV. Lo descargamos.
-          else {
-            descargarArchivoCSV(csvContent, "Reporte_Asignaciones_" + new Date().toISOString().slice(0,10) + ".csv");
-            closeModal('modal-descargar-asignaciones');
-            showToast("Archivo generado correctamente.");
-          }
-        })
-        .withFailureHandler(function(err) {
-          showLoading(false);
-          showToast("Error de conexión: " + err);
-        })
-        // Pasamos currentUser.name como segundo argumento
-        .generarExcelAsignaciones(filtroSeleccionado, currentUser.name);
-    }
-
     function buscarSaldoSeller() {
       var seller = document.getElementById('rec_seller').value.trim();
       var btnGuardar = document.getElementById('btn_guardar_recarga');
@@ -28935,9 +27503,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
     suite:{tbody:'tablaSuiteBody',from:'suite-fecha-desde',to:'suite-fecha-hasta',cols:[0]},
     colaboradores:{tbody:'tablaColaboradores',from:'col-fecha-desde',to:'col-fecha-hasta',cols:[2]},
     certificados:{tbody:'tablaHistorialCertificados',from:'cert-fecha-desde',to:'cert-fecha-hasta',cols:[0]},
-    historialGlobal:{tbody:'tablaHistorialGlobalBody',from:'global-fecha-desde',to:'global-fecha-hasta',cols:[0]},
-    asignaciones:{tbody:'tablaAsignacionesBody',from:'asig-fecha-desde',to:'asig-fecha-hasta',cols:[0]},
-    activaciones:{tbody:'tablaActivacionesBody',from:'act-fecha-desde',to:'act-fecha-hasta',cols:[4]},
     seguimiento:{tbody:'tablaSeguimientoBody',from:'seg-fecha-desde',to:'seg-fecha-hasta',cols:[0,1]}
   };
   function parseDate(v){
