@@ -27586,6 +27586,21 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 })();
 </script>
 
+<!-- Modal de confirmación Activación Inter -->
+<div id="act-inter-modal" style="display:none;position:fixed;inset:0;background:rgba(4,8,13,.72);backdrop-filter:blur(3px);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:linear-gradient(150deg,#111b26,#0b1119);border:1px solid rgba(255,196,0,.25);border-radius:18px;max-width:420px;width:92%;padding:28px 24px;box-shadow:0 24px 60px rgba(0,0,0,.5);text-align:center;">
+    <div style="width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:rgba(255,196,0,.12);display:flex;align-items:center;justify-content:center;">
+      <i class="bi bi-envelope-check-fill" style="font-size:30px;color:#ffc400;"></i>
+    </div>
+    <h3 style="color:#eaf1f8;margin:0 0 8px;font-size:19px;">¿Procesar activaciones?</h3>
+    <p id="act-inter-modal-msg" style="color:#cbd5e1;font-size:14.5px;line-height:1.55;margin:0 0 22px;"></p>
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <button type="button" id="act-inter-modal-cancel" style="flex:1;padding:11px 16px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;font-weight:600;cursor:pointer;font-size:14px;">Cancelar</button>
+      <button type="button" id="act-inter-modal-ok" style="flex:1;padding:11px 16px;border-radius:11px;border:none;background:linear-gradient(135deg,#ffc400,#ffb300);color:#111;font-weight:700;cursor:pointer;font-size:14px;">Sí, enviar <i class="bi bi-send-fill"></i></button>
+    </div>
+  </div>
+</div>
+
 <!-- ================= LOGICA COMERCIAL: ACTIVACION INTER ================= -->
 <script>
 var actInterFilas = [];
@@ -27647,7 +27662,33 @@ function leerExcelActivacionInter(file) {
 
 function procesarActivacionInter() {
   if (!actInterFilas.length) { showToast('Primero monta un Excel válido.'); return; }
-  if (!confirm('Se enviará el correo de activación a ' + actInterFilas.length + ' cliente(s). ¿Continuar?')) return;
+  confirmarActivacionInter('Se enviará el <strong>correo</strong> y el <strong>WhatsApp</strong> de activación a <strong>' + actInterFilas.length + '</strong> cliente(s).').then(function(ok){
+    if (ok) ejecutarProcesarActivacionInter();
+  });
+}
+
+function confirmarActivacionInter(mensajeHtml) {
+  return new Promise(function(resolve){
+    var modal = document.getElementById('act-inter-modal');
+    document.getElementById('act-inter-modal-msg').innerHTML = mensajeHtml;
+    modal.style.display = 'flex';
+    var btnOk = document.getElementById('act-inter-modal-ok');
+    var btnCancel = document.getElementById('act-inter-modal-cancel');
+    function cerrar(ok){
+      modal.style.display = 'none';
+      btnOk.removeEventListener('click', onOk);
+      btnCancel.removeEventListener('click', onCancel);
+      resolve(ok);
+    }
+    function onOk(){ cerrar(true); }
+    function onCancel(){ cerrar(false); }
+    btnOk.addEventListener('click', onOk);
+    btnCancel.addEventListener('click', onCancel);
+  });
+}
+
+function ejecutarProcesarActivacionInter() {
+  if (!actInterFilas.length) { showToast('Primero monta un Excel válido.'); return; }
   var btn = document.getElementById('act-inter-btn');
   var spinner = document.getElementById('act-inter-spinner');
   var dz = document.getElementById('act-inter-dropzone');
