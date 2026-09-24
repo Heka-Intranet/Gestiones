@@ -6779,6 +6779,19 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </a>
 </div>
 </div>
+
+<!-- NUEVO MENU COMERCIAL -->
+<div class="nav-accordion-item" id="nav-comercial-wrapper">
+<div class="nav-item" onclick="toggleSubmenu('submenu-comercial')">
+<i class="bi bi-briefcase-fill"></i><span>Comercial</span><i class="bi bi-chevron-down accordion-arrow"></i>
+</div>
+<div class="nav-submenu" id="submenu-comercial">
+<a class="nav-item sub-item" data-target="activacion_inter" href="#" onclick="goToPanel('panel-activacion-inter', this)">
+<i class="bi bi-envelope-check-fill"></i><span>Activación Inter</span>
+</a>
+</div>
+</div>
+
 <!-- NUEVO MENU PLATAFORMA DRIVE -->
 
 <!-- NUEVO MENU TALENTO HUMANO -->
@@ -7344,6 +7357,41 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 <!-- PANEL GESTIÓN ANULAR -->
+
+<!-- ================= PANEL COMERCIAL: ACTIVACION INTER ================= -->
+<div class="panel" id="panel-activacion-inter">
+<div class="page-header">
+<h1>Activación Inter</h1>
+<p>Carga el Excel de activaciones: se acumulan en la hoja "ACTIVACIONES INTER" y se notifica por correo a cada cliente que su cuenta está lista para gestionar envíos.</p>
+</div>
+<div class="card">
+<div class="form-section-title">Carga de Excel de Activaciones</div>
+<div id="act-inter-dropzone" style="border:2px dashed #ffc400;border-radius:16px;padding:36px 24px;text-align:center;cursor:pointer;background:linear-gradient(145deg,rgba(255,196,0,.06),rgba(255,196,0,.02));transition:all .25s ease;">
+<i class="bi bi-file-earmark-arrow-up-fill" style="font-size:42px;color:#ffc400;"></i>
+<h3 style="margin:12px 0 6px;">Montar Excel de Activaciones</h3>
+<p style="color:var(--text-muted);margin:0;">Haz clic para seleccionar el archivo .xlsx<br><small>Se toman los datos desde la <strong>fila 6</strong> hacia abajo</small></p>
+<input type="file" id="act-inter-file" accept=".xlsx,.xls" style="display:none">
+</div>
+<div id="act-inter-info" style="display:none;margin-top:16px;padding:14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--border-color);"></div>
+<div style="margin-top:16px;display:flex;gap:10px;align-items:center;">
+<button type="button" class="btn btn-primary" id="act-inter-btn" onclick="procesarActivacionInter()" style="display:none;">
+<i class="bi bi-send-fill"></i> Procesar y Enviar Correos
+</button>
+<span id="act-inter-spinner" style="display:none;color:var(--primary-dark);"><i class="bi bi-arrow-repeat"></i> Enviando correos, no cierres esta ventana...</span>
+</div>
+</div>
+<div class="card" style="margin-top:16px;">
+<div class="form-section-title">Últimas activaciones registradas</div>
+<div style="overflow-x:auto;">
+<table class="table" id="act-inter-tabla" style="width:100%;font-size:13px;">
+<thead><tr><th>Empresa</th><th>Sucursal/CC</th><th>NIT</th><th>Contacto</th><th>Teléfono</th><th>Ciudad</th><th>E-mail</th><th>Estado (K)</th></tr></thead>
+<tbody id="act-inter-tabla-body"></tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- ================= FIN PANEL ACTIVACION INTER ================= -->
+
 <div class="panel" id="panel-gestion-anular">
 <div class="page-header">
 <h1>Gestión Anular</h1>
@@ -12896,6 +12944,10 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 
       if (panelId === 'panel-check-recarga') {
         cargarCheckRecarga(); // <--- AGREGA ESTO PARA QUE CARGUE SOLO
+
+      if (panelId === 'panel-activacion-inter') {
+        cargarPreviewActivacionInter();
+      }
       }
 
       if (clickedElement) {
@@ -27533,4 +27585,115 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
   });
 })();
 </script>
+
+<!-- ================= LOGICA COMERCIAL: ACTIVACION INTER ================= -->
+<script>
+var actInterFilas = [];
+(function(){
+  function initActInter(){
+    var dz = document.getElementById('act-inter-dropzone');
+    var input = document.getElementById('act-inter-file');
+    if (!dz || !input || dz.dataset.init) return;
+    dz.dataset.init = '1';
+    dz.addEventListener('click', function(){ input.click(); });
+    input.addEventListener('change', function(){ if (input.files.length) leerExcelActivacionInter(input.files[0]); });
+    dz.addEventListener('dragover', function(e){ e.preventDefault(); dz.style.borderColor='#0d6efd'; });
+    dz.addEventListener('dragleave', function(){ dz.style.borderColor='#ffc400'; });
+    dz.addEventListener('drop', function(e){
+      e.preventDefault(); dz.style.borderColor='#ffc400';
+      if (e.dataTransfer.files.length) leerExcelActivacionInter(e.dataTransfer.files[0]);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initActInter);
+  else initActInter();
+})();
+
+function leerExcelActivacionInter(file) {
+  var info = document.getElementById('act-inter-info');
+  var btn = document.getElementById('act-inter-btn');
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var wb = XLSX.read(e.target.result, { type: 'array' });
+      var ws = wb.Sheets[wb.SheetNames[0]];
+      var todas = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: '' });
+      actInterFilas = todas.slice(5)
+        .map(function(r){
+          var f = [];
+          for (var c = 0; c < 10; c++) f.push(r[c] === undefined ? '' : String(r[c]).trim());
+          return f;
+        })
+        .filter(function(r){ return r.some(function(v){ return v !== ''; }); });
+      if (!actInterFilas.length) {
+        info.style.display = 'block';
+        info.innerHTML = '<span style="color:#dc3545"><i class="bi bi-exclamation-triangle"></i> No se encontraron datos desde la fila 6 en adelante.</span>';
+        btn.style.display = 'none';
+        return;
+      }
+      var conCorreo = actInterFilas.filter(function(r){ return r[7] && r[7].indexOf('@') > -1; }).length;
+      info.style.display = 'block';
+      info.innerHTML = '<i class="bi bi-check-circle-fill" style="color:#198754"></i> '
+        + '<strong>' + actInterFilas.length + ' filas</strong> detectadas desde la fila 6. '
+        + conCorreo + ' con correo válido (columna H).'
+        + '<br><small>Al procesar se acumularán en "ACTIVACIONES INTER" y se enviará la notificación a cada cliente.</small>';
+      btn.style.display = 'inline-flex';
+    } catch (err) {
+      info.style.display = 'block';
+      info.innerHTML = '<span style="color:#dc3545">Error leyendo el Excel: ' + err.message + '</span>';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function procesarActivacionInter() {
+  if (!actInterFilas.length) { alert('Primero monta un Excel válido.'); return; }
+  if (!confirm('Se enviará el correo de activación a ' + actInterFilas.length + ' cliente(s). ¿Continuar?')) return;
+  var btn = document.getElementById('act-inter-btn');
+  var spinner = document.getElementById('act-inter-spinner');
+  var dz = document.getElementById('act-inter-dropzone');
+  btn.style.display = 'none';
+  spinner.style.display = 'inline';
+  dz.classList.add('procesando');
+  google.script.run
+    .withSuccessHandler(function(res){
+      spinner.style.display = 'none';
+      dz.classList.remove('procesando');
+      if (res && res.status === 'success') {
+        showToast('✅ ' + res.message);
+        document.getElementById('act-inter-info').style.display = 'none';
+        document.getElementById('act-inter-file').value = '';
+        actInterFilas = [];
+        cargarPreviewActivacionInter();
+      } else {
+        showToast('Error: ' + ((res && res.message) || 'desconocido'));
+        btn.style.display = 'inline-flex';
+      }
+    })
+    .withFailureHandler(function(err){
+      spinner.style.display = 'none';
+      dz.classList.remove('procesando');
+      btn.style.display = 'inline-flex';
+      showToast('Error: ' + (err && err.message ? err.message : JSON.stringify(err)));
+    })
+    .procesarActivacionesInter(actInterFilas);
+}
+
+function cargarPreviewActivacionInter() {
+  google.script.run
+    .withSuccessHandler(function(res){
+      var body = document.getElementById('act-inter-tabla-body');
+      if (!body) return;
+      var data = (res && Array.isArray(res.data)) ? res.data : [];
+      body.innerHTML = data.map(function(r){
+        return '<tr>'
+          + '<td>' + (r[0]||'') + '</td><td>' + (r[1]||'') + '</td><td>' + (r[2]||'') + '</td>'
+          + '<td>' + (r[3]||'') + '</td><td>' + (r[4]||'') + '</td><td>' + (r[6]||'') + '</td>'
+          + '<td>' + (r[7]||'') + '</td><td>' + (r[10]||'') + '</td></tr>';
+      }).join('') || '<tr><td colspan="8" style="text-align:center;color:#888">Aún no hay activaciones registradas.</td></tr>';
+    })
+    .getActivacionesInterPreview();
+}
+</script>
+<!-- ================= FIN LOGICA ACTIVACION INTER ================= -->
+
 </body></html>
