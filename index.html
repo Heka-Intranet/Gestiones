@@ -7384,7 +7384,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="form-section-title">Últimas activaciones registradas</div>
 <div style="overflow-x:auto;">
 <table class="table" id="act-inter-tabla" style="width:100%;font-size:13px;">
-<thead><tr><th>Empresa</th><th>Sucursal/CC</th><th>NIT</th><th>Contacto</th><th>Teléfono</th><th>Ciudad</th><th>E-mail</th><th>Correo (K)</th><th>WhatsApp (L)</th></tr></thead>
+<thead><tr><th>Empresa</th><th>Sucursal/CC</th><th>NIT</th><th>Contacto</th><th>Teléfono</th><th>Ciudad</th><th>E-mail</th><th>Correo</th><th>WhatsApp</th></tr></thead>
 <tbody id="act-inter-tabla-body"></tbody>
 </table>
 </div>
@@ -27634,7 +27634,7 @@ function leerExcelActivacionInter(file) {
       info.style.display = 'block';
       info.innerHTML = '<i class="bi bi-check-circle-fill" style="color:#198754"></i> '
         + '<strong>' + actInterFilas.length + ' filas</strong> detectadas desde la fila 6. '
-        + conCorreo + ' con correo válido (columna H).'
+        + conCorreo + ' con correo válido.'
         + '<br><small>Al procesar se acumularán en "ACTIVACIONES INTER" y se enviará la notificación a cada cliente.</small>';
       btn.style.display = 'inline-flex';
     } catch (err) {
@@ -27646,7 +27646,7 @@ function leerExcelActivacionInter(file) {
 }
 
 function procesarActivacionInter() {
-  if (!actInterFilas.length) { alert('Primero monta un Excel válido.'); return; }
+  if (!actInterFilas.length) { showToast('Primero monta un Excel válido.'); return; }
   if (!confirm('Se enviará el correo de activación a ' + actInterFilas.length + ' cliente(s). ¿Continuar?')) return;
   var btn = document.getElementById('act-inter-btn');
   var spinner = document.getElementById('act-inter-spinner');
