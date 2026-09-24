@@ -7384,7 +7384,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="form-section-title">Últimas activaciones registradas</div>
 <div style="overflow-x:auto;">
 <table class="table" id="act-inter-tabla" style="width:100%;font-size:13px;">
-<thead><tr><th>Empresa</th><th>Sucursal/CC</th><th>NIT</th><th>Contacto</th><th>Teléfono</th><th>Ciudad</th><th>E-mail</th><th>Estado (K)</th></tr></thead>
+<thead><tr><th>Empresa</th><th>Sucursal/CC</th><th>NIT</th><th>Contacto</th><th>Teléfono</th><th>Ciudad</th><th>E-mail</th><th>Correo (K)</th><th>WhatsApp (L)</th></tr></thead>
 <tbody id="act-inter-tabla-body"></tbody>
 </table>
 </div>
@@ -27688,8 +27688,8 @@ function cargarPreviewActivacionInter() {
         return '<tr>'
           + '<td>' + (r[0]||'') + '</td><td>' + (r[1]||'') + '</td><td>' + (r[2]||'') + '</td>'
           + '<td>' + (r[3]||'') + '</td><td>' + (r[4]||'') + '</td><td>' + (r[6]||'') + '</td>'
-          + '<td>' + (r[7]||'') + '</td><td>' + (r[10]||'') + '</td></tr>';
-      }).join('') || '<tr><td colspan="8" style="text-align:center;color:#888">Aún no hay activaciones registradas.</td></tr>';
+          + '<td>' + (r[7]||'') + '</td><td>' + (r[10]||'') + '</td><td>' + (r[11]||'') + '</td></tr>';
+      }).join('') || '<tr><td colspan="9" style="text-align:center;color:#888">Aún no hay activaciones registradas.</td></tr>';
     })
     .getActivacionesInterPreview();
 }
