@@ -6550,6 +6550,25 @@ body > .novedad-dropdown-menu .novedad-option:hover {
   }
 }
 </style>
+
+<style>
+/* ============================================================
+   TEMA OSCURO para el modal de progreso de Recuentos
+   (antes era blanco casi opaco: rgba(255,255,255,.95))
+   ============================================================ */
+.progress-overlay {
+  background: rgba(4, 8, 13, 0.88) !important;
+  backdrop-filter: blur(4px);
+}
+.progress-content .progress-spinner {
+  border: 5px solid rgba(255, 196, 0, .15) !important;
+  border-top: 5px solid #ffc400 !important;
+}
+.progress-content .progress-title { color: #eaf1f8 !important; }
+.progress-content .progress-status { color: #cbd5e1 !important; }
+.progress-content .progress-percentage { color: #ffc400 !important; }
+.progress-content .progress-track { background: rgba(255,255,255,.1) !important; }
+</style>
 </head>
 <body>
 <!-- INICIO LOGIN OVERLAY -->
@@ -9637,7 +9656,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <span>Historial Recargas</span>
 </label>
 <label class="checkbox-item">
-<div class="switch">&gt;
+<div class="switch">
                     <input class="perm-check" type="checkbox" value="panel-indemnizaciones"/>
 <span class="slider round"></span>
 </div>
@@ -9649,6 +9668,24 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <span class="slider round"></span>
 </div>
 <span>Banco vs Pl</span>
+</label>
+</div>
+</div>
+</div>
+<!-- ACORDEÓN COMERCIAL -->
+<div class="accordion-item">
+<div class="accordion-header" onclick="toggleAccordion(this)">
+<span><i class="bi bi-briefcase-fill" style="margin-right:8px; color:var(--primary-dark);"></i> COMERCIAL</span>
+<i class="bi bi-chevron-down"></i>
+</div>
+<div class="accordion-body">
+<div class="checkbox-group">
+<label class="checkbox-item">
+<div class="switch">
+<input class="perm-check" type="checkbox" value="activacion_inter"/>
+<span class="slider round"></span>
+</div>
+<span>Activación Inter</span>
 </label>
 </div>
 </div>
