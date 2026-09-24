@@ -12040,6 +12040,13 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
       const icon = toast ? toast.querySelector('i') : null;
       if (!toast) return;
 
+      // Si llega un objeto (respuestas del backend / errores), extraer mensaje legible
+      if (msg && typeof msg === 'object') {
+        if (msg.message) msg = msg.message;
+        else if (msg.responseText) { try { const j = JSON.parse(msg.responseText); msg = j.message || j.error || msg.responseText; } catch(e) { msg = String(msg.responseText); } }
+        else { try { msg = JSON.stringify(msg); } catch(e) { msg = String(msg); } }
+      }
+
       const text = String(msg ?? '');
       const lower = text.toLowerCase();
       let type = 'info';
@@ -14076,10 +14083,66 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
           }
         })
         .withFailureHandler(function(err) {
-          finishSuccess(false); // Oculta modal porque hubo error de conexión
-          showToast("Error de conexión: " + err);
+          // Con data muy grande la peticion puede agotar los 45s del navegador
+          // aunque el servidor SIGUE trabajando. En ese caso no mostramos
+          // error: consultamos el progreso real al backend hasta que termine.
+          var msg = (err && err.message) ? err.message : String(err);
+          if (msg.indexOf('tardó demasiado') !== -1 || msg.indexOf('saturado') !== -1) {
+            vigilarRecuento(tipo, asesorActual);
+          } else {
+            finishSuccess(false);
+            showToast("Error de conexión: " + msg);
+          }
         })
         .procesarRecuentoParaUsuario(tipo, asesorActual);
+    }
+
+    // Polling de progreso del recuento: consulta al backend cada 5s y mueve
+    // la barra/modal con la fase real. Termina al llegar a "completo"/"error".
+    function vigilarRecuento(tipo, asesor) {
+      var modal = document.getElementById('modal-progress');
+      var bar = document.getElementById('progressBar');
+      var text = document.getElementById('progressText');
+      var status = document.getElementById('progressStatus');
+      var intentos = 0;
+      var MAX_INTENTOS = 180; // 15 minutos maximo
+
+      var timer = setInterval(function() {
+        intentos++;
+        if (isCancelled) { clearInterval(timer); return; }
+        if (intentos > MAX_INTENTOS) {
+          clearInterval(timer);
+          finishSuccess(false);
+          showToast("El proceso sigue trabajando en el servidor. Espera un momento y vuelve a intentar la búsqueda.");
+          return;
+        }
+        google.script.run
+          .withSuccessHandler(function(est) {
+            if (isCancelled) { clearInterval(timer); return; }
+            if (est && est.fase === 'completo') {
+              clearInterval(timer);
+              finishSuccess(true);
+              showToast("Recuento actualizado correctamente.");
+              setTimeout(function() {
+                var sa = document.getElementById('recuentoSearchArea');
+                if (sa) { sa.style.display = 'block'; sa.classList.add('active'); }
+                var inp = document.getElementById('inputGuiaRecuento');
+                if (inp) inp.focus();
+              }, 900);
+            } else if (est && est.fase === 'error') {
+              clearInterval(timer);
+              finishSuccess(false);
+              showToast("Error procesando el recuento: " + (est.mensaje || 'desconocido'));
+            } else if (est) {
+              var pct = Math.max(5, Math.min(99, est.pct || 0));
+              if (bar) { bar.style.width = pct + '%'; }
+              if (text) { text.innerText = pct + '%'; }
+              if (status) { status.innerText = est.fase || 'Procesando...'; }
+            }
+          })
+          .withFailureHandler(function() { /* sigue intentando */ })
+          .getEstadoRecuento(tipo, asesor);
+      }, 5000);
     }
 
     function handleEnterRecuento(event) {
