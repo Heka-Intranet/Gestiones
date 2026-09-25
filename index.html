@@ -10619,6 +10619,26 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 </div>
+<!-- MODAL VALIDACION CUN MASIVO -->
+<div id="modal-cun-validacion" style="display:none;position:fixed;inset:0;background:rgba(2,6,12,.85);backdrop-filter:blur(8px);z-index:9996;align-items:center;justify-content:center;">
+<div style="max-width:560px;width:94%;max-height:86vh;display:flex;flex-direction:column;background:linear-gradient(160deg,rgba(17,27,38,.97),rgba(8,14,22,.97));border:1px solid rgba(255,196,0,.28);border-radius:22px;box-shadow:0 0 50px rgba(255,196,0,.10),0 30px 80px rgba(0,0,0,.6);overflow:hidden;">
+<div style="padding:20px 22px 14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:14px;">
+<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#ffc400,#ff9500);display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(255,196,0,.35);"><i class="bi bi-shield-check" style="font-size:22px;color:#0b1119;"></i></div>
+<div style="flex:1;">
+<div style="color:#eaf1f8;font-weight:700;font-size:16px;">Validaci&oacute;n de Valores</div>
+<div style="color:#7f8b9b;font-size:12px;">Comparaci&oacute;n contra Valor Recaudo - Seguro</div>
+</div>
+<button type="button" onclick="cerrarModalValidacionCun()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+</div>
+<div id="cun-val-cuerpo" style="padding:16px 22px;overflow-y:auto;flex:1;font-size:13px;"></div>
+<div style="padding:14px 22px;border-top:1px solid rgba(255,255,255,.07);display:flex;gap:10px;justify-content:flex-end;">
+<button type="button" onclick="cerrarModalValidacionCun()" style="padding:10px 16px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;font-weight:600;cursor:pointer;">Cancelar</button>
+<button type="button" id="btn-cun-solo-verificadas" style="padding:10px 16px;border-radius:11px;border:none;background:linear-gradient(135deg,#22c55e,#0e9f6e);color:#fff;font-weight:700;cursor:pointer;">Procesar solo verificadas</button>
+<button type="button" id="btn-cun-todas" style="padding:10px 16px;border-radius:11px;border:none;background:linear-gradient(135deg,#ffc400,#e08e00);color:#111;font-weight:700;cursor:pointer;">Procesar todas</button>
+</div>
+</div>
+</div>
+
 <!-- MODAL CUN / COMPROBANTE MASIVO -->
 <div class="modal-overlay" id="modal-cun-masivo" onclick="closeModalOnOutsideClick(event, 'modal-cun-masivo')">
 <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 560px;">
@@ -10660,8 +10680,8 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 </select>
 </div>
 <div style="margin-bottom: 8px;">
-<label style="font-size: 12px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 4px;">Guías (separadas por espacio, coma o salto de línea)</label>
-<textarea class="form-input" id="cunmasivo-guias" placeholder="200123456, 200123457 200123458..." rows="6" style="width: 100%; font-family: monospace; font-size: 13px;"></textarea>
+<label style="font-size: 12px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 4px;">Guías (separadas por espacio, coma o salto de línea) — opcional: guía [Tab] valor NC para el cálculo</label>
+<textarea class="form-input" id="cunmasivo-guias" placeholder="Solo guías: 200123456, 200123457 200123458...&#10;&#10;O guía + valor NC (Tab):&#10;200123456&#9;10000&#10;200123457&#9;25000" rows="6" style="width: 100%; font-family: monospace; font-size: 13px;"></textarea>
 </div>
 <div id="cunmasivo-resultado" style="display: none; font-size: 13px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 10px; margin-top: 10px; max-height: 160px; overflow-y: auto; white-space: pre-wrap;"></div>
 </div>
@@ -20481,6 +20501,62 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
     // ==========================================
     // CUN / COMPROBANTE MASIVO (registro masivo por transportadora)
     // ==========================================
+    var cunValidacionPendiente = null; // {pares, tipo, numero, estado, verifSet}
+
+    function abrirModalValidacionCun(val, pares, tipo, numero, estado) {
+        var cuerpo = document.getElementById('cun-val-cuerpo');
+        var verificadas = val.verificadas || [];
+        var diferentes = val.diferentes || [];
+        var sinComparar = val.sinComparar || [];
+        cunValidacionPendiente = { pares: pares, tipo: tipo, numero: numero, estado: estado, verifSet: {} };
+        verificadas.forEach(function(v) { cunValidacionPendiente.verifSet[v.guia] = true; });
+
+        var html = '';
+        if (diferentes.length) {
+            html += '<div style="color:#f87171;font-weight:700;margin-bottom:8px;"><i class="bi bi-exclamation-triangle-fill"></i> CON DIFERENCIA (' + diferentes.length + ')</div>';
+            html += '<div style="border:1px solid #f8717144;border-radius:12px;overflow:hidden;margin-bottom:16px;">';
+            html += '<table style="width:100%;border-collapse:collapse;font-size:12.5px;">';
+            html += '<tr style="background:#f871711a;color:#eaf1f8;"><th style="padding:8px;text-align:left;">Gu&iacute;a</th><th style="padding:8px;text-align:right;">Pegado</th><th style="padding:8px;text-align:right;">Recaudo-Seguro</th></tr>';
+            diferentes.forEach(function(d) {
+                html += '<tr style="border-top:1px solid rgba(255,255,255,.06);color:#e6edf5;"><td style="padding:7px 8px;font-family:monospace;">' + d.guia + '</td><td style="padding:7px 8px;text-align:right;color:#f87171;font-weight:700;">' + d.pegado.toLocaleString() + '</td><td style="padding:7px 8px;text-align:right;color:#22c55e;font-weight:700;">' + d.hoja.toLocaleString() + '</td></tr>';
+            });
+            html += '</table></div>';
+        }
+        if (verificadas.length) {
+            html += '<div style="color:#22c55e;font-weight:700;margin-bottom:8px;"><i class="bi bi-check-circle-fill"></i> VERIFICADAS (' + verificadas.length + ')</div>';
+            html += '<div style="border:1px solid #22c55e44;border-radius:12px;padding:10px 12px;margin-bottom:16px;color:#cbd5e1;font-family:monospace;font-size:12px;line-height:1.8;">' + verificadas.map(function(v) { return v.guia + ' <span style="color:#22c55e;">(' + v.valor.toLocaleString() + ')</span>'; }).join(' &nbsp; ') + '</div>';
+        }
+        if (sinComparar.length) {
+            html += '<div style="color:#8b98a8;font-weight:700;margin-bottom:8px;"><i class="bi bi-dash-circle"></i> SIN COMPARAR (' + sinComparar.length + ')</div>';
+            html += '<div style="border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;margin-bottom:6px;color:#8b98a8;font-size:12px;line-height:1.7;">' + sinComparar.map(function(x) { return x.guia + ' <i>(' + x.motivo + ')</i>'; }).join(' &nbsp; ') + '</div>';
+        }
+        cuerpo.innerHTML = html;
+        document.getElementById('modal-cun-validacion').style.display = 'flex';
+    }
+
+    function cerrarModalValidacionCun() {
+        document.getElementById('modal-cun-validacion').style.display = 'none';
+    }
+
+    // Botones del modal de validacion
+    document.addEventListener('DOMContentLoaded', function() {
+        var b1 = document.getElementById('btn-cun-solo-verificadas');
+        var b2 = document.getElementById('btn-cun-todas');
+        if (b1) b1.addEventListener('click', function() {
+            if (!cunValidacionPendiente) return;
+            var cvp = cunValidacionPendiente;
+            cerrarModalValidacionCun();
+            var subconjunto = cvp.pares.filter(function(p) { return cvp.verifSet[p.guia] || p.valor === null; });
+            confirmarCunMasivo(subconjunto, cvp.tipo, cvp.numero, cvp.estado, false, subconjunto.length);
+        });
+        if (b2) b2.addEventListener('click', function() {
+            if (!cunValidacionPendiente) return;
+            var cvp = cunValidacionPendiente;
+            cerrarModalValidacionCun();
+            confirmarCunMasivo(cvp.pares, cvp.tipo, cvp.numero, cvp.estado, false, 0);
+        });
+    });
+
     function abrirModalCunMasivo() {
         // Preseleccionar la transportadora de la pestaña activa (si hay)
         const sel = document.getElementById('cunmasivo-tipo');
@@ -20493,7 +20569,7 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
         if (modal) modal.classList.add('active');
     }
 
-    function ejecutarCunMasivo() {
+        function ejecutarCunMasivo() {
         const tipo = document.getElementById('cunmasivo-tipo').value;
         const numero = document.getElementById('cunmasivo-numero').value.replace(/\D/g, '');
         const estado = document.getElementById('cunmasivo-estado').value;
@@ -20502,18 +20578,61 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
         if (!numero) return showToast("Escribe el número de CUN / Comprobante.");
         if (!textoGuias) return showToast("Pega al menos una guía.");
 
-        const guias = textoGuias.split(/[\s,;]+/).filter(function(g) { return g; });
-        if (guias.length === 0) return showToast("No se detectaron guías válidas.");
+        // Parsear: cada linea puede ser "guia<TAB>valor" (valor NC para el calculo)
+        // o una lista plana separada por espacios/comas.
+        const vistos = {};
+        const pares = [];
+        textoGuias.split(String.fromCharCode(10)).forEach(function(linea) {
+            const l = linea.trim();
+            if (!l) return;
+            const partes = l.split(/[\t,;]+/).map(function(x){ return x.trim(); }).filter(Boolean);
+            if (partes.length >= 2 && /^\d+([.,]\d+)?$/.test(partes[1])) {
+                if (!vistos[partes[0]]) { vistos[partes[0]] = true; pares.push({ guia: partes[0], valor: partes[1].replace(',', '.') }); }
+            } else {
+                l.split(/[\s,;]+/).forEach(function(g) {
+                    if (g && !vistos[g]) { vistos[g] = true; pares.push({ guia: g, valor: null }); }
+                });
+            }
+        });
+        if (pares.length === 0) return showToast("No se detectaron guías válidas.");
 
         const esComprobante = (tipo === 'coord' || tipo === 'tcc');
-        const unicas = guias.filter(function(g, i) { return guias.indexOf(g) === i; });
+        const conValor = pares.filter(function(p) { return p.valor !== null; }).length;
 
+        if (conValor > 0) {
+            // Validar contra el Valor Recaudo-Seguro de la hoja antes de confirmar
+            showLoading(true);
+            const textoParaValidar = pares.map(function(p) { return p.valor ? p.guia + String.fromCharCode(9) + p.valor : p.guia; }).join(String.fromCharCode(10));
+            google.script.run
+                .withSuccessHandler(function(val) {
+                    showLoading(false);
+                    if (!val || val.status !== 'success') return showToast('Error validando valores: ' + ((val && val.message) || 'desconocido'));
+                    if (!Array.isArray(val.diferentes) || val.diferentes.length === 0) {
+                        confirmarCunMasivo(pares, tipo, numero, estado, esComprobante, (val.verificadas || []).length);
+                    } else {
+                        abrirModalValidacionCun(val, pares, tipo, numero, estado);
+                    }
+                })
+                .withFailureHandler(function(e) {
+                    showLoading(false);
+                    showToast('Error validando: ' + (e.message || e));
+                })
+                .validarCunMasivo(tipo, textoParaValidar);
+        } else {
+            confirmarCunMasivo(pares, tipo, numero, estado, esComprobante, 0);
+        }
+    }
+
+    // Confirmacion clasica del masivo (despues de pasar la validacion, o si no habia valores)
+    function confirmarCunMasivo(pares, tipo, numero, estado, esComprobante, verificadas) {
         mostrarModalConfirmacion(
-            '¿Aplicar ' + (esComprobante ? 'COMPROBANTE' : 'CUN') + ' ' + numero +
-            ' a ' + unicas.length + ' guía(s) en ' + tipo.toUpperCase() + '?\n\n' +
-            'Las guías existentes se actualizan; las que no existan se crean con la fecha de hoy' +
+            '\n\n' +
+            '\u00bfAplicar ' + (esComprobante ? 'COMPROBANTE' : 'CUN') + ' ' + numero +
+            ' a ' + pares.length + ' gu\u00eda(s) en ' + tipo.toUpperCase() + '?' +
+            (verificadas > 0 ? '\n' + verificadas + ' gu\u00eda(s) verificadas contra Valor Recaudo-Seguro.' : '') + '\n' +
+            'Las gu\u00edas existentes se actualizan; las que no existan se crean con la fecha de hoy' +
             (estado ? ' y estado "' + estado + '"' : '') + '.',
-            function() { procesarCunMasivoBloques(tipo, unicas, numero, estado); }
+            function() { procesarCunMasivoBloques(tipo, pares, numero, estado); }
         );
     }
 
@@ -20526,7 +20645,9 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
         // con seguridad el timeout de 45s del shim
         const TAMANO = 50;
         const bloques = [];
-        for (let i = 0; i < guias.length; i += TAMANO) bloques.push(guias.slice(i, i + TAMANO));
+        // cada bloque viaja como lineas "guia<TAB>valor" (o solo "guia" si no trae valor)
+        const comoTexto = guias.map(function(p) { return p.valor ? p.guia + String.fromCharCode(9) + p.valor : p.guia; });
+        for (let i = 0; i < comoTexto.length; i += TAMANO) bloques.push(comoTexto.slice(i, i + TAMANO));
 
         const totales = { actualizadas: 0, creadas: 0, errores: [] };
         let bi = 0;
@@ -20565,7 +20686,7 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
                     bi++;
                     siguienteBloque();
                 })
-                .procesarCunMasivo(tipo, bloques[bi].join(' '), numero, estado);
+                .procesarCunMasivo(tipo, bloques[bi].join(String.fromCharCode(10)), numero, estado);
         }
 
         siguienteBloque();
