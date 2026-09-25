@@ -27942,38 +27942,63 @@ function abrirHistorialDisp(cedula, nombre) {
         lista.innerHTML = '<div style="text-align:center;color:#7f8b9b;padding:16px;">Sin movimientos registrados.</div>';
         return;
       }
-      lista.innerHTML = res.data.map(function(ev, i) {
+      // Render con parejas fusionadas: ALMUERZO IDA+VUELTA en un solo item,
+      // BREAK INICIO+FIN en un solo item (igual que los pide el usuario).
+      var items = [];
+      var saltar = {};
+      for (var k = 0; k < res.data.length; k++) {
+        if (saltar[k]) continue;
+        var ev = res.data[k];
         var d = DISP_ICONOS[ev.evento] || { icono: 'bi-activity', color: '#888' };
-        // Duracion de ESTE estado: desde este evento hasta el siguiente (mas nuevo).
-        // La lista viene de mas reciente a mas viejo, asi que el siguiente es i-1.
-        // El evento mas reciente (i=0) sigue en curso.
-        var duracion = '';
-        if (i === 0) {
-          duracion = '<span class="disp-hist-duracion" style="background:#22d3ee1c;color:#22d3ee;border:1px solid #22d3ee44;"><i class="bi bi-arrow-repeat"></i> en curso</span>';
-        } else {
-          var previo = res.data[i - 1];
-          if (previo && ev.ms && previo.ms) {
-            var mins = Math.max(0, Math.round((previo.ms - ev.ms) / 60000));
-            var textoDur = mins < 60 ? mins + ' min' : Math.floor(mins/60) + ' h ' + (mins%60) + ' min';
-            // textos claros segun el tipo de pausa
-            var etiquetaDur = 'en este estado';
-            if (ev.evento === 'ALMUERZO IDA') etiquetaDur = 'de almuerzo';
-            else if (ev.evento === 'BREAK INICIO') etiquetaDur = 'de break';
-            else if (ev.evento === 'INGRESO') etiquetaDur = 'activo antes de esta pausa';
-            duracion = '<span class="disp-hist-duracion" style="background:' + d.color + '1c;color:' + d.color + ';border:1px solid ' + d.color + '44;"><i class="bi bi-hourglass-split"></i> ' + textoDur + ' ' + etiquetaDur + '</span>';
-          }
+        var esIdaAlmuerzo = (ev.evento === 'ALMUERZO IDA');
+        var esIniBreak = (ev.evento === 'BREAK INICIO');
+        var previo = res.data[k - 1]; // evento mas nuevo
+
+        if ((esIdaAlmuerzo || esIniBreak) && previo && previo.ms && ev.ms &&
+            ((esIdaAlmuerzo && previo.evento === 'ALMUERZO VUELTA') ||
+             (esIniBreak && previo.evento === 'BREAK FIN'))) {
+          // pareja completa: fusionar en un solo item
+          var mins = Math.max(0, Math.round((previo.ms - ev.ms) / 60000));
+          var textoDur = mins < 60 ? mins + ' min' : Math.floor(mins/60) + ' h ' + (mins%60) + ' min';
+          var etiqueta = esIdaAlmuerzo ? 'de almuerzo' : 'de break';
+          var nombrePar = esIdaAlmuerzo ? 'ALMUERZO' : 'BREAK';
+          var links = '';
+          if (previo.mapa) links += ' <a href="' + previo.mapa + '" target="_blank" style="color:#22d3ee;font-size:12px;text-decoration:none;"><i class="bi bi-geo-alt-fill"></i></a>';
+          if (previo.foto) links += ' <a href="' + previo.foto + '" target="_blank" style="color:#22d3ee;font-size:12px;text-decoration:none;"><i class="bi bi-image"></i></a>';
+          items.push('<div class="disp-hist-item" style="--dc:' + d.color + '">'
+            + '<div class="disp-hist-icono"><i class="bi ' + d.icono + '"></i></div>'
+            + '<div class="disp-hist-datos">'
+            + '<div class="disp-hist-titulo">' + nombrePar + ' (' + ev.evento.split(' ')[1] + ' - ' + previo.evento.split(' ')[1] + ')' + links + '</div>'
+            + '<div class="disp-hist-hora">' + ev.hora + ' &nbsp;-&nbsp; ' + previo.hora + '</div>'
+            + '<span class="disp-hist-duracion" style="background:' + d.color + '1c;color:' + d.color + ';border:1px solid ' + d.color + '44;"><i class="bi bi-hourglass-split"></i> ' + textoDur + ' ' + etiqueta + '</span>'
+            + '</div></div>');
+          continue;
         }
-        var links = '';
-        if (ev.mapa) links += ' <a href="' + ev.mapa + '" target="_blank" style="color:#22d3ee;font-size:12px;text-decoration:none;"><i class="bi bi-geo-alt-fill"></i></a>';
-        if (ev.foto) links += ' <a href="' + ev.foto + '" target="_blank" style="color:#22d3ee;font-size:12px;text-decoration:none;"><i class="bi bi-image"></i></a>';
-        return '<div class="disp-hist-item" style="--dc:' + d.color + '">'
+
+        // item normal
+        var duracion = '';
+        if (k === 0) {
+          duracion = '<span class="disp-hist-duracion" style="background:#22d3ee1c;color:#22d3ee;border:1px solid #22d3ee44;"><i class="bi bi-arrow-repeat"></i> en curso</span>';
+        } else if (previo && ev.ms && previo.ms) {
+          var minsN = Math.max(0, Math.round((previo.ms - ev.ms) / 60000));
+          var textoDurN = minsN < 60 ? minsN + ' min' : Math.floor(minsN/60) + ' h ' + (minsN%60) + ' min';
+          var etiquetaN = 'en este estado';
+          if (ev.evento === 'INGRESO') etiquetaN = 'activo antes de esta pausa';
+          else if (ev.evento === 'SALIDA') etiquetaN = 'activo antes de salir';
+          duracion = '<span class="disp-hist-duracion" style="background:' + d.color + '1c;color:' + d.color + ';border:1px solid ' + d.color + '44;"><i class="bi bi-hourglass-split"></i> ' + textoDurN + ' ' + etiquetaN + '</span>';
+        }
+        var linksN = '';
+        if (ev.mapa) linksN += ' <a href="' + ev.mapa + '" target="_blank" style="color:#22d3ee;font-size:12px;text-decoration:none;"><i class="bi bi-geo-alt-fill"></i></a>';
+        if (ev.foto) linksN += ' <a href="' + ev.foto + '" target="_blank" style="color:#22d3ee;font-size:12px;text-decoration:none;"><i class="bi bi-image"></i></a>';
+        items.push('<div class="disp-hist-item" style="--dc:' + d.color + '">'
           + '<div class="disp-hist-icono"><i class="bi ' + d.icono + '"></i></div>'
           + '<div class="disp-hist-datos">'
-          + '<div class="disp-hist-titulo">' + ev.evento + links + '</div>'
+          + '<div class="disp-hist-titulo">' + ev.evento + linksN + '</div>'
           + '<div class="disp-hist-hora">' + ev.hora + '</div>'
           + duracion
-          + '</div></div>';
-      }).join('');
+          + '</div></div>');
+      }
+      lista.innerHTML = items.join('');
     })
     .withFailureHandler(function(err) {
       document.getElementById('disp-hist-lista').innerHTML = '<div style="text-align:center;color:#dc3545;padding:16px;">Error de conexión: ' + ((err && err.message) || '') + '</div>';
