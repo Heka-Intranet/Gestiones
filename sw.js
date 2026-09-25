@@ -1,4 +1,4 @@
-const CACHE_NAME = 'heka-panelS-v42'; // ← CAMBIA esto en cada despliegue
+const CACHE_NAME = 'heka-panelS-v43'; // ← CAMBIA esto en cada despliegue
 const ASSETS_TO_CACHE = [
   './',
   './manifest.json'
