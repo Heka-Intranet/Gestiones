@@ -28037,9 +28037,14 @@ function cargarPanelDisponibilidad() {
         var tiempo = (u.minutos !== '' && u.minutos !== null && u.minutos !== undefined)
           ? (u.minutos < 60 ? u.minutos + ' min' : Math.floor(u.minutos/60) + ' h ' + (u.minutos%60) + ' m') : '';
         // miniatura directa de la foto de Drive
+        // portada: foto de perfil (la del login); respaldo: miniatura de la evidencia
         var thumb = '';
-        var m = /\/file\/d\/([a-zA-Z0-9_-]+)/.exec(u.foto || '');
-        if (m) thumb = 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400';
+        if (u.fotoPerfil) {
+          thumb = u.fotoPerfil;
+        } else {
+          var m = /\/file\/d\/([a-zA-Z0-9_-]+)/.exec(u.foto || '');
+          if (m) thumb = 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400';
+        }
         var iniciales = (u.nombre || '?').split(' ').map(function(p){return p.charAt(0);}).slice(0,2).join('').toUpperCase();
         var fallback = '<div class="disp-card-foto vacia">' + iniciales + '</div>'.replace(/"/g, '&quot;');
         var fotoHtml = thumb
