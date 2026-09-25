@@ -6799,6 +6799,20 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 
+<!-- NUEVO MENU DISPONIBILIDAD -->
+<div class="nav-accordion-item" id="nav-disponibilidad-wrapper">
+<div class="nav-item" onclick="toggleSubmenu('submenu-disponibilidad')">
+<i class="bi bi-people-fill"></i><span>Disponibilidad</span><i class="bi bi-chevron-down accordion-arrow"></i>
+</div>
+<div class="nav-submenu" id="submenu-disponibilidad">
+<a class="nav-item sub-item" data-target="status" href="#" onclick="goToPanel('panel-status', this)">
+<i class="bi bi-person-check-fill"></i><span>Status</span>
+</a>
+<a class="nav-item sub-item" data-target="panel_disponibilidad" href="#" onclick="goToPanel('panel-disponibilidad', this)">
+<i class="bi bi-grid-3x3-gap-fill"></i><span>Panel de Disponibilidad</span>
+</a>
+</div>
+</div>
 <!-- NUEVO MENU COMERCIAL -->
 <div class="nav-accordion-item" id="nav-comercial-wrapper">
 <div class="nav-item" onclick="toggleSubmenu('submenu-comercial')">
@@ -7376,6 +7390,64 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 <!-- PANEL GESTIÓN ANULAR -->
+
+<!-- ================= PANEL STATUS (auto-registro del trabajador) ================= -->
+<div class="panel" id="panel-status">
+<div class="page-header">
+<h1>Status</h1>
+<p>Registra tu estado con evidencia fotográfica y ubicación en tiempo real.</p>
+</div>
+<div class="card">
+<div class="form-section-title">¿Qué quieres registrar?</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+<button type="button" class="btn disp-btn" onclick="iniciarRegistroDisponibilidad('INGRESO')" style="background:linear-gradient(135deg,#198754,#146c43);color:#fff;border:none;border-radius:14px;padding:22px 12px;font-size:16px;font-weight:700;">
+<i class="bi bi-box-arrow-in-right" style="font-size:26px;display:block;margin-bottom:8px;"></i>Ingreso</button>
+<button type="button" class="btn disp-btn" onclick="iniciarRegistroDisponibilidad('ALMUERZO IDA')" style="background:linear-gradient(135deg,#ffc400,#e6a800);color:#111;border:none;border-radius:14px;padding:22px 12px;font-size:16px;font-weight:700;">
+<i class="bi bi-egg-fried" style="font-size:26px;display:block;margin-bottom:8px;"></i>Salgo a Almuerzo</button>
+<button type="button" class="btn disp-btn" onclick="iniciarRegistroDisponibilidad('ALMUERZO VUELTA')" style="background:linear-gradient(135deg,#0dcaf0,#0a9cbf);color:#111;border:none;border-radius:14px;padding:22px 12px;font-size:16px;font-weight:700;">
+<i class="bi bi-skip-end-fill" style="font-size:26px;display:block;margin:0 auto 8px;display:block;"></i>Volví del Almuerzo</button>
+<button type="button" class="btn disp-btn" onclick="iniciarRegistroDisponibilidad('BREAK INICIO')" style="background:linear-gradient(135deg,#6f42c1,#59359d);color:#fff;border:none;border-radius:14px;padding:22px 12px;font-size:16px;font-weight:700;">
+<i class="bi bi-cup-hot-fill" style="font-size:26px;display:block;margin-bottom:8px;"></i>Inicio Break</button>
+<button type="button" class="btn disp-btn" onclick="iniciarRegistroDisponibilidad('BREAK FIN')" style="background:linear-gradient(135deg,#0d6efd,#0a58ca);color:#fff;border:none;border-radius:14px;padding:22px 12px;font-size:16px;font-weight:700;">
+<i class="bi bi-cup-straw" style="font-size:26px;display:block;margin-bottom:8px;"></i>Fin Break</button>
+<button type="button" class="btn disp-btn" onclick="iniciarRegistroDisponibilidad('SALIDA')" style="background:linear-gradient(135deg,#dc3545,#a71d2a);color:#fff;border:none;border-radius:14px;padding:22px 12px;font-size:16px;font-weight:700;">
+<i class="bi bi-box-arrow-right" style="font-size:26px;display:block;margin-bottom:8px;"></i>Salida</button>
+</div>
+<div id="disp-status-info" style="display:none;margin-top:16px;padding:14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--border-color);"></div>
+</div>
+</div>
+<!-- input de foto oculto (camara en movil) -->
+<input type="file" id="disp-foto-input" accept="image/*" capture="environment" style="display:none">
+
+<!-- Modal confirmacion disponibilidad -->
+<div id="disp-modal" style="display:none;position:fixed;inset:0;background:rgba(4,8,13,.75);backdrop-filter:blur(3px);z-index:9999;align-items:center;justify-content:center;">
+<div style="background:linear-gradient(150deg,#111b26,#0b1119);border:1px solid rgba(255,196,0,.25);border-radius:18px;max-width:420px;width:92%;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.5);">
+<h3 style="color:#eaf1f8;margin:0 0 6px;">Confirmar <span id="disp-modal-evento" style="color:#ffc400"></span></h3>
+<p style="color:#cbd5e1;font-size:13.5px;margin:0 0 14px;">Se adjuntará tu foto de evidencia y tu ubicación actual.</p>
+<div style="text-align:center;margin-bottom:14px;"><img id="disp-foto-preview" src="data:," alt="evidencia" style="max-width:100%;max-height:200px;border-radius:12px;border:1px solid rgba(255,255,255,.15);"></div>
+<div id="disp-ubicacion" style="color:#cbd5e1;font-size:13px;margin-bottom:18px;"></div>
+<div style="display:flex;gap:12px;">
+<button type="button" id="disp-cancelar" style="flex:1;padding:11px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;font-weight:600;cursor:pointer;">Cancelar</button>
+<button type="button" id="disp-confirmar" style="flex:1;padding:11px;border-radius:11px;border:none;background:linear-gradient(135deg,#ffc400,#ffb300);color:#111;font-weight:700;cursor:pointer;">Registrar</button>
+</div>
+</div>
+</div>
+
+<!-- ================= PANEL DE DISPONIBILIDAD (tiempo real) ================= -->
+<div class="panel" id="panel-disponibilidad">
+<div class="page-header">
+<h1>Panel de Disponibilidad</h1>
+<p>Estado en tiempo real del equipo. Se actualiza automáticamente cada 30 segundos. <span id="disp-actualizado" style="color:var(--text-muted);font-size:13px;"></span></p>
+</div>
+<div class="card">
+<div style="overflow-x:auto;">
+<table class="table" style="width:100%;font-size:13.5px;">
+<thead><tr><th>Colaborador</th><th>Estado</th><th>Hora evento</th><th>Tiempo</th><th>Ubicación</th><th>Evidencia</th></tr></thead>
+<tbody id="disp-tabla-body"><tr><td colspan="6" style="text-align:center;color:#888;">Cargando...</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
 
 <!-- ================= PANEL COMERCIAL: ACTIVACION INTER ================= -->
 <div class="panel" id="panel-activacion-inter">
@@ -9668,6 +9740,31 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <span class="slider round"></span>
 </div>
 <span>Banco vs Pl</span>
+</label>
+</div>
+</div>
+</div>
+<!-- ACORDEÓN DISPONIBILIDAD -->
+<div class="accordion-item">
+<div class="accordion-header" onclick="toggleAccordion(this)">
+<span><i class="bi bi-people-fill" style="margin-right:8px; color:var(--primary-dark);"></i> DISPONIBILIDAD</span>
+<i class="bi bi-chevron-down"></i>
+</div>
+<div class="accordion-body">
+<div class="checkbox-group">
+<label class="checkbox-item">
+<div class="switch">
+<input class="perm-check" type="checkbox" value="status"/>
+<span class="slider round"></span>
+</div>
+<span>Status</span>
+</label>
+<label class="checkbox-item">
+<div class="switch">
+<input class="perm-check" type="checkbox" value="panel_disponibilidad"/>
+<span class="slider round"></span>
+</div>
+<span>Panel de Disponibilidad</span>
 </label>
 </div>
 </div>
@@ -12991,6 +13088,15 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 
       if (panelId === 'panel-activacion-inter') {
         cargarPreviewActivacionInter();
+      }
+
+      if (panelId === 'panel-disponibilidad') {
+        cargarPanelDisponibilidad();
+        if (dispTimer) clearInterval(dispTimer);
+        dispTimer = setInterval(cargarPanelDisponibilidad, 30000); // refresco automatico cada 30s
+      } else if (dispTimer) {
+        clearInterval(dispTimer); // dejar de refrescar al salir del panel
+        dispTimer = null;
       }
       }
 
@@ -27700,6 +27806,118 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
     </div>
   </div>
 </div>
+
+<!-- ================= LOGICA DISPONIBILIDAD ================= -->
+<script>
+var dispPendiente = null;   // {evento, lat, lng, precision, fotoBase64}
+var dispFotoData = null;
+var dispTimer = null;
+
+function iniciarRegistroDisponibilidad(evento) {
+  dispPendiente = { evento: evento, lat: null, lng: null, precision: null };
+  dispFotoData = null;
+  // 1. ubicacion en tiempo real
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      dispPendiente.lat = pos.coords.latitude;
+      dispPendiente.lng = pos.coords.longitude;
+      dispPendiente.precision = Math.round(pos.coords.accuracy || 0);
+    }, function() { /* sin permiso: se registra sin ubicacion */ }, { enableHighAccuracy: true, timeout: 8000 });
+  }
+  // 2. pedir la foto de evidencia
+  var input = document.getElementById('disp-foto-input');
+  input.value = '';
+  input.click();
+}
+
+// Al elegir la foto: preview + modal de confirmacion
+document.addEventListener('change', function(e) {
+  if (e.target && e.target.id === 'disp-foto-input' && e.target.files.length) {
+    var file = e.target.files[0];
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var dataUrl = ev.target.result; // data:image/jpeg;base64,....
+      dispFotoData = dataUrl.split(',')[1];
+      document.getElementById('disp-foto-preview').src = dataUrl;
+      document.getElementById('disp-modal-evento').innerText = dispPendiente.evento;
+      var ub = document.getElementById('disp-ubicacion');
+      if (dispPendiente.lat !== null) {
+        ub.innerHTML = '<i class="bi bi-geo-alt-fill" style="color:#ffc400;"></i> Ubicación capturada: '
+          + dispPendiente.lat.toFixed(5) + ', ' + dispPendiente.lng.toFixed(5)
+          + ' (±' + dispPendiente.precision + ' m)';
+      } else {
+        ub.innerHTML = '<i class="bi bi-geo-alt" style="color:#dc3545;"></i> Sin ubicación (permiso denegado o no disponible)';
+      }
+      document.getElementById('disp-modal').style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+document.getElementById('disp-cancelar').addEventListener('click', function() {
+  document.getElementById('disp-modal').style.display = 'none';
+});
+document.getElementById('disp-confirmar').addEventListener('click', function() {
+  document.getElementById('disp-modal').style.display = 'none';
+  var info = document.getElementById('disp-status-info');
+  info.style.display = 'block';
+  info.innerHTML = '<i class="bi bi-arrow-repeat"></i> Registrando ' + dispPendiente.evento + '...';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      info.innerHTML = res && res.status === 'success'
+        ? '<i class="bi bi-check-circle-fill" style="color:#198754"></i> ' + res.message
+        : '<span style="color:#dc3545">Error: ' + ((res && res.message) || 'desconocido') + '</span>';
+      if (res && res.status === 'success') setTimeout(function(){ info.style.display = 'none'; }, 4000);
+    })
+    .withFailureHandler(function(err) {
+      info.innerHTML = '<span style="color:#dc3545">Error de conexión: ' + (err && err.message ? err.message : '') + '</span>';
+    })
+    .registrarDisponibilidad({
+      cedula: currentUser.cedula,
+      nombre: currentUser.name,
+      evento: dispPendiente.evento,
+      lat: dispPendiente.lat,
+      lng: dispPendiente.lng,
+      precision: dispPendiente.precision,
+      foto: dispFotoData ? { data: dispFotoData, mimeType: 'image/jpeg' } : null
+    });
+});
+
+// ---------- PANEL DE DISPONIBILIDAD (tiempo real) ----------
+var DISP_ESTADOS = {
+  'INGRESO':        { texto: 'Disponible',      color: '#198754' },
+  'ALMUERZO IDA':   { texto: 'En almuerzo',     color: '#ffc400' },
+  'ALMUERZO VUELTA':{ texto: 'Disponible',      color: '#198754' },
+  'BREAK INICIO':   { texto: 'En break',        color: '#6f42c1' },
+  'BREAK FIN':      { texto: 'Disponible',      color: '#198754' },
+  'SALIDA':         { texto: 'Salido',          color: '#dc3545' }
+};
+
+function cargarPanelDisponibilidad() {
+  google.script.run
+    .withSuccessHandler(function(res) {
+      var body = document.getElementById('disp-tabla-body');
+      if (!body) return;
+      var data = (res && Array.isArray(res.data)) ? res.data : [];
+      if (res && res.actualizado) document.getElementById('disp-actualizado').innerText = '(actualizado ' + res.actualizado + ')';
+      body.innerHTML = data.map(function(u) {
+        var est = DISP_ESTADOS[u.evento] || { texto: u.evento, color: '#888' };
+        var tiempo = u.minutos !== '' ? (u.minutos < 60 ? u.minutos + ' min' : Math.floor(u.minutos/60) + ' h ' + (u.minutos%60) + ' m') : '';
+        return '<tr>'
+          + '<td><strong>' + (u.nombre || u.cedula) + '</strong><br><small style="color:#888">' + u.cedula + '</small></td>'
+          + '<td><span style="background:' + est.color + '22;color:' + est.color + ';border:1px solid ' + est.color + '55;padding:4px 12px;border-radius:20px;font-weight:600;font-size:12px;">' + est.texto + '</span></td>'
+          + '<td>' + u.horaEvento + '</td>'
+          + '<td>' + tiempo + '</td>'
+          + '<td>' + (u.mapa ? '<a href="' + u.mapa + '" target="_blank" style="color:#0dcaf0;"><i class="bi bi-geo-alt-fill"></i> Ver</a>' : '<span style="color:#888">—</span>') + '</td>'
+          + '<td>' + (u.foto ? '<a href="' + u.foto + '" target="_blank" style="color:#0dcaf0;"><i class="bi bi-image"></i> Ver</a>' : '<span style="color:#888">—</span>') + '</td>'
+          + '</tr>';
+      }).join('') || '<tr><td colspan="6" style="text-align:center;color:#888">Aún no hay registros de disponibilidad.</td></tr>';
+    })
+    .withFailureHandler(function() {})
+    .getDisponibilidadPanel();
+}
+</script>
+<!-- ================= FIN LOGICA DISPONIBILIDAD ================= -->
 
 <!-- ================= LOGICA COMERCIAL: ACTIVACION INTER ================= -->
 <script>
