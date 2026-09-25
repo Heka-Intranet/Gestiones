@@ -27949,6 +27949,13 @@ function abrirHistorialDisp(cedula, nombre) {
       for (var k = 0; k < res.data.length; k++) {
         if (saltar[k]) continue;
         var ev = res.data[k];
+        // Si este es el cierre de una pausa y su apertura esta justo debajo,
+        // se omite aqui: se mostrara fusionado cuando el bucle llegue a la apertura.
+        var siguiente = res.data[k + 1];
+        if (siguiente && ((ev.evento === 'ALMUERZO VUELTA' && siguiente.evento === 'ALMUERZO IDA')
+                       || (ev.evento === 'BREAK FIN' && siguiente.evento === 'BREAK INICIO'))) {
+          continue;
+        }
         var d = DISP_ICONOS[ev.evento] || { icono: 'bi-activity', color: '#888' };
         var esIdaAlmuerzo = (ev.evento === 'ALMUERZO IDA');
         var esIniBreak = (ev.evento === 'BREAK INICIO');
