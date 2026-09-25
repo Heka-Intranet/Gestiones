@@ -6935,7 +6935,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <img alt="Perfil" class="user-avatar" id="headerUserImg" src="https://ui-avatars.com/api/?name=Usuario&amp;background=random"/>
 <i class="bi bi-chevron-down dropdown-icon"></i>
 <div class="dropdown-menu" id="userDropdown">
-<a class="dropdown-item" id="disp-status-menu-item" href="#" onclick="toggleUserDropdown(event); goToPanel('panel-status');" style="display:none;justify-content:space-between;align-items:center;">
+<a class="dropdown-item" id="disp-status-menu-item" href="#" onclick="toggleUserDropdown(event); abrirModalStatus();" style="display:none;justify-content:space-between;align-items:center;">
 <span><i class="bi bi-person-check-fill" style="margin-right:8px;"></i>Mi Status</span>
 <span id="disp-status-menu-estado" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid #6b7280;color:#6b7280;">Sin registro</span>
 </a>
@@ -7419,6 +7419,51 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 <!-- input de foto oculto (camara en movil) -->
 <input type="file" id="disp-foto-input" accept="image/*" capture="environment" style="display:none">
+
+<!-- ================= MODAL STATUS FUTURISTA ================= -->
+<div id="disp-status-modal" style="display:none;position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,196,0,.08),transparent 40%),rgba(2,6,12,.82);backdrop-filter:blur(8px);z-index:9998;align-items:center;justify-content:center;">
+<div style="position:relative;max-width:560px;width:94%;background:linear-gradient(160deg,rgba(17,27,38,.96),rgba(8,14,22,.96));border:1px solid rgba(255,196,0,.28);border-radius:24px;padding:30px 26px;box-shadow:0 0 60px rgba(255,196,0,.10),0 30px 80px rgba(0,0,0,.6);">
+<button type="button" onclick="cerrarModalStatus()" style="position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;font-size:16px;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#fff';this.style.borderColor='#fff'" onmouseout="this.style.color='#8b98a8';this.style.borderColor='rgba(255,255,255,.15)'"><i class="bi bi-x-lg"></i></button>
+<div style="text-align:center;margin-bottom:22px;">
+<div style="width:54px;height:54px;margin:0 auto 10px;border-radius:16px;background:linear-gradient(135deg,#ffc400,#ff9500);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(255,196,0,.45);">
+<i class="bi bi-activity" style="font-size:26px;color:#0b1119;"></i></div>
+<h3 style="color:#eaf1f8;margin:0;font-size:20px;letter-spacing:.5px;">Estado de Disponibilidad</h3>
+<p style="color:#7f8b9b;font-size:12.5px;margin:6px 0 0;">Selecciona tu estado · se registra con foto y ubicación</p>
+</div>
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+<button type="button" class="disp-opt" onclick="cerrarModalStatus(); iniciarRegistroDisponibilidad('INGRESO');" style="--c1:#22c55e;--c2:#0e9f6e;">
+<i class="bi bi-door-open-fill"></i><div><strong>Ingreso</strong><small>Empezar jornada</small></div></button>
+<button type="button" class="disp-opt" onclick="cerrarModalStatus(); iniciarRegistroDisponibilidad('ALMUERZO IDA');" style="--c1:#ffc400;--c2:#e08e00;">
+<i class="bi bi-sun-fill"></i><div><strong>Salgo a Almuerzo</strong><small>Pausa mediodía</small></div></button>
+<button type="button" class="disp-opt" onclick="cerrarModalStatus(); iniciarRegistroDisponibilidad('ALMUERZO VUELTA');" style="--c1:#22d3ee;--c2:#0e9bbf;">
+<i class="bi bi-compass-fill"></i><div><strong>Volví del Almuerzo</strong><small>De regreso</small></div></button>
+<button type="button" class="disp-opt" onclick="cerrarModalStatus(); iniciarRegistroDisponibilidad('BREAK INICIO');" style="--c1:#a78bfa;--c2:#7c5ce0;">
+<i class="bi bi-lightning-charge-fill"></i><div><strong>Inicio Break</strong><small>Descanso corto</small></div></button>
+<button type="button" class="disp-opt" onclick="cerrarModalStatus(); iniciarRegistroDisponibilidad('BREAK FIN');" style="--c1:#60a5fa;--c2:#3b82f6;">
+<i class="bi bi-broadcast-pin"></i><div><strong>Fin Break</strong><small>Otra vez activo</small></div></button>
+<button type="button" class="disp-opt" onclick="cerrarModalStatus(); iniciarRegistroDisponibilidad('SALIDA');" style="--c1:#f87171;--c2:#dc2626;">
+<i class="bi bi-power"></i><div><strong>Salida</strong><small>Fin de jornada</small></div></button>
+</div>
+<div id="disp-status-modal-actual" style="text-align:center;margin-top:18px;color:#7f8b9b;font-size:12px;"></div>
+</div>
+</div>
+<style>
+.disp-opt{
+  display:flex;align-items:center;gap:12px;padding:16px 14px;border-radius:16px;cursor:pointer;text-align:left;
+  background:linear-gradient(150deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+  border:1px solid rgba(255,255,255,.09);color:#e6edf5;transition:all .25s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;
+}
+.disp-opt::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c1),var(--c2));opacity:0;transition:opacity .25s;}
+.disp-opt > *{position:relative;z-index:1;}
+.disp-opt i{font-size:24px;width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  background:linear-gradient(135deg,var(--c1),var(--c2));color:#0b1119;box-shadow:0 4px 14px -4px var(--c1);}
+.disp-opt strong{display:block;font-size:14.5px;letter-spacing:.2px;}
+.disp-opt small{color:#8b98a8;font-size:11.5px;}
+.disp-opt:hover{transform:translateY(-3px);border-color:var(--c1);box-shadow:0 10px 26px -8px var(--c1),0 0 0 1px var(--c1);}
+.disp-opt:hover::before{opacity:.08;}
+.disp-opt:active{transform:translateY(-1px) scale(.98);}
+@media (max-width:460px){.disp-opt strong{font-size:13px}.disp-opt i{width:38px;height:38px;font-size:19px}}
+</style>
 
 <!-- Modal confirmacion disponibilidad -->
 <div id="disp-modal" style="display:none;position:fixed;inset:0;background:rgba(4,8,13,.75);backdrop-filter:blur(3px);z-index:9999;align-items:center;justify-content:center;">
@@ -27830,6 +27875,22 @@ var DISP_ESTADOS_CHIP = {
   'SALIDA':         { texto: 'Salido',       color: '#ef4444' }
 };
 
+function abrirModalStatus() {
+  var m = document.getElementById('disp-status-modal');
+  var info = document.getElementById('disp-status-modal-actual');
+  m.style.display = 'flex';
+  // mostrar mi estado actual al pie del modal
+  if (info && currentUser && currentUser.cedula) {
+    google.script.run.withSuccessHandler(function(res) {
+      if (res && res.status === 'success' && res.evento) {
+        var est = DISP_ESTADOS_CHIP[res.evento] || { texto: res.evento, color: '#888' };
+        info.innerHTML = 'Estado actual: <strong style="color:' + est.color + '">' + est.texto + '</strong>';
+      } else { info.innerText = 'Aún no tienes registros hoy.'; }
+    }).withFailureHandler(function(){}).getMiDisponibilidad(String(currentUser.cedula));
+  }
+}
+function cerrarModalStatus() { document.getElementById('disp-status-modal').style.display = 'none'; }
+
 // Colorea el contorno del perfil y el item "Mi Status" del menu segun mi estado
 function actualizarMiStatusChip() {
   if (!currentUser || !currentUser.cedula) return;
@@ -27901,6 +27962,12 @@ document.addEventListener('change', function(e) {
   }
 });
 
+document.getElementById('disp-status-modal').addEventListener('click', function(e) {
+  if (e.target === this) cerrarModalStatus();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') cerrarModalStatus();
+});
 document.getElementById('disp-cancelar').addEventListener('click', function() {
   document.getElementById('disp-modal').style.display = 'none';
 });
