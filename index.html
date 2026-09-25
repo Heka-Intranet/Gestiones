@@ -7420,6 +7420,33 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <!-- input de foto oculto (camara en movil) -->
 <input type="file" id="disp-foto-input" accept="image/*" capture="environment" style="display:none">
 
+<!-- ================= MODAL HISTORIAL DISPONIBILIDAD ================= -->
+<div id="disp-historial-modal" style="display:none;position:fixed;inset:0;background:radial-gradient(circle at 70% 10%,rgba(34,211,238,.07),transparent 40%),rgba(2,6,12,.85);backdrop-filter:blur(8px);z-index:9997;align-items:center;justify-content:center;">
+<div style="max-width:520px;width:94%;max-height:86vh;display:flex;flex-direction:column;background:linear-gradient(160deg,rgba(17,27,38,.97),rgba(8,14,22,.97));border:1px solid rgba(255,196,0,.25);border-radius:22px;box-shadow:0 0 50px rgba(255,196,0,.08),0 30px 80px rgba(0,0,0,.6);overflow:hidden;">
+<div style="padding:20px 22px 14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:14px;">
+<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#ffc400,#ff9500);display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(255,196,0,.35);"><i class="bi bi-clock-history" style="font-size:22px;color:#0b1119;"></i></div>
+<div style="flex:1;">
+<div id="disp-hist-nombre" style="color:#eaf1f8;font-weight:700;font-size:16px;">Colaborador</div>
+<div style="color:#7f8b9b;font-size:12px;">Movimientos y tiempos</div>
+</div>
+<button type="button" onclick="cerrarHistorialDisp()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+</div>
+<div id="disp-hist-lista" style="padding:18px 22px;overflow-y:auto;flex:1;"></div>
+</div>
+</div>
+
+<style>
+.disp-hist-item{display:flex;gap:14px;position:relative;padding-bottom:22px;}
+.disp-hist-item:last-child{padding-bottom:0;}
+.disp-hist-item::before{content:'';position:absolute;left:19px;top:40px;bottom:0;width:2px;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.02));}
+.disp-hist-item:last-child::before{display:none;}
+.disp-hist-icono{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#0b1119;font-size:18px;box-shadow:0 4px 14px -4px var(--dc,#888);background:linear-gradient(135deg,var(--dc,#888),var(--dc,#888));z-index:1;}
+.disp-hist-datos{flex:1;min-width:0;}
+.disp-hist-titulo{color:#eaf1f8;font-weight:700;font-size:14px;}
+.disp-hist-hora{color:#8b98a8;font-size:12px;margin-top:2px;}
+.disp-hist-duracion{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:var(--dc,#888)1c;color:var(--dc,#888);border:1px solid var(--dc,#888)44;}
+</style>
+
 <!-- ================= MODAL STATUS FUTURISTA ================= -->
 <div id="disp-status-modal" style="display:none;position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,196,0,.08),transparent 40%),rgba(2,6,12,.82);backdrop-filter:blur(8px);z-index:9998;align-items:center;justify-content:center;">
 <div style="position:relative;max-width:560px;width:94%;background:linear-gradient(160deg,rgba(17,27,38,.96),rgba(8,14,22,.96));border:1px solid rgba(255,196,0,.28);border-radius:24px;padding:30px 26px;box-shadow:0 0 60px rgba(255,196,0,.10),0 30px 80px rgba(0,0,0,.6);">
@@ -27890,6 +27917,60 @@ var DISP_ESTADOS_CHIP = {
   'SALIDA':         { texto: 'Salido',       color: '#ef4444' }
 };
 
+var DISP_ICONOS = {
+  'INGRESO':        { icono: 'bi-door-open-fill',        color: '#22c55e' },
+  'ALMUERZO IDA':   { icono: 'bi-sun-fill',              color: '#ffc400' },
+  'ALMUERZO VUELTA':{ icono: 'bi-compass-fill',          color: '#22d3ee' },
+  'BREAK INICIO':   { icono: 'bi-lightning-charge-fill', color: '#a78bfa' },
+  'BREAK FIN':      { icono: 'bi-broadcast-pin',         color: '#60a5fa' },
+  'SALIDA':         { icono: 'bi-power',                 color: '#f87171' }
+};
+
+function abrirHistorialDisp(cedula, nombre) {
+  var m = document.getElementById('disp-historial-modal');
+  document.getElementById('disp-hist-nombre').innerText = nombre || cedula;
+  document.getElementById('disp-hist-lista').innerHTML = '<div style="text-align:center;color:#7f8b9b;padding:20px;">Cargando movimientos...</div>';
+  m.style.display = 'flex';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      var lista = document.getElementById('disp-hist-lista');
+      if (!res || res.status !== 'success' || !Array.isArray(res.data)) {
+        lista.innerHTML = '<div style="text-align:center;color:#dc3545;padding:16px;">Error: ' + ((res && res.message) || 'sin datos') + '</div>';
+        return;
+      }
+      if (!res.data.length) {
+        lista.innerHTML = '<div style="text-align:center;color:#7f8b9b;padding:16px;">Sin movimientos registrados.</div>';
+        return;
+      }
+      lista.innerHTML = res.data.map(function(ev, i) {
+        var d = DISP_ICONOS[ev.evento] || { icono: 'bi-activity', color: '#888' };
+        // duracion hasta el evento anterior (lista viene de mas reciente a mas viejo)
+        var duracion = '';
+        var sig = res.data[i + 1];
+        if (sig && ev.ms && sig.ms) {
+          var mins = Math.max(0, Math.round((ev.ms - sig.ms) / 60000));
+          var textoDur = mins < 60 ? mins + ' min' : Math.floor(mins/60) + ' h ' + (mins%60) + ' min';
+          duracion = '<span class="disp-hist-duracion"><i class="bi bi-hourglass-split"></i> ' + textoDur + ' en este estado</span>';
+        }
+        var links = '';
+        if (ev.mapa) links += ' <a href="' + ev.mapa + '" target="_blank" style="color:#22d3ee;font-size:12px;text-decoration:none;"><i class="bi bi-geo-alt-fill"></i></a>';
+        if (ev.foto) links += ' <a href="' + ev.foto + '" target="_blank" style="color:#22d3ee;font-size:12px;text-decoration:none;"><i class="bi bi-image"></i></a>';
+        return '<div class="disp-hist-item" style="--dc:' + d.color + '">'
+          + '<div class="disp-hist-icono"><i class="bi ' + d.icono + '"></i></div>'
+          + '<div class="disp-hist-datos">'
+          + '<div class="disp-hist-titulo">' + ev.evento + links + '</div>'
+          + '<div class="disp-hist-hora">' + ev.hora + '</div>'
+          + duracion
+          + '</div></div>';
+      }).join('');
+    })
+    .withFailureHandler(function(err) {
+      document.getElementById('disp-hist-lista').innerHTML = '<div style="text-align:center;color:#dc3545;padding:16px;">Error de conexión: ' + ((err && err.message) || '') + '</div>';
+    })
+    .getHistorialDisponibilidad(String(cedula));
+}
+function cerrarHistorialDisp() { document.getElementById('disp-historial-modal').style.display = 'none'; }
+
 function abrirModalStatus() {
   var m = document.getElementById('disp-status-modal');
   var info = document.getElementById('disp-status-modal-actual');
@@ -27977,11 +28058,14 @@ document.addEventListener('change', function(e) {
   }
 });
 
+document.getElementById('disp-historial-modal').addEventListener('click', function(e) {
+  if (e.target === this) cerrarHistorialDisp();
+});
 document.getElementById('disp-status-modal').addEventListener('click', function(e) {
   if (e.target === this) cerrarModalStatus();
 });
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') cerrarModalStatus();
+  if (e.key === 'Escape') { cerrarModalStatus(); cerrarHistorialDisp(); }
 });
 document.getElementById('disp-cancelar').addEventListener('click', function() {
   document.getElementById('disp-modal').style.display = 'none';
@@ -28052,7 +28136,8 @@ function cargarPanelDisponibilidad() {
               ? '<img class="disp-card-foto" src="' + thumb + '" alt="' + (u.nombre || '') + '" onerror="this.style.display=&#39;none&#39;;this.nextElementSibling.style.display=&#39;inline-flex&#39;"><div class="disp-card-foto vacia" style="display:none">' + iniciales + '</div>'
               : '<div class="disp-card-foto vacia">' + iniciales + '</div>')
           + '</div>';
-        return '<div class="disp-card" style="--dc:' + est.color + '">'
+        var nomSeguro = String(u.nombre || u.cedula).replace(/"/g, '&quot;');
+        return '<div class="disp-card" style="--dc:' + est.color + ';cursor:pointer;" data-ced="' + u.cedula + '" data-nom="' + nomSeguro + '" onclick="abrirHistorialDisp(this.dataset.ced, this.dataset.nom)">"
           + '<div class="disp-card-barra"></div>'
           + fotoHtml
           + '<div class="disp-card-cuerpo">'
