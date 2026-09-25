@@ -27898,6 +27898,10 @@ function cargarPanelDisponibilidad() {
     .withSuccessHandler(function(res) {
       var body = document.getElementById('disp-tabla-body');
       if (!body) return;
+      if (res && res.status === 'error') {
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#dc3545">Error del servidor: ' + (res.message || '') + '</td></tr>';
+        return;
+      }
       var data = (res && Array.isArray(res.data)) ? res.data : [];
       if (res && res.actualizado) document.getElementById('disp-actualizado').innerText = '(actualizado ' + res.actualizado + ')';
       body.innerHTML = data.map(function(u) {
@@ -27913,7 +27917,11 @@ function cargarPanelDisponibilidad() {
           + '</tr>';
       }).join('') || '<tr><td colspan="6" style="text-align:center;color:#888">Aún no hay registros de disponibilidad.</td></tr>';
     })
-    .withFailureHandler(function() {})
+    .withFailureHandler(function(err) {
+      var body = document.getElementById('disp-tabla-body');
+      if (body) body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#dc3545">Error cargando disponibilidad: '
+        + ((err && err.message) ? err.message : 'sin conexión con el servidor') + '</td></tr>';
+    })
     .getDisponibilidadPanel();
 }
 </script>
