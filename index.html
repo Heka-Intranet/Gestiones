@@ -10693,6 +10693,21 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 
+<!-- Causal de PQR -->
+<div class="cun-seccion">
+<div class="cun-seccion-titulo"><i class="bi bi-exclamation-triangle-fill"></i> Causal de PQR</div>
+<select id="cunmasivo-causal" class="cun-input">
+<option value="">(No cambiar causal de las existentes)</option>
+<option value="PERDIDA / HURTO">PERDIDA / HURTO</option>
+<option value="SERVICIO NO CONFORME">SERVICIO NO CONFORME</option>
+<option value="SAQUEO">SAQUEO</option>
+<option value="CIERRE LOGISTICO">CIERRE LOGISTICO</option>
+<option value="TROCADO">TROCADO</option>
+<option value="CIERRE LOGISTICO INTENTO DE FRAUDE">CIERRE LOGISTICO INTENTO DE FRAUDE</option>
+<option value="AVERÍA">AVERÍA</option>
+</select>
+</div>
+
 <!-- Guias -->
 <div class="cun-seccion">
 <div class="cun-seccion-titulo"><i class="bi bi-list-ol"></i> Gu&iacute;as <small style="color:#8b98a8;font-weight:500;">— solo gu&iacute;as, o gu&iacute;a [Tab] valor NC ($1,310,000 v&aacute;lido)</small></div>
@@ -10785,8 +10800,8 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <span class="value-indem view-mode" id="indem-ticket-view"></span>
 <input class="form-input edit-mode-only" id="indem-ticket-edit" style="display:none; width:100%; font-size:13px;" type="text"/>
 </div>
-<!-- 6. N° CREDITO -->
-<div class="indemnizacion-row">
+<!-- 6. N° CREDITO (columna eliminada de la hoja) -->
+<div class="indemnizacion-row" style="display:none;">
 <span class="label-indem">N° Credito:</span>
 <span class="value-indem view-mode" id="indem-num-nota-view"></span>
 <input class="form-input edit-mode-only" id="indem-num-nota-edit" style="display:none; width:100%; font-size:13px;" type="text"/>
@@ -10835,19 +10850,16 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <span class="value-indem view-mode" id="indem-val-rec-seg-view"></span>
 <input class="form-input edit-mode-only" id="indem-val-rec-seg-edit" style="display:none; width:100%; font-size:13px;" type="number"/>
 </div>
-<div class="indemnizacion-row">
+<!-- Flete Inter y Diff Fletes eliminados de la hoja -->
+<div class="indemnizacion-row" style="display:none;">
 <span class="label-indem">Flete Plataforma Inter:</span>
 <span class="value-indem view-mode" id="indem-flete-inter-view"></span>
 <input class="form-input edit-mode-only" id="indem-flete-inter-edit" style="display:none; width:100%; font-size:13px;" type="number"/>
 </div>
-<div class="indemnizacion-row">
+<div class="indemnizacion-row" style="display:none;">
 <span class="label-indem">Diferencias Fletes:</span>
 <span class="value-indem view-mode" id="indem-diff-fletes-view"></span>
-<!-- CAMBIOS: 
-                  1. type="text" (en lugar de number) 
-                  2. Eliminé display:none (para que la JS pueda mostrarlo) 
-              -->
-<input class="form-input edit-mode-only" id="indem-diff-fletes-edit" style="width:100%; font-size:13px;" type="text"/>
+<input class="form-input edit-mode-only" id="indem-diff-fletes-edit" style="display:none; width:100%; font-size:13px;" type="text"/>
 </div>
 <div class="indemnizacion-row">
 <span class="label-indem">Comisión Transp. + Flete:</span>
@@ -18571,7 +18583,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         const obsIndem = document.getElementById('indem-obs-edit');
         if(obsIndem) obsIndem.oninput = null; 
 
-        const camposAutomaticos = ['indem-diff-fletes-edit', 'indem-valor-pagar-edit', 'indem-valor-final-edit', 'indem-nueva-pqr-edit'];
+        const camposAutomaticos = ['indem-valor-pagar-edit', 'indem-valor-final-edit', 'indem-nueva-pqr-edit'];
         camposAutomaticos.forEach(id => {
             const el = document.getElementById(id);
             if(el) {
@@ -18582,7 +18594,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 
         const inputsTrigger = [
             'indem-causal-edit', 'indem-valor-nota-edit', 'indem-pago-destino-edit',
-            'indem-cobro-devol-edit', 'indem-val-rec-seg-edit', 'indem-flete-inter-edit',
+            'indem-cobro-devol-edit', 'indem-val-rec-seg-edit',
             'indem-com-trans-flete-edit', 'indem-com-heka-edit', 'indem-com-heka-adic-edit',
             'indem-estado-edit'
         ];
@@ -18833,7 +18845,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                 { id: 'indem-fecha-edit', nombre: 'Fecha' }, { id: 'indem-causal-edit', nombre: 'Causal' },
                 { id: 'indem-seller-edit', nombre: 'Seller' }, { id: 'indem-guia-edit', nombre: 'Guía' },
                 { id: 'indem-valor-nota-edit', nombre: 'Valor Nota' }, { id: 'indem-pago-destino-edit', nombre: 'Pago Destino' },
-                { id: 'indem-flete-inter-edit', nombre: 'Flete Inter' }, { id: 'indem-com-trans-flete-edit', nombre: 'Comisión Trans' },
+                { id: 'indem-com-trans-flete-edit', nombre: 'Comisión Trans' },
                 { id: 'indem-com-heka-edit', nombre: 'Comisión Heka' }
             ];
             let faltantes = [];
@@ -18852,7 +18864,14 @@ body > .novedad-dropdown-menu .novedad-option:hover {
             obs: (function(){
                 const val = document.getElementById('indem-obs-edit').value;
                 const check = document.getElementById('indem-cun-masivo');
-                // Lógica CUN MASIVO: Si está checkeado, agrega prefijo al guardar
+                if (check && check.checked && val.trim() !== "") {
+                    return "CUN MASIVO " + val;
+                }
+                return val;
+            })(),
+            observaciones: (function(){
+                const val = document.getElementById('indem-obs-edit').value;
+                const check = document.getElementById('indem-cun-masivo');
                 if (check && check.checked && val.trim() !== "") {
                     return "CUN MASIVO " + val;
                 }
@@ -18866,17 +18885,17 @@ body > .novedad-dropdown-menu .novedad-option:hover {
             causal: document.getElementById('indem-causal-edit').value,
             seller: document.getElementById('indem-seller-edit').value,
             guia: guiaVisible,
-            tiempoEst: document.getElementById('indem-fecha-estimada-edit').value,
+            tiempoEst: (document.getElementById('indem-fecha-estimada-edit')||{}).value || "",
             fechaAprob: document.getElementById('indem-fecha-aprobacion-edit').value,
             fechaNota: document.getElementById('indem-fecha-nota-edit').value,
             ticket: document.getElementById('indem-ticket-edit').value,
-            numNota: document.getElementById('indem-num-nota-edit').value,
-            cobroFleteFactura: document.getElementById('indem-cobro-flete-edit') ? document.getElementById('indem-cobro-flete-edit').value : "", 
+            numNota: (document.getElementById('indem-num-nota-edit')||{}).value || "",
+            cobroFleteFactura: "", 
             tipoResp: "", valNota: document.getElementById('indem-valor-nota-edit').value,
             pagoDestino: document.getElementById('indem-pago-destino-edit').value,
             cobroDevol: document.getElementById('indem-cobro-devol-edit').value,
             valRecSeg: document.getElementById('indem-val-rec-seg-edit').value,
-            fleteInter: document.getElementById('indem-flete-inter-edit').value,
+            fleteInter: 0,
             comTransFlete: document.getElementById('indem-com-trans-flete-edit').value,
             comHeka: document.getElementById('indem-com-heka-edit').value,
             comHekaAdic: document.getElementById('indem-com-heka-adic-edit').value,
@@ -19102,7 +19121,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         const obsServi = document.getElementById('servi-col-t-edit');
         if(obsServi) obsServi.oninput = null;
 
-        const camposAutomaticos = ['servi-diff-fletes-edit', 'servi-val-final-pagar-edit', 'servi-val-final-heka-edit'];
+        const camposAutomaticos = ['servi-val-final-pagar-edit', 'servi-val-final-heka-edit'];
         camposAutomaticos.forEach(id => {
             const el = document.getElementById(id);
             if(el) {
@@ -19113,7 +19132,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 
         const inputsTrigger = [
             'servi-causal-edit', 'servi-val-ce-edit', 'servi-pago-destino-edit',
-            'servi-cobro-devol-edit', 'servi-val-rec-seg-edit', 'servi-flete-servi-edit',
+            'servi-cobro-devol-edit', 'servi-val-rec-seg-edit',
             'servi-com-trans-flete-edit', 'servi-com-heka-edit', 'servi-com-heka-adic-edit'
         ];
 
@@ -20536,12 +20555,13 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     // ==========================================
     var cunValidacionPendiente = null; // {pares, tipo, numero, estado, verifSet}
 
-    function abrirModalValidacionCun(val, pares, tipo, numero, estado) {
+    function abrirModalValidacionCun(val, pares, tipo, numero, estado, causal) {
         var cuerpo = document.getElementById('cun-val-cuerpo');
         var verificadas = val.verificadas || [];
         var diferentes = val.diferentes || [];
         var sinComparar = val.sinComparar || [];
-        cunValidacionPendiente = { pares: pares, tipo: tipo, numero: numero, estado: estado, verifSet: {} };
+        var esComp = (tipo === 'coord' || tipo === 'tcc');
+        cunValidacionPendiente = { pares: pares, tipo: tipo, numero: numero, estado: estado, causal: causal || "", esComprobante: esComp, verifSet: {} };
         verificadas.forEach(function(v) { cunValidacionPendiente.verifSet[v.guia] = true; });
 
         var html = '';
@@ -20580,13 +20600,13 @@ body > .novedad-dropdown-menu .novedad-option:hover {
             var cvp = cunValidacionPendiente;
             cerrarModalValidacionCun();
             var subconjunto = cvp.pares.filter(function(p) { return cvp.verifSet[p.guia] || p.valor === null; });
-            confirmarCunMasivo(subconjunto, cvp.tipo, cvp.numero, cvp.estado, false, subconjunto.length);
+            confirmarCunMasivo(subconjunto, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, subconjunto.length);
         });
         if (b2) b2.addEventListener('click', function() {
             if (!cunValidacionPendiente) return;
             var cvp = cunValidacionPendiente;
             cerrarModalValidacionCun();
-            confirmarCunMasivo(cvp.pares, cvp.tipo, cvp.numero, cvp.estado, false, 0);
+            confirmarCunMasivo(cvp.pares, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, 0);
         });
     });
 
@@ -20611,37 +20631,77 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         if (modal) modal.style.display = 'flex';
     }
 
-        // Convierte "$1,310,000" / "$1.310.000" / "1.310.000,50" / "25000" a numero
+    // Detecta si un texto parece valor monetario ($1,310,000 / 1.310.000 / 25000)
+    function esValorMonedaCun(txt) {
+        var v = String(txt || "").replace(/[$\s]/g, '');
+        if (!v) return false;
+        if (/^\d{1,3}([.,]\d{3})+([.,]\d{1,2})?$/.test(v)) return true;
+        if (/^\d+([.,]\d{1,2})?$/.test(v)) return true;
+        return false;
+    }
+
+    // Convierte "$1,310,000" / "$1.310.000" / "1.310.000,50" / "25000" a numero (string)
     function normalizarValorCun(txt) {
-        var v = String(txt).replace(/[$\s]/g, '');
-        // miles tipo 1.310.000 o 1,310,000 (grupos de 3): quitar separadores
-        if (/^\d{1,3}([.,]\d{3})+$/.test(v)) v = v.replace(/[.,]/g, '');
-        else v = v.replace(',', '.');
-        return String(Number(v));
+        var v = String(txt || "").replace(/[$\s]/g, '');
+        if (!v) return "0";
+        if (/^\d{1,3}([.,]\d{3})+([.,]\d{1,2})?$/.test(v)) {
+            var up = v.lastIndexOf('.'), uc = v.lastIndexOf(',');
+            var lastSep = Math.max(up, uc);
+            var after = v.substring(lastSep + 1);
+            if (after.length >= 1 && after.length <= 2 && /[.,]/.test(v.substring(0, lastSep))) {
+                v = v.substring(0, lastSep).replace(/[.,]/g, '') + '.' + after;
+            } else {
+                v = v.replace(/[.,]/g, '');
+            }
+        } else {
+            v = v.replace(',', '.');
+        }
+        var n = Number(v);
+        return String(isNaN(n) ? 0 : n);
+    }
+
+    // Parser robusto: no rompe $1,310,000 cuando el separador es coma
+    function parsearLineaGuiaValorCunFront(linea) {
+        var l = String(linea || "").trim();
+        if (!l) return null;
+        var TAB = String.fromCharCode(9);
+        if (l.indexOf(TAB) !== -1) {
+            var pTab = l.split(TAB).map(function(x){ return x.trim(); }).filter(Boolean);
+            if (pTab.length >= 2) {
+                var valorTab = pTab.slice(1).join(' ').trim();
+                if (esValorMonedaCun(valorTab)) return { guia: pTab[0], valor: normalizarValorCun(valorTab) };
+            }
+            if (pTab[0] && !esValorMonedaCun(pTab[0])) return { guia: pTab[0], valor: null };
+        }
+        var m = l.match(/^([A-Za-z0-9\-_]+)[\s,;]+(.+)$/);
+        if (m && esValorMonedaCun(m[2])) return { guia: m[1], valor: normalizarValorCun(m[2]) };
+        return null;
     }
 
     function ejecutarCunMasivo() {
         const tipo = document.getElementById('cunmasivo-tipo').value;
         const numero = document.getElementById('cunmasivo-numero').value.replace(/\D/g, '');
         const estado = document.getElementById('cunmasivo-estado').value;
+        const causal = (document.getElementById('cunmasivo-causal') || {}).value || "";
         const textoGuias = document.getElementById('cunmasivo-guias').value.trim();
 
         if (!numero) return showToast("Escribe el número de CUN / Comprobante.");
         if (!textoGuias) return showToast("Pega al menos una guía.");
 
-        // Parsear: cada linea puede ser "guia<TAB>valor" (valor NC para el calculo)
-        // o una lista plana separada por espacios/comas.
         const vistos = {};
         const pares = [];
         textoGuias.split(String.fromCharCode(10)).forEach(function(linea) {
             const l = linea.trim();
             if (!l) return;
-            const partes = l.split(/[\t,;]+/).map(function(x){ return x.trim(); }).filter(Boolean);
-            if (partes.length >= 2 && /^[$\s]*\d([\d.,$\s]*\d)?$/.test(partes[1])) {
-                if (!vistos[partes[0]]) { vistos[partes[0]] = true; pares.push({ guia: partes[0], valor: normalizarValorCun(partes[1]) }); }
+            const par = parsearLineaGuiaValorCunFront(l);
+            if (par) {
+                if (!vistos[par.guia]) { vistos[par.guia] = true; pares.push(par); }
             } else {
                 l.split(/[\s,;]+/).forEach(function(g) {
-                    if (g && !vistos[g]) { vistos[g] = true; pares.push({ guia: g, valor: null }); }
+                    if (g && !esValorMonedaCun(g) && !vistos[g]) {
+                        vistos[g] = true;
+                        pares.push({ guia: g, valor: null });
+                    }
                 });
             }
         });
@@ -20651,17 +20711,17 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         const conValor = pares.filter(function(p) { return p.valor !== null; }).length;
 
         if (conValor > 0) {
-            // Validar contra el Valor Recaudo-Seguro de la hoja antes de confirmar
             showLoading(true);
+            // Enviar con TAB para que el backend no confunda la coma de miles
             const textoParaValidar = pares.map(function(p) { return p.valor ? p.guia + String.fromCharCode(9) + p.valor : p.guia; }).join(String.fromCharCode(10));
             google.script.run
                 .withSuccessHandler(function(val) {
                     showLoading(false);
                     if (!val || val.status !== 'success') return showToast('Error validando valores: ' + ((val && val.message) || 'desconocido'));
                     if (!Array.isArray(val.diferentes) || val.diferentes.length === 0) {
-                        confirmarCunMasivo(pares, tipo, numero, estado, esComprobante, (val.verificadas || []).length);
+                        confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, (val.verificadas || []).length);
                     } else {
-                        abrirModalValidacionCun(val, pares, tipo, numero, estado);
+                        abrirModalValidacionCun(val, pares, tipo, numero, estado, causal);
                     }
                 })
                 .withFailureHandler(function(e) {
@@ -20670,30 +20730,29 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                 })
                 .validarCunMasivo(tipo, textoParaValidar);
         } else {
-            confirmarCunMasivo(pares, tipo, numero, estado, esComprobante, 0);
+            confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, 0);
         }
     }
 
     // Confirmacion clasica del masivo (despues de pasar la validacion, o si no habia valores)
-    function confirmarCunMasivo(pares, tipo, numero, estado, esComprobante, verificadas) {
+    function confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, verificadas) {
         mostrarModalConfirmacion(
             '\n\n' +
             '\u00bfAplicar ' + (esComprobante ? 'COMPROBANTE' : 'CUN') + ' ' + numero +
             ' a ' + pares.length + ' gu\u00eda(s) en ' + tipo.toUpperCase() + '?' +
+            (causal ? '\nCausal: ' + causal : '') +
             (verificadas > 0 ? '\n' + verificadas + ' gu\u00eda(s) verificadas contra Valor Recaudo-Seguro.' : '') + '\n' +
             'Las gu\u00edas existentes se actualizan; las que no existan se crean con la fecha de hoy' +
             (estado ? ' y estado "' + estado + '"' : '') + '.',
-            function() { procesarCunMasivoBloques(tipo, pares, numero, estado); }
+            function() { procesarCunMasivoBloques(tipo, pares, numero, estado, causal); }
         );
     }
 
-    function procesarCunMasivoBloques(tipo, guias, numero, estado) {
+    function procesarCunMasivoBloques(tipo, guias, numero, estado, causal) {
         const btn = document.getElementById('btn-ejecutar-cunmasivo');
         if (btn) { btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...'; }
         showLoading(true);
 
-        // Bloques de 50: cada llamada lee la hoja y escribe; así ninguna supera
-        // con seguridad el timeout de 45s del shim
         // Con valores pegados el backend consulta la API por guia: bloques mas
         // pequenos para no superar el timeout de 45s. Sin valores, de a 50.
         const TAMANO = guias.some(function(p) { return p.valor !== null; }) ? 10 : 50;
@@ -20716,7 +20775,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                 }
                 if (res) { res.textContent = resumen; res.style.display = 'block'; }
                 showToast('CUN masivo aplicado a ' + guias.length + ' guía(s).');
-                // Recargar la tabla de la transportadora procesada
                 const hojas = { inter: 'INTER RAPIDISIMO', servi: 'SERVIENTREGA', coord: 'COORDINADORA', tcc: 'TCC' };
                 if (hojas[tipo]) cargarIndemnizaciones(tipo, hojas[tipo]);
                 return;
@@ -20739,7 +20797,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                     bi++;
                     siguienteBloque();
                 })
-                .procesarCunMasivo(tipo, bloques[bi].join(String.fromCharCode(10)), numero, estado);
+                .procesarCunMasivo(tipo, bloques[bi].join(String.fromCharCode(10)), numero, estado, causal || "");
         }
 
         siguienteBloque();
@@ -20833,19 +20891,19 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                 causal: document.getElementById('indem-causal-edit').value,
                 seller: document.getElementById('indem-seller-edit') ? document.getElementById('indem-seller-edit').value : "", 
                 guia: document.getElementById('indem-guia-edit').value,
-                tiempoEst: document.getElementById('indem-fecha-estimada-edit').value,
+                tiempoEst: "",
                 fechaAprob: document.getElementById('indem-fecha-aprobacion-edit').value,
                 fechaNota: document.getElementById('indem-fecha-nota-edit').value,
                 ticket: document.getElementById('indem-ticket-edit').value,
-                numNota: document.getElementById('indem-num-nota-edit').value,
-                cobroFleteFactura: document.getElementById('indem-cobro-flete-edit') ? document.getElementById('indem-cobro-flete-edit').value : "", 
+                numNota: "",
+                cobroFleteFactura: "", 
                 tipoResp: "", 
                 valNota: parseFloat(document.getElementById('indem-valor-nota-edit').value) || 0,
                 pagoDestino: document.getElementById('indem-pago-destino-edit').value,
                 cobroDevol: document.getElementById('indem-cobro-devol-edit').value,
                 valRecSeg: parseFloat(document.getElementById('indem-val-rec-seg-edit').value) || 0,
-                fleteInter: parseFloat(document.getElementById('indem-flete-inter-edit').value) || 0,
-                diffFletes: parseFloat(document.getElementById('indem-diff-fletes-edit').value) || 0,
+                fleteInter: 0,
+                diffFletes: "",
                 comTransFlete: parseFloat(document.getElementById('indem-com-trans-flete-edit').value) || 0,
                 comHeka: parseFloat(document.getElementById('indem-com-heka-edit').value) || 0,
                 comHekaAdic: parseFloat(document.getElementById('indem-com-heka-adic-edit').value) || 0,
@@ -20854,6 +20912,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                 nuevaPqr: document.getElementById('indem-nueva-pqr-edit').value,
                 pqr2: document.getElementById('indem-pqr2-edit').value,
                 obs: document.getElementById('indem-obs-edit').value,
+                observaciones: document.getElementById('indem-obs-edit').value,
                 obsPqr2: document.getElementById('indem-obs-pqr2-edit').value,
                 estado: document.getElementById('indem-estado-edit').value
             };
@@ -20875,9 +20934,9 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                 pagoDestino: document.getElementById('servi-pago-dest-edit').value,
                 cobroDevol: document.getElementById('servi-cobro-devol-edit').value,
                 valRecSeg: parseFloat(document.getElementById('servi-val-rec-seg-edit').value) || 0,
-                fleteServi: parseFloat(document.getElementById('servi-flete-servi-edit').value) || 0,
+                fleteServi: 0,
                 comTransFlete: parseFloat(document.getElementById('servi-com-trans-flete-edit').value) || 0,
-                diffFletes: parseFloat(document.getElementById('servi-diff-fletes-edit').value) || 0,
+                diffFletes: 0,
                 comHeka: parseFloat(document.getElementById('servi-com-heka-edit').value) || 0,
                 comHekaAdic: parseFloat(document.getElementById('servi-com-heka-adic-edit').value) || 0,
                 valFinalPagar: parseFloat(document.getElementById('servi-val-final-pagar-edit').value) || 0,
