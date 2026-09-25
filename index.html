@@ -12787,7 +12787,7 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
             loginSuccess();
           } else { showToast(data.message); }
         })
-        .withFailureHandler(function(err) { showLoading(false); showToast("Error: " + err); })
+        .withFailureHandler(function(err) { showLoading(false); showToast("Error: " + (err && err.message ? err.message : JSON.stringify(err))); })
         .loginBackend(user, pass);
     }
 
@@ -28137,7 +28137,7 @@ function cargarPanelDisponibilidad() {
               : '<div class="disp-card-foto vacia">' + iniciales + '</div>')
           + '</div>';
         var nomSeguro = String(u.nombre || u.cedula).replace(/"/g, '&quot;');
-        return '<div class="disp-card" style="--dc:' + est.color + ';cursor:pointer;" data-ced="' + u.cedula + '" data-nom="' + nomSeguro + '" onclick="abrirHistorialDisp(this.dataset.ced, this.dataset.nom)">"
+        return '<div class="disp-card" style="--dc:' + est.color + ';cursor:pointer;" data-ced="' + u.cedula + '" data-nom="' + nomSeguro + '" onclick="abrirHistorialDisp(this.dataset.ced, this.dataset.nom)">'
           + '<div class="disp-card-barra"></div>'
           + fotoHtml
           + '<div class="disp-card-cuerpo">'
