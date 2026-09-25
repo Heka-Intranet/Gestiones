@@ -27955,7 +27955,12 @@ function abrirHistorialDisp(cedula, nombre) {
           if (previo && ev.ms && previo.ms) {
             var mins = Math.max(0, Math.round((previo.ms - ev.ms) / 60000));
             var textoDur = mins < 60 ? mins + ' min' : Math.floor(mins/60) + ' h ' + (mins%60) + ' min';
-            duracion = '<span class="disp-hist-duracion" style="background:' + d.color + '1c;color:' + d.color + ';border:1px solid ' + d.color + '44;"><i class="bi bi-hourglass-split"></i> ' + textoDur + ' en este estado</span>';
+            // textos claros segun el tipo de pausa
+            var etiquetaDur = 'en este estado';
+            if (ev.evento === 'ALMUERZO IDA') etiquetaDur = 'de almuerzo';
+            else if (ev.evento === 'BREAK INICIO') etiquetaDur = 'de break';
+            else if (ev.evento === 'INGRESO') etiquetaDur = 'activo antes de esta pausa';
+            duracion = '<span class="disp-hist-duracion" style="background:' + d.color + '1c;color:' + d.color + ';border:1px solid ' + d.color + '44;"><i class="bi bi-hourglass-split"></i> ' + textoDur + ' ' + etiquetaDur + '</span>';
           }
         }
         var links = '';
