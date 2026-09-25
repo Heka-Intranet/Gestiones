@@ -7486,14 +7486,28 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <p>Estado en tiempo real del equipo. Se actualiza automáticamente cada 30 segundos. <span id="disp-actualizado" style="color:var(--text-muted);font-size:13px;"></span></p>
 </div>
 <div class="card">
-<div style="overflow-x:auto;">
-<table class="table" style="width:100%;font-size:13.5px;">
-<thead><tr><th>Colaborador</th><th>Estado</th><th>Hora evento</th><th>Tiempo</th><th>Ubicación</th><th>Evidencia</th></tr></thead>
-<tbody id="disp-tabla-body"><tr><td colspan="6" style="text-align:center;color:#888;">Cargando...</td></tr></tbody>
-</table>
+<div id="disp-tarjetas" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;">
+<div style="grid-column:1/-1;text-align:center;color:#888;padding:20px;">Cargando...</div>
 </div>
 </div>
 </div>
+
+<style>
+.disp-card{background:linear-gradient(155deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.09);border-radius:18px;overflow:hidden;transition:all .25s ease;position:relative;}
+.disp-card:hover{transform:translateY(-4px);border-color:var(--dc,#888);box-shadow:0 12px 28px -10px var(--dc,#888);}
+.disp-card-barra{height:4px;background:linear-gradient(90deg,var(--dc,#888),transparent);}
+.disp-card-foto{width:100%;height:150px;object-fit:cover;display:block;background:#0d141d;}
+.disp-card-foto.vacia{display:flex;align-items:center;justify-content:center;font-size:44px;color:#2a3947;font-weight:800;}
+.disp-card-cuerpo{padding:13px 14px;}
+.disp-card-nombre{font-weight:700;font-size:14.5px;color:#eaf1f8;line-height:1.25;}
+.disp-card-cedula{font-size:11.5px;color:#7f8b9b;margin:2px 0 9px;}
+.disp-card-estado{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11.5px;font-weight:700;}
+.disp-card-info{margin-top:10px;font-size:12px;color:#aeb9c6;display:flex;flex-direction:column;gap:4px;}
+.disp-card-info i{color:var(--dc,#888);margin-right:5px;}
+.disp-card-links{display:flex;gap:8px;margin-top:10px;}
+.disp-card-links a{flex:1;text-align:center;padding:7px;border-radius:10px;border:1px solid rgba(255,255,255,.12);color:#22d3ee;font-size:12px;font-weight:600;text-decoration:none;transition:all .2s;}
+.disp-card-links a:hover{border-color:#22d3ee;background:rgba(34,211,238,.08);}
+</style>
 
 <!-- ================= PANEL COMERCIAL: ACTIVACION INTER ================= -->
 <div class="panel" id="panel-activacion-inter">
@@ -28010,31 +28024,49 @@ var DISP_ESTADOS = {
 function cargarPanelDisponibilidad() {
   google.script.run
     .withSuccessHandler(function(res) {
-      var body = document.getElementById('disp-tabla-body');
-      if (!body) return;
+      var cont = document.getElementById('disp-tarjetas');
+      if (!cont) return;
       if (res && res.status === 'error') {
-        body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#dc3545">Error del servidor: ' + (res.message || '') + '</td></tr>';
+        cont.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#dc3545;padding:20px;">Error del servidor: ' + (res.message || '') + '</div>';
         return;
       }
       var data = (res && Array.isArray(res.data)) ? res.data : [];
       if (res && res.actualizado) document.getElementById('disp-actualizado').innerText = '(actualizado ' + res.actualizado + ')';
-      body.innerHTML = data.map(function(u) {
+      cont.innerHTML = data.map(function(u) {
         var est = DISP_ESTADOS[u.evento] || { texto: u.evento, color: '#888' };
-        var tiempo = u.minutos !== '' ? (u.minutos < 60 ? u.minutos + ' min' : Math.floor(u.minutos/60) + ' h ' + (u.minutos%60) + ' m') : '';
-        return '<tr>'
-          + '<td><strong>' + (u.nombre || u.cedula) + '</strong><br><small style="color:#888">' + u.cedula + '</small></td>'
-          + '<td><span style="background:' + est.color + '22;color:' + est.color + ';border:1px solid ' + est.color + '55;padding:4px 12px;border-radius:20px;font-weight:600;font-size:12px;">' + est.texto + '</span></td>'
-          + '<td>' + u.horaEvento + '</td>'
-          + '<td>' + tiempo + '</td>'
-          + '<td>' + (u.mapa ? '<a href="' + u.mapa + '" target="_blank" style="color:#0dcaf0;"><i class="bi bi-geo-alt-fill"></i> Ver</a>' : '<span style="color:#888">—</span>') + '</td>'
-          + '<td>' + (u.foto ? '<a href="' + u.foto + '" target="_blank" style="color:#0dcaf0;"><i class="bi bi-image"></i> Ver</a>' : '<span style="color:#888">—</span>') + '</td>'
-          + '</tr>';
-      }).join('') || '<tr><td colspan="6" style="text-align:center;color:#888">Aún no hay registros de disponibilidad.</td></tr>';
+        var tiempo = (u.minutos !== '' && u.minutos !== null && u.minutos !== undefined)
+          ? (u.minutos < 60 ? u.minutos + ' min' : Math.floor(u.minutos/60) + ' h ' + (u.minutos%60) + ' m') : '';
+        // miniatura directa de la foto de Drive
+        var thumb = '';
+        var m = /\/file\/d\/([a-zA-Z0-9_-]+)/.exec(u.foto || '');
+        if (m) thumb = 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400';
+        var iniciales = (u.nombre || '?').split(' ').map(function(p){return p.charAt(0);}).slice(0,2).join('').toUpperCase();
+        var fallback = '<div class="disp-card-foto vacia">' + iniciales + '</div>'.replace(/"/g, '&quot;');
+        var fotoHtml = thumb
+          ? '<img class="disp-card-foto" src="' + thumb + '" alt="evidencia" data-fb="' + fallback + '" onerror="this.outerHTML=this.dataset.fb">'
+          : '<div class="disp-card-foto vacia">' + iniciales + '</div>';
+        return '<div class="disp-card" style="--dc:' + est.color + '">'
+          + '<div class="disp-card-barra"></div>'
+          + fotoHtml
+          + '<div class="disp-card-cuerpo">'
+          + '<div class="disp-card-nombre">' + (u.nombre || u.cedula) + '</div>'
+          + '<div class="disp-card-cedula">' + u.cedula + '</div>'
+          + '<span class="disp-card-estado" style="background:' + est.color + '22;color:' + est.color + ';border:1px solid ' + est.color + '55;">' + est.texto + '</span>'
+          + '<div class="disp-card-info">'
+          + '<div><i class="bi bi-clock-history"></i>' + u.horaEvento + '</div>'
+          + (tiempo ? '<div><i class="bi bi-hourglass-split"></i>hace ' + tiempo + '</div>' : '')
+          + '</div>'
+          + '<div class="disp-card-links">'
+          + (u.mapa ? '<a href="' + u.mapa + '" target="_blank"><i class="bi bi-geo-alt-fill"></i> Ubicación</a>' : '')
+          + (u.foto ? '<a href="' + u.foto + '" target="_blank"><i class="bi bi-image"></i> Evidencia</a>' : '')
+          + '</div>'
+          + '</div></div>';
+      }).join('') || '<div style="grid-column:1/-1;text-align:center;color:#888;padding:20px;">Aún no hay registros de disponibilidad.</div>';
     })
     .withFailureHandler(function(err) {
-      var body = document.getElementById('disp-tabla-body');
-      if (body) body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#dc3545">Error cargando disponibilidad: '
-        + ((err && err.message) ? err.message : 'sin conexión con el servidor') + '</td></tr>';
+      var cont = document.getElementById('disp-tarjetas');
+      if (cont) cont.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#dc3545;padding:20px;">Error cargando disponibilidad: '
+        + ((err && err.message) ? err.message : 'sin conexión con el servidor') + '</div>';
     })
     .getDisponibilidadPanel();
 }
