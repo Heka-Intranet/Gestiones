@@ -7444,7 +7444,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 .disp-hist-datos{flex:1;min-width:0;}
 .disp-hist-titulo{color:#eaf1f8;font-weight:700;font-size:14px;}
 .disp-hist-hora{color:#8b98a8;font-size:12px;margin-top:2px;}
-.disp-hist-duracion{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:var(--dc,#888)1c;color:var(--dc,#888);border:1px solid var(--dc,#888)44;}
+.disp-hist-duracion{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;}
 </style>
 
 <!-- ================= MODAL STATUS FUTURISTA ================= -->
@@ -27944,13 +27944,19 @@ function abrirHistorialDisp(cedula, nombre) {
       }
       lista.innerHTML = res.data.map(function(ev, i) {
         var d = DISP_ICONOS[ev.evento] || { icono: 'bi-activity', color: '#888' };
-        // duracion hasta el evento anterior (lista viene de mas reciente a mas viejo)
+        // Duracion de ESTE estado: desde este evento hasta el siguiente (mas nuevo).
+        // La lista viene de mas reciente a mas viejo, asi que el siguiente es i-1.
+        // El evento mas reciente (i=0) sigue en curso.
         var duracion = '';
-        var sig = res.data[i + 1];
-        if (sig && ev.ms && sig.ms) {
-          var mins = Math.max(0, Math.round((ev.ms - sig.ms) / 60000));
-          var textoDur = mins < 60 ? mins + ' min' : Math.floor(mins/60) + ' h ' + (mins%60) + ' min';
-          duracion = '<span class="disp-hist-duracion"><i class="bi bi-hourglass-split"></i> ' + textoDur + ' en este estado</span>';
+        if (i === 0) {
+          duracion = '<span class="disp-hist-duracion" style="background:#22d3ee1c;color:#22d3ee;border:1px solid #22d3ee44;"><i class="bi bi-arrow-repeat"></i> en curso</span>';
+        } else {
+          var previo = res.data[i - 1];
+          if (previo && ev.ms && previo.ms) {
+            var mins = Math.max(0, Math.round((previo.ms - ev.ms) / 60000));
+            var textoDur = mins < 60 ? mins + ' min' : Math.floor(mins/60) + ' h ' + (mins%60) + ' min';
+            duracion = '<span class="disp-hist-duracion" style="background:' + d.color + '1c;color:' + d.color + ';border:1px solid ' + d.color + '44;"><i class="bi bi-hourglass-split"></i> ' + textoDur + ' en este estado</span>';
+          }
         }
         var links = '';
         if (ev.mapa) links += ' <a href="' + ev.mapa + '" target="_blank" style="color:#22d3ee;font-size:12px;text-decoration:none;"><i class="bi bi-geo-alt-fill"></i></a>';
