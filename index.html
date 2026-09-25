@@ -6805,9 +6805,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <i class="bi bi-people-fill"></i><span>Disponibilidad</span><i class="bi bi-chevron-down accordion-arrow"></i>
 </div>
 <div class="nav-submenu" id="submenu-disponibilidad">
-<a class="nav-item sub-item" data-target="status" href="#" onclick="goToPanel('panel-status', this)">
-<i class="bi bi-person-check-fill"></i><span>Status</span>
-</a>
 <a class="nav-item sub-item" data-target="panel_disponibilidad" href="#" onclick="goToPanel('panel-disponibilidad', this)">
 <i class="bi bi-grid-3x3-gap-fill"></i><span>Panel de Disponibilidad</span>
 </a>
@@ -6930,7 +6927,10 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <img alt="Sisclinet" class="external-link-img" src="https://i.postimg.cc/3RPjH9cF/robot-sisclient.png"/>
 </a>
 </div>
-<div class="user-profile-container" onclick="toggleUserDropdown(event)">
+<div class="user-profile-container" id="userProfileContainer" onclick="toggleUserDropdown(event)">
+<button type="button" id="disp-status-chip" onclick="event.stopPropagation(); goToPanel('panel-status');" title="Registrar mi estado" style="display:none;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;border:1.5px solid #888;background:transparent;color:#cbd5e1;font-size:12px;font-weight:700;cursor:pointer;transition:all .3s ease;">
+<span id="disp-status-chip-text">Status</span>
+</button>
 <div class="user-info">
 <div class="user-name" id="headerUserName">Usuario</div>
 <div class="user-role" id="headerUserRole">Colaborador</div>
@@ -12732,6 +12732,9 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
         if(adminLinkDesktop) adminLinkDesktop.style.display = 'flex';
         if(adminLinkMobile) adminLinkMobile.style.display = 'flex';
 
+        // Chip de estado en el perfil (admin tambien)
+        if (typeof actualizarMiStatusChip === 'function') actualizarMiStatusChip();
+
         return; 
       }
 
@@ -12835,6 +12838,9 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
           btnTriggerUpdate.style.display = 'none';  
         }
       }
+
+      // Chip de estado en el perfil (para usuarios con permiso status)
+      if (typeof actualizarMiStatusChip === 'function') actualizarMiStatusChip();
 
     }
 
@@ -13089,6 +13095,10 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 
       if (panelId === 'panel-activacion-inter') {
         cargarPreviewActivacionInter();
+      }
+
+      if (panelId === 'panel-status') {
+        actualizarMiStatusChip();
       }
 
       if (panelId === 'panel-disponibilidad') {
@@ -27810,6 +27820,41 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 <!-- ================= LOGICA DISPONIBILIDAD ================= -->
 <script>
 var dispPendiente = null;   // {evento, lat, lng, precision, fotoBase64}
+var DISP_ESTADOS_CHIP = {
+  'INGRESO':        { texto: 'Disponible',   color: '#22c55e' },
+  'ALMUERZO IDA':   { texto: 'En almuerzo',  color: '#ffc400' },
+  'ALMUERZO VUELTA':{ texto: 'Disponible',   color: '#22c55e' },
+  'BREAK INICIO':   { texto: 'En break',     color: '#a78bfa' },
+  'BREAK FIN':      { texto: 'Disponible',   color: '#22c55e' },
+  'SALIDA':         { texto: 'Salido',       color: '#ef4444' }
+};
+
+// Pinta el chip del perfil y colorea el contenedor segun mi estado actual
+function actualizarMiStatusChip() {
+  var chip = document.getElementById('disp-status-chip');
+  if (!chip || !currentUser || !currentUser.cedula) return;
+  var permiso = currentUser.role === 'Administrador' || (currentUser.permissions || '').includes('status');
+  if (!permiso) { chip.style.display = 'none'; return; }
+  chip.style.display = 'inline-flex';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || res.status !== 'success') return;
+      var est = res.evento ? (DISP_ESTADOS_CHIP[res.evento] || { texto: res.evento, color: '#888' }) : { texto: 'Sin registro', color: '#6b7280' };
+      var texto = document.getElementById('disp-status-chip-text');
+      var cont = document.getElementById('userProfileContainer');
+      texto.innerText = est.texto;
+      chip.style.color = est.color;
+      chip.style.borderColor = est.color;
+      chip.style.background = est.color + '1f';
+      if (cont) {
+        cont.style.border = '1.5px solid ' + est.color;
+        cont.style.boxShadow = '0 0 14px ' + est.color + '40';
+        cont.style.borderRadius = '16px';
+      }
+    })
+    .withFailureHandler(function() {})
+    .getMiDisponibilidad(String(currentUser.cedula));
+}
 var dispFotoData = null;
 var dispTimer = null;
 
@@ -27867,7 +27912,7 @@ document.getElementById('disp-confirmar').addEventListener('click', function() {
       info.innerHTML = res && res.status === 'success'
         ? '<i class="bi bi-check-circle-fill" style="color:#198754"></i> ' + res.message
         : '<span style="color:#dc3545">Error: ' + ((res && res.message) || 'desconocido') + '</span>';
-      if (res && res.status === 'success') setTimeout(function(){ info.style.display = 'none'; }, 4000);
+      if (res && res.status === 'success') { actualizarMiStatusChip(); setTimeout(function(){ info.style.display = 'none'; }, 4000); }
     })
     .withFailureHandler(function(err) {
       info.innerHTML = '<span style="color:#dc3545">Error de conexión: ' + (err && err.message ? err.message : '') + '</span>';
