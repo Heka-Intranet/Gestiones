@@ -20671,7 +20671,9 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 
         // Bloques de 50: cada llamada lee la hoja y escribe; así ninguna supera
         // con seguridad el timeout de 45s del shim
-        const TAMANO = 50;
+        // Con valores pegados el backend consulta la API por guia: bloques mas
+        // pequenos para no superar el timeout de 45s. Sin valores, de a 50.
+        const TAMANO = guias.some(function(p) { return p.valor !== null; }) ? 10 : 50;
         const bloques = [];
         // cada bloque viaja como lineas "guia<TAB>valor" (o solo "guia" si no trae valor)
         const comoTexto = guias.map(function(p) { return p.valor ? p.guia + String.fromCharCode(9) + p.valor : p.guia; });
