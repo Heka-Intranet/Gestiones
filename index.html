@@ -6928,9 +6928,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </a>
 </div>
 <div class="user-profile-container" id="userProfileContainer" onclick="toggleUserDropdown(event)">
-<button type="button" id="disp-status-chip" onclick="event.stopPropagation(); goToPanel('panel-status');" title="Registrar mi estado" style="display:none;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;border:1.5px solid #888;background:transparent;color:#cbd5e1;font-size:12px;font-weight:700;cursor:pointer;transition:all .3s ease;">
-<span id="disp-status-chip-text">Status</span>
-</button>
 <div class="user-info">
 <div class="user-name" id="headerUserName">Usuario</div>
 <div class="user-role" id="headerUserRole">Colaborador</div>
@@ -6938,6 +6935,10 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <img alt="Perfil" class="user-avatar" id="headerUserImg" src="https://ui-avatars.com/api/?name=Usuario&amp;background=random"/>
 <i class="bi bi-chevron-down dropdown-icon"></i>
 <div class="dropdown-menu" id="userDropdown">
+<a class="dropdown-item" id="disp-status-menu-item" href="#" onclick="toggleUserDropdown(event); goToPanel('panel-status');" style="display:none;justify-content:space-between;align-items:center;">
+<span><i class="bi bi-person-check-fill" style="margin-right:8px;"></i>Mi Status</span>
+<span id="disp-status-menu-estado" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid #6b7280;color:#6b7280;">Sin registro</span>
+</a>
 <a class="dropdown-item" href="#" onclick="openMyData()">
 <i class="bi bi-person"></i> Mis Datos
             </a>
@@ -27829,23 +27830,24 @@ var DISP_ESTADOS_CHIP = {
   'SALIDA':         { texto: 'Salido',       color: '#ef4444' }
 };
 
-// Pinta el chip del perfil y colorea el contenedor segun mi estado actual
+// Colorea el contorno del perfil y el item "Mi Status" del menu segun mi estado
 function actualizarMiStatusChip() {
-  var chip = document.getElementById('disp-status-chip');
-  if (!chip || !currentUser || !currentUser.cedula) return;
+  if (!currentUser || !currentUser.cedula) return;
   var permiso = currentUser.role === 'Administrador' || (currentUser.permissions || '').includes('status');
-  if (!permiso) { chip.style.display = 'none'; return; }
-  chip.style.display = 'inline-flex';
+  var item = document.getElementById('disp-status-menu-item');
+  if (item) item.style.display = permiso ? 'flex' : 'none';
+  if (!permiso) return;
   google.script.run
     .withSuccessHandler(function(res) {
       if (!res || res.status !== 'success') return;
       var est = res.evento ? (DISP_ESTADOS_CHIP[res.evento] || { texto: res.evento, color: '#888' }) : { texto: 'Sin registro', color: '#6b7280' };
-      var texto = document.getElementById('disp-status-chip-text');
+      var badge = document.getElementById('disp-status-menu-estado');
       var cont = document.getElementById('userProfileContainer');
-      texto.innerText = est.texto;
-      chip.style.color = est.color;
-      chip.style.borderColor = est.color;
-      chip.style.background = est.color + '1f';
+      if (badge) {
+        badge.innerText = est.texto;
+        badge.style.color = est.color;
+        badge.style.borderColor = est.color;
+      }
       if (cont) {
         cont.style.border = '1.5px solid ' + est.color;
         cont.style.boxShadow = '0 0 14px ' + est.color + '40';
