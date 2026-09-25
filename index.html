@@ -7496,8 +7496,9 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 .disp-card{background:linear-gradient(155deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.09);border-radius:18px;overflow:hidden;transition:all .25s ease;position:relative;}
 .disp-card:hover{transform:translateY(-4px);border-color:var(--dc,#888);box-shadow:0 12px 28px -10px var(--dc,#888);}
 .disp-card-barra{height:4px;background:linear-gradient(90deg,var(--dc,#888),transparent);}
-.disp-card-foto{width:100%;height:150px;object-fit:cover;display:block;background:#0d141d;}
-.disp-card-foto.vacia{display:flex;align-items:center;justify-content:center;font-size:44px;color:#2a3947;font-weight:800;}
+.disp-card-cabecera{padding:18px 14px 0;text-align:center;}
+.disp-card-foto{width:86px;height:86px;border-radius:50%;object-fit:cover;display:inline-block;background:#0d141d;border:3px solid var(--dc,#888);box-shadow:0 0 16px var(--dc,#888)55;}
+.disp-card-foto.vacia{display:inline-flex;align-items:center;justify-content:center;font-size:28px;color:#8b98a8;font-weight:800;}
 .disp-card-cuerpo{padding:13px 14px;}
 .disp-card-nombre{font-weight:700;font-size:14.5px;color:#eaf1f8;line-height:1.25;}
 .disp-card-cedula{font-size:11.5px;color:#7f8b9b;margin:2px 0 9px;}
@@ -28046,10 +28047,11 @@ function cargarPanelDisponibilidad() {
           if (m) thumb = 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400';
         }
         var iniciales = (u.nombre || '?').split(' ').map(function(p){return p.charAt(0);}).slice(0,2).join('').toUpperCase();
-        var fallback = '<div class="disp-card-foto vacia">' + iniciales + '</div>'.replace(/"/g, '&quot;');
-        var fotoHtml = thumb
-          ? '<img class="disp-card-foto" src="' + thumb + '" alt="evidencia" data-fb="' + fallback + '" onerror="this.outerHTML=this.dataset.fb">'
-          : '<div class="disp-card-foto vacia">' + iniciales + '</div>';
+        var fotoHtml = '<div class="disp-card-cabecera">'
+          + (thumb
+              ? '<img class="disp-card-foto" src="' + thumb + '" alt="' + (u.nombre || '') + '" onerror="this.style.display=&#39;none&#39;;this.nextElementSibling.style.display=&#39;inline-flex&#39;"><div class="disp-card-foto vacia" style="display:none">' + iniciales + '</div>'
+              : '<div class="disp-card-foto vacia">' + iniciales + '</div>')
+          + '</div>';
         return '<div class="disp-card" style="--dc:' + est.color + '">'
           + '<div class="disp-card-barra"></div>'
           + fotoHtml
