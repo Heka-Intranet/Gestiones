@@ -10655,12 +10655,32 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
 <div>
 <label style="font-size: 12px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 4px;">Transportadora</label>
-<select class="form-input" id="cunmasivo-tipo" style="width: 100%;">
+<select class="form-input" id="cunmasivo-tipo" style="width: 100%; display: none;">
 <option value="inter">Inter Rapidísimo (CUN MASIVO)</option>
 <option value="servi">Servientrega (CUN MASIVO)</option>
 <option value="coord">Coordinadora (COMPROBANTE MASIVO)</option>
 <option value="tcc">TCC (COMPROBANTE MASIVO)</option>
 </select>
+<div id="cunmasivo-logos" style="display:flex;gap:12px;justify-content:space-between;">
+<button type="button" class="cun-logo-opt" data-valor="inter" onclick="seleccionarLogoCun('inter')" title="Inter Rapidísimo (CUN MASIVO)">
+<img src="https://i.postimg.cc/2jqJ616Y/Interrapidisimo.png" alt="Inter"><span>CUN</span></button>
+<button type="button" class="cun-logo-opt" data-valor="servi" onclick="seleccionarLogoCun('servi')" title="Servientrega (CUN MASIVO)">
+<img src="https://i.postimg.cc/tCk1Jf6X/images-(1).png" alt="Servi"><span>CUN</span></button>
+<button type="button" class="cun-logo-opt" data-valor="coord" onclick="seleccionarLogoCun('coord')" title="Coordinadora (COMPROBANTE MASIVO)">
+<img src="https://i.postimg.cc/66LZC0Tf/logo-coordinadora-efficommerce-1-Photoroom.png" alt="Coord"><span>Comp.</span></button>
+<button type="button" class="cun-logo-opt" data-valor="tcc" onclick="seleccionarLogoCun('tcc')" title="TCC (COMPROBANTE MASIVO)">
+<img src="https://i.postimg.cc/1XJ42vNB/Logo-TCC-svg.png" alt="TCC"><span>Comp.</span></button>
+</div>
+
+<style>
+.cun-logo-opt{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border-radius:16px;cursor:pointer;background:linear-gradient(155deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:2px solid rgba(255,255,255,.09);transition:all .25s ease;}
+.cun-logo-opt img{width:52px;height:52px;border-radius:50%;object-fit:contain;background:#fff;padding:4px;border:2.5px solid transparent;transition:all .25s ease;}
+.cun-logo-opt span{font-size:10.5px;font-weight:700;color:#8b98a8;letter-spacing:.5px;}
+.cun-logo-opt:hover{transform:translateY(-2px);border-color:rgba(255,196,0,.45);}
+.cun-logo-opt.seleccionada{border-color:#ffc400;box-shadow:0 0 18px rgba(255,196,0,.25);}
+.cun-logo-opt.seleccionada img{border-color:#ffc400;box-shadow:0 0 12px rgba(255,196,0,.45);}
+.cun-logo-opt.seleccionada span{color:#ffc400;}
+</style>
 </div>
 <div>
 <label style="font-size: 12px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 4px;">Número de CUN / Comprobante</label>
@@ -20557,10 +20577,18 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
         });
     });
 
+    function seleccionarLogoCun(valor) {
+        document.getElementById('cunmasivo-tipo').value = valor;
+        document.querySelectorAll('.cun-logo-opt').forEach(function(b) {
+            b.classList.toggle('seleccionada', b.getAttribute('data-valor') === valor);
+        });
+    }
+
     function abrirModalCunMasivo() {
         // Preseleccionar la transportadora de la pestaña activa (si hay)
         const sel = document.getElementById('cunmasivo-tipo');
         if (sel && currentIndemnizationType) sel.value = currentIndemnizationType;
+        seleccionarLogoCun(document.getElementById('cunmasivo-tipo').value);
         const res = document.getElementById('cunmasivo-resultado');
         if (res) { res.style.display = 'none'; res.textContent = ''; }
         const btn = document.getElementById('btn-ejecutar-cunmasivo');
