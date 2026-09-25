@@ -13085,6 +13085,7 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
 
       if (panelId === 'panel-check-recarga') {
         cargarCheckRecarga(); // <--- AGREGA ESTO PARA QUE CARGUE SOLO
+      }
 
       if (panelId === 'panel-activacion-inter') {
         cargarPreviewActivacionInter();
@@ -13097,7 +13098,6 @@ Pega las guías y el número de CUN (o comprobante). Si la guía ya existe se ac
       } else if (dispTimer) {
         clearInterval(dispTimer); // dejar de refrescar al salir del panel
         dispTimer = null;
-      }
       }
 
       if (clickedElement) {
