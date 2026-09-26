@@ -19305,11 +19305,33 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         }
 
         // =====================================================
+        // REGLA PRIORITARIA:
+        // Si Valor CE == Comisión Transp. + Flete Heka
+        // Seller = CE - ComTrans - ComHeka - ComHekaAdic
+        // =====================================================
+
+        if (
+            COMISION_TRANSPORTADORA_FLETE > 0 &&
+            Math.abs(VALOR_CE - COMISION_TRANSPORTADORA_FLETE) < 0.01
+        ) {
+
+            VALOR_FINAL_PAGAR_SELLER =
+                VALOR_CE
+                - COMISION_TRANSPORTADORA_FLETE
+                - COMISION_HEKA
+                - COMISION_HEKA_ADICIONAL;
+
+            if (VALOR_FINAL_PAGAR_SELLER < 0) {
+                VALOR_FINAL_PAGAR_SELLER = 0;
+            }
+        }
+
+        // =====================================================
         // CASO:
         // PAGO CONTRAENTREGA / PAGO DESTINO
         // =====================================================
 
-        if (
+        else if (
             TIPO_SERVICIO === "PAGO CONTRAENTREGA" ||
             TIPO_SERVICIO === "PAGO DESTINO"
         ) {
