@@ -19306,13 +19306,13 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 
         // =====================================================
         // REGLA PRIORITARIA:
-        // Si Valor CE == Comisión Transp. + Flete Heka
+        // Si Valor CE == Valor Recaudo - Seguro
         // Seller = CE - ComTrans - ComHeka - ComHekaAdic
         // =====================================================
 
         if (
-            COMISION_TRANSPORTADORA_FLETE > 0 &&
-            Math.abs(VALOR_CE - COMISION_TRANSPORTADORA_FLETE) < 0.01
+            VALOR_RECAUDO_SEGURO > 0 &&
+            Math.abs(VALOR_CE - VALOR_RECAUDO_SEGURO) < 0.01
         ) {
 
             VALOR_FINAL_PAGAR_SELLER =
