@@ -6822,6 +6822,21 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 
+<!-- MENU SOFTWARE / MESA DE AYUDA -->
+<div class="nav-accordion-item" id="nav-software-wrapper">
+<div class="nav-item" onclick="toggleSubmenu('submenu-software')">
+<i class="bi bi-code-slash"></i><span>Software</span><i class="bi bi-chevron-down accordion-arrow"></i>
+</div>
+<div class="nav-submenu" id="submenu-software">
+<a class="nav-item sub-item" data-target="mesa_ayuda" href="#" onclick="goToPanel('panel-mesa-ayuda', this)">
+<i class="bi bi-ticket-detailed"></i><span>Mis solicitudes</span>
+</a>
+<a class="nav-item sub-item" data-target="mesa_ayuda_dev" href="#" onclick="goToPanel('panel-mesa-ayuda-dev', this)">
+<i class="bi bi-hdd-stack"></i><span>Mesa de desarrollo</span>
+</a>
+</div>
+</div>
+
 <!-- NUEVO MENU PLATAFORMA DRIVE -->
 
 <!-- NUEVO MENU TALENTO HUMANO -->
@@ -7570,6 +7585,160 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 <!-- ================= FIN PANEL ACTIVACION INTER ================= -->
+
+<!-- ================= PANEL SOFTWARE: MIS SOLICITUDES (COLABORADOR) ================= -->
+<div class="panel" id="panel-mesa-ayuda">
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="margin:0;"><i class="bi bi-ticket-detailed" style="color:var(--primary-yellow);"></i> Mis solicitudes</h1>
+      <p style="margin:6px 0 0;color:#8b98a8;">Reporta errores o fallas de plataforma al área de Software</p>
+    </div>
+    <button class="btn btn-primary" onclick="abrirModalNuevaSolicitudSW()" style="display:inline-flex;align-items:center;gap:8px;">
+      <i class="bi bi-plus-circle-fill"></i> Nueva solicitud
+    </button>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
+      <select id="sw-filtro-mis" class="form-input" style="max-width:200px;" onchange="cargarMisSolicitudesSW()">
+        <option value="TODOS">Todos los estados</option>
+        <option value="ABIERTA">Abiertas</option>
+        <option value="EN GESTION">En gestión</option>
+        <option value="SOLUCIONADO">Solucionadas</option>
+      </select>
+      <button class="btn btn-secondary btn-sm" onclick="cargarMisSolicitudesSW()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Título</th>
+            <th>Prioridad</th>
+            <th>Tiempo</th>
+            <th>Estado</th>
+            <th>Dev</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="sw-mis-tbody">
+          <tr><td colspan="8" style="text-align:center;color:#8b98a8;">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PANEL SOFTWARE: MESA DE DESARROLLO ================= -->
+<div class="panel" id="panel-mesa-ayuda-dev">
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="margin:0;"><i class="bi bi-hdd-stack" style="color:var(--primary-yellow);"></i> Mesa de desarrollo</h1>
+      <p style="margin:6px 0 0;color:#8b98a8;">Gestiona, responde y cierra solicitudes del equipo</p>
+    </div>
+    <button class="btn btn-secondary" onclick="cargarSolicitudesDevSW()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
+      <select id="sw-filtro-dev" class="form-input" style="max-width:220px;" onchange="cargarSolicitudesDevSW()">
+        <option value="ACTIVAS" selected>Activas (Abiertas + En gestión)</option>
+        <option value="ABIERTA">Solo abiertas</option>
+        <option value="EN GESTION">En gestión</option>
+        <option value="SOLUCIONADO">Solucionadas</option>
+        <option value="TODOS">Todas</option>
+      </select>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Solicitante</th>
+            <th>Título</th>
+            <th>Prioridad</th>
+            <th>Tiempo</th>
+            <th>Estado</th>
+            <th>Asignado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="sw-dev-tbody">
+          <tr><td colspan="9" style="text-align:center;color:#8b98a8;">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVA SOLICITUD SOFTWARE -->
+<div id="modal-sw-nueva" style="display:none;position:fixed;inset:0;background:rgba(2,6,12,.85);backdrop-filter:blur(8px);z-index:9997;align-items:center;justify-content:center;">
+  <div style="max-width:560px;width:94%;background:linear-gradient(160deg,rgba(20,14,34,.97),rgba(8,12,20,.97));border:1px solid rgba(167,139,250,.3);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden;">
+    <div style="padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;">
+      <div style="color:#eaf1f8;font-weight:800;font-size:16px;"><i class="bi bi-plus-circle" style="color:#a78bfa;"></i> Nueva solicitud a Software</div>
+      <button type="button" onclick="cerrarModalNuevaSolicitudSW()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div style="padding:18px 22px;display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Título *</label>
+        <input id="sw-nueva-titulo" class="form-input" type="text" placeholder="Ej: Error al generar guía en Inter" style="width:100%;margin-top:6px;"/>
+      </div>
+      <div>
+        <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Descripción del error / falla *</label>
+        <textarea id="sw-nueva-desc" class="form-input" rows="4" placeholder="Describe qué ocurre, en qué pantalla, pasos para reproducirlo..." style="width:100%;margin-top:6px;resize:vertical;"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Prioridad</label>
+          <select id="sw-nueva-prioridad" class="form-input" style="width:100%;margin-top:6px;">
+            <option value="Baja">Baja</option>
+            <option value="Media" selected>Media</option>
+            <option value="Alta">Alta</option>
+            <option value="Crítica">Crítica</option>
+          </select>
+        </div>
+        <div>
+          <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Tiempo esperado de solución</label>
+          <input id="sw-nueva-tiempo" class="form-input" type="text" placeholder="Ej: 24 horas, 2 días" style="width:100%;margin-top:6px;"/>
+        </div>
+      </div>
+    </div>
+    <div style="padding:14px 22px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:flex-end;gap:10px;">
+      <button type="button" class="btn btn-secondary" onclick="cerrarModalNuevaSolicitudSW()">Cancelar</button>
+      <button type="button" class="btn btn-primary" onclick="enviarNuevaSolicitudSW()"><i class="bi bi-send-fill"></i> Enviar solicitud</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE + CHAT SOFTWARE -->
+<div id="modal-sw-chat" style="display:none;position:fixed;inset:0;background:rgba(2,6,12,.88);backdrop-filter:blur(8px);z-index:9998;align-items:center;justify-content:center;">
+  <div style="max-width:720px;width:96%;max-height:90vh;display:flex;flex-direction:column;background:linear-gradient(160deg,rgba(14,18,28,.98),rgba(8,12,20,.98));border:1px solid rgba(167,139,250,.28);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.65);overflow:hidden;">
+    <div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;gap:12px;">
+      <div style="flex:1;min-width:0;">
+        <div id="sw-chat-id" style="color:#a78bfa;font-size:12px;font-weight:700;letter-spacing:.4px;"></div>
+        <div id="sw-chat-titulo" style="color:#eaf1f8;font-weight:800;font-size:16px;margin-top:2px;"></div>
+        <div id="sw-chat-meta" style="color:#8b98a8;font-size:12px;margin-top:4px;"></div>
+      </div>
+      <span id="sw-chat-estado-badge" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;"></span>
+      <button type="button" onclick="cerrarModalChatSW()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;flex-shrink:0;"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div id="sw-chat-mensajes" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px;min-height:220px;max-height:48vh;"></div>
+    <div id="sw-chat-acciones-dev" style="display:none;padding:8px 20px;border-top:1px solid rgba(255,255,255,.05);gap:8px;flex-wrap:wrap;">
+      <button type="button" id="sw-btn-tomar" class="btn btn-secondary btn-sm" onclick="tomarCasoSW()"><i class="bi bi-hand-index-thumb"></i> Tomar caso</button>
+      <button type="button" id="sw-btn-solucionar" class="btn btn-primary btn-sm" onclick="marcarSolucionadoSW()" style="background:linear-gradient(135deg,#22c55e,#16a34a);"><i class="bi bi-check-circle-fill"></i> Marcar solucionado</button>
+    </div>
+    <div id="sw-chat-composer" style="padding:12px 20px 16px;border-top:1px solid rgba(255,255,255,.07);display:flex;gap:10px;align-items:flex-end;">
+      <textarea id="sw-chat-input" rows="2" placeholder="Escribe tu respuesta..." style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eaf1f8;font-size:13.5px;padding:10px 12px;outline:none;resize:none;"></textarea>
+      <button type="button" class="btn btn-primary" onclick="enviarMensajeChatSW()" style="height:42px;"><i class="bi bi-send-fill"></i></button>
+    </div>
+    <div id="sw-chat-cerrado" style="display:none;padding:14px 20px;text-align:center;color:#8b98a8;font-size:13px;border-top:1px solid rgba(255,255,255,.07);">
+      <i class="bi bi-lock-fill" style="color:#22c55e;"></i> Caso solucionado — el chat está cerrado
+    </div>
+  </div>
+</div>
+
 
 <div class="panel" id="panel-gestion-anular">
 <div class="page-header">
@@ -9871,6 +10040,31 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <span class="slider round"></span>
 </div>
 <span>Activación Inter</span>
+</label>
+</div>
+</div>
+</div>
+<!-- ACORDEÓN SOFTWARE -->
+<div class="accordion-item">
+<div class="accordion-header" onclick="toggleAccordion(this)">
+<span><i class="bi bi-code-slash" style="margin-right:8px; color:var(--primary-dark);"></i> SOFTWARE</span>
+<i class="bi bi-chevron-down"></i>
+</div>
+<div class="accordion-body">
+<div class="checkbox-group">
+<label class="checkbox-item">
+<div class="switch">
+<input class="perm-check" type="checkbox" value="mesa_ayuda"/>
+<span class="slider round"></span>
+</div>
+<span>Mis solicitudes (Colaborador)</span>
+</label>
+<label class="checkbox-item">
+<div class="switch">
+<input class="perm-check" type="checkbox" value="mesa_ayuda_dev"/>
+<span class="slider round"></span>
+</div>
+<span>Mesa de desarrollo</span>
 </label>
 </div>
 </div>
@@ -12901,6 +13095,11 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       
       navItems.forEach(item => {
         const target = item.getAttribute('data-target');
+        // Mesa de ayuda colaborador: visible para todos los usuarios logueados
+        if (target === 'mesa_ayuda') {
+          item.style.display = 'flex';
+          return;
+        }
         if (!perms.includes(target)) {
           item.style.display = 'none';
         } else {
@@ -13248,6 +13447,17 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 
       if (panelId === 'panel-activacion-inter') {
         cargarPreviewActivacionInter();
+      }
+
+      if (panelId === 'panel-mesa-ayuda') {
+        cargarMisSolicitudesSW();
+      }
+      if (panelId === 'panel-mesa-ayuda-dev') {
+        cargarSolicitudesDevSW();
+      }
+      // Detener polling del chat SW al cambiar de panel
+      if (panelId !== 'panel-mesa-ayuda' && panelId !== 'panel-mesa-ayuda-dev') {
+        if (typeof swStopChatPolling === 'function') swStopChatPolling();
       }
 
       if (panelId === 'panel-status') {
@@ -28655,6 +28865,319 @@ function cargarPreviewActivacionInter() {
     })
     .getActivacionesInterPreview();
 }
+
+
+/* ============================================================
+   SOFTWARE — MESA DE AYUDA (colaborador + desarrollador + chat)
+   ============================================================ */
+var swTicketActual = null;
+var swModoVista = 'colaborador'; // 'colaborador' | 'dev'
+var swChatTimer = null;
+var swChatUltimoCount = 0;
+
+function swBadgeEstado(estado) {
+  var e = String(estado || '').toUpperCase();
+  var map = {
+    'ABIERTA': { bg: 'rgba(59,130,246,.18)', color: '#60a5fa', label: 'Abierta' },
+    'EN GESTION': { bg: 'rgba(251,191,36,.18)', color: '#fbbf24', label: 'En gestión' },
+    'SOLUCIONADO': { bg: 'rgba(34,197,94,.18)', color: '#4ade80', label: 'Solucionado' }
+  };
+  var m = map[e] || { bg: 'rgba(255,255,255,.08)', color: '#cbd5e1', label: estado || '-' };
+  return '<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:' + m.bg + ';color:' + m.color + ';">' + m.label + '</span>';
+}
+
+function swBadgePrioridad(p) {
+  var map = {
+    'Baja': '#94a3b8', 'Media': '#60a5fa', 'Alta': '#fbbf24', 'Crítica': '#f87171'
+  };
+  var c = map[p] || '#94a3b8';
+  return '<span style="color:' + c + ';font-weight:700;">' + (p || '-') + '</span>';
+}
+
+function swFmtFecha(iso) {
+  if (!iso) return '-';
+  try {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso).slice(0, 16);
+    return d.toLocaleString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  } catch (e) { return String(iso).slice(0, 16); }
+}
+
+function abrirModalNuevaSolicitudSW() {
+  document.getElementById('sw-nueva-titulo').value = '';
+  document.getElementById('sw-nueva-desc').value = '';
+  document.getElementById('sw-nueva-prioridad').value = 'Media';
+  document.getElementById('sw-nueva-tiempo').value = '';
+  document.getElementById('modal-sw-nueva').style.display = 'flex';
+}
+function cerrarModalNuevaSolicitudSW() {
+  document.getElementById('modal-sw-nueva').style.display = 'none';
+}
+
+function enviarNuevaSolicitudSW() {
+  var titulo = (document.getElementById('sw-nueva-titulo').value || '').trim();
+  var desc = (document.getElementById('sw-nueva-desc').value || '').trim();
+  var prioridad = document.getElementById('sw-nueva-prioridad').value;
+  var tiempo = (document.getElementById('sw-nueva-tiempo').value || '').trim();
+  if (!titulo) return showToast('Escribe un título para la solicitud.');
+  if (!desc) return showToast('Describe el error o la falla.');
+  showLoading(true);
+  google.script.run
+    .withSuccessHandler(function(res) {
+      showLoading(false);
+      if (!res || res.status !== 'success') {
+        return showToast((res && res.message) || 'No se pudo crear la solicitud.');
+      }
+      showToast('Solicitud creada: ' + res.id);
+      cerrarModalNuevaSolicitudSW();
+      cargarMisSolicitudesSW();
+    })
+    .withFailureHandler(function(e) {
+      showLoading(false);
+      showToast('Error: ' + (e.message || e));
+    })
+    .crearSolicitudSoftware({
+      titulo: titulo,
+      descripcion: desc,
+      prioridad: prioridad,
+      tiempoSolicitado: tiempo,
+      solicitante: currentUser.name || '',
+      cedula: currentUser.cedula || ''
+    });
+}
+
+function cargarMisSolicitudesSW() {
+  var tbody = document.getElementById('sw-mis-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b98a8;">Cargando...</td></tr>';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || res.status !== 'success') {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#f87171;">Error al cargar</td></tr>';
+        return;
+      }
+      var filtro = (document.getElementById('sw-filtro-mis') || {}).value || 'TODOS';
+      var data = (res.data || []).filter(function(t) {
+        if (filtro === 'TODOS') return true;
+        return String(t.estado).toUpperCase() === filtro;
+      });
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b98a8;">No tienes solicitudes aún. Crea la primera con el botón de arriba.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(function(t) {
+        return '<tr>'
+          + '<td style="font-family:monospace;font-size:12px;">' + t.id + '</td>'
+          + '<td style="font-size:12px;">' + swFmtFecha(t.fecha) + '</td>'
+          + '<td><strong>' + (t.titulo || '') + '</strong></td>'
+          + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
+          + '<td style="font-size:12px;">' + (t.tiempoSolicitado || '-') + '</td>'
+          + '<td>' + swBadgeEstado(t.estado) + '</td>'
+          + '<td style="font-size:12px;">' + (t.desarrollador || '-') + '</td>'
+          + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + t.id + '\',\'colaborador\')"><i class="bi bi-chat-dots"></i></button></td>'
+          + '</tr>';
+      }).join('');
+    })
+    .withFailureHandler(function() {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#f87171;">Error de conexión</td></tr>';
+    })
+    .listarMisSolicitudesSoftware(currentUser.cedula || '');
+}
+
+function cargarSolicitudesDevSW() {
+  var tbody = document.getElementById('sw-dev-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#8b98a8;">Cargando...</td></tr>';
+  var filtro = (document.getElementById('sw-filtro-dev') || {}).value || 'ACTIVAS';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || res.status !== 'success') {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#f87171;">Error al cargar</td></tr>';
+        return;
+      }
+      var data = res.data || [];
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#8b98a8;">No hay solicitudes en este filtro.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(function(t) {
+        return '<tr>'
+          + '<td style="font-family:monospace;font-size:12px;">' + t.id + '</td>'
+          + '<td style="font-size:12px;">' + swFmtFecha(t.fecha) + '</td>'
+          + '<td style="font-size:12px;">' + (t.solicitante || '') + '</td>'
+          + '<td><strong>' + (t.titulo || '') + '</strong></td>'
+          + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
+          + '<td style="font-size:12px;">' + (t.tiempoSolicitado || '-') + '</td>'
+          + '<td>' + swBadgeEstado(t.estado) + '</td>'
+          + '<td style="font-size:12px;">' + (t.desarrollador || '-') + '</td>'
+          + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + t.id + '\',\'dev\')"><i class="bi bi-chat-dots"></i></button></td>'
+          + '</tr>';
+      }).join('');
+    })
+    .withFailureHandler(function() {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#f87171;">Error de conexión</td></tr>';
+    })
+    .listarTodasSolicitudesSoftware(filtro);
+}
+
+function swStopChatPolling() {
+  if (swChatTimer) { clearInterval(swChatTimer); swChatTimer = null; }
+}
+
+function abrirChatSW(id, modo) {
+  swTicketActual = id;
+  swModoVista = modo || 'colaborador';
+  swChatUltimoCount = 0;
+  document.getElementById('modal-sw-chat').style.display = 'flex';
+  document.getElementById('sw-chat-mensajes').innerHTML = '<div style="text-align:center;color:#8b98a8;padding:20px;">Cargando conversación...</div>';
+  refrescarDetalleYChatSW();
+  swStopChatPolling();
+  swChatTimer = setInterval(function() {
+    if (document.getElementById('modal-sw-chat').style.display === 'flex') {
+      refrescarDetalleYChatSW(true);
+    } else {
+      swStopChatPolling();
+    }
+  }, 30000);
+}
+
+function cerrarModalChatSW() {
+  swStopChatPolling();
+  swTicketActual = null;
+  document.getElementById('modal-sw-chat').style.display = 'none';
+  if (swModoVista === 'dev') cargarSolicitudesDevSW();
+  else cargarMisSolicitudesSW();
+}
+
+function refrescarDetalleYChatSW(silencioso) {
+  if (!swTicketActual) return;
+  google.script.run
+    .withSuccessHandler(function(det) {
+      if (!det || det.status !== 'success' || !det.data) {
+        if (!silencioso) showToast('No se pudo cargar la solicitud.');
+        return;
+      }
+      var t = det.data;
+      document.getElementById('sw-chat-id').textContent = t.id;
+      document.getElementById('sw-chat-titulo').textContent = t.titulo || '';
+      document.getElementById('sw-chat-meta').textContent =
+        (t.solicitante || '') + ' · Prioridad ' + (t.prioridad || '-') +
+        (t.tiempoSolicitado ? ' · Tiempo: ' + t.tiempoSolicitado : '') +
+        (t.desarrollador ? ' · Dev: ' + t.desarrollador : '');
+      document.getElementById('sw-chat-estado-badge').outerHTML =
+        '<span id="sw-chat-estado-badge">' + swBadgeEstado(t.estado) + '</span>';
+
+      var cerrado = String(t.estado).toUpperCase() === 'SOLUCIONADO';
+      document.getElementById('sw-chat-composer').style.display = cerrado ? 'none' : 'flex';
+      document.getElementById('sw-chat-cerrado').style.display = cerrado ? 'block' : 'none';
+
+      var acciones = document.getElementById('sw-chat-acciones-dev');
+      if (swModoVista === 'dev' && !cerrado) {
+        acciones.style.display = 'flex';
+        var btnTomar = document.getElementById('sw-btn-tomar');
+        var btnSol = document.getElementById('sw-btn-solucionar');
+        if (btnTomar) btnTomar.style.display = (String(t.estado).toUpperCase() === 'ABIERTA') ? 'inline-flex' : 'none';
+        if (btnSol) btnSol.style.display = 'inline-flex';
+      } else {
+        acciones.style.display = 'none';
+      }
+
+      google.script.run
+        .withSuccessHandler(function(chat) {
+          renderChatMensajesSW((chat && chat.data) || [], cerrado);
+        })
+        .obtenerChatSoftware(swTicketActual);
+    })
+    .obtenerDetalleSolicitudSoftware(swTicketActual);
+}
+
+function renderChatMensajesSW(msgs, cerrado) {
+  var box = document.getElementById('sw-chat-mensajes');
+  if (!msgs.length) {
+    box.innerHTML = '<div style="text-align:center;color:#8b98a8;padding:20px;">Sin mensajes aún.</div>';
+    return;
+  }
+  var miCedula = String(currentUser.cedula || '');
+  var html = msgs.map(function(m) {
+    var mio = String(m.cedula || '') === miCedula;
+    var esDev = String(m.rol || '').toUpperCase() === 'DESARROLLADOR';
+    var align = mio ? 'flex-end' : 'flex-start';
+    var bg = mio
+      ? 'linear-gradient(135deg,rgba(167,139,250,.35),rgba(111,66,193,.25))'
+      : (esDev ? 'rgba(34,197,94,.12)' : 'rgba(255,255,255,.06)');
+    var border = mio ? 'rgba(167,139,250,.35)' : (esDev ? 'rgba(34,197,94,.25)' : 'rgba(255,255,255,.08)');
+    var rolTag = esDev
+      ? '<span style="color:#4ade80;font-size:10px;font-weight:700;">DEV</span>'
+      : '<span style="color:#94a3b8;font-size:10px;font-weight:700;">COLAB</span>';
+    return '<div style="display:flex;justify-content:' + align + ';">'
+      + '<div style="max-width:78%;background:' + bg + ';border:1px solid ' + border + ';border-radius:14px;padding:10px 12px;">'
+      + '<div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">'
+      + '<strong style="color:#eaf1f8;font-size:12px;">' + (m.autor || '') + '</strong>'
+      + rolTag
+      + '<span style="color:#6b7a8d;font-size:10px;margin-left:auto;">' + swFmtFecha(m.fecha) + '</span>'
+      + '</div>'
+      + '<div style="color:#cbd5e1;font-size:13.5px;white-space:pre-wrap;line-height:1.45;">' + String(m.mensaje || '').replace(/</g,'&lt;') + '</div>'
+      + '</div></div>';
+  }).join('');
+  var scrollBottom = !swChatUltimoCount || msgs.length !== swChatUltimoCount;
+  swChatUltimoCount = msgs.length;
+  box.innerHTML = html;
+  if (scrollBottom) box.scrollTop = box.scrollHeight;
+}
+
+function enviarMensajeChatSW() {
+  if (!swTicketActual) return;
+  var input = document.getElementById('sw-chat-input');
+  var msg = (input.value || '').trim();
+  if (!msg) return showToast('Escribe un mensaje.');
+  var rol = (swModoVista === 'dev') ? 'DESARROLLADOR' : 'COLABORADOR';
+  input.value = '';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || res.status !== 'success') {
+        showToast((res && res.message) || 'No se pudo enviar.');
+        return;
+      }
+      refrescarDetalleYChatSW();
+    })
+    .withFailureHandler(function(e) { showToast('Error: ' + (e.message || e)); })
+    .enviarMensajeSoftware(swTicketActual, currentUser.name || '', currentUser.cedula || '', rol, msg);
+}
+
+function tomarCasoSW() {
+  if (!swTicketActual) return;
+  showLoading(true);
+  google.script.run
+    .withSuccessHandler(function(res) {
+      showLoading(false);
+      showToast((res && res.message) || 'Listo');
+      refrescarDetalleYChatSW();
+      cargarSolicitudesDevSW();
+    })
+    .withFailureHandler(function(e) { showLoading(false); showToast('Error: ' + (e.message || e)); })
+    .tomarSolicitudSoftware(swTicketActual, currentUser.name || '', currentUser.cedula || '');
+}
+
+function marcarSolucionadoSW() {
+  if (!swTicketActual) return;
+  mostrarModalConfirmacion(
+    '¿Marcar esta solicitud como SOLUCIONADO?\n\nEl chat se cerrará y no se podrá reabrir ni responder de nuevo.',
+    function() {
+      showLoading(true);
+      google.script.run
+        .withSuccessHandler(function(res) {
+          showLoading(false);
+          showToast((res && res.message) || 'Solucionado');
+          refrescarDetalleYChatSW();
+          cargarSolicitudesDevSW();
+        })
+        .withFailureHandler(function(e) { showLoading(false); showToast('Error: ' + (e.message || e)); })
+        .marcarSolucionadoSoftware(swTicketActual, currentUser.name || '', currentUser.cedula || '');
+    },
+    { titulo: 'Cerrar caso', textoSi: 'Sí, solucionado', textoNo: 'Cancelar', silenciarCancel: true }
+  );
+}
+
 </script>
 <!-- ================= FIN LOGICA ACTIVACION INTER ================= -->
 
