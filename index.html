@@ -7676,7 +7676,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 
 <!-- MODAL NUEVA SOLICITUD SOFTWARE -->
-<div id="modal-sw-nueva" style="display:none;position:fixed;inset:0;background:rgba(2,6,12,.85);backdrop-filter:blur(8px);z-index:9997;align-items:center;justify-content:center;">
+<div id="modal-sw-nueva" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(2,6,12,.92);backdrop-filter:blur(10px);z-index:100000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
   <div style="max-width:580px;width:94%;max-height:92vh;overflow-y:auto;background:linear-gradient(160deg,rgba(20,14,34,.97),rgba(8,12,20,.97));border:1px solid rgba(167,139,250,.3);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.6);">
     <div style="padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(14,12,24,.98);z-index:1;">
       <div style="color:#eaf1f8;font-weight:800;font-size:16px;"><i class="bi bi-plus-circle" style="color:#a78bfa;"></i> Nueva solicitud a Software</div>
@@ -7731,8 +7731,8 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 
 <!-- MODAL DETALLE + CHAT SOFTWARE -->
-<div id="modal-sw-chat" style="display:none;position:fixed;inset:0;background:rgba(2,6,12,.88);backdrop-filter:blur(8px);z-index:9998;align-items:center;justify-content:center;padding:12px;">
-  <div style="max-width:760px;width:100%;height:min(90vh,720px);display:flex;flex-direction:column;background:linear-gradient(165deg,#0f1520 0%,#0a0e16 100%);border:1px solid rgba(167,139,250,.28);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.65);overflow:hidden;">
+<div id="modal-sw-chat" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(2,6,12,.92);backdrop-filter:blur(10px);z-index:100000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;overflow:hidden;">
+  <div style="max-width:780px;width:100%;height:min(88vh,700px);max-height:calc(100vh - 40px);display:flex;flex-direction:column;background:linear-gradient(165deg,#0f1520 0%,#0a0e16 100%);border:1px solid rgba(167,139,250,.28);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.75);overflow:hidden;position:relative;z-index:1;">
     <!-- Header -->
     <div style="padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,.02);flex-shrink:0;">
       <div style="width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#a78bfa,#6f42c1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -7749,7 +7749,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       </div>
     </div>
     <!-- Messages -->
-    <div id="sw-chat-mensajes" style="flex:1;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;padding:16px 14px;display:flex;flex-direction:column;gap:12px;background:radial-gradient(ellipse at top,rgba(167,139,250,.04),transparent 55%);"></div>
+    <div id="sw-chat-mensajes" style="flex:1;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;padding:18px 20px;display:flex;flex-direction:column;gap:12px;background:radial-gradient(ellipse at top,rgba(167,139,250,.04),transparent 55%);box-sizing:border-box;"></div>
     <!-- Dev actions -->
     <div id="sw-chat-acciones-dev" style="display:none;padding:8px 16px;border-top:1px solid rgba(255,255,255,.05);gap:8px;flex-wrap:wrap;flex-shrink:0;background:rgba(0,0,0,.15);">
       <button type="button" id="sw-btn-tomar" class="btn btn-secondary btn-sm" onclick="tomarCasoSW()"><i class="bi bi-hand-index-thumb"></i> Tomar caso</button>
@@ -10968,7 +10968,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 .cun-logo-opt.seleccionada span{color:#a78bfa;}
 
 .sw-nav-badge{margin-left:auto;background:linear-gradient(135deg,#f87171,#ef4444);color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 0 10px rgba(239,68,68,.45);}
-.sw-bubble{max-width:min(72%,380px);width:fit-content;border-radius:16px;padding:10px 12px;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.18);box-sizing:border-box;overflow:hidden;}
+.sw-bubble{max-width:min(70%,360px);width:fit-content;border-radius:16px;padding:10px 12px;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.18);box-sizing:border-box;overflow:hidden;margin:0 4px;}
 .sw-bubble-colab{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-bottom-left-radius:4px;align-self:flex-start;}
 .sw-bubble-dev{background:linear-gradient(145deg,#7c5cff,#5b3fd4);border:1px solid rgba(255,255,255,.12);border-bottom-right-radius:4px;align-self:flex-end;}
 .sw-bubble-sys{background:rgba(255,196,0,.1);border:1px solid rgba(255,196,0,.28);border-radius:14px;align-self:center;max-width:min(88%,480px);text-align:left;}
@@ -29038,10 +29038,18 @@ function abrirModalNuevaSolicitudSW() {
   if (fi) fi.value = '';
   document.getElementById('sw-nueva-file-name').textContent = 'Ninguno';
   document.getElementById('sw-nueva-preview').style.display = 'none';
-  document.getElementById('modal-sw-nueva').style.display = 'flex';
+  var modal = document.getElementById('modal-sw-nueva');
+  if (modal && modal.parentElement !== document.body) {
+    document.body.appendChild(modal);
+  }
+  modal.style.display = 'flex';
+  modal.style.zIndex = '100000';
+  document.body.style.overflow = 'hidden';
 }
 function cerrarModalNuevaSolicitudSW() {
-  document.getElementById('modal-sw-nueva').style.display = 'none';
+  var modal = document.getElementById('modal-sw-nueva');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 function enviarNuevaSolicitudSW() {
@@ -29182,8 +29190,15 @@ function abrirChatSW(id, modo) {
   swModoVista = modo || 'colaborador';
   swChatUltimoCount = 0;
   swLimpiarAdjuntoChat();
-  document.getElementById('modal-sw-chat').style.display = 'flex';
+  var modal = document.getElementById('modal-sw-chat');
+  // Mover al body para que el sidebar / transform del layout no recorte el chat
+  if (modal && modal.parentElement !== document.body) {
+    document.body.appendChild(modal);
+  }
+  modal.style.display = 'flex';
   document.getElementById('sw-chat-mensajes').innerHTML = '<div style="text-align:center;color:#8b98a8;padding:20px;">Cargando conversación...</div>';
+  // Bloquear scroll del fondo
+  document.body.style.overflow = 'hidden';
   refrescarDetalleYChatSW();
   swStopChatPolling();
   swChatTimer = setInterval(function() {
@@ -29199,7 +29214,9 @@ function cerrarModalChatSW() {
   swStopChatPolling();
   swTicketActual = null;
   swLimpiarAdjuntoChat();
-  document.getElementById('modal-sw-chat').style.display = 'none';
+  var modal = document.getElementById('modal-sw-chat');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
   if (swModoVista === 'dev') cargarSolicitudesDevSW();
   else cargarMisSolicitudesSW();
   swPollNotificaciones(true);
