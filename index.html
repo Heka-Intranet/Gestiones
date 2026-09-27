@@ -7749,7 +7749,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       </div>
     </div>
     <!-- Messages -->
-    <div id="sw-chat-mensajes" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 14px;display:flex;flex-direction:column;gap:12px;background:radial-gradient(ellipse at top,rgba(167,139,250,.04),transparent 55%);"></div>
+    <div id="sw-chat-mensajes" style="flex:1;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;padding:16px 14px;display:flex;flex-direction:column;gap:12px;background:radial-gradient(ellipse at top,rgba(167,139,250,.04),transparent 55%);"></div>
     <!-- Dev actions -->
     <div id="sw-chat-acciones-dev" style="display:none;padding:8px 16px;border-top:1px solid rgba(255,255,255,.05);gap:8px;flex-wrap:wrap;flex-shrink:0;background:rgba(0,0,0,.15);">
       <button type="button" id="sw-btn-tomar" class="btn btn-secondary btn-sm" onclick="tomarCasoSW()"><i class="bi bi-hand-index-thumb"></i> Tomar caso</button>
@@ -10968,12 +10968,18 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 .cun-logo-opt.seleccionada span{color:#a78bfa;}
 
 .sw-nav-badge{margin-left:auto;background:linear-gradient(135deg,#f87171,#ef4444);color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 0 10px rgba(239,68,68,.45);}
-.sw-bubble{max-width:min(78%,420px);border-radius:16px;padding:10px 12px;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.18);}
-.sw-bubble-me{background:linear-gradient(145deg,#7c5cff,#5b3fd4);border:1px solid rgba(255,255,255,.12);border-bottom-right-radius:4px;margin-left:auto;}
-.sw-bubble-other{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;margin-right:auto;}
-.sw-bubble-text{color:#eef2ff;font-size:13.5px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;}
-.sw-bubble-meta{display:flex;gap:8px;align-items:center;margin-bottom:5px;flex-wrap:wrap;}
+.sw-bubble{max-width:min(72%,380px);width:fit-content;border-radius:16px;padding:10px 12px;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.18);box-sizing:border-box;overflow:hidden;}
+.sw-bubble-colab{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-bottom-left-radius:4px;align-self:flex-start;}
+.sw-bubble-dev{background:linear-gradient(145deg,#7c5cff,#5b3fd4);border:1px solid rgba(255,255,255,.12);border-bottom-right-radius:4px;align-self:flex-end;}
+.sw-bubble-sys{background:rgba(255,196,0,.1);border:1px solid rgba(255,196,0,.28);border-radius:14px;align-self:center;max-width:min(88%,480px);text-align:left;}
+.sw-bubble-text{color:#eef2ff;font-size:13.5px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-all;word-wrap:break-word;max-width:100%;}
+.sw-bubble-sys .sw-bubble-text{color:#f5e6a8;}
+.sw-bubble-meta{display:flex;gap:8px;align-items:center;margin-bottom:5px;flex-wrap:wrap;max-width:100%;}
+.sw-bubble-meta strong{overflow:hidden;text-overflow:ellipsis;max-width:160px;white-space:nowrap;}
+.sw-media{max-width:100%;overflow:hidden;}
 .sw-media img,.sw-media video{max-width:100%;max-height:260px;border-radius:10px;margin-top:6px;display:block;background:#000;}
+#sw-chat-mensajes{overflow-x:hidden !important;}
+#sw-chat-titulo,#sw-chat-meta,#sw-chat-id{overflow-wrap:anywhere;word-break:break-word;}
 </style>
 
 <!-- MODAL DETALLE INDEMNIZACIONES (INTER) -->
@@ -29248,24 +29254,42 @@ function renderChatMensajesSW(msgs, cerrado) {
     return;
   }
   var miCedula = String(currentUser.cedula || '');
-  var html = msgs.map(function(m) {
-    var mio = String(m.cedula || '') === miCedula;
+  var html = msgs.map(function(m, idx) {
     var esDev = String(m.rol || '').toUpperCase() === 'DESARROLLADOR';
-    var bubbleClass = mio ? 'sw-bubble sw-bubble-me' : 'sw-bubble sw-bubble-other';
+    var texto = String(m.mensaje || '');
+    // Mensaje de apertura de solicitud -> centrado estilo sistema
+    var esSistema = idx === 0 && /^Solicitud creada:/i.test(texto.trim());
+
+    if (esSistema) {
+      return '<div style="display:flex;justify-content:center;width:100%;padding:4px 0;">'
+        + '<div class="sw-bubble sw-bubble-sys">'
+        + '<div class="sw-bubble-meta" style="justify-content:center;">'
+        + '<span style="color:#ffc400;font-size:10px;font-weight:800;letter-spacing:.4px;"><i class="bi bi-ticket-detailed-fill"></i> SOLICITUD</span>'
+        + '<span style="color:rgba(255,220,120,.7);font-size:10px;">' + swFmtFecha(m.fecha) + '</span>'
+        + '</div>'
+        + (texto ? '<div class="sw-bubble-text">' + swEsc(texto) + '</div>' : '')
+        + (m.adjunto ? swMediaHtml(m.adjunto, m.tipoAdjunto) : '')
+        + '</div></div>';
+    }
+
+    // WhatsApp por ROL: COLAB siempre izquierda, DEV siempre derecha
+    var lado = esDev ? 'flex-end' : 'flex-start';
+    var bubbleClass = esDev ? 'sw-bubble sw-bubble-dev' : 'sw-bubble sw-bubble-colab';
     var rolTag = esDev
-      ? '<span style="color:#4ade80;font-size:10px;font-weight:700;letter-spacing:.3px;">DEV</span>'
+      ? '<span style="color:#b8a6ff;font-size:10px;font-weight:700;letter-spacing:.3px;">DEV</span>'
       : '<span style="color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:.3px;">COLAB</span>';
-    var nameColor = mio ? 'rgba(255,255,255,.9)' : '#eaf1f8';
-    var timeColor = mio ? 'rgba(255,255,255,.55)' : '#6b7a8d';
-    var row = '<div style="display:flex;flex-direction:column;align-items:' + (mio ? 'flex-end' : 'flex-start') + ';">'
+    var nameColor = esDev ? 'rgba(255,255,255,.95)' : '#eaf1f8';
+    var timeColor = esDev ? 'rgba(255,255,255,.55)' : '#6b7a8d';
+
+    var row = '<div style="display:flex;justify-content:' + lado + ';width:100%;">'
       + '<div class="' + bubbleClass + '">'
       + '<div class="sw-bubble-meta">'
       + '<strong style="color:' + nameColor + ';font-size:12px;">' + swEsc(m.autor) + '</strong>'
       + rolTag
-      + '<span style="color:' + timeColor + ';font-size:10px;margin-left:auto;">' + swFmtFecha(m.fecha) + '</span>'
+      + '<span style="color:' + timeColor + ';font-size:10px;margin-left:auto;white-space:nowrap;">' + swFmtFecha(m.fecha) + '</span>'
       + '</div>';
-    if (m.mensaje) {
-      row += '<div class="sw-bubble-text">' + swEsc(m.mensaje) + '</div>';
+    if (texto) {
+      row += '<div class="sw-bubble-text">' + swEsc(texto) + '</div>';
     }
     if (m.adjunto) {
       row += swMediaHtml(m.adjunto, m.tipoAdjunto);
@@ -29276,7 +29300,6 @@ function renderChatMensajesSW(msgs, cerrado) {
 
   var prevCount = swChatUltimoCount;
   var scrollBottom = !prevCount || msgs.length !== prevCount;
-  // sonido si hay mensaje nuevo de otro mientras el chat está abierto
   if (prevCount && msgs.length > prevCount) {
     var last = msgs[msgs.length - 1];
     if (String(last.cedula || '') !== miCedula) {
