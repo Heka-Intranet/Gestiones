@@ -1502,7 +1502,109 @@
     }
 
 
-    /* --- HEADER COMPACTO PARA COLABORADORES --- */
+    
+/* ===== Configuración de Usuarios: acordeones legibles (tema oscuro) ===== */
+#modal-admin .accordion-item{
+  background:rgba(8,13,19,.92) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  border-radius:14px !important;
+  overflow:hidden !important;
+  box-shadow:0 6px 18px rgba(0,0,0,.25) !important;
+  margin-bottom:10px !important;
+}
+#modal-admin .accordion-header{
+  background:linear-gradient(145deg,#141c28,#0c121a) !important;
+  color:#eaf1f8 !important;
+  border:none !important;
+  border-bottom:1px solid rgba(255,255,255,.06) !important;
+  padding:14px 16px !important;
+  font-weight:700 !important;
+}
+#modal-admin .accordion-header span{
+  color:#eaf1f8 !important;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+#modal-admin .accordion-header i{
+  color:#ffc400 !important;
+}
+#modal-admin .accordion-header:hover,
+#modal-admin .accordion-header.active{
+  background:rgba(255,196,0,.07) !important;
+  color:#ffc400 !important;
+}
+#modal-admin .accordion-header:hover span,
+#modal-admin .accordion-header.active span{
+  color:#ffc400 !important;
+}
+#modal-admin .accordion-body{
+  background:rgba(5,9,14,.88) !important;
+  color:#cbd5e1 !important;
+  border-top:1px solid rgba(255,255,255,.06) !important;
+  padding:16px !important;
+}
+#modal-admin .checkbox-item{
+  background:rgba(255,255,255,.04) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  color:#e2e8f0 !important;
+  border-radius:10px !important;
+}
+#modal-admin .checkbox-item span{
+  color:#e2e8f0 !important;
+}
+#modal-admin .checkbox-item:hover{
+  border-color:rgba(255,196,0,.35) !important;
+  background:rgba(255,196,0,.06) !important;
+}
+#modal-admin label,
+#modal-admin .form-group label,
+#modal-admin p,
+#modal-admin h3,
+#modal-admin h4{
+  color:#eaf1f8 !important;
+}
+#modal-admin .form-input,
+#modal-admin input[type="text"],
+#modal-admin input[type="search"],
+#modal-admin select{
+  background:#0a1018 !important;
+  color:#edf3f9 !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+}
+
+/* ===== Selectores de fecha: fondo claro / texto legible ===== */
+input[type="date"].form-input,
+.form-input[type="date"],
+input[type="date"]{
+  background:#ffffff !important;
+  color:#111827 !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  color-scheme: light !important;
+  border-radius:8px !important;
+}
+input[type="date"]:focus{
+  border-color:rgba(255,196,0,.75) !important;
+  box-shadow:0 0 0 3px rgba(255,196,0,.12) !important;
+  outline:none !important;
+}
+/* Overrides previos que forzaban dark en date */
+.heka-date-filter input[type=date],
+.heka-date-field input[type=date],
+#panel-check-recarga input[type=date],
+#panel-historial-recargas input[type=date],
+#panel-seguimiento-logistica input[type=date],
+#panel-historial-certificados input[type=date],
+#panel-talento-humano input[type=date],
+#panel-banco-vs-pl input[type=date],
+#panel-rentabilidad-seller input[type=date]{
+  background:#ffffff !important;
+  color:#111827 !important;
+  color-scheme: light !important;
+  border:1px solid #d1d5db !important;
+}
+
+/* --- HEADER COMPACTO PARA COLABORADORES --- */
     .colaboradores-header {
       display: flex;
       justify-content: flex-start; /* <--- POR ESTO */
