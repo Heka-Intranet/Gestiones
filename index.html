@@ -7756,15 +7756,22 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       <button type="button" id="sw-btn-solucionar" class="btn btn-primary btn-sm" onclick="marcarSolucionadoSW()" style="background:linear-gradient(135deg,#22c55e,#16a34a);"><i class="bi bi-check-circle-fill"></i> Marcar solucionado</button>
     </div>
     <!-- Composer -->
-    <div id="sw-chat-composer" style="padding:12px 14px 14px;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:8px;flex-shrink:0;background:rgba(0,0,0,.2);">
+    <div id="sw-chat-composer" style="padding:12px 14px 14px;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:8px;flex-shrink:0;background:rgba(0,0,0,.2);position:relative;">
       <div id="sw-chat-preview" style="display:none;"></div>
+      <div id="sw-emoji-panel" style="display:none;max-height:160px;overflow-y:auto;background:rgba(20,24,36,.98);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px;display:none;flex-wrap:wrap;gap:4px;">
+      </div>
       <div style="display:flex;gap:8px;align-items:flex-end;">
         <label title="Adjuntar imagen o video" style="width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#a78bfa;flex-shrink:0;">
           <i class="bi bi-paperclip"></i>
           <input type="file" id="sw-chat-file" accept="image/*,video/*" style="display:none;" onchange="swPreviewAdjuntoChat(this)"/>
         </label>
-        <textarea id="sw-chat-input" rows="2" placeholder="Escribe tu respuesta..." style="flex:1;min-width:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;color:#eaf1f8;font-size:13.5px;padding:10px 12px;outline:none;resize:none;overflow-wrap:anywhere;word-break:break-word;line-height:1.4;"></textarea>
-        <button type="button" class="btn btn-primary" onclick="enviarMensajeChatSW()" style="height:40px;width:44px;padding:0;border-radius:12px;flex-shrink:0;"><i class="bi bi-send-fill"></i></button>
+        <button type="button" title="Emojis" onclick="swToggleEmojiPanel()" style="width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fbbf24;flex-shrink:0;font-size:18px;padding:0;">
+          😊
+        </button>
+        <textarea id="sw-chat-input" rows="2" placeholder="Escribe tu respuesta... (Enter para enviar, Shift+Enter nueva línea)" style="flex:1;min-width:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;color:#eaf1f8;font-size:13.5px;padding:10px 12px;outline:none;resize:none;overflow-wrap:anywhere;word-break:break-word;line-height:1.4;"></textarea>
+        <button type="button" id="sw-btn-enviar" onclick="enviarMensajeChatSW()" title="Enviar" style="height:40px;width:40px;min-width:40px;padding:0;margin:0;border:none;border-radius:12px;flex-shrink:0;background:linear-gradient(135deg,#a78bfa,#6f42c1);color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(111,66,193,.4);line-height:1;">
+          <i class="bi bi-send-fill" style="font-size:15px;line-height:1;display:block;margin:0;padding:0;transform:translateX(1px);"></i>
+        </button>
       </div>
     </div>
     <div id="sw-chat-cerrado" style="display:none;padding:14px 20px;text-align:center;color:#8b98a8;font-size:13px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;">
@@ -29199,6 +29206,9 @@ function abrirChatSW(id, modo) {
   document.getElementById('sw-chat-mensajes').innerHTML = '<div style="text-align:center;color:#8b98a8;padding:20px;">Cargando conversación...</div>';
   // Bloquear scroll del fondo
   document.body.style.overflow = 'hidden';
+  swBindChatEnter();
+  var ep = document.getElementById('sw-emoji-panel');
+  if (ep) ep.style.display = 'none';
   refrescarDetalleYChatSW();
   swStopChatPolling();
   swChatTimer = setInterval(function() {
@@ -29328,6 +29338,48 @@ function renderChatMensajesSW(msgs, cerrado) {
   if (scrollBottom) box.scrollTop = box.scrollHeight;
 }
 
+
+function swToggleEmojiPanel() {
+  var panel = document.getElementById('sw-emoji-panel');
+  if (!panel) return;
+  if (panel.style.display === 'flex') {
+    panel.style.display = 'none';
+    return;
+  }
+  if (!panel.dataset.ready) {
+    var emojis = ['😀','😃','😄','😁','😅','😂','🤣','😊','😇','🙂','😉','😌','😍','🥰','😘','😗','😋','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','😯','😪','😫','🥱','😴','😌','😛','😓','😕','🙃','🫠','😲','😢','😭','😤','😠','😡','🤬','😈','👿','💀','👍','👎','👏','🙌','🤝','🙏','💪','✌️','🤞','👌','🤙','👈','👉','👆','👇','✋','👋','🎉','🎊','🔥','⭐','✨','💯','✅','❌','⚠️','🚀','💡','❤️','🧡','💛','💚','💙','💜','🖤','🤍','💔','💕','💖','💗','💘','💝','😎','🥳','😱','😳','🤭','🫡','👀','💬','📎','📷','🖥️','🐛','🛠️','✔️','⏳','📌'];
+    panel.innerHTML = emojis.map(function(e) {
+      return '<button type="button" onclick="swInsertEmoji(\'' + e + '\')" style="width:34px;height:34px;border:none;background:transparent;font-size:20px;cursor:pointer;border-radius:8px;line-height:1;padding:0;" onmouseover="this.style.background=\'rgba(255,255,255,.08)\'" onmouseout="this.style.background=\'transparent\'">' + e + '</button>';
+    }).join('');
+    panel.dataset.ready = '1';
+  }
+  panel.style.display = 'flex';
+}
+
+function swInsertEmoji(emoji) {
+  var input = document.getElementById('sw-chat-input');
+  if (!input) return;
+  var start = input.selectionStart || input.value.length;
+  var end = input.selectionEnd || input.value.length;
+  var v = input.value;
+  input.value = v.slice(0, start) + emoji + v.slice(end);
+  var pos = start + emoji.length;
+  input.focus();
+  try { input.setSelectionRange(pos, pos); } catch (e) {}
+}
+
+function swBindChatEnter() {
+  var input = document.getElementById('sw-chat-input');
+  if (!input || input.dataset.enterBound) return;
+  input.dataset.enterBound = '1';
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      enviarMensajeChatSW();
+    }
+  });
+}
+
 function enviarMensajeChatSW() {
   if (!swTicketActual) return;
   var input = document.getElementById('sw-chat-input');
@@ -29345,6 +29397,8 @@ function enviarMensajeChatSW() {
         }
         input.value = '';
         swLimpiarAdjuntoChat();
+        var ep = document.getElementById('sw-emoji-panel');
+        if (ep) ep.style.display = 'none';
         refrescarDetalleYChatSW();
       })
       .withFailureHandler(function(e) {
