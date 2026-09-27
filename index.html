@@ -7601,17 +7601,17 @@ body > .novedad-dropdown-menu .novedad-option:hover {
   </div>
 
   <div class="card" style="margin-top:16px;">
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
-      <select id="sw-filtro-mis" class="form-input" style="max-width:200px;" onchange="cargarMisSolicitudesSW()">
-        <option value="TODOS">Todos los estados</option>
-        <option value="ABIERTA">Abiertas</option>
-        <option value="EN GESTION">En gestión</option>
-        <option value="SOLUCIONADO">Solucionadas</option>
-      </select>
-      <button class="btn btn-secondary btn-sm" onclick="cargarMisSolicitudesSW()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
+    <div class="sw-toolbar">
+      <div class="sw-filtros" id="sw-filtros-mis" data-valor="TODOS">
+        <button type="button" class="sw-chip active" data-f="TODOS" onclick="swSetFiltro('mis', this)">Todas</button>
+        <button type="button" class="sw-chip" data-f="ABIERTA" onclick="swSetFiltro('mis', this)">Abiertas</button>
+        <button type="button" class="sw-chip" data-f="EN GESTION" onclick="swSetFiltro('mis', this)">En gestión</button>
+        <button type="button" class="sw-chip" data-f="SOLUCIONADO" onclick="swSetFiltro('mis', this)">Solucionadas</button>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="cargarMisSolicitudesSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
     </div>
-    <div class="table-container">
-      <table>
+    <div class="table-container sw-table-wrap">
+      <table class="sw-table">
         <thead>
           <tr>
             <th>ID</th>
@@ -7643,17 +7643,18 @@ body > .novedad-dropdown-menu .novedad-option:hover {
   </div>
 
   <div class="card" style="margin-top:16px;">
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
-      <select id="sw-filtro-dev" class="form-input" style="max-width:220px;" onchange="cargarSolicitudesDevSW()">
-        <option value="ACTIVAS" selected>Activas (Abiertas + En gestión)</option>
-        <option value="ABIERTA">Solo abiertas</option>
-        <option value="EN GESTION">En gestión</option>
-        <option value="SOLUCIONADO">Solucionadas</option>
-        <option value="TODOS">Todas</option>
-      </select>
+    <div class="sw-toolbar">
+      <div class="sw-filtros" id="sw-filtros-dev" data-valor="ACTIVAS">
+        <button type="button" class="sw-chip active" data-f="ACTIVAS" onclick="swSetFiltro('dev', this)">Activas</button>
+        <button type="button" class="sw-chip" data-f="ABIERTA" onclick="swSetFiltro('dev', this)">Abiertas</button>
+        <button type="button" class="sw-chip" data-f="EN GESTION" onclick="swSetFiltro('dev', this)">En gestión</button>
+        <button type="button" class="sw-chip" data-f="SOLUCIONADO" onclick="swSetFiltro('dev', this)">Solucionadas</button>
+        <button type="button" class="sw-chip" data-f="TODOS" onclick="swSetFiltro('dev', this)">Todas</button>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="cargarSolicitudesDevSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
     </div>
-    <div class="table-container">
-      <table>
+    <div class="table-container sw-table-wrap">
+      <table class="sw-table">
         <thead>
           <tr>
             <th>ID</th>
@@ -10974,6 +10975,20 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 .cun-logo-opt.seleccionada img{border-color:#a78bfa;box-shadow:0 0 12px rgba(167,139,250,.5);}
 .cun-logo-opt.seleccionada span{color:#a78bfa;}
 
+
+.sw-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.sw-filtros{display:inline-flex;flex-wrap:wrap;gap:6px;padding:4px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;}
+.sw-chip{border:none;background:transparent;color:#8b98a8;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:10px;cursor:pointer;transition:all .18s ease;letter-spacing:.2px;}
+.sw-chip:hover{color:#eaf1f8;background:rgba(255,255,255,.06);}
+.sw-chip.active{background:linear-gradient(135deg,rgba(255,196,0,.2),rgba(255,196,0,.08));color:#ffc400;box-shadow:inset 0 0 0 1px rgba(255,196,0,.35);}
+.sw-table-wrap{overflow-x:auto;}
+.sw-table{width:100%;border-collapse:separate;border-spacing:0;}
+.sw-table th{white-space:nowrap;font-size:12px;letter-spacing:.3px;}
+.sw-table td{vertical-align:middle;font-size:13px;}
+.sw-table td.sw-td-id{font-family:ui-monospace,monospace;font-size:11.5px;white-space:nowrap;color:#a78bfa;}
+.sw-table td.sw-td-title{max-width:220px;overflow-wrap:anywhere;word-break:break-word;font-weight:600;}
+.sw-table td.sw-td-name{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sw-table tbody tr:hover{background:rgba(255,255,255,.03);}
 .sw-nav-badge{margin-left:auto;background:linear-gradient(135deg,#f87171,#ef4444);color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 0 10px rgba(239,68,68,.45);}
 .sw-bubble{max-width:min(70%,360px);width:fit-content;border-radius:16px;padding:10px 12px;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.18);box-sizing:border-box;overflow:hidden;margin:0 4px;}
 .sw-bubble-colab{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-bottom-left-radius:4px;align-self:flex-start;}
@@ -29117,6 +29132,16 @@ function enviarNuevaSolicitudSW() {
   }
 }
 
+function swSetFiltro(tipo, btn) {
+  var wrap = document.getElementById(tipo === 'dev' ? 'sw-filtros-dev' : 'sw-filtros-mis');
+  if (!wrap || !btn) return;
+  wrap.querySelectorAll('.sw-chip').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  wrap.dataset.valor = btn.getAttribute('data-f') || 'TODOS';
+  if (tipo === 'dev') cargarSolicitudesDevSW();
+  else cargarMisSolicitudesSW();
+}
+
 function cargarMisSolicitudesSW() {
   var tbody = document.getElementById('sw-mis-tbody');
   if (!tbody) return;
@@ -29127,8 +29152,10 @@ function cargarMisSolicitudesSW() {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#f87171;">Error al cargar</td></tr>';
         return;
       }
-      var filtro = (document.getElementById('sw-filtro-mis') || {}).value || 'TODOS';
+      var filtro = (document.getElementById('sw-filtros-mis') || {}).dataset.valor || 'TODOS';
       var data = (res.data || []).filter(function(t) {
+        if (!t || !t.id || String(t.id).indexOf('SW-') !== 0) return false;
+        if (!String(t.titulo || '').trim()) return false;
         if (filtro === 'TODOS') return true;
         return String(t.estado).toUpperCase() === filtro;
       });
@@ -29159,14 +29186,16 @@ function cargarSolicitudesDevSW() {
   var tbody = document.getElementById('sw-dev-tbody');
   if (!tbody) return;
   tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#8b98a8;">Cargando...</td></tr>';
-  var filtro = (document.getElementById('sw-filtro-dev') || {}).value || 'ACTIVAS';
+  var filtro = (document.getElementById('sw-filtros-dev') || {}).dataset.valor || 'ACTIVAS';
   google.script.run
     .withSuccessHandler(function(res) {
       if (!res || res.status !== 'success') {
         tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#f87171;">Error al cargar</td></tr>';
         return;
       }
-      var data = res.data || [];
+      var data = (res.data || []).filter(function(t) {
+        return t && t.id && String(t.id).indexOf('SW-') === 0 && String(t.titulo || '').trim();
+      });
       if (!data.length) {
         tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#8b98a8;">No hay solicitudes en este filtro.</td></tr>';
         return;
