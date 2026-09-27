@@ -28933,6 +28933,9 @@ var swNotifTimer = null;
 var swAdjuntoNueva = null; // { base64, mime, name, tipo }
 var swAdjuntoChat = null;
 var swNotifKnown = {}; // id -> last msg fingerprint
+var swEnviando = false;          // hay un envío en curso
+var swColaMensajes = [];         // cola si dan Enter varias veces o en paralelo
+var swChatFingerprint = '';      // para detectar mensajes nuevos sin pisar scroll al azar
 
 function swBadgeEstado(estado) {
   var e = String(estado || '').toUpperCase();
@@ -29213,16 +29216,20 @@ function abrirChatSW(id, modo) {
   swStopChatPolling();
   swChatTimer = setInterval(function() {
     if (document.getElementById('modal-sw-chat').style.display === 'flex') {
-      refrescarDetalleYChatSW(true);
+      // Solo refresca mensajes; no toca el input que el usuario está escribiendo
+      swSoloRefrescarMensajes();
     } else {
       swStopChatPolling();
     }
-  }, 30000);
+  }, 12000);
 }
 
 function cerrarModalChatSW() {
   swStopChatPolling();
   swTicketActual = null;
+  swColaMensajes = [];
+  swEnviando = false;
+  swChatFingerprint = '';
   swLimpiarAdjuntoChat();
   var modal = document.getElementById('modal-sw-chat');
   if (modal) modal.style.display = 'none';
@@ -29326,6 +29333,10 @@ function renderChatMensajesSW(msgs, cerrado) {
   }).join('');
 
   var prevCount = swChatUltimoCount;
+  var nearBottom = true;
+  try {
+    nearBottom = (box.scrollHeight - box.scrollTop - box.clientHeight) < 80;
+  } catch (e) {}
   var scrollBottom = !prevCount || msgs.length !== prevCount;
   if (prevCount && msgs.length > prevCount) {
     var last = msgs[msgs.length - 1];
@@ -29334,8 +29345,11 @@ function renderChatMensajesSW(msgs, cerrado) {
     }
   }
   swChatUltimoCount = msgs.length;
+  swChatFingerprint = msgs.length + '|' + (msgs.length ? (msgs[msgs.length-1].fecha + msgs[msgs.length-1].mensaje) : '');
   box.innerHTML = html;
-  if (scrollBottom) box.scrollTop = box.scrollHeight;
+  // Solo auto-scroll si el usuario ya estaba abajo o es la primera carga
+  if (scrollBottom && nearBottom) box.scrollTop = box.scrollHeight;
+  else if (!prevCount) box.scrollTop = box.scrollHeight;
 }
 
 
@@ -29380,51 +29394,117 @@ function swBindChatEnter() {
   });
 }
 
+
+/** Refresco silencioso solo del hilo (no borra lo que el usuario escribe) */
+function swSoloRefrescarMensajes() {
+  if (!swTicketActual) return;
+  if (swEnviando) return; // no interrumpir un envío en curso
+  google.script.run
+    .withSuccessHandler(function(chat) {
+      if (!swTicketActual) return;
+      var msgs = (chat && chat.data) || [];
+      var fp = msgs.length + '|' + (msgs.length ? (msgs[msgs.length-1].fecha + msgs[msgs.length-1].mensaje) : '');
+      if (fp === swChatFingerprint) return; // sin cambios
+      renderChatMensajesSW(msgs, false);
+    })
+    .obtenerChatSoftware(swTicketActual);
+}
+
 function enviarMensajeChatSW() {
   if (!swTicketActual) return;
   var input = document.getElementById('sw-chat-input');
   var msg = (input.value || '').trim();
-  if (!msg && !swAdjuntoChat) return showToast('Escribe un mensaje o adjunta un archivo.');
-  var rol = (swModoVista === 'dev') ? 'DESARROLLADOR' : 'COLABORADOR';
+  var adj = swAdjuntoChat; // capturar adjunto actual
+  if (!msg && !adj) return showToast('Escribe un mensaje o adjunta un archivo.');
 
-  function enviar(urlAdj, tipoAdj) {
+  // Meter en cola para no perder Enter simultáneos
+  swColaMensajes.push({
+    texto: msg,
+    adjunto: adj,
+    rol: (swModoVista === 'dev') ? 'DESARROLLADOR' : 'COLABORADOR'
+  });
+  // Limpiar UI de inmediato (optimistic) pero la cola conserva el contenido
+  input.value = '';
+  swLimpiarAdjuntoChat();
+  var ep = document.getElementById('sw-emoji-panel');
+  if (ep) ep.style.display = 'none';
+
+  swProcesarColaMensajes();
+}
+
+function swProcesarColaMensajes() {
+  if (swEnviando) return;
+  if (!swColaMensajes.length) return;
+  if (!swTicketActual) { swColaMensajes = []; return; }
+
+  swEnviando = true;
+  var item = swColaMensajes.shift();
+
+  function enviarFinal(urlAdj, tipoAdj) {
     google.script.run
       .withSuccessHandler(function(res) {
-        showLoading(false);
+        swEnviando = false;
         if (!res || res.status !== 'success') {
-          showToast((res && res.message) || 'No se pudo enviar.');
+          // Devolver el mensaje al input si falló, sin perder la cola restante
+          var input = document.getElementById('sw-chat-input');
+          if (input && item.texto) {
+            input.value = item.texto + (input.value ? '\n' + input.value : '');
+          }
+          showToast((res && res.message) || 'No se pudo enviar. Reintenta.');
+          // Seguir con el resto de la cola
+          swProcesarColaMensajes();
           return;
         }
-        input.value = '';
-        swLimpiarAdjuntoChat();
-        var ep = document.getElementById('sw-emoji-panel');
-        if (ep) ep.style.display = 'none';
-        refrescarDetalleYChatSW();
+        // Usar el chat completo que devolvió el servidor (incluye mensajes del otro)
+        if (res.chat && Array.isArray(res.chat)) {
+          renderChatMensajesSW(res.chat, false);
+        } else {
+          swSoloRefrescarMensajes();
+        }
+        swProcesarColaMensajes();
       })
       .withFailureHandler(function(e) {
-        showLoading(false);
-        showToast('Error: ' + (e.message || e));
+        swEnviando = false;
+        var input = document.getElementById('sw-chat-input');
+        if (input && item.texto) {
+          input.value = item.texto + (input.value ? '\n' + input.value : '');
+        }
+        showToast('Error de red: ' + (e.message || e) + '. Se reintentará el resto.');
+        swProcesarColaMensajes();
       })
-      .enviarMensajeSoftware(swTicketActual, currentUser.name || '', currentUser.cedula || '', rol, msg, urlAdj || '', tipoAdj || '');
+      .enviarMensajeSoftware(
+        swTicketActual,
+        currentUser.name || '',
+        currentUser.cedula || '',
+        item.rol,
+        item.texto || '',
+        urlAdj || '',
+        tipoAdj || ''
+      );
   }
 
-  if (swAdjuntoChat) {
-    showLoading(true);
+  if (item.adjunto) {
     google.script.run
       .withSuccessHandler(function(up) {
         if (!up || up.status !== 'success') {
-          showLoading(false);
-          return showToast((up && up.message) || 'Error subiendo adjunto');
+          swEnviando = false;
+          showToast((up && up.message) || 'Error subiendo adjunto');
+          // reencolar texto sin adjunto para no perder el mensaje
+          if (item.texto) swColaMensajes.unshift({ texto: item.texto, adjunto: null, rol: item.rol });
+          swProcesarColaMensajes();
+          return;
         }
-        enviar(up.url, swAdjuntoChat.tipo);
+        enviarFinal(up.url, item.adjunto.tipo);
       })
       .withFailureHandler(function(e) {
-        showLoading(false);
+        swEnviando = false;
         showToast('Error subiendo: ' + (e.message || e));
+        if (item.texto) swColaMensajes.unshift({ texto: item.texto, adjunto: null, rol: item.rol });
+        swProcesarColaMensajes();
       })
-      .swSubirAdjuntoSoftware(swAdjuntoChat.base64, swAdjuntoChat.mime, swAdjuntoChat.name);
+      .swSubirAdjuntoSoftware(item.adjunto.base64, item.adjunto.mime, item.adjunto.name);
   } else {
-    enviar('', '');
+    enviarFinal('', '');
   }
 }
 
