@@ -6830,9 +6830,11 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="nav-submenu" id="submenu-software">
 <a class="nav-item sub-item" data-target="mesa_ayuda" href="#" onclick="goToPanel('panel-mesa-ayuda', this)">
 <i class="bi bi-ticket-detailed"></i><span>Mis solicitudes</span>
+<span id="sw-badge-colab" class="sw-nav-badge" style="display:none;">0</span>
 </a>
 <a class="nav-item sub-item" data-target="mesa_ayuda_dev" href="#" onclick="goToPanel('panel-mesa-ayuda-dev', this)">
 <i class="bi bi-hdd-stack"></i><span>Mesa de desarrollo</span>
+<span id="sw-badge-dev" class="sw-nav-badge" style="display:none;">0</span>
 </a>
 </div>
 </div>
@@ -7675,8 +7677,8 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 
 <!-- MODAL NUEVA SOLICITUD SOFTWARE -->
 <div id="modal-sw-nueva" style="display:none;position:fixed;inset:0;background:rgba(2,6,12,.85);backdrop-filter:blur(8px);z-index:9997;align-items:center;justify-content:center;">
-  <div style="max-width:560px;width:94%;background:linear-gradient(160deg,rgba(20,14,34,.97),rgba(8,12,20,.97));border:1px solid rgba(167,139,250,.3);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden;">
-    <div style="padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;">
+  <div style="max-width:580px;width:94%;max-height:92vh;overflow-y:auto;background:linear-gradient(160deg,rgba(20,14,34,.97),rgba(8,12,20,.97));border:1px solid rgba(167,139,250,.3);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.6);">
+    <div style="padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(14,12,24,.98);z-index:1;">
       <div style="color:#eaf1f8;font-weight:800;font-size:16px;"><i class="bi bi-plus-circle" style="color:#a78bfa;"></i> Nueva solicitud a Software</div>
       <button type="button" onclick="cerrarModalNuevaSolicitudSW()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
     </div>
@@ -7687,7 +7689,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       </div>
       <div>
         <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Descripción del error / falla *</label>
-        <textarea id="sw-nueva-desc" class="form-input" rows="4" placeholder="Describe qué ocurre, en qué pantalla, pasos para reproducirlo..." style="width:100%;margin-top:6px;resize:vertical;"></textarea>
+        <textarea id="sw-nueva-desc" class="form-input" rows="4" placeholder="Describe qué ocurre, en qué pantalla, pasos para reproducirlo..." style="width:100%;margin-top:6px;resize:vertical;overflow-wrap:anywhere;word-break:break-word;"></textarea>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
         <div>
@@ -7700,9 +7702,25 @@ body > .novedad-dropdown-menu .novedad-option:hover {
           </select>
         </div>
         <div>
-          <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Tiempo esperado de solución</label>
-          <input id="sw-nueva-tiempo" class="form-input" type="text" placeholder="Ej: 24 horas, 2 días" style="width:100%;margin-top:6px;"/>
+          <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Tiempo de solución *</label>
+          <select id="sw-nueva-tiempo" class="form-input" style="width:100%;margin-top:6px;">
+            <option value="Inmediato">Inmediato</option>
+            <option value="1 día" selected>1 día</option>
+            <option value="2 días">2 días</option>
+            <option value="3 días">3 días</option>
+          </select>
         </div>
+      </div>
+      <div>
+        <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Adjunto (imagen o video)</label>
+        <div style="margin-top:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <label class="btn btn-secondary btn-sm" style="cursor:pointer;margin:0;">
+            <i class="bi bi-paperclip"></i> Elegir archivo
+            <input type="file" id="sw-nueva-file" accept="image/*,video/*" style="display:none;" onchange="swPreviewAdjuntoNueva(this)"/>
+          </label>
+          <span id="sw-nueva-file-name" style="color:#8b98a8;font-size:12px;">Ninguno</span>
+        </div>
+        <div id="sw-nueva-preview" style="display:none;margin-top:10px;"></div>
       </div>
     </div>
     <div style="padding:14px 22px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:flex-end;gap:10px;">
@@ -7713,32 +7731,47 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 
 <!-- MODAL DETALLE + CHAT SOFTWARE -->
-<div id="modal-sw-chat" style="display:none;position:fixed;inset:0;background:rgba(2,6,12,.88);backdrop-filter:blur(8px);z-index:9998;align-items:center;justify-content:center;">
-  <div style="max-width:720px;width:96%;max-height:90vh;display:flex;flex-direction:column;background:linear-gradient(160deg,rgba(14,18,28,.98),rgba(8,12,20,.98));border:1px solid rgba(167,139,250,.28);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.65);overflow:hidden;">
-    <div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;gap:12px;">
-      <div style="flex:1;min-width:0;">
-        <div id="sw-chat-id" style="color:#a78bfa;font-size:12px;font-weight:700;letter-spacing:.4px;"></div>
-        <div id="sw-chat-titulo" style="color:#eaf1f8;font-weight:800;font-size:16px;margin-top:2px;"></div>
-        <div id="sw-chat-meta" style="color:#8b98a8;font-size:12px;margin-top:4px;"></div>
+<div id="modal-sw-chat" style="display:none;position:fixed;inset:0;background:rgba(2,6,12,.88);backdrop-filter:blur(8px);z-index:9998;align-items:center;justify-content:center;padding:12px;">
+  <div style="max-width:760px;width:100%;height:min(90vh,720px);display:flex;flex-direction:column;background:linear-gradient(165deg,#0f1520 0%,#0a0e16 100%);border:1px solid rgba(167,139,250,.28);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.65);overflow:hidden;">
+    <!-- Header -->
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,.02);flex-shrink:0;">
+      <div style="width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#a78bfa,#6f42c1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="bi bi-chat-dots-fill" style="color:#0b1119;font-size:18px;"></i>
       </div>
-      <span id="sw-chat-estado-badge" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;"></span>
-      <button type="button" onclick="cerrarModalChatSW()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;flex-shrink:0;"><i class="bi bi-x-lg"></i></button>
+      <div style="flex:1;min-width:0;overflow:hidden;">
+        <div id="sw-chat-id" style="color:#a78bfa;font-size:11px;font-weight:700;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+        <div id="sw-chat-titulo" style="color:#eaf1f8;font-weight:800;font-size:15px;margin-top:2px;overflow-wrap:anywhere;word-break:break-word;line-height:1.3;"></div>
+        <div id="sw-chat-meta" style="color:#8b98a8;font-size:11.5px;margin-top:4px;overflow-wrap:anywhere;word-break:break-word;line-height:1.35;"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <span id="sw-chat-estado-badge"></span>
+        <button type="button" onclick="cerrarModalChatSW()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+      </div>
     </div>
-    <div id="sw-chat-mensajes" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px;min-height:220px;max-height:48vh;"></div>
-    <div id="sw-chat-acciones-dev" style="display:none;padding:8px 20px;border-top:1px solid rgba(255,255,255,.05);gap:8px;flex-wrap:wrap;">
+    <!-- Messages -->
+    <div id="sw-chat-mensajes" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 14px;display:flex;flex-direction:column;gap:12px;background:radial-gradient(ellipse at top,rgba(167,139,250,.04),transparent 55%);"></div>
+    <!-- Dev actions -->
+    <div id="sw-chat-acciones-dev" style="display:none;padding:8px 16px;border-top:1px solid rgba(255,255,255,.05);gap:8px;flex-wrap:wrap;flex-shrink:0;background:rgba(0,0,0,.15);">
       <button type="button" id="sw-btn-tomar" class="btn btn-secondary btn-sm" onclick="tomarCasoSW()"><i class="bi bi-hand-index-thumb"></i> Tomar caso</button>
       <button type="button" id="sw-btn-solucionar" class="btn btn-primary btn-sm" onclick="marcarSolucionadoSW()" style="background:linear-gradient(135deg,#22c55e,#16a34a);"><i class="bi bi-check-circle-fill"></i> Marcar solucionado</button>
     </div>
-    <div id="sw-chat-composer" style="padding:12px 20px 16px;border-top:1px solid rgba(255,255,255,.07);display:flex;gap:10px;align-items:flex-end;">
-      <textarea id="sw-chat-input" rows="2" placeholder="Escribe tu respuesta..." style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eaf1f8;font-size:13.5px;padding:10px 12px;outline:none;resize:none;"></textarea>
-      <button type="button" class="btn btn-primary" onclick="enviarMensajeChatSW()" style="height:42px;"><i class="bi bi-send-fill"></i></button>
+    <!-- Composer -->
+    <div id="sw-chat-composer" style="padding:12px 14px 14px;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:8px;flex-shrink:0;background:rgba(0,0,0,.2);">
+      <div id="sw-chat-preview" style="display:none;"></div>
+      <div style="display:flex;gap:8px;align-items:flex-end;">
+        <label title="Adjuntar imagen o video" style="width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#a78bfa;flex-shrink:0;">
+          <i class="bi bi-paperclip"></i>
+          <input type="file" id="sw-chat-file" accept="image/*,video/*" style="display:none;" onchange="swPreviewAdjuntoChat(this)"/>
+        </label>
+        <textarea id="sw-chat-input" rows="2" placeholder="Escribe tu respuesta..." style="flex:1;min-width:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;color:#eaf1f8;font-size:13.5px;padding:10px 12px;outline:none;resize:none;overflow-wrap:anywhere;word-break:break-word;line-height:1.4;"></textarea>
+        <button type="button" class="btn btn-primary" onclick="enviarMensajeChatSW()" style="height:40px;width:44px;padding:0;border-radius:12px;flex-shrink:0;"><i class="bi bi-send-fill"></i></button>
+      </div>
     </div>
-    <div id="sw-chat-cerrado" style="display:none;padding:14px 20px;text-align:center;color:#8b98a8;font-size:13px;border-top:1px solid rgba(255,255,255,.07);">
+    <div id="sw-chat-cerrado" style="display:none;padding:14px 20px;text-align:center;color:#8b98a8;font-size:13px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;">
       <i class="bi bi-lock-fill" style="color:#22c55e;"></i> Caso solucionado — el chat está cerrado
     </div>
   </div>
 </div>
-
 
 <div class="panel" id="panel-gestion-anular">
 <div class="page-header">
@@ -10933,6 +10966,14 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 .cun-logo-opt.seleccionada{border-color:#a78bfa;box-shadow:0 0 18px rgba(167,139,250,.3);}
 .cun-logo-opt.seleccionada img{border-color:#a78bfa;box-shadow:0 0 12px rgba(167,139,250,.5);}
 .cun-logo-opt.seleccionada span{color:#a78bfa;}
+
+.sw-nav-badge{margin-left:auto;background:linear-gradient(135deg,#f87171,#ef4444);color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 0 10px rgba(239,68,68,.45);}
+.sw-bubble{max-width:min(78%,420px);border-radius:16px;padding:10px 12px;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.18);}
+.sw-bubble-me{background:linear-gradient(145deg,#7c5cff,#5b3fd4);border:1px solid rgba(255,255,255,.12);border-bottom-right-radius:4px;margin-left:auto;}
+.sw-bubble-other{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;margin-right:auto;}
+.sw-bubble-text{color:#eef2ff;font-size:13.5px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;}
+.sw-bubble-meta{display:flex;gap:8px;align-items:center;margin-bottom:5px;flex-wrap:wrap;}
+.sw-media img,.sw-media video{max-width:100%;max-height:260px;border-radius:10px;margin-top:6px;display:block;background:#000;}
 </style>
 
 <!-- MODAL DETALLE INDEMNIZACIONES (INTER) -->
@@ -13201,6 +13242,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     function loginSuccess() {
       updateUserHeader();
       applyPermissions();
+      if (typeof swStartNotifPolling === 'function') swStartNotifPolling();
       
        //const adminLink = document.getElementById('adminLink');
        //const mobileAdminLink = document.getElementById('mobileAdminLink');
@@ -28871,9 +28913,13 @@ function cargarPreviewActivacionInter() {
    SOFTWARE — MESA DE AYUDA (colaborador + desarrollador + chat)
    ============================================================ */
 var swTicketActual = null;
-var swModoVista = 'colaborador'; // 'colaborador' | 'dev'
+var swModoVista = 'colaborador';
 var swChatTimer = null;
 var swChatUltimoCount = 0;
+var swNotifTimer = null;
+var swAdjuntoNueva = null; // { base64, mime, name, tipo }
+var swAdjuntoChat = null;
+var swNotifKnown = {}; // id -> last msg fingerprint
 
 function swBadgeEstado(estado) {
   var e = String(estado || '').toUpperCase();
@@ -28887,9 +28933,7 @@ function swBadgeEstado(estado) {
 }
 
 function swBadgePrioridad(p) {
-  var map = {
-    'Baja': '#94a3b8', 'Media': '#60a5fa', 'Alta': '#fbbf24', 'Crítica': '#f87171'
-  };
+  var map = { 'Baja': '#94a3b8', 'Media': '#60a5fa', 'Alta': '#fbbf24', 'Crítica': '#f87171' };
   var c = map[p] || '#94a3b8';
   return '<span style="color:' + c + ';font-weight:700;">' + (p || '-') + '</span>';
 }
@@ -28903,11 +28947,91 @@ function swFmtFecha(iso) {
   } catch (e) { return String(iso).slice(0, 16); }
 }
 
+function swEsc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function swMediaHtml(url, tipo) {
+  if (!url) return '';
+  var t = String(tipo || '').toLowerCase();
+  var isVid = t.indexOf('video') >= 0 || /\.(mp4|webm|mov)(\?|$)/i.test(url);
+  if (isVid) {
+    return '<div class="sw-media"><video controls src="' + swEsc(url) + '" style="max-width:100%;max-height:260px;border-radius:10px;"></video></div>';
+  }
+  return '<div class="sw-media"><a href="' + swEsc(url) + '" target="_blank" rel="noopener"><img src="' + swEsc(url) + '" alt="adjunto" style="max-width:100%;max-height:260px;border-radius:10px;"/></a></div>';
+}
+
+function swLeerArchivo(file, cb) {
+  if (!file) return cb(null);
+  if (file.size > 8 * 1024 * 1024) {
+    showToast('El archivo supera 8 MB. Comprime la imagen o usa un video más corto.');
+    return cb(null);
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    cb({
+      base64: e.target.result,
+      mime: file.type || 'application/octet-stream',
+      name: file.name || 'adjunto',
+      tipo: (file.type || '').indexOf('video') >= 0 ? 'video' : 'image'
+    });
+  };
+  reader.onerror = function() { showToast('No se pudo leer el archivo.'); cb(null); };
+  reader.readAsDataURL(file);
+}
+
+function swPreviewAdjuntoNueva(input) {
+  var file = input.files && input.files[0];
+  if (!file) { swAdjuntoNueva = null; document.getElementById('sw-nueva-file-name').textContent = 'Ninguno'; document.getElementById('sw-nueva-preview').style.display='none'; return; }
+  swLeerArchivo(file, function(data) {
+    swAdjuntoNueva = data;
+    document.getElementById('sw-nueva-file-name').textContent = data ? data.name : 'Ninguno';
+    var prev = document.getElementById('sw-nueva-preview');
+    if (!data) { prev.style.display='none'; return; }
+    prev.style.display = 'block';
+    if (data.tipo === 'video') {
+      prev.innerHTML = '<video controls src="' + data.base64 + '" style="max-width:100%;max-height:180px;border-radius:10px;"></video>';
+    } else {
+      prev.innerHTML = '<img src="' + data.base64 + '" style="max-width:100%;max-height:180px;border-radius:10px;"/>';
+    }
+  });
+}
+
+function swPreviewAdjuntoChat(input) {
+  var file = input.files && input.files[0];
+  var prev = document.getElementById('sw-chat-preview');
+  if (!file) { swAdjuntoChat = null; prev.style.display='none'; prev.innerHTML=''; return; }
+  swLeerArchivo(file, function(data) {
+    swAdjuntoChat = data;
+    if (!data) { prev.style.display='none'; return; }
+    prev.style.display = 'block';
+    var media = data.tipo === 'video'
+      ? '<video controls src="' + data.base64 + '" style="max-height:120px;border-radius:8px;"></video>'
+      : '<img src="' + data.base64 + '" style="max-height:120px;border-radius:8px;"/>';
+    prev.innerHTML = '<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:6px 8px;">'
+      + media
+      + '<button type="button" class="btn btn-sm btn-secondary" onclick="swLimpiarAdjuntoChat()">Quitar</button></div>';
+  });
+}
+
+function swLimpiarAdjuntoChat() {
+  swAdjuntoChat = null;
+  var f = document.getElementById('sw-chat-file');
+  if (f) f.value = '';
+  var prev = document.getElementById('sw-chat-preview');
+  if (prev) { prev.style.display='none'; prev.innerHTML=''; }
+}
+
 function abrirModalNuevaSolicitudSW() {
   document.getElementById('sw-nueva-titulo').value = '';
   document.getElementById('sw-nueva-desc').value = '';
   document.getElementById('sw-nueva-prioridad').value = 'Media';
-  document.getElementById('sw-nueva-tiempo').value = '';
+  document.getElementById('sw-nueva-tiempo').value = '1 día';
+  swAdjuntoNueva = null;
+  var fi = document.getElementById('sw-nueva-file');
+  if (fi) fi.value = '';
+  document.getElementById('sw-nueva-file-name').textContent = 'Ninguno';
+  document.getElementById('sw-nueva-preview').style.display = 'none';
   document.getElementById('modal-sw-nueva').style.display = 'flex';
 }
 function cerrarModalNuevaSolicitudSW() {
@@ -28918,32 +29042,55 @@ function enviarNuevaSolicitudSW() {
   var titulo = (document.getElementById('sw-nueva-titulo').value || '').trim();
   var desc = (document.getElementById('sw-nueva-desc').value || '').trim();
   var prioridad = document.getElementById('sw-nueva-prioridad').value;
-  var tiempo = (document.getElementById('sw-nueva-tiempo').value || '').trim();
+  var tiempo = document.getElementById('sw-nueva-tiempo').value;
   if (!titulo) return showToast('Escribe un título para la solicitud.');
   if (!desc) return showToast('Describe el error o la falla.');
+
+  function crearConAdjunto(urlAdj, tipoAdj) {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        showLoading(false);
+        if (!res || res.status !== 'success') {
+          return showToast((res && res.message) || 'No se pudo crear la solicitud.');
+        }
+        showToast('Solicitud creada: ' + res.id);
+        cerrarModalNuevaSolicitudSW();
+        cargarMisSolicitudesSW();
+      })
+      .withFailureHandler(function(e) {
+        showLoading(false);
+        showToast('Error: ' + (e.message || e));
+      })
+      .crearSolicitudSoftware({
+        titulo: titulo,
+        descripcion: desc,
+        prioridad: prioridad,
+        tiempoSolicitado: tiempo,
+        solicitante: currentUser.name || '',
+        cedula: currentUser.cedula || '',
+        adjunto: urlAdj || '',
+        tipoAdjunto: tipoAdj || ''
+      });
+  }
+
   showLoading(true);
-  google.script.run
-    .withSuccessHandler(function(res) {
-      showLoading(false);
-      if (!res || res.status !== 'success') {
-        return showToast((res && res.message) || 'No se pudo crear la solicitud.');
-      }
-      showToast('Solicitud creada: ' + res.id);
-      cerrarModalNuevaSolicitudSW();
-      cargarMisSolicitudesSW();
-    })
-    .withFailureHandler(function(e) {
-      showLoading(false);
-      showToast('Error: ' + (e.message || e));
-    })
-    .crearSolicitudSoftware({
-      titulo: titulo,
-      descripcion: desc,
-      prioridad: prioridad,
-      tiempoSolicitado: tiempo,
-      solicitante: currentUser.name || '',
-      cedula: currentUser.cedula || ''
-    });
+  if (swAdjuntoNueva) {
+    google.script.run
+      .withSuccessHandler(function(up) {
+        if (!up || up.status !== 'success') {
+          showLoading(false);
+          return showToast((up && up.message) || 'Error subiendo adjunto');
+        }
+        crearConAdjunto(up.url, swAdjuntoNueva.tipo);
+      })
+      .withFailureHandler(function(e) {
+        showLoading(false);
+        showToast('Error subiendo: ' + (e.message || e));
+      })
+      .swSubirAdjuntoSoftware(swAdjuntoNueva.base64, swAdjuntoNueva.mime, swAdjuntoNueva.name);
+  } else {
+    crearConAdjunto('', '');
+  }
 }
 
 function cargarMisSolicitudesSW() {
@@ -28967,14 +29114,14 @@ function cargarMisSolicitudesSW() {
       }
       tbody.innerHTML = data.map(function(t) {
         return '<tr>'
-          + '<td style="font-family:monospace;font-size:12px;">' + t.id + '</td>'
-          + '<td style="font-size:12px;">' + swFmtFecha(t.fecha) + '</td>'
-          + '<td><strong>' + (t.titulo || '') + '</strong></td>'
+          + '<td style="font-family:monospace;font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.id) + '</td>'
+          + '<td style="font-size:12px;white-space:nowrap;">' + swFmtFecha(t.fecha) + '</td>'
+          + '<td style="max-width:220px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
           + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
-          + '<td style="font-size:12px;">' + (t.tiempoSolicitado || '-') + '</td>'
+          + '<td style="font-size:12px;">' + swEsc(t.tiempoSolicitado || '-') + '</td>'
           + '<td>' + swBadgeEstado(t.estado) + '</td>'
-          + '<td style="font-size:12px;">' + (t.desarrollador || '-') + '</td>'
-          + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + t.id + '\',\'colaborador\')"><i class="bi bi-chat-dots"></i></button></td>'
+          + '<td style="font-size:12px;max-width:100px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.desarrollador || '-') + '</td>'
+          + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + String(t.id).replace(/'/g,"\\'") + '\',\'colaborador\')"><i class="bi bi-chat-dots"></i></button></td>'
           + '</tr>';
       }).join('');
     })
@@ -29002,15 +29149,15 @@ function cargarSolicitudesDevSW() {
       }
       tbody.innerHTML = data.map(function(t) {
         return '<tr>'
-          + '<td style="font-family:monospace;font-size:12px;">' + t.id + '</td>'
-          + '<td style="font-size:12px;">' + swFmtFecha(t.fecha) + '</td>'
-          + '<td style="font-size:12px;">' + (t.solicitante || '') + '</td>'
-          + '<td><strong>' + (t.titulo || '') + '</strong></td>'
+          + '<td style="font-family:monospace;font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.id) + '</td>'
+          + '<td style="font-size:12px;white-space:nowrap;">' + swFmtFecha(t.fecha) + '</td>'
+          + '<td style="font-size:12px;max-width:110px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.solicitante) + '</td>'
+          + '<td style="max-width:200px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
           + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
-          + '<td style="font-size:12px;">' + (t.tiempoSolicitado || '-') + '</td>'
+          + '<td style="font-size:12px;">' + swEsc(t.tiempoSolicitado || '-') + '</td>'
           + '<td>' + swBadgeEstado(t.estado) + '</td>'
-          + '<td style="font-size:12px;">' + (t.desarrollador || '-') + '</td>'
-          + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + t.id + '\',\'dev\')"><i class="bi bi-chat-dots"></i></button></td>'
+          + '<td style="font-size:12px;max-width:100px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.desarrollador || '-') + '</td>'
+          + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + String(t.id).replace(/'/g,"\\'") + '\',\'dev\')"><i class="bi bi-chat-dots"></i></button></td>'
           + '</tr>';
       }).join('');
     })
@@ -29028,6 +29175,7 @@ function abrirChatSW(id, modo) {
   swTicketActual = id;
   swModoVista = modo || 'colaborador';
   swChatUltimoCount = 0;
+  swLimpiarAdjuntoChat();
   document.getElementById('modal-sw-chat').style.display = 'flex';
   document.getElementById('sw-chat-mensajes').innerHTML = '<div style="text-align:center;color:#8b98a8;padding:20px;">Cargando conversación...</div>';
   refrescarDetalleYChatSW();
@@ -29044,9 +29192,11 @@ function abrirChatSW(id, modo) {
 function cerrarModalChatSW() {
   swStopChatPolling();
   swTicketActual = null;
+  swLimpiarAdjuntoChat();
   document.getElementById('modal-sw-chat').style.display = 'none';
   if (swModoVista === 'dev') cargarSolicitudesDevSW();
   else cargarMisSolicitudesSW();
+  swPollNotificaciones(true);
 }
 
 function refrescarDetalleYChatSW(silencioso) {
@@ -29062,10 +29212,10 @@ function refrescarDetalleYChatSW(silencioso) {
       document.getElementById('sw-chat-titulo').textContent = t.titulo || '';
       document.getElementById('sw-chat-meta').textContent =
         (t.solicitante || '') + ' · Prioridad ' + (t.prioridad || '-') +
-        (t.tiempoSolicitado ? ' · Tiempo: ' + t.tiempoSolicitado : '') +
+        (t.tiempoSolicitado ? ' · ' + t.tiempoSolicitado : '') +
         (t.desarrollador ? ' · Dev: ' + t.desarrollador : '');
-      document.getElementById('sw-chat-estado-badge').outerHTML =
-        '<span id="sw-chat-estado-badge">' + swBadgeEstado(t.estado) + '</span>';
+      var badgeWrap = document.getElementById('sw-chat-estado-badge');
+      if (badgeWrap) badgeWrap.innerHTML = swBadgeEstado(t.estado);
 
       var cerrado = String(t.estado).toUpperCase() === 'SOLUCIONADO';
       document.getElementById('sw-chat-composer').style.display = cerrado ? 'none' : 'flex';
@@ -29101,25 +29251,38 @@ function renderChatMensajesSW(msgs, cerrado) {
   var html = msgs.map(function(m) {
     var mio = String(m.cedula || '') === miCedula;
     var esDev = String(m.rol || '').toUpperCase() === 'DESARROLLADOR';
-    var align = mio ? 'flex-end' : 'flex-start';
-    var bg = mio
-      ? 'linear-gradient(135deg,rgba(167,139,250,.35),rgba(111,66,193,.25))'
-      : (esDev ? 'rgba(34,197,94,.12)' : 'rgba(255,255,255,.06)');
-    var border = mio ? 'rgba(167,139,250,.35)' : (esDev ? 'rgba(34,197,94,.25)' : 'rgba(255,255,255,.08)');
+    var bubbleClass = mio ? 'sw-bubble sw-bubble-me' : 'sw-bubble sw-bubble-other';
     var rolTag = esDev
-      ? '<span style="color:#4ade80;font-size:10px;font-weight:700;">DEV</span>'
-      : '<span style="color:#94a3b8;font-size:10px;font-weight:700;">COLAB</span>';
-    return '<div style="display:flex;justify-content:' + align + ';">'
-      + '<div style="max-width:78%;background:' + bg + ';border:1px solid ' + border + ';border-radius:14px;padding:10px 12px;">'
-      + '<div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">'
-      + '<strong style="color:#eaf1f8;font-size:12px;">' + (m.autor || '') + '</strong>'
+      ? '<span style="color:#4ade80;font-size:10px;font-weight:700;letter-spacing:.3px;">DEV</span>'
+      : '<span style="color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:.3px;">COLAB</span>';
+    var nameColor = mio ? 'rgba(255,255,255,.9)' : '#eaf1f8';
+    var timeColor = mio ? 'rgba(255,255,255,.55)' : '#6b7a8d';
+    var row = '<div style="display:flex;flex-direction:column;align-items:' + (mio ? 'flex-end' : 'flex-start') + ';">'
+      + '<div class="' + bubbleClass + '">'
+      + '<div class="sw-bubble-meta">'
+      + '<strong style="color:' + nameColor + ';font-size:12px;">' + swEsc(m.autor) + '</strong>'
       + rolTag
-      + '<span style="color:#6b7a8d;font-size:10px;margin-left:auto;">' + swFmtFecha(m.fecha) + '</span>'
-      + '</div>'
-      + '<div style="color:#cbd5e1;font-size:13.5px;white-space:pre-wrap;line-height:1.45;">' + String(m.mensaje || '').replace(/</g,'&lt;') + '</div>'
-      + '</div></div>';
+      + '<span style="color:' + timeColor + ';font-size:10px;margin-left:auto;">' + swFmtFecha(m.fecha) + '</span>'
+      + '</div>';
+    if (m.mensaje) {
+      row += '<div class="sw-bubble-text">' + swEsc(m.mensaje) + '</div>';
+    }
+    if (m.adjunto) {
+      row += swMediaHtml(m.adjunto, m.tipoAdjunto);
+    }
+    row += '</div></div>';
+    return row;
   }).join('');
-  var scrollBottom = !swChatUltimoCount || msgs.length !== swChatUltimoCount;
+
+  var prevCount = swChatUltimoCount;
+  var scrollBottom = !prevCount || msgs.length !== prevCount;
+  // sonido si hay mensaje nuevo de otro mientras el chat está abierto
+  if (prevCount && msgs.length > prevCount) {
+    var last = msgs[msgs.length - 1];
+    if (String(last.cedula || '') !== miCedula) {
+      swPlayNotifSound();
+    }
+  }
   swChatUltimoCount = msgs.length;
   box.innerHTML = html;
   if (scrollBottom) box.scrollTop = box.scrollHeight;
@@ -29129,19 +29292,46 @@ function enviarMensajeChatSW() {
   if (!swTicketActual) return;
   var input = document.getElementById('sw-chat-input');
   var msg = (input.value || '').trim();
-  if (!msg) return showToast('Escribe un mensaje.');
+  if (!msg && !swAdjuntoChat) return showToast('Escribe un mensaje o adjunta un archivo.');
   var rol = (swModoVista === 'dev') ? 'DESARROLLADOR' : 'COLABORADOR';
-  input.value = '';
-  google.script.run
-    .withSuccessHandler(function(res) {
-      if (!res || res.status !== 'success') {
-        showToast((res && res.message) || 'No se pudo enviar.');
-        return;
-      }
-      refrescarDetalleYChatSW();
-    })
-    .withFailureHandler(function(e) { showToast('Error: ' + (e.message || e)); })
-    .enviarMensajeSoftware(swTicketActual, currentUser.name || '', currentUser.cedula || '', rol, msg);
+
+  function enviar(urlAdj, tipoAdj) {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        showLoading(false);
+        if (!res || res.status !== 'success') {
+          showToast((res && res.message) || 'No se pudo enviar.');
+          return;
+        }
+        input.value = '';
+        swLimpiarAdjuntoChat();
+        refrescarDetalleYChatSW();
+      })
+      .withFailureHandler(function(e) {
+        showLoading(false);
+        showToast('Error: ' + (e.message || e));
+      })
+      .enviarMensajeSoftware(swTicketActual, currentUser.name || '', currentUser.cedula || '', rol, msg, urlAdj || '', tipoAdj || '');
+  }
+
+  if (swAdjuntoChat) {
+    showLoading(true);
+    google.script.run
+      .withSuccessHandler(function(up) {
+        if (!up || up.status !== 'success') {
+          showLoading(false);
+          return showToast((up && up.message) || 'Error subiendo adjunto');
+        }
+        enviar(up.url, swAdjuntoChat.tipo);
+      })
+      .withFailureHandler(function(e) {
+        showLoading(false);
+        showToast('Error subiendo: ' + (e.message || e));
+      })
+      .swSubirAdjuntoSoftware(swAdjuntoChat.base64, swAdjuntoChat.mime, swAdjuntoChat.name);
+  } else {
+    enviar('', '');
+  }
 }
 
 function tomarCasoSW() {
@@ -29176,6 +29366,92 @@ function marcarSolucionadoSW() {
     },
     { titulo: 'Cerrar caso', textoSi: 'Sí, solucionado', textoNo: 'Cancelar', silenciarCancel: true }
   );
+}
+
+/* ---- Notificaciones: badge + sonido ---- */
+function swPlayNotifSound() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var o = ctx.createOscillator();
+    var g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = 880;
+    g.gain.value = 0.04;
+    o.start();
+    setTimeout(function(){ o.frequency.value = 1175; }, 90);
+    setTimeout(function(){ o.stop(); ctx.close(); }, 220);
+  } catch (e) {}
+}
+
+function swSetBadge(id, count) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  if (count > 0) {
+    el.style.display = 'inline-flex';
+    el.textContent = count > 9 ? '9+' : String(count);
+  } else {
+    el.style.display = 'none';
+    el.textContent = '0';
+  }
+}
+
+function swPollNotificaciones(silencioso) {
+  if (!currentUser || !currentUser.cedula) return;
+  // Colaborador siempre
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || res.status !== 'success') return;
+      var count = res.count || 0;
+      swSetBadge('sw-badge-colab', count);
+      if (!silencioso && count > 0) {
+        var key = (res.items || []).map(function(i){ return i.id + '|' + i.fecha; }).join(';');
+        var prev = swNotifKnown['colab'] || '';
+        if (key && key !== prev) {
+          swNotifKnown['colab'] = key;
+          if (prev) { // no sonar en la primera carga
+            swPlayNotifSound();
+            showToast('💬 Nueva respuesta en tus solicitudes de Software');
+          } else {
+            swNotifKnown['colab'] = key;
+          }
+        }
+      } else if (count === 0) {
+        swNotifKnown['colab'] = '';
+      }
+    })
+    .obtenerNotificacionesSoftware(currentUser.cedula, false);
+
+  // Dev solo si tiene permiso o es admin
+  var esDev = (currentUser.role === 'Administrador') ||
+    (String(currentUser.permissions || '').indexOf('mesa_ayuda_dev') >= 0);
+  if (esDev) {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (!res || res.status !== 'success') return;
+        var count = res.count || 0;
+        swSetBadge('sw-badge-dev', count);
+        if (!silencioso && count > 0) {
+          var key = (res.items || []).map(function(i){ return i.id + '|' + i.fecha; }).join(';');
+          var prev = swNotifKnown['dev'] || '';
+          if (key && key !== prev) {
+            if (prev) {
+              swPlayNotifSound();
+              showToast('💬 Nueva respuesta de colaborador en mesa Software');
+            }
+            swNotifKnown['dev'] = key;
+          }
+        } else if (count === 0) {
+          swNotifKnown['dev'] = '';
+        }
+      })
+      .obtenerNotificacionesSoftware(currentUser.cedula, true);
+  }
+}
+
+function swStartNotifPolling() {
+  if (swNotifTimer) clearInterval(swNotifTimer);
+  swPollNotificaciones(true);
+  swNotifTimer = setInterval(function(){ swPollNotificaciones(false); }, 30000);
 }
 
 </script>
