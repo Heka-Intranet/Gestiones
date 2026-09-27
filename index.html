@@ -18694,13 +18694,21 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     // ==========================================
     // 1. FUNCIÓN AUXILIAR DEL MODAL (Lógica)
     // ==========================================
-    function mostrarModalConfirmacion(mensaje, callbackSi) {
+    function mostrarModalConfirmacion(mensaje, callbackSi, opciones) {
         const modal = document.getElementById('modal-confirmacion');
         const txtMensaje = document.getElementById('confir-mensaje');
+        const txtTitulo = document.getElementById('confir-titulo');
         const btnSi = document.getElementById('btn-confir-si');
         const btnNo = document.getElementById('btn-confir-no');
+        const opts = opciones || {};
 
-        txtMensaje.innerText = mensaje;
+        if (txtTitulo) txtTitulo.textContent = opts.titulo || '¿Estás seguro?';
+        // Permite HTML simple para mensajes más claros
+        if (opts.html) {
+            txtMensaje.innerHTML = mensaje;
+        } else {
+            txtMensaje.innerText = mensaje;
+        }
         modal.classList.add('active');
 
         // Clonar botones para eliminar eventos anteriores y evitar acumulaciones
@@ -18709,16 +18717,19 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         btnSi.parentNode.replaceChild(newBtnSi, btnSi);
         btnNo.parentNode.replaceChild(newBtnNo, btnNo);
 
+        newBtnSi.textContent = opts.textoSi || 'Sí, guardar';
+        newBtnNo.textContent = opts.textoNo || 'Cancelar';
+
         // Evento Clic: SÍ
         newBtnSi.onclick = function() {
             modal.classList.remove('active');
-            if (callbackSi) callbackSi(); // Ejecutar la acción
+            if (callbackSi) callbackSi();
         };
 
-        // Evento Clic: NO (Solo cerrar y avisar)
+        // Evento Clic: NO
         newBtnNo.onclick = function() {
             modal.classList.remove('active');
-            showToast("Acción cancelada por el usuario.");
+            if (!opts.silenciarCancel) showToast("Acción cancelada por el usuario.");
         };
     }
 
@@ -20639,16 +20650,28 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         });
     }
 
+    function limpiarFormularioCunMasivo() {
+        const num = document.getElementById('cunmasivo-numero');
+        if (num) num.value = '';
+        const guias = document.getElementById('cunmasivo-guias');
+        if (guias) guias.value = '';
+        const estado = document.getElementById('cunmasivo-estado');
+        if (estado) estado.value = 'En Validacion';
+        const causal = document.getElementById('cunmasivo-causal');
+        if (causal) causal.value = '';
+        const res = document.getElementById('cunmasivo-resultado');
+        if (res) { res.style.display = 'none'; res.textContent = ''; }
+        const btn = document.getElementById('btn-ejecutar-cunmasivo');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-clipboard-check-fill"></i> Procesar'; }
+    }
+
     function abrirModalCunMasivo() {
         // Preseleccionar la transportadora de la pestaña activa (si hay)
         const sel = document.getElementById('cunmasivo-tipo');
         if (sel && currentIndemnizationType) sel.value = currentIndemnizationType;
         seleccionarLogoCun(document.getElementById('cunmasivo-tipo').value);
-        // Se conservan los datos pegados: solo se limpian al procesar con exito.
-        const res = document.getElementById('cunmasivo-resultado');
-        if (res) { res.style.display = 'none'; res.textContent = ''; }
-        const btn = document.getElementById('btn-ejecutar-cunmasivo');
-        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-clipboard-check-fill"></i> Procesar'; }
+        // Formulario limpio al abrir (tras un proceso exitoso ya se limpió)
+        limpiarFormularioCunMasivo();
         const modal = document.getElementById('modal-cun-masivo');
         if (modal) modal.style.display = 'flex';
     }
@@ -20756,18 +20779,45 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         }
     }
 
-    // Confirmacion clasica del masivo (despues de pasar la validacion, o si no habia valores)
+    // Confirmacion del masivo (despues de pasar la validacion, o si no habia valores)
     function confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, verificadas) {
-        mostrarModalConfirmacion(
-            '\n\n' +
-            '\u00bfAplicar ' + (esComprobante ? 'COMPROBANTE' : 'CUN') + ' ' + numero +
-            ' a ' + pares.length + ' gu\u00eda(s) en ' + tipo.toUpperCase() + '?' +
-            (causal ? '\nCausal: ' + causal : '') +
-            (verificadas > 0 ? '\n' + verificadas + ' gu\u00eda(s) verificadas contra Valor Recaudo-Seguro.' : '') + '\n' +
-            'Las gu\u00edas existentes se actualizan; las que no existan se crean con la fecha de hoy' +
-            (estado ? ' y estado "' + estado + '"' : '') + '.',
-            function() { procesarCunMasivoBloques(tipo, pares, numero, estado, causal); }
-        );
+        const nombres = { inter: 'Inter Rapidísimo', servi: 'Servientrega', coord: 'Coordinadora', tcc: 'TCC' };
+        const label = esComprobante ? 'Comprobante' : 'CUN';
+        const nombreTipo = nombres[tipo] || tipo.toUpperCase();
+        const conValor = pares.filter(function(p){ return p.valor !== null; }).length;
+
+        let html = '<div style="text-align:left;line-height:1.55;">'
+            + '<p style="margin:0 0 12px;color:#444;">Vas a aplicar el siguiente registro masivo:</p>'
+            + '<div style="background:#f8f9fb;border:1px solid #e8ecf1;border-radius:12px;padding:12px 14px;margin-bottom:12px;">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Tipo</span><strong>' + label + '</strong></div>'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Número</span><strong style="color:#6f42c1;">' + numero + '</strong></div>'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Transportadora</span><strong>' + nombreTipo + '</strong></div>'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Guías</span><strong>' + pares.length + '</strong></div>';
+        if (estado) {
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Estado</span><strong>' + estado + '</strong></div>';
+        }
+        if (causal) {
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Causal</span><strong>' + causal + '</strong></div>';
+        }
+        if (conValor > 0) {
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888;font-size:12px;">Con valor NC/CE</span><strong>' + conValor + '</strong></div>';
+        }
+        html += '</div>'
+            + '<p style="margin:0;color:#666;font-size:13.5px;">Las guías existentes se <strong>actualizan</strong>; las que no existan se <strong>crean</strong> con la fecha de hoy.</p>';
+        if (verificadas > 0) {
+            html += '<p style="margin:8px 0 0;color:#0d6efd;font-size:13px;">✓ ' + verificadas + ' guía(s) verificadas contra Valor Recaudo − Seguro.</p>';
+        }
+        html += '</div>';
+
+        mostrarModalConfirmacion(html, function() {
+            procesarCunMasivoBloques(tipo, pares, numero, estado, causal);
+        }, {
+            titulo: 'Confirmar ' + label + ' masivo',
+            textoSi: 'Sí, procesar',
+            textoNo: 'Cancelar',
+            html: true,
+            silenciarCancel: true
+        });
     }
 
     function procesarCunMasivoBloques(tipo, guias, numero, estado, causal) {
@@ -20789,14 +20839,20 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         function siguienteBloque() {
             if (bi >= bloques.length) {
                 showLoading(false);
-                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-clipboard-check"></i> Procesar'; }
-                const res = document.getElementById('cunmasivo-resultado');
-                let resumen = '✅ Actualizadas: ' + totales.actualizadas + '  |  Creadas: ' + totales.creadas;
-                if (totales.errores.length > 0) {
-                    resumen += '\n⚠ Errores (' + totales.errores.length + '):\n• ' + totales.errores.join('\n• ');
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-clipboard-check-fill"></i> Procesar'; }
+
+                const ok = totales.errores.length === 0;
+                let msgToast = 'Proceso completado: ' + totales.actualizadas + ' actualizada(s), ' + totales.creadas + ' creada(s)';
+                if (!ok) {
+                    msgToast += ' · ' + totales.errores.length + ' con error';
                 }
-                if (res) { res.textContent = resumen; res.style.display = 'block'; }
-                showToast('CUN masivo aplicado a ' + guias.length + ' guía(s).');
+                showToast(msgToast);
+
+                // Cerrar modal y limpiar formulario para la próxima vez
+                limpiarFormularioCunMasivo();
+                const modalCun = document.getElementById('modal-cun-masivo');
+                if (modalCun) modalCun.style.display = 'none';
+
                 const hojas = { inter: 'INTER RAPIDISIMO', servi: 'SERVIENTREGA', coord: 'COORDINADORA', tcc: 'TCC' };
                 if (hojas[tipo]) cargarIndemnizaciones(tipo, hojas[tipo]);
                 return;
