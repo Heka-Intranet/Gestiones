@@ -11045,6 +11045,13 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </select>
 </div>
 
+<!-- Fecha llegada nota crédito -->
+<div class="cun-seccion">
+<div class="cun-seccion-titulo"><i class="bi bi-calendar-event"></i> Fecha llegada nota crédito</div>
+<input id="cunmasivo-fecha-nota" type="date" class="cun-input" style="color-scheme:dark;"/>
+<small style="color:#8b98a8;font-size:11px;display:block;margin-top:6px;">Se aplica en columna F (Inter/Servi) o E (Coord/TCC) y también en columna A.</small>
+</div>
+
 <!-- Guias -->
 <div class="cun-seccion">
 <div class="cun-seccion-titulo"><i class="bi bi-list-ol"></i> Gu&iacute;as <small style="color:#8b98a8;font-weight:500;">— solo gu&iacute;as, o gu&iacute;a [Tab] valor NC ($1,310,000 v&aacute;lido)</small></div>
@@ -11313,19 +11320,19 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 <!-- MODAL DE CONFIRMACIÓN PERSONALIZADO -->
-<div class="modal-overlay" id="modal-confirmacion" style="z-index: 9999;">
-<div class="modal-content" style="max-width: 400px; text-align: center; border-top: 4px solid var(--primary-dark);">
-<div class="modal-body" style="padding: 30px;">
-<div style="font-size: 40px; color: #ffc107; margin-bottom: 15px;">
+<div class="modal-overlay" id="modal-confirmacion" style="z-index: 100050;">
+<div class="modal-content" style="max-width: 440px; text-align: center; background:linear-gradient(160deg,#141c28,#0b1119); border:1px solid rgba(255,196,0,.25); border-radius:18px; box-shadow:0 24px 60px rgba(0,0,0,.55);">
+<div class="modal-body" style="padding: 28px 24px;">
+<div style="font-size: 36px; color: #ffc400; margin-bottom: 12px;">
 <i class="bi bi-exclamation-triangle-fill"></i>
 </div>
-<h3 id="confir-titulo" style="margin-bottom: 10px; color: #333;">¿Estás seguro?</h3>
-<p id="confir-mensaje" style="color: #666; font-size: 15px; line-height: 1.5;">
+<h3 id="confir-titulo" style="margin-bottom: 10px; color: #eaf1f8; font-weight:800;">¿Estás seguro?</h3>
+<div id="confir-mensaje" style="color: #cbd5e1; font-size: 14.5px; line-height: 1.5; text-align:left;">
           Este es el mensaje de confirmación.
-        </p>
-<div style="margin-top: 25px; display: flex; gap: 10px; justify-content: center;">
-<button class="btn btn-secondary" id="btn-confir-no" style="min-width: 100px;">Cancelar</button>
-<button class="btn btn-primary" id="btn-confir-si" style="min-width: 100px;">Sí, guardar</button>
+        </div>
+<div style="margin-top: 22px; display: flex; gap: 10px; justify-content: center;">
+<button class="btn btn-secondary" id="btn-confir-no" style="min-width: 110px;">Cancelar</button>
+<button class="btn btn-primary" id="btn-confir-si" style="min-width: 110px;">Sí, guardar</button>
 </div>
 </div>
 </div>
@@ -20970,13 +20977,13 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     // ==========================================
     var cunValidacionPendiente = null; // {pares, tipo, numero, estado, verifSet}
 
-    function abrirModalValidacionCun(val, pares, tipo, numero, estado, causal) {
+    function abrirModalValidacionCun(val, pares, tipo, numero, estado, causal, fechaNota) {
         var cuerpo = document.getElementById('cun-val-cuerpo');
         var verificadas = val.verificadas || [];
         var diferentes = val.diferentes || [];
         var sinComparar = val.sinComparar || [];
         var esComp = (tipo === 'coord' || tipo === 'tcc');
-        cunValidacionPendiente = { pares: pares, tipo: tipo, numero: numero, estado: estado, causal: causal || "", esComprobante: esComp, verifSet: {} };
+        cunValidacionPendiente = { pares: pares, tipo: tipo, numero: numero, estado: estado, causal: causal || "", fechaNota: fechaNota || "", esComprobante: esComp, verifSet: {} };
         verificadas.forEach(function(v) { cunValidacionPendiente.verifSet[v.guia] = true; });
 
         var html = '';
@@ -21015,13 +21022,13 @@ body > .novedad-dropdown-menu .novedad-option:hover {
             var cvp = cunValidacionPendiente;
             cerrarModalValidacionCun();
             var subconjunto = cvp.pares.filter(function(p) { return cvp.verifSet[p.guia] || p.valor === null; });
-            confirmarCunMasivo(subconjunto, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, subconjunto.length);
+            confirmarCunMasivo(subconjunto, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, subconjunto.length, cvp.fechaNota || "");
         });
         if (b2) b2.addEventListener('click', function() {
             if (!cunValidacionPendiente) return;
             var cvp = cunValidacionPendiente;
             cerrarModalValidacionCun();
-            confirmarCunMasivo(cvp.pares, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, 0);
+            confirmarCunMasivo(cvp.pares, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, 0, cvp.fechaNota || "");
         });
     });
 
@@ -21041,6 +21048,8 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         if (estado) estado.value = 'En Validacion';
         const causal = document.getElementById('cunmasivo-causal');
         if (causal) causal.value = '';
+        const fechaNota = document.getElementById('cunmasivo-fecha-nota');
+        if (fechaNota) fechaNota.value = '';
         const res = document.getElementById('cunmasivo-resultado');
         if (res) { res.style.display = 'none'; res.textContent = ''; }
         const btn = document.getElementById('btn-ejecutar-cunmasivo');
@@ -21110,6 +21119,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         const numero = document.getElementById('cunmasivo-numero').value.replace(/\D/g, '');
         const estado = document.getElementById('cunmasivo-estado').value;
         const causal = (document.getElementById('cunmasivo-causal') || {}).value || "";
+        const fechaNota = (document.getElementById('cunmasivo-fecha-nota') || {}).value || "";
         const textoGuias = document.getElementById('cunmasivo-guias').value.trim();
 
         if (!numero) return showToast("Escribe el número de CUN / Comprobante.");
@@ -21146,9 +21156,9 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                     showLoading(false);
                     if (!val || val.status !== 'success') return showToast('Error validando valores: ' + ((val && val.message) || 'desconocido'));
                     if (!Array.isArray(val.diferentes) || val.diferentes.length === 0) {
-                        confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, (val.verificadas || []).length);
+                        confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, (val.verificadas || []).length, fechaNota);
                     } else {
-                        abrirModalValidacionCun(val, pares, tipo, numero, estado, causal);
+                        abrirModalValidacionCun(val, pares, tipo, numero, estado, causal, fechaNota);
                     }
                 })
                 .withFailureHandler(function(e) {
@@ -21157,42 +21167,49 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                 })
                 .validarCunMasivo(tipo, textoParaValidar);
         } else {
-            confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, 0);
+            confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, 0, fechaNota);
         }
     }
 
     // Confirmacion del masivo (despues de pasar la validacion, o si no habia valores)
-    function confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, verificadas) {
+    function confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, verificadas, fechaNota) {
         const nombres = { inter: 'Inter Rapidísimo', servi: 'Servientrega', coord: 'Coordinadora', tcc: 'TCC' };
         const label = esComprobante ? 'Comprobante' : 'CUN';
         const nombreTipo = nombres[tipo] || tipo.toUpperCase();
-        const conValor = pares.filter(function(p){ return p.valor !== null; }).length;
+        const conValorPares = pares.filter(function(p){ return p.valor !== null && p.valor !== undefined && p.valor !== ''; });
+        const conValor = conValorPares.length;
+        let sumaValor = 0;
+        conValorPares.forEach(function(p){ sumaValor += Number(p.valor) || 0; });
+        const sumaFmt = sumaValor.toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+        const fechaMostrar = fechaNota || '(hoy / no cambiar)';
 
         let html = '<div style="text-align:left;line-height:1.55;">'
-            + '<p style="margin:0 0 12px;color:#444;">Vas a aplicar el siguiente registro masivo:</p>'
-            + '<div style="background:#f8f9fb;border:1px solid #e8ecf1;border-radius:12px;padding:12px 14px;margin-bottom:12px;">'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Tipo</span><strong>' + label + '</strong></div>'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Número</span><strong style="color:#6f42c1;">' + numero + '</strong></div>'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Transportadora</span><strong>' + nombreTipo + '</strong></div>'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Guías</span><strong>' + pares.length + '</strong></div>';
+            + '<p style="margin:0 0 12px;color:#94a3b8;">Vas a aplicar el siguiente registro masivo:</p>'
+            + '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:12px 14px;margin-bottom:12px;">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Tipo</span><strong style="color:#eaf1f8;">' + label + '</strong></div>'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Número</span><strong style="color:#a78bfa;">' + numero + '</strong></div>'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Transportadora</span><strong style="color:#eaf1f8;">' + nombreTipo + '</strong></div>'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Guías</span><strong style="color:#eaf1f8;">' + pares.length + '</strong></div>';
         if (estado) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Estado</span><strong>' + estado + '</strong></div>';
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Estado</span><strong style="color:#eaf1f8;">' + estado + '</strong></div>';
         }
         if (causal) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#888;font-size:12px;">Causal</span><strong>' + causal + '</strong></div>';
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Causal</span><strong style="color:#eaf1f8;">' + causal + '</strong></div>';
         }
+        html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Fecha llegada NC</span><strong style="color:#eaf1f8;">' + fechaMostrar + '</strong></div>';
         if (conValor > 0) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888;font-size:12px;">Con valor NC/CE</span><strong>' + conValor + '</strong></div>';
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;"><span style="color:#8b98a8;font-size:12px;">Con valor NC/CE</span><strong style="color:#eaf1f8;">' + conValor + ' guía(s)</strong></div>';
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#8b98a8;font-size:12px;">Total valores</span><strong style="color:#4ade80;">' + sumaFmt + '</strong></div>';
         }
         html += '</div>'
-            + '<p style="margin:0;color:#666;font-size:13.5px;">Las guías existentes se <strong>actualizan</strong>; las que no existan se <strong>crean</strong> con la fecha de hoy.</p>';
+            + '<p style="margin:0;color:#94a3b8;font-size:13.5px;">Las guías existentes se <strong style="color:#eaf1f8;">actualizan</strong>; las que no existan se <strong style="color:#eaf1f8;">crean</strong>.</p>';
         if (verificadas > 0) {
-            html += '<p style="margin:8px 0 0;color:#0d6efd;font-size:13px;">✓ ' + verificadas + ' guía(s) verificadas contra Valor Recaudo − Seguro.</p>';
+            html += '<p style="margin:8px 0 0;color:#60a5fa;font-size:13px;">✓ ' + verificadas + ' guía(s) verificadas contra Valor Recaudo − Seguro.</p>';
         }
         html += '</div>';
 
         mostrarModalConfirmacion(html, function() {
-            procesarCunMasivoBloques(tipo, pares, numero, estado, causal);
+            procesarCunMasivoBloques(tipo, pares, numero, estado, causal, fechaNota || '');
         }, {
             titulo: 'Confirmar ' + label + ' masivo',
             textoSi: 'Sí, procesar',
@@ -21202,7 +21219,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         });
     }
 
-    function procesarCunMasivoBloques(tipo, guias, numero, estado, causal) {
+    function procesarCunMasivoBloques(tipo, guias, numero, estado, causal, fechaNota) {
         const btn = document.getElementById('btn-ejecutar-cunmasivo');
         if (btn) { btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...'; }
         showLoading(true);
@@ -21257,7 +21274,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                     bi++;
                     siguienteBloque();
                 })
-                .procesarCunMasivo(tipo, bloques[bi].join(String.fromCharCode(10)), numero, estado, causal || "");
+                .procesarCunMasivo(tipo, bloques[bi].join(String.fromCharCode(10)), numero, estado, causal || "", fechaNota || "");
         }
 
         siguienteBloque();
