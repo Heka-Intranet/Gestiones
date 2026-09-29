@@ -11019,7 +11019,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="cun-seccion">
 <div class="cun-seccion-titulo"><i class="bi bi-flag-fill"></i> Estado a aplicar</div>
 <select id="cunmasivo-estado" class="cun-input">
-<option value="">(No cambiar el estado de las existentes)</option>
+<option value="">Seleccionar...</option>
 <option value="En Validacion" selected="selected">En Validacion</option>
 <option value="PARA PAGAR">PARA PAGAR</option>
 <option value="PAGADO">PAGADO</option>
@@ -11034,7 +11034,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="cun-seccion">
 <div class="cun-seccion-titulo"><i class="bi bi-exclamation-triangle-fill"></i> Causal de PQR</div>
 <select id="cunmasivo-causal" class="cun-input">
-<option value="">(No cambiar causal de las existentes)</option>
+<option value="">Seleccionar...</option>
 <option value="PERDIDA / HURTO">PERDIDA / HURTO</option>
 <option value="SERVICIO NO CONFORME">SERVICIO NO CONFORME</option>
 <option value="SAQUEO">SAQUEO</option>
@@ -11049,31 +11049,31 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="cun-seccion">
 <div class="cun-seccion-titulo"><i class="bi bi-calendar-event"></i> Fecha llegada nota crédito</div>
 <input id="cunmasivo-fecha-nota" type="date" class="cun-input" style="color-scheme:dark;"/>
-<small style="color:#8b98a8;font-size:11px;display:block;margin-top:6px;">Se aplica en columna F (Inter/Servi) o E (Coord/TCC) y también en columna A.</small>
+<small style="color:#8b98a8;font-size:11px;display:block;margin-top:6px;">Se aplica a todas las guías del lote.</small>
 </div>
 
 <!-- Campos según transportadora -->
 <div id="cunmasivo-campos-inter" style="display:none;">
   <div class="cun-seccion">
-    <div class="cun-seccion-titulo"><i class="bi bi-ticket-perforated"></i> Ticket <small style="color:#8b98a8;">(columna G)</small></div>
+    <div class="cun-seccion-titulo"><i class="bi bi-ticket-perforated"></i> Ticket</div>
     <input id="cunmasivo-ticket" type="text" class="cun-input" placeholder="Número de ticket"/>
   </div>
   <div class="cun-seccion">
-    <div class="cun-seccion-titulo"><i class="bi bi-receipt"></i> N° Nota crédito <small style="color:#8b98a8;">(columna H — si no pegas valor por guía, este llena H)</small></div>
-    <input id="cunmasivo-num-nota" type="text" class="cun-input" placeholder="N° de nota crédito / valor NC global"/>
+    <div class="cun-seccion-titulo"><i class="bi bi-receipt"></i> N° Nota crédito</div>
+    <input id="cunmasivo-num-nota" type="text" class="cun-input" placeholder="N° de nota crédito"/>
   </div>
 </div>
 <div id="cunmasivo-campos-servi" style="display:none;">
   <div class="cun-seccion">
-    <div class="cun-seccion-titulo"><i class="bi bi-tags-fill"></i> Concepto <small style="color:#8b98a8;">(columna G)</small></div>
+    <div class="cun-seccion-titulo"><i class="bi bi-tags-fill"></i> Concepto</div>
     <select id="cunmasivo-concepto" class="cun-input">
-      <option value="">(No cambiar)</option>
+      <option value="">Seleccionar...</option>
       <option value="Indemnizacion">Indemnizacion</option>
       <option value="Acta de Castigo">Acta de Castigo</option>
     </select>
   </div>
   <div class="cun-seccion">
-    <div class="cun-seccion-titulo"><i class="bi bi-hash"></i> Número CE <small style="color:#8b98a8;">(columna H)</small></div>
+    <div class="cun-seccion-titulo"><i class="bi bi-hash"></i> Número CE</div>
     <input id="cunmasivo-num-ce" type="text" class="cun-input" placeholder="Número CE"/>
   </div>
 </div>
@@ -21242,16 +21242,16 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         }
         html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Fecha llegada NC</span><strong style="color:#eaf1f8;">' + fechaMostrar + '</strong></div>';
         if (tipo === 'inter' && extras.ticket) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Ticket (G)</span><strong style="color:#eaf1f8;">' + extras.ticket + '</strong></div>';
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Ticket</span><strong style="color:#eaf1f8;">' + extras.ticket + '</strong></div>';
         }
         if (tipo === 'inter' && extras.numNota) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">N° Nota (H)</span><strong style="color:#eaf1f8;">' + extras.numNota + '</strong></div>';
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">N° Nota crédito</span><strong style="color:#eaf1f8;">' + extras.numNota + '</strong></div>';
         }
         if (tipo === 'servi' && extras.concepto) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Concepto (G)</span><strong style="color:#eaf1f8;">' + extras.concepto + '</strong></div>';
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Concepto</span><strong style="color:#eaf1f8;">' + extras.concepto + '</strong></div>';
         }
         if (tipo === 'servi' && extras.numCe) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Número CE (H)</span><strong style="color:#eaf1f8;">' + extras.numCe + '</strong></div>';
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Número CE</span><strong style="color:#eaf1f8;">' + extras.numCe + '</strong></div>';
         }
         if (conValor > 0) {
             html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;"><span style="color:#8b98a8;font-size:12px;">Con valor NC/CE</span><strong style="color:#eaf1f8;">' + conValor + ' guía(s)</strong></div>';
