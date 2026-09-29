@@ -5454,6 +5454,57 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
   box-shadow:0 0 0 3px rgba(255,196,0,.1)!important;
 }
 .recarga-input-valor{font-weight:700;font-size:16px!important;color:#ffc400!important;}
+
+/* ===== Todos los date: icono bi-calendar3 blanco ===== */
+.heka-date-wrap,
+.recarga-date-wrap{
+  position:relative;
+  display:block;
+  width:100%;
+  max-width:100%;
+}
+.heka-date-wrap input[type="date"],
+.recarga-date-wrap input[type="date"]{
+  width:100% !important;
+  padding-right:40px !important;
+  color-scheme: dark !important;
+  box-sizing:border-box;
+}
+.heka-date-wrap input[type="date"]::-webkit-calendar-picker-indicator,
+.recarga-date-wrap input[type="date"]::-webkit-calendar-picker-indicator{
+  position:absolute;
+  left:0; top:0;
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  opacity:0 !important;
+  cursor:pointer;
+  z-index:2;
+  filter:none !important;
+}
+.heka-date-icon,
+.recarga-date-icon{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#ffffff !important;
+  font-size:15px !important;
+  pointer-events:none;
+  z-index:1;
+  opacity:1 !important;
+  line-height:1;
+  font-style:normal;
+}
+/* En fondos claros, icono oscuro */
+.heka-date-wrap.heka-date-light .heka-date-icon{
+  color:#111827 !important;
+}
+.heka-date-wrap.heka-date-light input[type="date"]{
+  color-scheme: light !important;
+}
+
 /* Fecha recarga: icono bi-calendar3 blanco visible */
 .recarga-date-wrap{
   position:relative;
@@ -14594,6 +14645,61 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     // --- LÓGICA MODAL RECARGA ---
 
     
+
+function hekaEnhanceDateInputs(root) {
+  try {
+    var scope = root && root.querySelectorAll ? root : document;
+    var list = scope.querySelectorAll('input[type="date"]');
+    list.forEach(function(inp) {
+      if (!inp || inp.dataset.hekaDateReady === '1') return;
+      if (inp.closest('.heka-date-wrap') || inp.closest('.recarga-date-wrap')) {
+        inp.dataset.hekaDateReady = '1';
+        return;
+      }
+      var parent = inp.parentNode;
+      if (!parent) return;
+      var wrap = document.createElement('div');
+      wrap.className = 'heka-date-wrap';
+      // Detectar fondo claro aproximado
+      try {
+        var bg = window.getComputedStyle(inp).backgroundColor || '';
+        if (bg.indexOf('255') >= 0 && bg.indexOf('rgba(0') < 0) {
+          wrap.classList.add('heka-date-light');
+        }
+        // fechaProgramada u otros con style blanco
+        var st = (inp.getAttribute('style') || '') + (inp.className || '');
+        if (/background:\s*#fff|background:\s*white|background-color:\s*#fff/i.test(st)) {
+          wrap.classList.add('heka-date-light');
+        }
+        if (inp.id === 'fechaProgramadaInput') wrap.classList.add('heka-date-light');
+      } catch (e1) {}
+      // Conservar ancho inline del input (filtros 130px, etc.)
+      try {
+        if (inp.style.width) wrap.style.width = inp.style.width;
+        else if (inp.getAttribute('style') && /width\s*:/i.test(inp.getAttribute('style'))) {
+          var mw = inp.getAttribute('style').match(/width\s*:\s*([^;]+)/i);
+          if (mw) wrap.style.width = mw[1].trim();
+        }
+      } catch (e2) {}
+      parent.insertBefore(wrap, inp);
+      wrap.appendChild(inp);
+      var icon = document.createElement('i');
+      icon.className = 'bi bi-calendar3 heka-date-icon';
+      icon.setAttribute('aria-hidden', 'true');
+      wrap.appendChild(icon);
+      inp.dataset.hekaDateReady = '1';
+    });
+  } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  hekaEnhanceDateInputs(document);
+  // Re-aplicar al abrir modales (por si se clonan nodos)
+  document.body.addEventListener('click', function() {
+    setTimeout(function() { hekaEnhanceDateInputs(document); }, 300);
+  }, true);
+});
+
 function recargaUpdateFileLabel(input) {
   var box = document.getElementById('recarga-file-names');
   if (!box) return;
