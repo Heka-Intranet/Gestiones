@@ -11052,6 +11052,32 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <small style="color:#8b98a8;font-size:11px;display:block;margin-top:6px;">Se aplica en columna F (Inter/Servi) o E (Coord/TCC) y también en columna A.</small>
 </div>
 
+<!-- Campos según transportadora -->
+<div id="cunmasivo-campos-inter" style="display:none;">
+  <div class="cun-seccion">
+    <div class="cun-seccion-titulo"><i class="bi bi-ticket-perforated"></i> Ticket <small style="color:#8b98a8;">(columna G)</small></div>
+    <input id="cunmasivo-ticket" type="text" class="cun-input" placeholder="Número de ticket"/>
+  </div>
+  <div class="cun-seccion">
+    <div class="cun-seccion-titulo"><i class="bi bi-receipt"></i> N° Nota crédito <small style="color:#8b98a8;">(columna H — si no pegas valor por guía, este llena H)</small></div>
+    <input id="cunmasivo-num-nota" type="text" class="cun-input" placeholder="N° de nota crédito / valor NC global"/>
+  </div>
+</div>
+<div id="cunmasivo-campos-servi" style="display:none;">
+  <div class="cun-seccion">
+    <div class="cun-seccion-titulo"><i class="bi bi-tags-fill"></i> Concepto <small style="color:#8b98a8;">(columna G)</small></div>
+    <select id="cunmasivo-concepto" class="cun-input">
+      <option value="">(No cambiar)</option>
+      <option value="Indemnizacion">Indemnizacion</option>
+      <option value="Acta de Castigo">Acta de Castigo</option>
+    </select>
+  </div>
+  <div class="cun-seccion">
+    <div class="cun-seccion-titulo"><i class="bi bi-hash"></i> Número CE <small style="color:#8b98a8;">(columna H)</small></div>
+    <input id="cunmasivo-num-ce" type="text" class="cun-input" placeholder="Número CE"/>
+  </div>
+</div>
+
 <!-- Guias -->
 <div class="cun-seccion">
 <div class="cun-seccion-titulo"><i class="bi bi-list-ol"></i> Gu&iacute;as <small style="color:#8b98a8;font-weight:500;">— solo gu&iacute;as, o gu&iacute;a [Tab] valor NC ($1,310,000 v&aacute;lido)</small></div>
@@ -11407,7 +11433,11 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="indemnizacion-row">
 <span class="label-indem">Concepto:</span>
 <span class="value-indem view-mode" id="servi-concepto-view"></span>
-<input class="form-input edit-mode-only" id="servi-concepto-edit" style="display:none; width:100%; font-size:13px;" type="text"/>
+<select class="form-input edit-mode-only" id="servi-concepto-edit" style="display:none; width:100%; font-size:13px;">
+<option value="">Seleccionar...</option>
+<option value="Indemnizacion">Indemnizacion</option>
+<option value="Acta de Castigo">Acta de Castigo</option>
+</select>
 </div>
 <!-- 8. NUM CE -->
 <div class="indemnizacion-row">
@@ -20977,13 +21007,13 @@ body > .novedad-dropdown-menu .novedad-option:hover {
     // ==========================================
     var cunValidacionPendiente = null; // {pares, tipo, numero, estado, verifSet}
 
-    function abrirModalValidacionCun(val, pares, tipo, numero, estado, causal, fechaNota) {
+    function abrirModalValidacionCun(val, pares, tipo, numero, estado, causal, fechaNota, extras) {
         var cuerpo = document.getElementById('cun-val-cuerpo');
         var verificadas = val.verificadas || [];
         var diferentes = val.diferentes || [];
         var sinComparar = val.sinComparar || [];
         var esComp = (tipo === 'coord' || tipo === 'tcc');
-        cunValidacionPendiente = { pares: pares, tipo: tipo, numero: numero, estado: estado, causal: causal || "", fechaNota: fechaNota || "", esComprobante: esComp, verifSet: {} };
+        cunValidacionPendiente = { pares: pares, tipo: tipo, numero: numero, estado: estado, causal: causal || "", fechaNota: fechaNota || "", extras: extras || {}, esComprobante: esComp, verifSet: {} };
         verificadas.forEach(function(v) { cunValidacionPendiente.verifSet[v.guia] = true; });
 
         var html = '';
@@ -21022,13 +21052,13 @@ body > .novedad-dropdown-menu .novedad-option:hover {
             var cvp = cunValidacionPendiente;
             cerrarModalValidacionCun();
             var subconjunto = cvp.pares.filter(function(p) { return cvp.verifSet[p.guia] || p.valor === null; });
-            confirmarCunMasivo(subconjunto, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, subconjunto.length, cvp.fechaNota || "");
+            confirmarCunMasivo(subconjunto, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, subconjunto.length, cvp.fechaNota || "", cvp.extras || {});
         });
         if (b2) b2.addEventListener('click', function() {
             if (!cunValidacionPendiente) return;
             var cvp = cunValidacionPendiente;
             cerrarModalValidacionCun();
-            confirmarCunMasivo(cvp.pares, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, 0, cvp.fechaNota || "");
+            confirmarCunMasivo(cvp.pares, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, 0, cvp.fechaNota || "", cvp.extras || {});
         });
     });
 
@@ -21037,6 +21067,10 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         document.querySelectorAll('.cun-logo-opt').forEach(function(b) {
             b.classList.toggle('seleccionada', b.getAttribute('data-valor') === valor);
         });
+        var boxInter = document.getElementById('cunmasivo-campos-inter');
+        var boxServi = document.getElementById('cunmasivo-campos-servi');
+        if (boxInter) boxInter.style.display = (valor === 'inter') ? 'block' : 'none';
+        if (boxServi) boxServi.style.display = (valor === 'servi') ? 'block' : 'none';
     }
 
     function limpiarFormularioCunMasivo() {
@@ -21050,6 +21084,10 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         if (causal) causal.value = '';
         const fechaNota = document.getElementById('cunmasivo-fecha-nota');
         if (fechaNota) fechaNota.value = '';
+        var tkt = document.getElementById('cunmasivo-ticket'); if (tkt) tkt.value = '';
+        var nn = document.getElementById('cunmasivo-num-nota'); if (nn) nn.value = '';
+        var conc = document.getElementById('cunmasivo-concepto'); if (conc) conc.value = '';
+        var nce = document.getElementById('cunmasivo-num-ce'); if (nce) nce.value = '';
         const res = document.getElementById('cunmasivo-resultado');
         if (res) { res.style.display = 'none'; res.textContent = ''; }
         const btn = document.getElementById('btn-ejecutar-cunmasivo');
@@ -21120,6 +21158,11 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         const estado = document.getElementById('cunmasivo-estado').value;
         const causal = (document.getElementById('cunmasivo-causal') || {}).value || "";
         const fechaNota = (document.getElementById('cunmasivo-fecha-nota') || {}).value || "";
+        const ticket = (document.getElementById('cunmasivo-ticket') || {}).value || "";
+        const numNota = (document.getElementById('cunmasivo-num-nota') || {}).value || "";
+        const concepto = (document.getElementById('cunmasivo-concepto') || {}).value || "";
+        const numCe = (document.getElementById('cunmasivo-num-ce') || {}).value || "";
+        const extras = { ticket: ticket, numNota: numNota, concepto: concepto, numCe: numCe };
         const textoGuias = document.getElementById('cunmasivo-guias').value.trim();
 
         if (!numero) return showToast("Escribe el número de CUN / Comprobante.");
@@ -21156,9 +21199,9 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                     showLoading(false);
                     if (!val || val.status !== 'success') return showToast('Error validando valores: ' + ((val && val.message) || 'desconocido'));
                     if (!Array.isArray(val.diferentes) || val.diferentes.length === 0) {
-                        confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, (val.verificadas || []).length, fechaNota);
+                        confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, (val.verificadas || []).length, fechaNota, extras);
                     } else {
-                        abrirModalValidacionCun(val, pares, tipo, numero, estado, causal, fechaNota);
+                        abrirModalValidacionCun(val, pares, tipo, numero, estado, causal, fechaNota, extras);
                     }
                 })
                 .withFailureHandler(function(e) {
@@ -21167,12 +21210,13 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                 })
                 .validarCunMasivo(tipo, textoParaValidar);
         } else {
-            confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, 0, fechaNota);
+            confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, 0, fechaNota, extras);
         }
     }
 
     // Confirmacion del masivo (despues de pasar la validacion, o si no habia valores)
-    function confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, verificadas, fechaNota) {
+    function confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, verificadas, fechaNota, extras) {
+        extras = extras || {};
         const nombres = { inter: 'Inter Rapidísimo', servi: 'Servientrega', coord: 'Coordinadora', tcc: 'TCC' };
         const label = esComprobante ? 'Comprobante' : 'CUN';
         const nombreTipo = nombres[tipo] || tipo.toUpperCase();
@@ -21197,19 +21241,31 @@ body > .novedad-dropdown-menu .novedad-option:hover {
             html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Causal</span><strong style="color:#eaf1f8;">' + causal + '</strong></div>';
         }
         html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Fecha llegada NC</span><strong style="color:#eaf1f8;">' + fechaMostrar + '</strong></div>';
+        if (tipo === 'inter' && extras.ticket) {
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Ticket (G)</span><strong style="color:#eaf1f8;">' + extras.ticket + '</strong></div>';
+        }
+        if (tipo === 'inter' && extras.numNota) {
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">N° Nota (H)</span><strong style="color:#eaf1f8;">' + extras.numNota + '</strong></div>';
+        }
+        if (tipo === 'servi' && extras.concepto) {
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Concepto (G)</span><strong style="color:#eaf1f8;">' + extras.concepto + '</strong></div>';
+        }
+        if (tipo === 'servi' && extras.numCe) {
+            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Número CE (H)</span><strong style="color:#eaf1f8;">' + extras.numCe + '</strong></div>';
+        }
         if (conValor > 0) {
             html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;"><span style="color:#8b98a8;font-size:12px;">Con valor NC/CE</span><strong style="color:#eaf1f8;">' + conValor + ' guía(s)</strong></div>';
             html += '<div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#8b98a8;font-size:12px;">Total valores</span><strong style="color:#4ade80;">' + sumaFmt + '</strong></div>';
         }
         html += '</div>'
-            + '<p style="margin:0;color:#94a3b8;font-size:13.5px;">Las guías existentes se <strong style="color:#eaf1f8;">actualizan</strong>; las que no existan se <strong style="color:#eaf1f8;">crean</strong>.</p>';
+            + '<p style="margin:0;color:#94a3b8;font-size:13.5px;">Las guías existentes se <strong style="color:#eaf1f8;">actualizan</strong> (CUN, valor, estado, causal y fecha NC aunque ya tengan datos — sirve para pago adicional); las que no existan se <strong style="color:#eaf1f8;">crean</strong>.</p>';
         if (verificadas > 0) {
             html += '<p style="margin:8px 0 0;color:#60a5fa;font-size:13px;">✓ ' + verificadas + ' guía(s) verificadas contra Valor Recaudo − Seguro.</p>';
         }
         html += '</div>';
 
         mostrarModalConfirmacion(html, function() {
-            procesarCunMasivoBloques(tipo, pares, numero, estado, causal, fechaNota || '');
+            procesarCunMasivoBloques(tipo, pares, numero, estado, causal, fechaNota || '', extras);
         }, {
             titulo: 'Confirmar ' + label + ' masivo',
             textoSi: 'Sí, procesar',
@@ -21219,7 +21275,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
         });
     }
 
-    function procesarCunMasivoBloques(tipo, guias, numero, estado, causal, fechaNota) {
+    function procesarCunMasivoBloques(tipo, guias, numero, estado, causal, fechaNota, extras) {
         const btn = document.getElementById('btn-ejecutar-cunmasivo');
         if (btn) { btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...'; }
         showLoading(true);
@@ -21274,7 +21330,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
                     bi++;
                     siguienteBloque();
                 })
-                .procesarCunMasivo(tipo, bloques[bi].join(String.fromCharCode(10)), numero, estado, causal || "", fechaNota || "");
+                .procesarCunMasivo(tipo, bloques[bi].join(String.fromCharCode(10)), numero, estado, causal || "", fechaNota || "", extras || {});
         }
 
         siguienteBloque();
