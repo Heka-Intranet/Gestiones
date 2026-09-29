@@ -1573,35 +1573,33 @@
   border:1px solid rgba(255,255,255,.12) !important;
 }
 
-/* ===== Selectores de fecha: fondo claro / texto legible ===== */
+/* ===== Selectores de fecha (tema oscuro) + icono calendario blanco ===== */
 input[type="date"].form-input,
 .form-input[type="date"],
-input[type="date"]{
-  background:#ffffff !important;
-  color:#111827 !important;
-  border:1px solid rgba(255,255,255,.18) !important;
-  color-scheme: light !important;
+input[type="date"],
+.cun-input[type="date"],
+.heka-date-filter input[type=date],
+.heka-date-field input[type=date]{
+  background:#0a1018 !important;
+  color:#edf3f9 !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  color-scheme: dark !important;
   border-radius:8px !important;
 }
-input[type="date"]:focus{
+input[type="date"]:focus,
+.cun-input[type="date"]:focus{
   border-color:rgba(255,196,0,.75) !important;
   box-shadow:0 0 0 3px rgba(255,196,0,.12) !important;
   outline:none !important;
 }
-/* Overrides previos que forzaban dark en date */
-.heka-date-filter input[type=date],
-.heka-date-field input[type=date],
-#panel-check-recarga input[type=date],
-#panel-historial-recargas input[type=date],
-#panel-seguimiento-logistica input[type=date],
-#panel-historial-certificados input[type=date],
-#panel-talento-humano input[type=date],
-#panel-banco-vs-pl input[type=date],
-#panel-rentabilidad-seller input[type=date]{
-  background:#ffffff !important;
-  color:#111827 !important;
-  color-scheme: light !important;
-  border:1px solid #d1d5db !important;
+/* Icono del calendario en blanco */
+input[type="date"]::-webkit-calendar-picker-indicator{
+  filter: invert(1) brightness(1.15) !important;
+  opacity: 0.9 !important;
+  cursor: pointer !important;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover{
+  opacity: 1 !important;
 }
 
 /* --- HEADER COMPACTO PARA COLABORADORES --- */
@@ -5391,6 +5389,126 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 #modal-indemnizacion-servi .modal-content,
 #modal-colaborador .modal-content,
 #modal-admin .modal-content,
+
+/* ===== Modal Registrar Recarga — diseño pro ===== */
+#modal-recarga.modal-overlay{
+  background:rgba(2,6,12,.88)!important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+#modal-recarga .recarga-modal-card{
+  max-width:520px!important;
+  width:94%!important;
+  margin:auto;
+  background:linear-gradient(165deg,#121a26 0%,#0a1018 100%)!important;
+  border:1px solid rgba(255,196,0,.28)!important;
+  border-radius:22px!important;
+  box-shadow:0 0 40px rgba(255,196,0,.08),0 28px 70px rgba(0,0,0,.55)!important;
+  overflow:hidden!important;
+  padding:0!important;
+}
+.recarga-modal-header{
+  display:flex;align-items:center;gap:14px;
+  padding:20px 22px 16px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  background:radial-gradient(ellipse at top left,rgba(255,196,0,.08),transparent 55%);
+}
+.recarga-modal-icon{
+  width:48px;height:48px;border-radius:14px;flex-shrink:0;
+  background:linear-gradient(135deg,#ffc400,#e08e00);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 20px rgba(255,196,0,.35);
+  color:#0b1119;font-size:22px;
+}
+.recarga-modal-title{margin:0;color:#eaf1f8!important;font-size:18px;font-weight:800;letter-spacing:.2px;}
+.recarga-modal-sub{margin:4px 0 0;color:#8b98a8;font-size:12.5px;}
+.recarga-modal-close{
+  width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.12);
+  background:transparent;color:#8b98a8;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
+}
+.recarga-modal-close:hover{color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.06);}
+.recarga-modal-body{padding:18px 22px 22px;}
+.recarga-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:520px){.recarga-grid{grid-template-columns:1fr;}}
+.recarga-field{margin-bottom:4px;}
+.recarga-label{
+  display:flex;align-items:center;gap:6px;
+  color:#aebdcd!important;font-size:11.5px;font-weight:700;
+  letter-spacing:.4px;text-transform:uppercase;margin-bottom:7px;
+}
+.recarga-label i{color:#ffc400;font-size:13px;}
+.recarga-input{
+  width:100%!important;
+  background:rgba(255,255,255,.04)!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:12px!important;
+  color:#eaf1f8!important;
+  font-size:14px!important;
+  padding:11px 13px!important;
+  outline:none!important;
+  transition:border-color .2s,box-shadow .2s;
+}
+.recarga-input:focus{
+  border-color:rgba(255,196,0,.65)!important;
+  box-shadow:0 0 0 3px rgba(255,196,0,.1)!important;
+}
+.recarga-input-valor{font-weight:700;font-size:16px!important;color:#ffc400!important;}
+.recarga-seller-row{display:flex;gap:8px;align-items:stretch;}
+.recarga-seller-row .recarga-input{flex:1;min-width:0;}
+.recarga-btn-buscar{
+  width:46px;border-radius:12px;border:1px solid rgba(255,196,0,.35);
+  background:rgba(255,196,0,.1);color:#ffc400;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  transition:all .2s;flex-shrink:0;
+}
+.recarga-btn-buscar:hover{background:rgba(255,196,0,.22);border-color:#ffc400;}
+.recarga-saldo{
+  margin-top:10px;padding:12px 14px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(34,197,94,.04));
+  border:1px solid rgba(34,197,94,.3);
+  color:#4ade80;font-weight:700;font-size:13.5px;
+  display:flex;align-items:center;gap:8px;
+}
+.recarga-file-drop{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  padding:18px 14px;border-radius:14px;cursor:pointer;
+  border:1.5px dashed rgba(255,255,255,.18);
+  background:rgba(255,255,255,.025);
+  transition:all .2s;text-align:center;
+}
+.recarga-file-drop:hover{
+  border-color:rgba(255,196,0,.45);
+  background:rgba(255,196,0,.04);
+}
+.recarga-file-drop i{font-size:26px;color:#ffc400;margin-bottom:2px;}
+.recarga-file-drop span{color:#eaf1f8;font-weight:600;font-size:13.5px;}
+.recarga-file-drop small{color:#8b98a8;font-size:11.5px;}
+.recarga-file-names{
+  margin-top:8px;padding:8px 12px;border-radius:10px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  color:#cbd5e1;font-size:12.5px;line-height:1.45;
+}
+.recarga-modal-footer{
+  display:flex;gap:10px;justify-content:flex-end;align-items:center;
+  margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.07);
+}
+.recarga-btn-cancel{
+  padding:11px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.14);
+  background:transparent;color:#cbd5e1;font-weight:600;cursor:pointer;font-size:13.5px;
+  transition:all .2s;
+}
+.recarga-btn-cancel:hover{background:rgba(255,255,255,.06);color:#fff;}
+.recarga-btn-save{
+  padding:11px 20px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,#ffc400,#e08e00);
+  color:#0b1119;font-weight:800;cursor:pointer;font-size:13.5px;
+  display:inline-flex;align-items:center;gap:7px;
+  box-shadow:0 6px 18px rgba(255,196,0,.3);
+  transition:all .2s;
+}
+.recarga-btn-save:hover:not(:disabled){filter:brightness(1.06);transform:translateY(-1px);}
+.recarga-btn-save:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
 #modal-recarga .modal-content,
 #modal-guias-madres .modal-content,
 #modal-recibir-hijas .modal-content {
@@ -10445,51 +10563,54 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 <!-- MODAL RECARGA -->
 <div class="modal-overlay" id="modal-recarga" onclick="closeModalRecarga(event)">
-<div class="modal-content" onclick="event.stopPropagation()" style="max-width: 600px;">
-<div class="modal-header">
-<div class="modal-title">
-<h2>Registrar Recarga</h2>
-</div>
-<button class="close-modal-btn" onclick="closeModalRecarga()">×</button>
-</div>
-<div class="modal-body">
-<form id="formRecarga">
-<!-- FILA 1: FECHA (IZQ) | VALOR (DERECHA) -->
-<div class="form-grid-2cols">
-<!-- Agrega id="group_rec_fecha" aquí -->
-<div class="form-group" id="group_rec_fecha">
-<label>Fecha de Recarga</label>
-<input class="form-input" id="rec_fecha" required="" type="date"/>
-</div>
-<div class="me-auto" id="group_rec_valor" style="width:100%;">
-<label>Valor</label>
-<input class="form-input" id="rec_valor" oninput="formatCurrencyInput(this)" placeholder="$ 0" required="" type="text"/>
-</div>
-</div>
-<!-- FILA 2: SELLER (IZQ) | SOPORTES (DERECHA) -->
-<div class="form-grid-2cols">
-<div class="form-group" id="group_rec_seller">
-<label>Seller</label>
-<input class="form-input" id="rec_seller" onblur="buscarSaldoSeller()" onkeypress="if(event.key === 'Enter') buscarSaldoSeller()" placeholder="Nombre del Seller" required="" type="text"/>
-<div id="res-saldo-display" style="display:none; margin-bottom: 10px; padding: 10px; background-color: #d1e7dd; color: #0f5132; border-radius: 8px; font-weight: bold; font-size: 14px;">
-<!-- Aquí aparecerá el saldo -->
-</div>
-</div>
-<div class="form-group" style="display: flex; flex-direction: column; justify-content: flex-end;">
-<label>Soportes</label>
-<input accept="image/*,.pdf,.doc,.docx" class="form-input" id="rec_sop_files" multiple="" type="file"/>
-<small style="color: var(--text-muted); display:block; margin-top:5px;">Se permiten múltiples archivos.</small>
-</div>
-</div>
-<!-- AGREGA ESTO AQUÍ SI FALTA: -->
-<input id="rec_asesor" type="hidden"/>
-<div style="margin-top: 20px; text-align: right;">
-<button class="btn btn-custom-black" disabled="" id="btn_guardar_recarga" onclick="enviarRecarga()" type="button">
-<i class="bi bi-save"></i> Guardar Recarga
-            </button>
-</div>
-</form>
-</div>
+<div class="modal-content recarga-modal-card" onclick="event.stopPropagation()">
+  <div class="recarga-modal-header">
+    <div class="recarga-modal-icon"><i class="bi bi-wallet2"></i></div>
+    <div style="flex:1;min-width:0;">
+      <h2 class="recarga-modal-title">Registrar Recarga</h2>
+      <p class="recarga-modal-sub">Carga de saldo al seller con soporte</p>
+    </div>
+    <button type="button" class="recarga-modal-close" onclick="closeModalRecarga()" title="Cerrar"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div class="recarga-modal-body">
+    <form id="formRecarga">
+      <div class="recarga-grid">
+        <div class="recarga-field" id="group_rec_fecha">
+          <label class="recarga-label"><i class="bi bi-calendar3"></i> Fecha de recarga</label>
+          <input class="form-input recarga-input" id="rec_fecha" required="" type="date"/>
+        </div>
+        <div class="recarga-field" id="group_rec_valor">
+          <label class="recarga-label"><i class="bi bi-currency-dollar"></i> Valor</label>
+          <input class="form-input recarga-input recarga-input-valor" id="rec_valor" oninput="formatCurrencyInput(this)" placeholder="$ 0" required="" type="text"/>
+        </div>
+      </div>
+      <div class="recarga-field" id="group_rec_seller" style="margin-top:4px;">
+        <label class="recarga-label"><i class="bi bi-shop"></i> Seller</label>
+        <div class="recarga-seller-row">
+          <input class="form-input recarga-input" id="rec_seller" onblur="buscarSaldoSeller()" onkeypress="if(event.key === 'Enter'){event.preventDefault();buscarSaldoSeller();}" placeholder="Nombre o ID del seller" required="" type="text"/>
+          <button type="button" class="recarga-btn-buscar" onclick="buscarSaldoSeller()" title="Consultar saldo"><i class="bi bi-search"></i></button>
+        </div>
+        <div id="res-saldo-display" class="recarga-saldo" style="display:none;"></div>
+      </div>
+      <div class="recarga-field" style="margin-top:12px;">
+        <label class="recarga-label"><i class="bi bi-paperclip"></i> Soportes</label>
+        <label class="recarga-file-drop" for="rec_sop_files">
+          <i class="bi bi-cloud-arrow-up"></i>
+          <span>Adjuntar comprobantes</span>
+          <small>Imágenes, PDF o Word · varios archivos</small>
+        </label>
+        <input accept="image/*,.pdf,.doc,.docx" class="form-input" id="rec_sop_files" multiple="" type="file" style="display:none;" onchange="if(window.recargaUpdateFileLabel)recargaUpdateFileLabel(this)"/>
+        <div id="recarga-file-names" class="recarga-file-names" style="display:none;"></div>
+      </div>
+      <input id="rec_asesor" type="hidden"/>
+      <div class="recarga-modal-footer">
+        <button type="button" class="recarga-btn-cancel" onclick="closeModalRecarga()">Cancelar</button>
+        <button class="recarga-btn-save" disabled="" id="btn_guardar_recarga" onclick="enviarRecarga()" type="button">
+          <i class="bi bi-check2-circle"></i> Guardar recarga
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 </div>
 <!-- MODAL ALERTA DUPLICADO -->
@@ -11048,7 +11169,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <!-- Fecha llegada nota crédito -->
 <div class="cun-seccion">
 <div class="cun-seccion-titulo"><i class="bi bi-calendar-event"></i> Fecha llegada nota crédito</div>
-<input id="cunmasivo-fecha-nota" type="date" class="cun-input" style="color-scheme:dark;"/>
+<input id="cunmasivo-fecha-nota" type="date" class="cun-input" style="color-scheme:dark; color:#edf3f9;"/>
 <small style="color:#8b98a8;font-size:11px;display:block;margin-top:6px;">Se aplica a todas las guías del lote.</small>
 </div>
 
@@ -11102,6 +11223,14 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 .cun-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eaf1f8;font-size:13.5px;padding:9px 12px;outline:none;transition:border-color .2s;}
 .cun-input:focus{border-color:#a78bfa;}
 .cun-input option{background:#111b26;color:#eaf1f8;}
+/* Icono calendario blanco en todos los date del app */
+input[type="date"]::-webkit-calendar-picker-indicator,
+.cun-input[type="date"]::-webkit-calendar-picker-indicator{
+  filter: invert(1) brightness(1.2) !important;
+  opacity: .95 !important;
+  cursor: pointer !important;
+}
+
 .cun-logo-opt{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border-radius:16px;cursor:pointer;background:linear-gradient(155deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:2px solid rgba(255,255,255,.09);transition:all .25s ease;}
 .cun-logo-opt img{width:50px;height:50px;border-radius:50%;object-fit:contain;background:#fff;padding:4px;border:2.5px solid transparent;transition:all .25s ease;}
 .cun-logo-opt span{font-size:10.5px;font-weight:700;color:#8b98a8;letter-spacing:.5px;}
@@ -14394,7 +14523,21 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 
     // --- LÓGICA MODAL RECARGA ---
 
-    function openModalRecarga() {
+    
+function recargaUpdateFileLabel(input) {
+  var box = document.getElementById('recarga-file-names');
+  if (!box) return;
+  if (!input.files || !input.files.length) {
+    box.style.display = 'none';
+    box.textContent = '';
+    return;
+  }
+  var names = [];
+  for (var i = 0; i < input.files.length; i++) names.push(input.files[i].name);
+  box.innerHTML = '<i class="bi bi-files" style="margin-right:6px;color:#ffc400;"></i>' + names.join('<br>');
+  box.style.display = 'block';
+}
+function openModalRecarga() {
       // 1. ABRIR EL MODAL VISUALMENTE
       document.getElementById('modal-recarga').classList.add('active');
       
