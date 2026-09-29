@@ -5454,6 +5454,47 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
   box-shadow:0 0 0 3px rgba(255,196,0,.1)!important;
 }
 .recarga-input-valor{font-weight:700;font-size:16px!important;color:#ffc400!important;}
+/* Fecha recarga: icono bi-calendar3 blanco visible */
+.recarga-date-wrap{
+  position:relative;
+  width:100%;
+}
+.recarga-date-wrap .recarga-input{
+  padding-right:42px !important;
+  color-scheme: dark !important;
+}
+.recarga-date-wrap input[type="date"]::-webkit-calendar-picker-indicator{
+  position:absolute;
+  right:0;top:0;
+  width:100%;
+  height:100%;
+  opacity:0 !important;
+  cursor:pointer;
+  filter:none !important;
+  z-index:2;
+}
+.recarga-date-icon{
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#ffffff !important;
+  font-size:16px !important;
+  pointer-events:none;
+  z-index:1;
+  opacity:1 !important;
+  line-height:1;
+}
+#modal-recarga .recarga-label i,
+#modal-recarga .recarga-label .bi-calendar3,
+#modal-recarga .recarga-label .bi-currency-dollar,
+#modal-recarga .recarga-label .bi-shop,
+#modal-recarga .recarga-label .bi-paperclip{
+  color:#ffc400 !important;
+  opacity:1 !important;
+  font-size:13px !important;
+}
+
 
 /* bi-calendar3 blanco (label fecha y similares) */
 .recarga-label .bi-calendar3,
@@ -10603,7 +10644,10 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       <div class="recarga-grid">
         <div class="recarga-field" id="group_rec_fecha">
           <label class="recarga-label"><i class="bi bi-calendar3"></i> Fecha de recarga</label>
-          <input class="form-input recarga-input" id="rec_fecha" required="" type="date" style="color-scheme:dark;"/>
+          <div class="recarga-date-wrap">
+            <input class="form-input recarga-input" id="rec_fecha" required="" type="date" style="color-scheme:dark;"/>
+            <i class="bi bi-calendar3 recarga-date-icon" aria-hidden="true"></i>
+          </div>
         </div>
         <div class="recarga-field" id="group_rec_valor">
           <label class="recarga-label"><i class="bi bi-currency-dollar"></i> Valor</label>
