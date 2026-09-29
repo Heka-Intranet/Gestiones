@@ -5454,6 +5454,20 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
   box-shadow:0 0 0 3px rgba(255,196,0,.1)!important;
 }
 .recarga-input-valor{font-weight:700;font-size:16px!important;color:#ffc400!important;}
+/* Icono calendario SIEMPRE blanco en fondos oscuros */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.recarga-input[type="date"]::-webkit-calendar-picker-indicator,
+.cun-input[type="date"]::-webkit-calendar-picker-indicator,
+#modal-recarga input[type="date"]::-webkit-calendar-picker-indicator,
+#rec_fecha::-webkit-calendar-picker-indicator,
+#cunmasivo-fecha-nota::-webkit-calendar-picker-indicator{
+  filter: invert(1) brightness(2) contrast(1.1) !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+  background: transparent !important;
+}
+
 .recarga-seller-row{display:flex;gap:8px;align-items:stretch;}
 .recarga-seller-row .recarga-input{flex:1;min-width:0;}
 .recarga-btn-buscar{
@@ -10577,7 +10591,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       <div class="recarga-grid">
         <div class="recarga-field" id="group_rec_fecha">
           <label class="recarga-label"><i class="bi bi-calendar3"></i> Fecha de recarga</label>
-          <input class="form-input recarga-input" id="rec_fecha" required="" type="date"/>
+          <input class="form-input recarga-input" id="rec_fecha" required="" type="date" style="color-scheme:dark;"/>
         </div>
         <div class="recarga-field" id="group_rec_valor">
           <label class="recarga-label"><i class="bi bi-currency-dollar"></i> Valor</label>
