@@ -7972,7 +7972,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 <!-- LOGO SERVI -->
 <div class="partner-showcase" onclick="cargarIndemnizaciones('servi', 'SERVIENTREGA', this)" style="animation: float 4.5s ease-in-out infinite;">
-<img alt="Servientrega" src="https://i.postimg.cc/tCk1Jf6X/images-(1).png"/>
+<img alt="Servientrega" src="https://i.imgur.com/qDwQyi3.png"/>
 <span>Servientrega</span>
 </div>
 <!-- LOGO TCC -->
@@ -8187,7 +8187,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 <!-- SERVI -->
 <div class="partner-showcase" onclick="cargarGerencial('servi', 'SERVIENTREGA', this)" style="animation: float 4.5s ease-in-out infinite;">
-<img alt="Servientrega" src="https://i.postimg.cc/tCk1Jf6X/images-(1).png"/>
+<img alt="Servientrega" src="https://i.imgur.com/qDwQyi3.png"/>
 <span>Servientrega</span>
 </div>
 <!-- COORD -->
@@ -8255,7 +8255,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
 <!-- SERVIENTREGA -->
 <div class="recuento-card" onclick="seleccionarRecuento('servientrega', this)">
-<img alt="Servientrega" src="https://i.postimg.cc/tCk1Jf6X/images-(1).png"/>
+<img alt="Servientrega" src="https://i.imgur.com/qDwQyi3.png"/>
 <h3>Servientrega</h3>
 </div>
 <!-- INTERRAPIDISIMO -->
@@ -10200,7 +10200,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <input class="perm-check" type="checkbox" value="mesa_ayuda"/>
 <span class="slider round"></span>
 </div>
-<span>Mis solicitudes (Colaborador)</span>
+<span>Mis solicitudes</span>
 </label>
 <label class="checkbox-item">
 <div class="switch">
@@ -10939,7 +10939,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 <!-- SERVI -->
 <div class="partner-showcase" onclick="abrirFormularioNuevo('servi')" onmouseout="this.style.borderColor='#ddd'" onmouseover="this.style.borderColor='#198754'" style="cursor: pointer; width: 120px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; transition: 0.3s;">
-<img alt="Servi" src="https://i.postimg.cc/tCk1Jf6X/images-(1).png" style="max-height: 60px;"/>
+<img alt="Servi" src="https://i.imgur.com/qDwQyi3.png" style="max-height: 60px;"/>
 <div style="font-size: 12px; margin-top: 5px; font-weight: bold;">Servientrega</div>
 </div>
 <!-- COORDINADORA -->
@@ -11002,7 +11002,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <button type="button" class="cun-logo-opt" data-valor="inter" onclick="seleccionarLogoCun('inter')" title="Inter Rapid&iacute;simo (CUN MASIVO)">
 <img src="https://i.postimg.cc/2jqJ616Y/Interrapidisimo.png" alt="Inter"><span>CUN</span></button>
 <button type="button" class="cun-logo-opt" data-valor="servi" onclick="seleccionarLogoCun('servi')" title="Servientrega (CUN MASIVO)">
-<img src="https://i.postimg.cc/tCk1Jf6X/images-(1).png" alt="Servi"><span>CUN</span></button>
+<img src="https://i.imgur.com/qDwQyi3.png" alt="Servi"><span>CUN</span></button>
 <button type="button" class="cun-logo-opt" data-valor="coord" onclick="seleccionarLogoCun('coord')" title="Coordinadora (COMPROBANTE MASIVO)">
 <img src="https://i.postimg.cc/66LZC0Tf/logo-coordinadora-efficommerce-1-Photoroom.png" alt="Coord"><span>Comp.</span></button>
 <button type="button" class="cun-logo-opt" data-valor="tcc" onclick="seleccionarLogoCun('tcc')" title="TCC (COMPROBANTE MASIVO)">
@@ -13303,12 +13303,8 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       
       navItems.forEach(item => {
         const target = item.getAttribute('data-target');
-        // Mesa de ayuda colaborador: visible para todos los usuarios logueados
-        if (target === 'mesa_ayuda') {
-          item.style.display = 'flex';
-          return;
-        }
-        if (!perms.includes(target)) {
+        // Software (mesa_ayuda / mesa_ayuda_dev) se controla igual que el resto de permisos
+        if (!perms || !perms.includes(target)) {
           item.style.display = 'none';
         } else {
           item.style.display = 'flex';
