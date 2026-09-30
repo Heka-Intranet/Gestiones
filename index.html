@@ -1502,107 +1502,7 @@
     }
 
 
-    
-/* ===== Configuración de Usuarios: acordeones legibles (tema oscuro) ===== */
-#modal-admin .accordion-item{
-  background:rgba(8,13,19,.92) !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  border-radius:14px !important;
-  overflow:hidden !important;
-  box-shadow:0 6px 18px rgba(0,0,0,.25) !important;
-  margin-bottom:10px !important;
-}
-#modal-admin .accordion-header{
-  background:linear-gradient(145deg,#141c28,#0c121a) !important;
-  color:#eaf1f8 !important;
-  border:none !important;
-  border-bottom:1px solid rgba(255,255,255,.06) !important;
-  padding:14px 16px !important;
-  font-weight:700 !important;
-}
-#modal-admin .accordion-header span{
-  color:#eaf1f8 !important;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-}
-#modal-admin .accordion-header i{
-  color:#ffc400 !important;
-}
-#modal-admin .accordion-header:hover,
-#modal-admin .accordion-header.active{
-  background:rgba(255,196,0,.07) !important;
-  color:#ffc400 !important;
-}
-#modal-admin .accordion-header:hover span,
-#modal-admin .accordion-header.active span{
-  color:#ffc400 !important;
-}
-#modal-admin .accordion-body{
-  background:rgba(5,9,14,.88) !important;
-  color:#cbd5e1 !important;
-  border-top:1px solid rgba(255,255,255,.06) !important;
-  padding:16px !important;
-}
-#modal-admin .checkbox-item{
-  background:rgba(255,255,255,.04) !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  color:#e2e8f0 !important;
-  border-radius:10px !important;
-}
-#modal-admin .checkbox-item span{
-  color:#e2e8f0 !important;
-}
-#modal-admin .checkbox-item:hover{
-  border-color:rgba(255,196,0,.35) !important;
-  background:rgba(255,196,0,.06) !important;
-}
-#modal-admin label,
-#modal-admin .form-group label,
-#modal-admin p,
-#modal-admin h3,
-#modal-admin h4{
-  color:#eaf1f8 !important;
-}
-#modal-admin .form-input,
-#modal-admin input[type="text"],
-#modal-admin input[type="search"],
-#modal-admin select{
-  background:#0a1018 !important;
-  color:#edf3f9 !important;
-  border:1px solid rgba(255,255,255,.12) !important;
-}
-
-/* ===== Selectores de fecha (tema oscuro) + icono calendario blanco ===== */
-input[type="date"].form-input,
-.form-input[type="date"],
-input[type="date"],
-.cun-input[type="date"],
-.heka-date-filter input[type=date],
-.heka-date-field input[type=date]{
-  background:#0a1018 !important;
-  color:#edf3f9 !important;
-  border:1px solid rgba(255,255,255,.14) !important;
-  color-scheme: dark !important;
-  border-radius:8px !important;
-}
-input[type="date"]:focus,
-.cun-input[type="date"]:focus{
-  border-color:rgba(255,196,0,.75) !important;
-  box-shadow:0 0 0 3px rgba(255,196,0,.12) !important;
-  outline:none !important;
-}
-/* Icono del calendario en blanco */
-input[type="date"]::-webkit-calendar-picker-indicator{
-  filter: invert(1) brightness(1.15) !important;
-  opacity: 0.9 !important;
-  cursor: pointer !important;
-}
-input[type="date"]::-webkit-calendar-picker-indicator:hover{
-  opacity: 1 !important;
-}
-
-/* --- HEADER COMPACTO PARA COLABORADORES --- */
+    /* --- HEADER COMPACTO PARA COLABORADORES --- */
     .colaboradores-header {
       display: flex;
       justify-content: flex-start; /* <--- POR ESTO */
@@ -5389,244 +5289,6 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
 #modal-indemnizacion-servi .modal-content,
 #modal-colaborador .modal-content,
 #modal-admin .modal-content,
-
-/* ===== Modal Registrar Recarga — diseño pro ===== */
-#modal-recarga.modal-overlay{
-  background:rgba(2,6,12,.88)!important;
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-}
-#modal-recarga .recarga-modal-card{
-  max-width:520px!important;
-  width:94%!important;
-  margin:auto;
-  background:linear-gradient(165deg,#121a26 0%,#0a1018 100%)!important;
-  border:1px solid rgba(255,196,0,.28)!important;
-  border-radius:22px!important;
-  box-shadow:0 0 40px rgba(255,196,0,.08),0 28px 70px rgba(0,0,0,.55)!important;
-  overflow:hidden!important;
-  padding:0!important;
-}
-.recarga-modal-header{
-  display:flex;align-items:center;gap:14px;
-  padding:20px 22px 16px;
-  border-bottom:1px solid rgba(255,255,255,.07);
-  background:radial-gradient(ellipse at top left,rgba(255,196,0,.08),transparent 55%);
-}
-.recarga-modal-icon{
-  width:48px;height:48px;border-radius:14px;flex-shrink:0;
-  background:linear-gradient(135deg,#ffc400,#e08e00);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 6px 20px rgba(255,196,0,.35);
-  color:#0b1119;font-size:22px;
-}
-.recarga-modal-title{margin:0;color:#eaf1f8!important;font-size:18px;font-weight:800;letter-spacing:.2px;}
-.recarga-modal-sub{margin:4px 0 0;color:#8b98a8;font-size:12.5px;}
-.recarga-modal-close{
-  width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.12);
-  background:transparent;color:#8b98a8;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:all .2s;flex-shrink:0;
-}
-.recarga-modal-close:hover{color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.06);}
-.recarga-modal-body{padding:18px 22px 22px;}
-.recarga-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-@media(max-width:520px){.recarga-grid{grid-template-columns:1fr;}}
-.recarga-field{margin-bottom:4px;}
-.recarga-label{
-  display:flex;align-items:center;gap:6px;
-  color:#aebdcd!important;font-size:11.5px;font-weight:700;
-  letter-spacing:.4px;text-transform:uppercase;margin-bottom:7px;
-}
-.recarga-label i{color:#ffc400;font-size:13px;}
-.recarga-input{
-  width:100%!important;
-  background:rgba(255,255,255,.04)!important;
-  border:1px solid rgba(255,255,255,.12)!important;
-  border-radius:12px!important;
-  color:#eaf1f8!important;
-  font-size:14px!important;
-  padding:11px 13px!important;
-  outline:none!important;
-  transition:border-color .2s,box-shadow .2s;
-}
-.recarga-input:focus{
-  border-color:rgba(255,196,0,.65)!important;
-  box-shadow:0 0 0 3px rgba(255,196,0,.1)!important;
-}
-.recarga-input-valor{font-weight:700;font-size:16px!important;color:#ffc400!important;}
-
-/* ===== Todos los date: icono bi-calendar3 blanco ===== */
-.heka-date-wrap,
-.recarga-date-wrap{
-  position:relative;
-  display:block;
-  width:100%;
-  max-width:100%;
-}
-.heka-date-wrap input[type="date"],
-.recarga-date-wrap input[type="date"]{
-  width:100% !important;
-  padding-right:40px !important;
-  color-scheme: dark !important;
-  box-sizing:border-box;
-}
-.heka-date-wrap input[type="date"]::-webkit-calendar-picker-indicator,
-.recarga-date-wrap input[type="date"]::-webkit-calendar-picker-indicator{
-  position:absolute;
-  left:0; top:0;
-  width:100%;
-  height:100%;
-  margin:0;
-  padding:0;
-  opacity:0 !important;
-  cursor:pointer;
-  z-index:2;
-  filter:none !important;
-}
-.heka-date-icon,
-.recarga-date-icon{
-  position:absolute;
-  right:12px;
-  top:50%;
-  transform:translateY(-50%);
-  color:#ffffff !important;
-  font-size:15px !important;
-  pointer-events:none;
-  z-index:1;
-  opacity:1 !important;
-  line-height:1;
-  font-style:normal;
-}
-/* En fondos claros, icono oscuro */
-.heka-date-wrap.heka-date-light .heka-date-icon{
-  color:#111827 !important;
-}
-.heka-date-wrap.heka-date-light input[type="date"]{
-  color-scheme: light !important;
-}
-
-/* Fecha recarga: icono bi-calendar3 blanco visible */
-.recarga-date-wrap{
-  position:relative;
-  width:100%;
-}
-.recarga-date-wrap .recarga-input{
-  padding-right:42px !important;
-  color-scheme: dark !important;
-}
-.recarga-date-wrap input[type="date"]::-webkit-calendar-picker-indicator{
-  position:absolute;
-  right:0;top:0;
-  width:100%;
-  height:100%;
-  opacity:0 !important;
-  cursor:pointer;
-  filter:none !important;
-  z-index:2;
-}
-.recarga-date-icon{
-  position:absolute;
-  right:14px;
-  top:50%;
-  transform:translateY(-50%);
-  color:#ffffff !important;
-  font-size:16px !important;
-  pointer-events:none;
-  z-index:1;
-  opacity:1 !important;
-  line-height:1;
-}
-#modal-recarga .recarga-label i,
-#modal-recarga .recarga-label .bi-calendar3,
-#modal-recarga .recarga-label .bi-currency-dollar,
-#modal-recarga .recarga-label .bi-shop,
-#modal-recarga .recarga-label .bi-paperclip{
-  color:#ffc400 !important;
-  opacity:1 !important;
-  font-size:13px !important;
-}
-
-
-/* bi-calendar3 blanco (label fecha y similares) */
-.recarga-label .bi-calendar3,
-.recarga-label i.bi-calendar3,
-.cun-seccion-titulo .bi-calendar-event,
-label .bi-calendar3,
-.bi-calendar3{
-  color:#ffffff !important;
-}
-#modal-recarga .recarga-label i{
-  color:#ffffff !important;
-}
-/* Icono calendario SIEMPRE blanco en fondos oscuros */
-input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="datetime-local"]::-webkit-calendar-picker-indicator,
-.recarga-input[type="date"]::-webkit-calendar-picker-indicator,
-.cun-input[type="date"]::-webkit-calendar-picker-indicator,
-#modal-recarga input[type="date"]::-webkit-calendar-picker-indicator,
-#rec_fecha::-webkit-calendar-picker-indicator,
-#cunmasivo-fecha-nota::-webkit-calendar-picker-indicator{
-  filter: invert(1) brightness(2) contrast(1.1) !important;
-  opacity: 1 !important;
-  cursor: pointer !important;
-  background: transparent !important;
-}
-
-.recarga-seller-row{display:flex;gap:8px;align-items:stretch;}
-.recarga-seller-row .recarga-input{flex:1;min-width:0;}
-.recarga-btn-buscar{
-  width:46px;border-radius:12px;border:1px solid rgba(255,196,0,.35);
-  background:rgba(255,196,0,.1);color:#ffc400;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:16px;
-  transition:all .2s;flex-shrink:0;
-}
-.recarga-btn-buscar:hover{background:rgba(255,196,0,.22);border-color:#ffc400;}
-.recarga-saldo{
-  margin-top:10px;padding:12px 14px;border-radius:12px;
-  background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(34,197,94,.04));
-  border:1px solid rgba(34,197,94,.3);
-  color:#4ade80;font-weight:700;font-size:13.5px;
-  display:flex;align-items:center;gap:8px;
-}
-.recarga-file-drop{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-  padding:18px 14px;border-radius:14px;cursor:pointer;
-  border:1.5px dashed rgba(255,255,255,.18);
-  background:rgba(255,255,255,.025);
-  transition:all .2s;text-align:center;
-}
-.recarga-file-drop:hover{
-  border-color:rgba(255,196,0,.45);
-  background:rgba(255,196,0,.04);
-}
-.recarga-file-drop i{font-size:26px;color:#ffc400;margin-bottom:2px;}
-.recarga-file-drop span{color:#eaf1f8;font-weight:600;font-size:13.5px;}
-.recarga-file-drop small{color:#8b98a8;font-size:11.5px;}
-.recarga-file-names{
-  margin-top:8px;padding:8px 12px;border-radius:10px;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  color:#cbd5e1;font-size:12.5px;line-height:1.45;
-}
-.recarga-modal-footer{
-  display:flex;gap:10px;justify-content:flex-end;align-items:center;
-  margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.07);
-}
-.recarga-btn-cancel{
-  padding:11px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.14);
-  background:transparent;color:#cbd5e1;font-weight:600;cursor:pointer;font-size:13.5px;
-  transition:all .2s;
-}
-.recarga-btn-cancel:hover{background:rgba(255,255,255,.06);color:#fff;}
-.recarga-btn-save{
-  padding:11px 20px;border-radius:12px;border:none;
-  background:linear-gradient(135deg,#ffc400,#e08e00);
-  color:#0b1119;font-weight:800;cursor:pointer;font-size:13.5px;
-  display:inline-flex;align-items:center;gap:7px;
-  box-shadow:0 6px 18px rgba(255,196,0,.3);
-  transition:all .2s;
-}
-.recarga-btn-save:hover:not(:disabled){filter:brightness(1.06);transform:translateY(-1px);}
-.recarga-btn-save:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
 #modal-recarga .modal-content,
 #modal-guias-madres .modal-content,
 #modal-recibir-hijas .modal-content {
@@ -7160,23 +6822,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 
-<!-- MENU SOFTWARE / MESA DE AYUDA -->
-<div class="nav-accordion-item" id="nav-software-wrapper">
-<div class="nav-item" onclick="toggleSubmenu('submenu-software')">
-<i class="bi bi-code-slash"></i><span>Software</span><i class="bi bi-chevron-down accordion-arrow"></i>
-</div>
-<div class="nav-submenu" id="submenu-software">
-<a class="nav-item sub-item" data-target="mesa_ayuda" href="#" onclick="goToPanel('panel-mesa-ayuda', this)">
-<i class="bi bi-ticket-detailed"></i><span>Mis solicitudes</span>
-<span id="sw-badge-colab" class="sw-nav-badge" style="display:none;">0</span>
-</a>
-<a class="nav-item sub-item" data-target="mesa_ayuda_dev" href="#" onclick="goToPanel('panel-mesa-ayuda-dev', this)">
-<i class="bi bi-hdd-stack"></i><span>Mesa de desarrollo</span>
-<span id="sw-badge-dev" class="sw-nav-badge" style="display:none;">0</span>
-</a>
-</div>
-</div>
-
 <!-- NUEVO MENU PLATAFORMA DRIVE -->
 
 <!-- NUEVO MENU TALENTO HUMANO -->
@@ -7898,7 +7543,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <h1>Activación Inter</h1>
 <p>Carga el Excel de activaciones: se acumulan en la hoja "ACTIVACIONES INTER" y se notifica por correo a cada cliente que su cuenta está lista para gestionar envíos.</p>
 </div>
-<div class="card">
+<div class="card" id="act-inter-carga-card">
 <div class="form-section-title">Carga de Excel de Activaciones</div>
 <div id="act-inter-dropzone" style="border:2px dashed #ffc400;border-radius:16px;padding:36px 24px;text-align:center;cursor:pointer;background:linear-gradient(145deg,rgba(255,196,0,.06),rgba(255,196,0,.02));transition:all .25s ease;">
 <i class="bi bi-file-earmark-arrow-up-fill" style="font-size:42px;color:#ffc400;"></i>
@@ -7914,8 +7559,14 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <span id="act-inter-spinner" style="display:none;color:var(--primary-dark);"><i class="bi bi-arrow-repeat"></i> Enviando correos, no cierres esta ventana...</span>
 </div>
 </div>
-<div class="card" style="margin-top:16px;">
-<div class="form-section-title">Últimas activaciones registradas</div>
+<div class="card" style="margin-top: 16px;">
+<div class="form-section-title">Activaciones registradas</div>
+<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+<input id="act-inter-busqueda" type="text" placeholder="Buscar por cualquier dato: empresa, NIT, contacto, teléfono, ciudad, correo, estado..." onkeydown="if(event.key==='Enter')buscarActivacionesInterUI()" style="flex:1;min-width:220px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eaf1f8;font-size:13px;padding:10px 14px;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='#ffc400'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
+<button type="button" onclick="buscarActivacionesInterUI()" style="padding:10px 18px;border-radius:12px;border:none;background:linear-gradient(135deg,#ffc400,#e6a800);color:#111;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><i class="bi bi-search"></i> Buscar</button>
+<button type="button" onclick="document.getElementById('act-inter-busqueda').value='';cargarPreviewActivacionInter()" style="padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;cursor:pointer;"><i class="bi bi-x-circle"></i></button>
+</div>
+<div id="act-inter-busqueda-info" style="display:none;margin-bottom:10px;font-size:12.5px;color:#cbd5e1;"></div>
 <div style="overflow-x:auto;">
 <table class="table" id="act-inter-tabla" style="width:100%;font-size:13px;">
 <thead><tr><th>Empresa</th><th>Sucursal/CC</th><th>NIT</th><th>Contacto</th><th>Teléfono</th><th>Ciudad</th><th>E-mail</th><th>Correo</th><th>WhatsApp</th></tr></thead>
@@ -7925,199 +7576,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 <!-- ================= FIN PANEL ACTIVACION INTER ================= -->
-
-<!-- ================= PANEL SOFTWARE: MIS SOLICITUDES (COLABORADOR) ================= -->
-<div class="panel" id="panel-mesa-ayuda">
-  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <div>
-      <h1 style="margin:0;"><i class="bi bi-ticket-detailed" style="color:var(--primary-yellow);"></i> Mis solicitudes</h1>
-      <p style="margin:6px 0 0;color:#8b98a8;">Reporta errores o fallas de plataforma al área de Software</p>
-    </div>
-    <button class="btn btn-primary" onclick="abrirModalNuevaSolicitudSW()" style="display:inline-flex;align-items:center;gap:8px;">
-      <i class="bi bi-plus-circle-fill"></i> Nueva solicitud
-    </button>
-  </div>
-
-  <div class="card" style="margin-top:16px;">
-    <div class="sw-toolbar">
-      <div class="sw-filtros" id="sw-filtros-mis" data-valor="TODOS">
-        <button type="button" class="sw-chip active" data-f="TODOS" onclick="swSetFiltro('mis', this)">Todas</button>
-        <button type="button" class="sw-chip" data-f="ABIERTA" onclick="swSetFiltro('mis', this)">Abiertas</button>
-        <button type="button" class="sw-chip" data-f="EN GESTION" onclick="swSetFiltro('mis', this)">En gestión</button>
-        <button type="button" class="sw-chip" data-f="SOLUCIONADO" onclick="swSetFiltro('mis', this)">Solucionadas</button>
-      </div>
-      <button class="btn btn-secondary btn-sm" onclick="cargarMisSolicitudesSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
-    </div>
-    <div class="table-container sw-table-wrap">
-      <table class="sw-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Título</th>
-            <th>Prioridad</th>
-            <th>Tiempo</th>
-            <th>Estado</th>
-            <th>Dev</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="sw-mis-tbody">
-          <tr><td colspan="8" style="text-align:center;color:#8b98a8;">Cargando...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- ================= PANEL SOFTWARE: MESA DE DESARROLLO ================= -->
-<div class="panel" id="panel-mesa-ayuda-dev">
-  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <div>
-      <h1 style="margin:0;"><i class="bi bi-hdd-stack" style="color:var(--primary-yellow);"></i> Mesa de desarrollo</h1>
-      <p style="margin:6px 0 0;color:#8b98a8;">Gestiona, responde y cierra solicitudes del equipo</p>
-    </div>
-    <button class="btn btn-secondary" onclick="cargarSolicitudesDevSW()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
-  </div>
-
-  <div class="card" style="margin-top:16px;">
-    <div class="sw-toolbar">
-      <div class="sw-filtros" id="sw-filtros-dev" data-valor="ACTIVAS">
-        <button type="button" class="sw-chip active" data-f="ACTIVAS" onclick="swSetFiltro('dev', this)">Activas</button>
-        <button type="button" class="sw-chip" data-f="ABIERTA" onclick="swSetFiltro('dev', this)">Abiertas</button>
-        <button type="button" class="sw-chip" data-f="EN GESTION" onclick="swSetFiltro('dev', this)">En gestión</button>
-        <button type="button" class="sw-chip" data-f="SOLUCIONADO" onclick="swSetFiltro('dev', this)">Solucionadas</button>
-        <button type="button" class="sw-chip" data-f="TODOS" onclick="swSetFiltro('dev', this)">Todas</button>
-      </div>
-      <button class="btn btn-secondary btn-sm" onclick="cargarSolicitudesDevSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
-    </div>
-    <div class="table-container sw-table-wrap">
-      <table class="sw-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Solicitante</th>
-            <th>Título</th>
-            <th>Prioridad</th>
-            <th>Tiempo</th>
-            <th>Estado</th>
-            <th>Asignado</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="sw-dev-tbody">
-          <tr><td colspan="9" style="text-align:center;color:#8b98a8;">Cargando...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL NUEVA SOLICITUD SOFTWARE -->
-<div id="modal-sw-nueva" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(2,6,12,.92);backdrop-filter:blur(10px);z-index:100000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
-  <div style="max-width:580px;width:94%;max-height:92vh;overflow-y:auto;background:linear-gradient(160deg,rgba(20,14,34,.97),rgba(8,12,20,.97));border:1px solid rgba(167,139,250,.3);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.6);">
-    <div style="padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(14,12,24,.98);z-index:1;">
-      <div style="color:#eaf1f8;font-weight:800;font-size:16px;"><i class="bi bi-plus-circle" style="color:#a78bfa;"></i> Nueva solicitud a Software</div>
-      <button type="button" onclick="cerrarModalNuevaSolicitudSW()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
-    </div>
-    <div style="padding:18px 22px;display:flex;flex-direction:column;gap:12px;">
-      <div>
-        <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Título *</label>
-        <input id="sw-nueva-titulo" class="form-input" type="text" placeholder="Ej: Error al generar guía en Inter" style="width:100%;margin-top:6px;"/>
-      </div>
-      <div>
-        <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Descripción del error / falla *</label>
-        <textarea id="sw-nueva-desc" class="form-input" rows="4" placeholder="Describe qué ocurre, en qué pantalla, pasos para reproducirlo..." style="width:100%;margin-top:6px;resize:vertical;overflow-wrap:anywhere;word-break:break-word;"></textarea>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div>
-          <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Prioridad</label>
-          <select id="sw-nueva-prioridad" class="form-input" style="width:100%;margin-top:6px;">
-            <option value="Baja">Baja</option>
-            <option value="Media" selected>Media</option>
-            <option value="Alta">Alta</option>
-            <option value="Crítica">Crítica</option>
-          </select>
-        </div>
-        <div>
-          <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Tiempo de solución *</label>
-          <select id="sw-nueva-tiempo" class="form-input" style="width:100%;margin-top:6px;">
-            <option value="Inmediato">Inmediato</option>
-            <option value="1 día" selected>1 día</option>
-            <option value="2 días">2 días</option>
-            <option value="3 días">3 días</option>
-          </select>
-        </div>
-      </div>
-      <div>
-        <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Adjunto (imagen o video)</label>
-        <div style="margin-top:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <label class="btn btn-secondary btn-sm" style="cursor:pointer;margin:0;">
-            <i class="bi bi-paperclip"></i> Elegir archivo
-            <input type="file" id="sw-nueva-file" accept="image/*,video/*" style="display:none;" onchange="swPreviewAdjuntoNueva(this)"/>
-          </label>
-          <span id="sw-nueva-file-name" style="color:#8b98a8;font-size:12px;">Ninguno</span>
-        </div>
-        <div id="sw-nueva-preview" style="display:none;margin-top:10px;"></div>
-      </div>
-    </div>
-    <div style="padding:14px 22px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:flex-end;gap:10px;">
-      <button type="button" class="btn btn-secondary" onclick="cerrarModalNuevaSolicitudSW()">Cancelar</button>
-      <button type="button" class="btn btn-primary" onclick="enviarNuevaSolicitudSW()"><i class="bi bi-send-fill"></i> Enviar solicitud</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL DETALLE + CHAT SOFTWARE -->
-<div id="modal-sw-chat" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(2,6,12,.92);backdrop-filter:blur(10px);z-index:100000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;overflow:hidden;">
-  <div style="max-width:780px;width:100%;height:min(88vh,700px);max-height:calc(100vh - 40px);display:flex;flex-direction:column;background:linear-gradient(165deg,#0f1520 0%,#0a0e16 100%);border:1px solid rgba(167,139,250,.28);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.75);overflow:hidden;position:relative;z-index:1;">
-    <!-- Header -->
-    <div style="padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,.02);flex-shrink:0;">
-      <div style="width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#a78bfa,#6f42c1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <i class="bi bi-chat-dots-fill" style="color:#0b1119;font-size:18px;"></i>
-      </div>
-      <div style="flex:1;min-width:0;overflow:hidden;">
-        <div id="sw-chat-id" style="color:#a78bfa;font-size:11px;font-weight:700;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
-        <div id="sw-chat-titulo" style="color:#eaf1f8;font-weight:800;font-size:15px;margin-top:2px;overflow-wrap:anywhere;word-break:break-word;line-height:1.3;"></div>
-        <div id="sw-chat-meta" style="color:#8b98a8;font-size:11.5px;margin-top:4px;overflow-wrap:anywhere;word-break:break-word;line-height:1.35;"></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-        <span id="sw-chat-estado-badge"></span>
-        <button type="button" onclick="cerrarModalChatSW()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
-      </div>
-    </div>
-    <!-- Messages -->
-    <div id="sw-chat-mensajes" style="flex:1;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;padding:18px 20px;display:flex;flex-direction:column;gap:12px;background:radial-gradient(ellipse at top,rgba(167,139,250,.04),transparent 55%);box-sizing:border-box;"></div>
-    <!-- Dev actions -->
-    <div id="sw-chat-acciones-dev" style="display:none;padding:8px 16px;border-top:1px solid rgba(255,255,255,.05);gap:8px;flex-wrap:wrap;flex-shrink:0;background:rgba(0,0,0,.15);">
-      <button type="button" id="sw-btn-tomar" class="btn btn-secondary btn-sm" onclick="tomarCasoSW()"><i class="bi bi-hand-index-thumb"></i> Tomar caso</button>
-      <button type="button" id="sw-btn-solucionar" class="btn btn-primary btn-sm" onclick="marcarSolucionadoSW()" style="background:linear-gradient(135deg,#22c55e,#16a34a);"><i class="bi bi-check-circle-fill"></i> Marcar solucionado</button>
-    </div>
-    <!-- Composer -->
-    <div id="sw-chat-composer" style="padding:12px 14px 14px;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:8px;flex-shrink:0;background:rgba(0,0,0,.2);position:relative;">
-      <div id="sw-chat-preview" style="display:none;"></div>
-      <div id="sw-emoji-panel" style="display:none;max-height:160px;overflow-y:auto;background:rgba(20,24,36,.98);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px;display:none;flex-wrap:wrap;gap:4px;">
-      </div>
-      <div style="display:flex;gap:8px;align-items:flex-end;">
-        <label title="Adjuntar imagen o video" style="width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#a78bfa;flex-shrink:0;">
-          <i class="bi bi-paperclip"></i>
-          <input type="file" id="sw-chat-file" accept="image/*,video/*" style="display:none;" onchange="swPreviewAdjuntoChat(this)"/>
-        </label>
-        <button type="button" title="Emojis" onclick="swToggleEmojiPanel()" style="width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fbbf24;flex-shrink:0;font-size:18px;padding:0;">
-          😊
-        </button>
-        <textarea id="sw-chat-input" rows="2" placeholder="Escribe tu respuesta... (Enter para enviar, Shift+Enter nueva línea)" style="flex:1;min-width:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;color:#eaf1f8;font-size:13.5px;padding:10px 12px;outline:none;resize:none;overflow-wrap:anywhere;word-break:break-word;line-height:1.4;"></textarea>
-        <button type="button" id="sw-btn-enviar" onclick="enviarMensajeChatSW()" title="Enviar" style="height:40px;width:40px;min-width:40px;padding:0;margin:0;border:none;border-radius:12px;flex-shrink:0;background:linear-gradient(135deg,#a78bfa,#6f42c1);color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(111,66,193,.4);line-height:1;">
-          <i class="bi bi-send-fill" style="font-size:15px;line-height:1;display:block;margin:0;padding:0;transform:translateX(1px);"></i>
-        </button>
-      </div>
-    </div>
-    <div id="sw-chat-cerrado" style="display:none;padding:14px 20px;text-align:center;color:#8b98a8;font-size:13px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;">
-      <i class="bi bi-lock-fill" style="color:#22c55e;"></i> Caso solucionado — el chat está cerrado
-    </div>
-  </div>
-</div>
 
 <div class="panel" id="panel-gestion-anular">
 <div class="page-header">
@@ -8208,7 +7666,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 <!-- LOGO SERVI -->
 <div class="partner-showcase" onclick="cargarIndemnizaciones('servi', 'SERVIENTREGA', this)" style="animation: float 4.5s ease-in-out infinite;">
-<img alt="Servientrega" src="https://i.imgur.com/qDwQyi3.png"/>
+<img alt="Servientrega" src="https://i.postimg.cc/tCk1Jf6X/images-(1).png"/>
 <span>Servientrega</span>
 </div>
 <!-- LOGO TCC -->
@@ -8423,7 +7881,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 <!-- SERVI -->
 <div class="partner-showcase" onclick="cargarGerencial('servi', 'SERVIENTREGA', this)" style="animation: float 4.5s ease-in-out infinite;">
-<img alt="Servientrega" src="https://i.imgur.com/qDwQyi3.png"/>
+<img alt="Servientrega" src="https://i.postimg.cc/tCk1Jf6X/images-(1).png"/>
 <span>Servientrega</span>
 </div>
 <!-- COORD -->
@@ -8491,7 +7949,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
 <!-- SERVIENTREGA -->
 <div class="recuento-card" onclick="seleccionarRecuento('servientrega', this)">
-<img alt="Servientrega" src="https://i.imgur.com/qDwQyi3.png"/>
+<img alt="Servientrega" src="https://i.postimg.cc/tCk1Jf6X/images-(1).png"/>
 <h3>Servientrega</h3>
 </div>
 <!-- INTERRAPIDISIMO -->
@@ -10418,32 +9876,14 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <input class="perm-check" type="checkbox" value="activacion_inter"/>
 <span class="slider round"></span>
 </div>
-<span>Activación Inter</span>
-</label>
-</div>
-</div>
-</div>
-<!-- ACORDEÓN SOFTWARE -->
-<div class="accordion-item">
-<div class="accordion-header" onclick="toggleAccordion(this)">
-<span><i class="bi bi-code-slash" style="margin-right:8px; color:var(--primary-dark);"></i> SOFTWARE</span>
-<i class="bi bi-chevron-down"></i>
-</div>
-<div class="accordion-body">
-<div class="checkbox-group">
-<label class="checkbox-item">
-<div class="switch">
-<input class="perm-check" type="checkbox" value="mesa_ayuda"/>
-<span class="slider round"></span>
-</div>
-<span>Mis solicitudes</span>
+<span>Activación Inter (ver)</span>
 </label>
 <label class="checkbox-item">
 <div class="switch">
-<input class="perm-check" type="checkbox" value="mesa_ayuda_dev"/>
+<input class="perm-check" type="checkbox" value="activacion_inter_carga"/>
 <span class="slider round"></span>
 </div>
-<span>Mesa de desarrollo</span>
+<span>Activación Inter (cargar Excel)</span>
 </label>
 </div>
 </div>
@@ -10681,57 +10121,51 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 <!-- MODAL RECARGA -->
 <div class="modal-overlay" id="modal-recarga" onclick="closeModalRecarga(event)">
-<div class="modal-content recarga-modal-card" onclick="event.stopPropagation()">
-  <div class="recarga-modal-header">
-    <div class="recarga-modal-icon"><i class="bi bi-wallet2"></i></div>
-    <div style="flex:1;min-width:0;">
-      <h2 class="recarga-modal-title">Registrar Recarga</h2>
-      <p class="recarga-modal-sub">Carga de saldo al seller con soporte</p>
-    </div>
-    <button type="button" class="recarga-modal-close" onclick="closeModalRecarga()" title="Cerrar"><i class="bi bi-x-lg"></i></button>
-  </div>
-  <div class="recarga-modal-body">
-    <form id="formRecarga">
-      <div class="recarga-grid">
-        <div class="recarga-field" id="group_rec_fecha">
-          <label class="recarga-label"><i class="bi bi-calendar3"></i> Fecha de recarga</label>
-          <div class="recarga-date-wrap">
-            <input class="form-input recarga-input" id="rec_fecha" required="" type="date" style="color-scheme:dark;"/>
-            <i class="bi bi-calendar3 recarga-date-icon" aria-hidden="true"></i>
-          </div>
-        </div>
-        <div class="recarga-field" id="group_rec_valor">
-          <label class="recarga-label"><i class="bi bi-currency-dollar"></i> Valor</label>
-          <input class="form-input recarga-input recarga-input-valor" id="rec_valor" oninput="formatCurrencyInput(this)" placeholder="$ 0" required="" type="text"/>
-        </div>
-      </div>
-      <div class="recarga-field" id="group_rec_seller" style="margin-top:4px;">
-        <label class="recarga-label"><i class="bi bi-shop"></i> Seller</label>
-        <div class="recarga-seller-row">
-          <input class="form-input recarga-input" id="rec_seller" onblur="buscarSaldoSeller()" onkeypress="if(event.key === 'Enter'){event.preventDefault();buscarSaldoSeller();}" placeholder="Nombre o ID del seller" required="" type="text"/>
-          <button type="button" class="recarga-btn-buscar" onclick="buscarSaldoSeller()" title="Consultar saldo"><i class="bi bi-search"></i></button>
-        </div>
-        <div id="res-saldo-display" class="recarga-saldo" style="display:none;"></div>
-      </div>
-      <div class="recarga-field" style="margin-top:12px;">
-        <label class="recarga-label"><i class="bi bi-paperclip"></i> Soportes</label>
-        <label class="recarga-file-drop" for="rec_sop_files">
-          <i class="bi bi-cloud-arrow-up"></i>
-          <span>Adjuntar comprobantes</span>
-          <small>Imágenes, PDF o Word · varios archivos</small>
-        </label>
-        <input accept="image/*,.pdf,.doc,.docx" class="form-input" id="rec_sop_files" multiple="" type="file" style="display:none;" onchange="if(window.recargaUpdateFileLabel)recargaUpdateFileLabel(this)"/>
-        <div id="recarga-file-names" class="recarga-file-names" style="display:none;"></div>
-      </div>
-      <input id="rec_asesor" type="hidden"/>
-      <div class="recarga-modal-footer">
-        <button type="button" class="recarga-btn-cancel" onclick="closeModalRecarga()">Cancelar</button>
-        <button class="recarga-btn-save" disabled="" id="btn_guardar_recarga" onclick="enviarRecarga()" type="button">
-          <i class="bi bi-check2-circle"></i> Guardar recarga
-        </button>
-      </div>
-    </form>
-  </div>
+<div class="modal-content" onclick="event.stopPropagation()" style="max-width: 600px;">
+<div class="modal-header">
+<div class="modal-title">
+<h2>Registrar Recarga</h2>
+</div>
+<button class="close-modal-btn" onclick="closeModalRecarga()">×</button>
+</div>
+<div class="modal-body">
+<form id="formRecarga">
+<!-- FILA 1: FECHA (IZQ) | VALOR (DERECHA) -->
+<div class="form-grid-2cols">
+<!-- Agrega id="group_rec_fecha" aquí -->
+<div class="form-group" id="group_rec_fecha">
+<label>Fecha de Recarga</label>
+<input class="form-input" id="rec_fecha" required="" type="date"/>
+</div>
+<div class="me-auto" id="group_rec_valor" style="width:100%;">
+<label>Valor</label>
+<input class="form-input" id="rec_valor" oninput="formatCurrencyInput(this)" placeholder="$ 0" required="" type="text"/>
+</div>
+</div>
+<!-- FILA 2: SELLER (IZQ) | SOPORTES (DERECHA) -->
+<div class="form-grid-2cols">
+<div class="form-group" id="group_rec_seller">
+<label>Seller</label>
+<input class="form-input" id="rec_seller" onblur="buscarSaldoSeller()" onkeypress="if(event.key === 'Enter') buscarSaldoSeller()" placeholder="Nombre del Seller" required="" type="text"/>
+<div id="res-saldo-display" style="display:none; margin-bottom: 10px; padding: 10px; background-color: #d1e7dd; color: #0f5132; border-radius: 8px; font-weight: bold; font-size: 14px;">
+<!-- Aquí aparecerá el saldo -->
+</div>
+</div>
+<div class="form-group" style="display: flex; flex-direction: column; justify-content: flex-end;">
+<label>Soportes</label>
+<input accept="image/*,.pdf,.doc,.docx" class="form-input" id="rec_sop_files" multiple="" type="file"/>
+<small style="color: var(--text-muted); display:block; margin-top:5px;">Se permiten múltiples archivos.</small>
+</div>
+</div>
+<!-- AGREGA ESTO AQUÍ SI FALTA: -->
+<input id="rec_asesor" type="hidden"/>
+<div style="margin-top: 20px; text-align: right;">
+<button class="btn btn-custom-black" disabled="" id="btn_guardar_recarga" onclick="enviarRecarga()" type="button">
+<i class="bi bi-save"></i> Guardar Recarga
+            </button>
+</div>
+</form>
+</div>
 </div>
 </div>
 <!-- MODAL ALERTA DUPLICADO -->
@@ -11181,7 +10615,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 <!-- SERVI -->
 <div class="partner-showcase" onclick="abrirFormularioNuevo('servi')" onmouseout="this.style.borderColor='#ddd'" onmouseover="this.style.borderColor='#198754'" style="cursor: pointer; width: 120px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; transition: 0.3s;">
-<img alt="Servi" src="https://i.imgur.com/qDwQyi3.png" style="max-height: 60px;"/>
+<img alt="Servi" src="https://i.postimg.cc/tCk1Jf6X/images-(1).png" style="max-height: 60px;"/>
 <div style="font-size: 12px; margin-top: 5px; font-weight: bold;">Servientrega</div>
 </div>
 <!-- COORDINADORA -->
@@ -11244,7 +10678,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <button type="button" class="cun-logo-opt" data-valor="inter" onclick="seleccionarLogoCun('inter')" title="Inter Rapid&iacute;simo (CUN MASIVO)">
 <img src="https://i.postimg.cc/2jqJ616Y/Interrapidisimo.png" alt="Inter"><span>CUN</span></button>
 <button type="button" class="cun-logo-opt" data-valor="servi" onclick="seleccionarLogoCun('servi')" title="Servientrega (CUN MASIVO)">
-<img src="https://i.imgur.com/qDwQyi3.png" alt="Servi"><span>CUN</span></button>
+<img src="https://i.postimg.cc/tCk1Jf6X/images-(1).png" alt="Servi"><span>CUN</span></button>
 <button type="button" class="cun-logo-opt" data-valor="coord" onclick="seleccionarLogoCun('coord')" title="Coordinadora (COMPROBANTE MASIVO)">
 <img src="https://i.postimg.cc/66LZC0Tf/logo-coordinadora-efficommerce-1-Photoroom.png" alt="Coord"><span>Comp.</span></button>
 <button type="button" class="cun-logo-opt" data-valor="tcc" onclick="seleccionarLogoCun('tcc')" title="TCC (COMPROBANTE MASIVO)">
@@ -11261,7 +10695,7 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="cun-seccion">
 <div class="cun-seccion-titulo"><i class="bi bi-flag-fill"></i> Estado a aplicar</div>
 <select id="cunmasivo-estado" class="cun-input">
-<option value="">Seleccionar...</option>
+<option value="">(No cambiar el estado de las existentes)</option>
 <option value="En Validacion" selected="selected">En Validacion</option>
 <option value="PARA PAGAR">PARA PAGAR</option>
 <option value="PAGADO">PAGADO</option>
@@ -11270,54 +10704,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <option value="VERSION 2">VERSION 2</option>
 </select>
 </div>
-</div>
-
-<!-- Causal de PQR -->
-<div class="cun-seccion">
-<div class="cun-seccion-titulo"><i class="bi bi-exclamation-triangle-fill"></i> Causal de PQR</div>
-<select id="cunmasivo-causal" class="cun-input">
-<option value="">Seleccionar...</option>
-<option value="PERDIDA / HURTO">PERDIDA / HURTO</option>
-<option value="SERVICIO NO CONFORME">SERVICIO NO CONFORME</option>
-<option value="SAQUEO">SAQUEO</option>
-<option value="CIERRE LOGISTICO">CIERRE LOGISTICO</option>
-<option value="TROCADO">TROCADO</option>
-<option value="CIERRE LOGISTICO INTENTO DE FRAUDE">CIERRE LOGISTICO INTENTO DE FRAUDE</option>
-<option value="AVERÍA">AVERÍA</option>
-</select>
-</div>
-
-<!-- Fecha llegada nota crédito -->
-<div class="cun-seccion">
-<div class="cun-seccion-titulo"><i class="bi bi-calendar-event"></i> Fecha llegada nota crédito</div>
-<input id="cunmasivo-fecha-nota" type="date" class="cun-input" style="color-scheme:dark; color:#edf3f9;"/>
-<small style="color:#8b98a8;font-size:11px;display:block;margin-top:6px;">Se aplica a todas las guías del lote.</small>
-</div>
-
-<!-- Campos según transportadora -->
-<div id="cunmasivo-campos-inter" style="display:none;">
-  <div class="cun-seccion">
-    <div class="cun-seccion-titulo"><i class="bi bi-ticket-perforated"></i> Ticket</div>
-    <input id="cunmasivo-ticket" type="text" class="cun-input" placeholder="Número de ticket"/>
-  </div>
-  <div class="cun-seccion">
-    <div class="cun-seccion-titulo"><i class="bi bi-receipt"></i> N° Nota crédito</div>
-    <input id="cunmasivo-num-nota" type="text" class="cun-input" placeholder="N° de nota crédito"/>
-  </div>
-</div>
-<div id="cunmasivo-campos-servi" style="display:none;">
-  <div class="cun-seccion">
-    <div class="cun-seccion-titulo"><i class="bi bi-tags-fill"></i> Concepto</div>
-    <select id="cunmasivo-concepto" class="cun-input">
-      <option value="">Seleccionar...</option>
-      <option value="Indemnizacion">Indemnizacion</option>
-      <option value="Acta de Castigo">Acta de Castigo</option>
-    </select>
-  </div>
-  <div class="cun-seccion">
-    <div class="cun-seccion-titulo"><i class="bi bi-hash"></i> Número CE</div>
-    <input id="cunmasivo-num-ce" type="text" class="cun-input" placeholder="Número CE"/>
-  </div>
 </div>
 
 <!-- Guias -->
@@ -11344,14 +10730,6 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 .cun-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eaf1f8;font-size:13.5px;padding:9px 12px;outline:none;transition:border-color .2s;}
 .cun-input:focus{border-color:#a78bfa;}
 .cun-input option{background:#111b26;color:#eaf1f8;}
-/* Icono calendario blanco en todos los date del app */
-input[type="date"]::-webkit-calendar-picker-indicator,
-.cun-input[type="date"]::-webkit-calendar-picker-indicator{
-  filter: invert(1) brightness(1.2) !important;
-  opacity: .95 !important;
-  cursor: pointer !important;
-}
-
 .cun-logo-opt{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border-radius:16px;cursor:pointer;background:linear-gradient(155deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:2px solid rgba(255,255,255,.09);transition:all .25s ease;}
 .cun-logo-opt img{width:50px;height:50px;border-radius:50%;object-fit:contain;background:#fff;padding:4px;border:2.5px solid transparent;transition:all .25s ease;}
 .cun-logo-opt span{font-size:10.5px;font-weight:700;color:#8b98a8;letter-spacing:.5px;}
@@ -11359,34 +10737,6 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 .cun-logo-opt.seleccionada{border-color:#a78bfa;box-shadow:0 0 18px rgba(167,139,250,.3);}
 .cun-logo-opt.seleccionada img{border-color:#a78bfa;box-shadow:0 0 12px rgba(167,139,250,.5);}
 .cun-logo-opt.seleccionada span{color:#a78bfa;}
-
-
-.sw-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
-.sw-filtros{display:inline-flex;flex-wrap:wrap;gap:6px;padding:4px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;}
-.sw-chip{border:none;background:transparent;color:#8b98a8;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:10px;cursor:pointer;transition:all .18s ease;letter-spacing:.2px;}
-.sw-chip:hover{color:#eaf1f8;background:rgba(255,255,255,.06);}
-.sw-chip.active{background:linear-gradient(135deg,rgba(255,196,0,.2),rgba(255,196,0,.08));color:#ffc400;box-shadow:inset 0 0 0 1px rgba(255,196,0,.35);}
-.sw-table-wrap{overflow-x:auto;}
-.sw-table{width:100%;border-collapse:separate;border-spacing:0;}
-.sw-table th{white-space:nowrap;font-size:12px;letter-spacing:.3px;}
-.sw-table td{vertical-align:middle;font-size:13px;}
-.sw-table td.sw-td-id{font-family:ui-monospace,monospace;font-size:11.5px;white-space:nowrap;color:#a78bfa;}
-.sw-table td.sw-td-title{max-width:220px;overflow-wrap:anywhere;word-break:break-word;font-weight:600;}
-.sw-table td.sw-td-name{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.sw-table tbody tr:hover{background:rgba(255,255,255,.03);}
-.sw-nav-badge{margin-left:auto;background:linear-gradient(135deg,#f87171,#ef4444);color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 0 10px rgba(239,68,68,.45);}
-.sw-bubble{max-width:min(70%,360px);width:fit-content;border-radius:16px;padding:10px 12px;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.18);box-sizing:border-box;overflow:hidden;margin:0 4px;}
-.sw-bubble-colab{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-bottom-left-radius:4px;align-self:flex-start;}
-.sw-bubble-dev{background:linear-gradient(145deg,#7c5cff,#5b3fd4);border:1px solid rgba(255,255,255,.12);border-bottom-right-radius:4px;align-self:flex-end;}
-.sw-bubble-sys{background:rgba(255,196,0,.1);border:1px solid rgba(255,196,0,.28);border-radius:14px;align-self:center;max-width:min(88%,480px);text-align:left;}
-.sw-bubble-text{color:#eef2ff;font-size:13.5px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-all;word-wrap:break-word;max-width:100%;}
-.sw-bubble-sys .sw-bubble-text{color:#f5e6a8;}
-.sw-bubble-meta{display:flex;gap:8px;align-items:center;margin-bottom:5px;flex-wrap:wrap;max-width:100%;}
-.sw-bubble-meta strong{overflow:hidden;text-overflow:ellipsis;max-width:160px;white-space:nowrap;}
-.sw-media{max-width:100%;overflow:hidden;}
-.sw-media img,.sw-media video{max-width:100%;max-height:260px;border-radius:10px;margin-top:6px;display:block;background:#000;}
-#sw-chat-mensajes{overflow-x:hidden !important;}
-#sw-chat-titulo,#sw-chat-meta,#sw-chat-id{overflow-wrap:anywhere;word-break:break-word;}
 </style>
 
 <!-- MODAL DETALLE INDEMNIZACIONES (INTER) -->
@@ -11448,8 +10798,8 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 <span class="value-indem view-mode" id="indem-ticket-view"></span>
 <input class="form-input edit-mode-only" id="indem-ticket-edit" style="display:none; width:100%; font-size:13px;" type="text"/>
 </div>
-<!-- 6. N° CREDITO (columna eliminada de la hoja) -->
-<div class="indemnizacion-row" style="display:none;">
+<!-- 6. N° CREDITO -->
+<div class="indemnizacion-row">
 <span class="label-indem">N° Credito:</span>
 <span class="value-indem view-mode" id="indem-num-nota-view"></span>
 <input class="form-input edit-mode-only" id="indem-num-nota-edit" style="display:none; width:100%; font-size:13px;" type="text"/>
@@ -11498,16 +10848,19 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 <span class="value-indem view-mode" id="indem-val-rec-seg-view"></span>
 <input class="form-input edit-mode-only" id="indem-val-rec-seg-edit" style="display:none; width:100%; font-size:13px;" type="number"/>
 </div>
-<!-- Flete Inter y Diff Fletes eliminados de la hoja -->
-<div class="indemnizacion-row" style="display:none;">
+<div class="indemnizacion-row">
 <span class="label-indem">Flete Plataforma Inter:</span>
 <span class="value-indem view-mode" id="indem-flete-inter-view"></span>
 <input class="form-input edit-mode-only" id="indem-flete-inter-edit" style="display:none; width:100%; font-size:13px;" type="number"/>
 </div>
-<div class="indemnizacion-row" style="display:none;">
+<div class="indemnizacion-row">
 <span class="label-indem">Diferencias Fletes:</span>
 <span class="value-indem view-mode" id="indem-diff-fletes-view"></span>
-<input class="form-input edit-mode-only" id="indem-diff-fletes-edit" style="display:none; width:100%; font-size:13px;" type="text"/>
+<!-- CAMBIOS: 
+                  1. type="text" (en lugar de number) 
+                  2. Eliminé display:none (para que la JS pueda mostrarlo) 
+              -->
+<input class="form-input edit-mode-only" id="indem-diff-fletes-edit" style="width:100%; font-size:13px;" type="text"/>
 </div>
 <div class="indemnizacion-row">
 <span class="label-indem">Comisión Transp. + Flete:</span>
@@ -11596,19 +10949,19 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 </div>
 </div>
 <!-- MODAL DE CONFIRMACIÓN PERSONALIZADO -->
-<div class="modal-overlay" id="modal-confirmacion" style="z-index: 100050;">
-<div class="modal-content" style="max-width: 440px; text-align: center; background:linear-gradient(160deg,#141c28,#0b1119); border:1px solid rgba(255,196,0,.25); border-radius:18px; box-shadow:0 24px 60px rgba(0,0,0,.55);">
-<div class="modal-body" style="padding: 28px 24px;">
-<div style="font-size: 36px; color: #ffc400; margin-bottom: 12px;">
+<div class="modal-overlay" id="modal-confirmacion" style="z-index: 9999;">
+<div class="modal-content" style="max-width: 400px; text-align: center; border-top: 4px solid var(--primary-dark);">
+<div class="modal-body" style="padding: 30px;">
+<div style="font-size: 40px; color: #ffc107; margin-bottom: 15px;">
 <i class="bi bi-exclamation-triangle-fill"></i>
 </div>
-<h3 id="confir-titulo" style="margin-bottom: 10px; color: #eaf1f8; font-weight:800;">¿Estás seguro?</h3>
-<div id="confir-mensaje" style="color: #cbd5e1; font-size: 14.5px; line-height: 1.5; text-align:left;">
+<h3 id="confir-titulo" style="margin-bottom: 10px; color: #333;">¿Estás seguro?</h3>
+<p id="confir-mensaje" style="color: #666; font-size: 15px; line-height: 1.5;">
           Este es el mensaje de confirmación.
-        </div>
-<div style="margin-top: 22px; display: flex; gap: 10px; justify-content: center;">
-<button class="btn btn-secondary" id="btn-confir-no" style="min-width: 110px;">Cancelar</button>
-<button class="btn btn-primary" id="btn-confir-si" style="min-width: 110px;">Sí, guardar</button>
+        </p>
+<div style="margin-top: 25px; display: flex; gap: 10px; justify-content: center;">
+<button class="btn btn-secondary" id="btn-confir-no" style="min-width: 100px;">Cancelar</button>
+<button class="btn btn-primary" id="btn-confir-si" style="min-width: 100px;">Sí, guardar</button>
 </div>
 </div>
 </div>
@@ -11683,11 +11036,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 <div class="indemnizacion-row">
 <span class="label-indem">Concepto:</span>
 <span class="value-indem view-mode" id="servi-concepto-view"></span>
-<select class="form-input edit-mode-only" id="servi-concepto-edit" style="display:none; width:100%; font-size:13px;">
-<option value="">Seleccionar...</option>
-<option value="Indemnizacion">Indemnizacion</option>
-<option value="Acta de Castigo">Acta de Castigo</option>
-</select>
+<input class="form-input edit-mode-only" id="servi-concepto-edit" style="display:none; width:100%; font-size:13px;" type="text"/>
 </div>
 <!-- 8. NUM CE -->
 <div class="indemnizacion-row">
@@ -12769,7 +12118,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     // Debe terminar en /exec
     // Ejemplo: https://script.google.com/macros/s/TU_ID_AQUI/exec
     // ============================================================
-    var GAS_URL = 'https://script.google.com/macros/s/AKfycbwvDET_inCy_1oLW0euj2FjVs8T2KvIHpxrKo-HjaVanDXssOV02ZHPPW8MTEnFLWE/exec';
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbwFz1K8o2Oau3TUd8oJiHK5RL0IOLLkGwlVlK2aMSQiNSVinJWNA07hKXTtOcKZVzs8/exec';
 
     // ============================================================
     // 🔌 SHIM: google.script.run → fetch POST
@@ -13553,8 +12902,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       
       navItems.forEach(item => {
         const target = item.getAttribute('data-target');
-        // Software (mesa_ayuda / mesa_ayuda_dev) se controla igual que el resto de permisos
-        if (!perms || !perms.includes(target)) {
+        if (!perms.includes(target)) {
           item.style.display = 'none';
         } else {
           item.style.display = 'flex';
@@ -13648,6 +12996,9 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       // Chip de estado en el perfil (para usuarios con permiso status)
       if (typeof actualizarMiStatusChip === 'function') actualizarMiStatusChip();
 
+      // Tarjeta de carga de activaciones (solo con permiso activacion_inter_carga)
+      if (typeof aplicarPermisoCargaActivaciones === 'function') aplicarPermisoCargaActivaciones();
+
     }
 
 
@@ -13655,7 +13006,6 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     function loginSuccess() {
       updateUserHeader();
       applyPermissions();
-      if (typeof swStartNotifPolling === 'function') swStartNotifPolling();
       
        //const adminLink = document.getElementById('adminLink');
        //const mobileAdminLink = document.getElementById('mobileAdminLink');
@@ -13901,18 +13251,8 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       }
 
       if (panelId === 'panel-activacion-inter') {
+        aplicarPermisoCargaActivaciones();
         cargarPreviewActivacionInter();
-      }
-
-      if (panelId === 'panel-mesa-ayuda') {
-        cargarMisSolicitudesSW();
-      }
-      if (panelId === 'panel-mesa-ayuda-dev') {
-        cargarSolicitudesDevSW();
-      }
-      // Detener polling del chat SW al cambiar de panel
-      if (panelId !== 'panel-mesa-ayuda' && panelId !== 'panel-mesa-ayuda-dev') {
-        if (typeof swStopChatPolling === 'function') swStopChatPolling();
       }
 
       if (panelId === 'panel-status') {
@@ -14644,76 +13984,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 
     // --- LÓGICA MODAL RECARGA ---
 
-    
-
-function hekaEnhanceDateInputs(root) {
-  try {
-    var scope = root && root.querySelectorAll ? root : document;
-    var list = scope.querySelectorAll('input[type="date"]');
-    list.forEach(function(inp) {
-      if (!inp || inp.dataset.hekaDateReady === '1') return;
-      if (inp.closest('.heka-date-wrap') || inp.closest('.recarga-date-wrap')) {
-        inp.dataset.hekaDateReady = '1';
-        return;
-      }
-      var parent = inp.parentNode;
-      if (!parent) return;
-      var wrap = document.createElement('div');
-      wrap.className = 'heka-date-wrap';
-      // Detectar fondo claro aproximado
-      try {
-        var bg = window.getComputedStyle(inp).backgroundColor || '';
-        if (bg.indexOf('255') >= 0 && bg.indexOf('rgba(0') < 0) {
-          wrap.classList.add('heka-date-light');
-        }
-        // fechaProgramada u otros con style blanco
-        var st = (inp.getAttribute('style') || '') + (inp.className || '');
-        if (/background:\s*#fff|background:\s*white|background-color:\s*#fff/i.test(st)) {
-          wrap.classList.add('heka-date-light');
-        }
-        if (inp.id === 'fechaProgramadaInput') wrap.classList.add('heka-date-light');
-      } catch (e1) {}
-      // Conservar ancho inline del input (filtros 130px, etc.)
-      try {
-        if (inp.style.width) wrap.style.width = inp.style.width;
-        else if (inp.getAttribute('style') && /width\s*:/i.test(inp.getAttribute('style'))) {
-          var mw = inp.getAttribute('style').match(/width\s*:\s*([^;]+)/i);
-          if (mw) wrap.style.width = mw[1].trim();
-        }
-      } catch (e2) {}
-      parent.insertBefore(wrap, inp);
-      wrap.appendChild(inp);
-      var icon = document.createElement('i');
-      icon.className = 'bi bi-calendar3 heka-date-icon';
-      icon.setAttribute('aria-hidden', 'true');
-      wrap.appendChild(icon);
-      inp.dataset.hekaDateReady = '1';
-    });
-  } catch (e) {}
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  hekaEnhanceDateInputs(document);
-  // Re-aplicar al abrir modales (por si se clonan nodos)
-  document.body.addEventListener('click', function() {
-    setTimeout(function() { hekaEnhanceDateInputs(document); }, 300);
-  }, true);
-});
-
-function recargaUpdateFileLabel(input) {
-  var box = document.getElementById('recarga-file-names');
-  if (!box) return;
-  if (!input.files || !input.files.length) {
-    box.style.display = 'none';
-    box.textContent = '';
-    return;
-  }
-  var names = [];
-  for (var i = 0; i < input.files.length; i++) names.push(input.files[i].name);
-  box.innerHTML = '<i class="bi bi-files" style="margin-right:6px;color:#ffc400;"></i>' + names.join('<br>');
-  box.style.display = 'block';
-}
-function openModalRecarga() {
+    function openModalRecarga() {
       // 1. ABRIR EL MODAL VISUALMENTE
       document.getElementById('modal-recarga').classList.add('active');
       
@@ -19317,7 +18588,7 @@ function openModalRecarga() {
         const obsIndem = document.getElementById('indem-obs-edit');
         if(obsIndem) obsIndem.oninput = null; 
 
-        const camposAutomaticos = ['indem-valor-pagar-edit', 'indem-valor-final-edit', 'indem-nueva-pqr-edit'];
+        const camposAutomaticos = ['indem-diff-fletes-edit', 'indem-valor-pagar-edit', 'indem-valor-final-edit', 'indem-nueva-pqr-edit'];
         camposAutomaticos.forEach(id => {
             const el = document.getElementById(id);
             if(el) {
@@ -19328,7 +18599,7 @@ function openModalRecarga() {
 
         const inputsTrigger = [
             'indem-causal-edit', 'indem-valor-nota-edit', 'indem-pago-destino-edit',
-            'indem-cobro-devol-edit', 'indem-val-rec-seg-edit',
+            'indem-cobro-devol-edit', 'indem-val-rec-seg-edit', 'indem-flete-inter-edit',
             'indem-com-trans-flete-edit', 'indem-com-heka-edit', 'indem-com-heka-adic-edit',
             'indem-estado-edit'
         ];
@@ -19428,21 +18699,13 @@ function openModalRecarga() {
     // ==========================================
     // 1. FUNCIÓN AUXILIAR DEL MODAL (Lógica)
     // ==========================================
-    function mostrarModalConfirmacion(mensaje, callbackSi, opciones) {
+    function mostrarModalConfirmacion(mensaje, callbackSi) {
         const modal = document.getElementById('modal-confirmacion');
         const txtMensaje = document.getElementById('confir-mensaje');
-        const txtTitulo = document.getElementById('confir-titulo');
         const btnSi = document.getElementById('btn-confir-si');
         const btnNo = document.getElementById('btn-confir-no');
-        const opts = opciones || {};
 
-        if (txtTitulo) txtTitulo.textContent = opts.titulo || '¿Estás seguro?';
-        // Permite HTML simple para mensajes más claros
-        if (opts.html) {
-            txtMensaje.innerHTML = mensaje;
-        } else {
-            txtMensaje.innerText = mensaje;
-        }
+        txtMensaje.innerText = mensaje;
         modal.classList.add('active');
 
         // Clonar botones para eliminar eventos anteriores y evitar acumulaciones
@@ -19451,19 +18714,16 @@ function openModalRecarga() {
         btnSi.parentNode.replaceChild(newBtnSi, btnSi);
         btnNo.parentNode.replaceChild(newBtnNo, btnNo);
 
-        newBtnSi.textContent = opts.textoSi || 'Sí, guardar';
-        newBtnNo.textContent = opts.textoNo || 'Cancelar';
-
         // Evento Clic: SÍ
         newBtnSi.onclick = function() {
             modal.classList.remove('active');
-            if (callbackSi) callbackSi();
+            if (callbackSi) callbackSi(); // Ejecutar la acción
         };
 
-        // Evento Clic: NO
+        // Evento Clic: NO (Solo cerrar y avisar)
         newBtnNo.onclick = function() {
             modal.classList.remove('active');
-            if (!opts.silenciarCancel) showToast("Acción cancelada por el usuario.");
+            showToast("Acción cancelada por el usuario.");
         };
     }
 
@@ -19590,7 +18850,7 @@ function openModalRecarga() {
                 { id: 'indem-fecha-edit', nombre: 'Fecha' }, { id: 'indem-causal-edit', nombre: 'Causal' },
                 { id: 'indem-seller-edit', nombre: 'Seller' }, { id: 'indem-guia-edit', nombre: 'Guía' },
                 { id: 'indem-valor-nota-edit', nombre: 'Valor Nota' }, { id: 'indem-pago-destino-edit', nombre: 'Pago Destino' },
-                { id: 'indem-com-trans-flete-edit', nombre: 'Comisión Trans' },
+                { id: 'indem-flete-inter-edit', nombre: 'Flete Inter' }, { id: 'indem-com-trans-flete-edit', nombre: 'Comisión Trans' },
                 { id: 'indem-com-heka-edit', nombre: 'Comisión Heka' }
             ];
             let faltantes = [];
@@ -19609,14 +18869,7 @@ function openModalRecarga() {
             obs: (function(){
                 const val = document.getElementById('indem-obs-edit').value;
                 const check = document.getElementById('indem-cun-masivo');
-                if (check && check.checked && val.trim() !== "") {
-                    return "CUN MASIVO " + val;
-                }
-                return val;
-            })(),
-            observaciones: (function(){
-                const val = document.getElementById('indem-obs-edit').value;
-                const check = document.getElementById('indem-cun-masivo');
+                // Lógica CUN MASIVO: Si está checkeado, agrega prefijo al guardar
                 if (check && check.checked && val.trim() !== "") {
                     return "CUN MASIVO " + val;
                 }
@@ -19630,17 +18883,17 @@ function openModalRecarga() {
             causal: document.getElementById('indem-causal-edit').value,
             seller: document.getElementById('indem-seller-edit').value,
             guia: guiaVisible,
-            tiempoEst: (document.getElementById('indem-fecha-estimada-edit')||{}).value || "",
+            tiempoEst: document.getElementById('indem-fecha-estimada-edit').value,
             fechaAprob: document.getElementById('indem-fecha-aprobacion-edit').value,
             fechaNota: document.getElementById('indem-fecha-nota-edit').value,
             ticket: document.getElementById('indem-ticket-edit').value,
-            numNota: (document.getElementById('indem-num-nota-edit')||{}).value || "",
-            cobroFleteFactura: "", 
+            numNota: document.getElementById('indem-num-nota-edit').value,
+            cobroFleteFactura: document.getElementById('indem-cobro-flete-edit') ? document.getElementById('indem-cobro-flete-edit').value : "", 
             tipoResp: "", valNota: document.getElementById('indem-valor-nota-edit').value,
             pagoDestino: document.getElementById('indem-pago-destino-edit').value,
             cobroDevol: document.getElementById('indem-cobro-devol-edit').value,
             valRecSeg: document.getElementById('indem-val-rec-seg-edit').value,
-            fleteInter: 0,
+            fleteInter: document.getElementById('indem-flete-inter-edit').value,
             comTransFlete: document.getElementById('indem-com-trans-flete-edit').value,
             comHeka: document.getElementById('indem-com-heka-edit').value,
             comHekaAdic: document.getElementById('indem-com-heka-adic-edit').value,
@@ -19866,7 +19119,7 @@ function openModalRecarga() {
         const obsServi = document.getElementById('servi-col-t-edit');
         if(obsServi) obsServi.oninput = null;
 
-        const camposAutomaticos = ['servi-val-final-pagar-edit', 'servi-val-final-heka-edit'];
+        const camposAutomaticos = ['servi-diff-fletes-edit', 'servi-val-final-pagar-edit', 'servi-val-final-heka-edit'];
         camposAutomaticos.forEach(id => {
             const el = document.getElementById(id);
             if(el) {
@@ -19877,7 +19130,7 @@ function openModalRecarga() {
 
         const inputsTrigger = [
             'servi-causal-edit', 'servi-val-ce-edit', 'servi-pago-destino-edit',
-            'servi-cobro-devol-edit', 'servi-val-rec-seg-edit',
+            'servi-cobro-devol-edit', 'servi-val-rec-seg-edit', 'servi-flete-servi-edit',
             'servi-com-trans-flete-edit', 'servi-com-heka-edit', 'servi-com-heka-adic-edit'
         ];
 
@@ -20050,33 +19303,11 @@ function openModalRecarga() {
         }
 
         // =====================================================
-        // REGLA PRIORITARIA:
-        // Si Valor CE == Valor Recaudo - Seguro
-        // Seller = CE - ComTrans - ComHeka - ComHekaAdic
-        // =====================================================
-
-        if (
-            VALOR_RECAUDO_SEGURO > 0 &&
-            Math.abs(VALOR_CE - VALOR_RECAUDO_SEGURO) < 0.01
-        ) {
-
-            VALOR_FINAL_PAGAR_SELLER =
-                VALOR_CE
-                - COMISION_TRANSPORTADORA_FLETE
-                - COMISION_HEKA
-                - COMISION_HEKA_ADICIONAL;
-
-            if (VALOR_FINAL_PAGAR_SELLER < 0) {
-                VALOR_FINAL_PAGAR_SELLER = 0;
-            }
-        }
-
-        // =====================================================
         // CASO:
         // PAGO CONTRAENTREGA / PAGO DESTINO
         // =====================================================
 
-        else if (
+        if (
             TIPO_SERVICIO === "PAGO CONTRAENTREGA" ||
             TIPO_SERVICIO === "PAGO DESTINO"
         ) {
@@ -21322,13 +20553,12 @@ function openModalRecarga() {
     // ==========================================
     var cunValidacionPendiente = null; // {pares, tipo, numero, estado, verifSet}
 
-    function abrirModalValidacionCun(val, pares, tipo, numero, estado, causal, fechaNota, extras) {
+    function abrirModalValidacionCun(val, pares, tipo, numero, estado) {
         var cuerpo = document.getElementById('cun-val-cuerpo');
         var verificadas = val.verificadas || [];
         var diferentes = val.diferentes || [];
         var sinComparar = val.sinComparar || [];
-        var esComp = (tipo === 'coord' || tipo === 'tcc');
-        cunValidacionPendiente = { pares: pares, tipo: tipo, numero: numero, estado: estado, causal: causal || "", fechaNota: fechaNota || "", extras: extras || {}, esComprobante: esComp, verifSet: {} };
+        cunValidacionPendiente = { pares: pares, tipo: tipo, numero: numero, estado: estado, verifSet: {} };
         verificadas.forEach(function(v) { cunValidacionPendiente.verifSet[v.guia] = true; });
 
         var html = '';
@@ -21367,13 +20597,13 @@ function openModalRecarga() {
             var cvp = cunValidacionPendiente;
             cerrarModalValidacionCun();
             var subconjunto = cvp.pares.filter(function(p) { return cvp.verifSet[p.guia] || p.valor === null; });
-            confirmarCunMasivo(subconjunto, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, subconjunto.length, cvp.fechaNota || "", cvp.extras || {});
+            confirmarCunMasivo(subconjunto, cvp.tipo, cvp.numero, cvp.estado, false, subconjunto.length);
         });
         if (b2) b2.addEventListener('click', function() {
             if (!cunValidacionPendiente) return;
             var cvp = cunValidacionPendiente;
             cerrarModalValidacionCun();
-            confirmarCunMasivo(cvp.pares, cvp.tipo, cvp.numero, cvp.estado, cvp.causal, cvp.esComprobante, 0, cvp.fechaNota || "", cvp.extras || {});
+            confirmarCunMasivo(cvp.pares, cvp.tipo, cvp.numero, cvp.estado, false, 0);
         });
     });
 
@@ -21382,31 +20612,6 @@ function openModalRecarga() {
         document.querySelectorAll('.cun-logo-opt').forEach(function(b) {
             b.classList.toggle('seleccionada', b.getAttribute('data-valor') === valor);
         });
-        var boxInter = document.getElementById('cunmasivo-campos-inter');
-        var boxServi = document.getElementById('cunmasivo-campos-servi');
-        if (boxInter) boxInter.style.display = (valor === 'inter') ? 'block' : 'none';
-        if (boxServi) boxServi.style.display = (valor === 'servi') ? 'block' : 'none';
-    }
-
-    function limpiarFormularioCunMasivo() {
-        const num = document.getElementById('cunmasivo-numero');
-        if (num) num.value = '';
-        const guias = document.getElementById('cunmasivo-guias');
-        if (guias) guias.value = '';
-        const estado = document.getElementById('cunmasivo-estado');
-        if (estado) estado.value = 'En Validacion';
-        const causal = document.getElementById('cunmasivo-causal');
-        if (causal) causal.value = '';
-        const fechaNota = document.getElementById('cunmasivo-fecha-nota');
-        if (fechaNota) fechaNota.value = '';
-        var tkt = document.getElementById('cunmasivo-ticket'); if (tkt) tkt.value = '';
-        var nn = document.getElementById('cunmasivo-num-nota'); if (nn) nn.value = '';
-        var conc = document.getElementById('cunmasivo-concepto'); if (conc) conc.value = '';
-        var nce = document.getElementById('cunmasivo-num-ce'); if (nce) nce.value = '';
-        const res = document.getElementById('cunmasivo-resultado');
-        if (res) { res.style.display = 'none'; res.textContent = ''; }
-        const btn = document.getElementById('btn-ejecutar-cunmasivo');
-        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-clipboard-check-fill"></i> Procesar'; }
     }
 
     function abrirModalCunMasivo() {
@@ -21414,89 +20619,48 @@ function openModalRecarga() {
         const sel = document.getElementById('cunmasivo-tipo');
         if (sel && currentIndemnizationType) sel.value = currentIndemnizationType;
         seleccionarLogoCun(document.getElementById('cunmasivo-tipo').value);
-        // Formulario limpio al abrir (tras un proceso exitoso ya se limpió)
-        limpiarFormularioCunMasivo();
+        // Se conservan los datos pegados: solo se limpian al procesar con exito.
+        const res = document.getElementById('cunmasivo-resultado');
+        if (res) { res.style.display = 'none'; res.textContent = ''; }
+        const btn = document.getElementById('btn-ejecutar-cunmasivo');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-clipboard-check-fill"></i> Procesar'; }
         const modal = document.getElementById('modal-cun-masivo');
         if (modal) modal.style.display = 'flex';
     }
 
-    // Detecta si un texto parece valor monetario ($1,310,000 / 1.310.000 / 25000)
-    function esValorMonedaCun(txt) {
-        var v = String(txt || "").replace(/[$\s]/g, '');
-        if (!v) return false;
-        if (/^\d{1,3}([.,]\d{3})+([.,]\d{1,2})?$/.test(v)) return true;
-        if (/^\d+([.,]\d{1,2})?$/.test(v)) return true;
-        return false;
-    }
-
-    // Convierte "$1,310,000" / "$1.310.000" / "1.310.000,50" / "25000" a numero (string)
+        // Convierte "$1,310,000" / "$1.310.000" / "1.310.000,50" / "25000" a numero
     function normalizarValorCun(txt) {
-        var v = String(txt || "").replace(/[$\s]/g, '');
-        if (!v) return "0";
-        if (/^\d{1,3}([.,]\d{3})+([.,]\d{1,2})?$/.test(v)) {
-            var up = v.lastIndexOf('.'), uc = v.lastIndexOf(',');
-            var lastSep = Math.max(up, uc);
-            var after = v.substring(lastSep + 1);
-            if (after.length >= 1 && after.length <= 2 && /[.,]/.test(v.substring(0, lastSep))) {
-                v = v.substring(0, lastSep).replace(/[.,]/g, '') + '.' + after;
-            } else {
-                v = v.replace(/[.,]/g, '');
-            }
-        } else {
-            v = v.replace(',', '.');
-        }
-        var n = Number(v);
-        return String(isNaN(n) ? 0 : n);
-    }
-
-    // Parser robusto: no rompe $1,310,000 cuando el separador es coma
-    function parsearLineaGuiaValorCunFront(linea) {
-        var l = String(linea || "").trim();
-        if (!l) return null;
-        var TAB = String.fromCharCode(9);
-        if (l.indexOf(TAB) !== -1) {
-            var pTab = l.split(TAB).map(function(x){ return x.trim(); }).filter(Boolean);
-            if (pTab.length >= 2) {
-                var valorTab = pTab.slice(1).join(' ').trim();
-                if (esValorMonedaCun(valorTab)) return { guia: pTab[0], valor: normalizarValorCun(valorTab) };
-            }
-            if (pTab[0] && !esValorMonedaCun(pTab[0])) return { guia: pTab[0], valor: null };
-        }
-        var m = l.match(/^([A-Za-z0-9\-_]+)[\s,;]+(.+)$/);
-        if (m && esValorMonedaCun(m[2])) return { guia: m[1], valor: normalizarValorCun(m[2]) };
-        return null;
+        var v = String(txt).replace(/[$\s]/g, '');
+        // miles tipo 1.310.000 o 1,310,000 (grupos de 3): quitar separadores
+        if (/^\d{1,3}([.,]\d{3})+$/.test(v)) v = v.replace(/[.,]/g, '');
+        else v = v.replace(',', '.');
+        return String(Number(v));
     }
 
     function ejecutarCunMasivo() {
         const tipo = document.getElementById('cunmasivo-tipo').value;
         const numero = document.getElementById('cunmasivo-numero').value.replace(/\D/g, '');
         const estado = document.getElementById('cunmasivo-estado').value;
-        const causal = (document.getElementById('cunmasivo-causal') || {}).value || "";
-        const fechaNota = (document.getElementById('cunmasivo-fecha-nota') || {}).value || "";
-        const ticket = (document.getElementById('cunmasivo-ticket') || {}).value || "";
-        const numNota = (document.getElementById('cunmasivo-num-nota') || {}).value || "";
-        const concepto = (document.getElementById('cunmasivo-concepto') || {}).value || "";
-        const numCe = (document.getElementById('cunmasivo-num-ce') || {}).value || "";
-        const extras = { ticket: ticket, numNota: numNota, concepto: concepto, numCe: numCe };
         const textoGuias = document.getElementById('cunmasivo-guias').value.trim();
 
         if (!numero) return showToast("Escribe el número de CUN / Comprobante.");
         if (!textoGuias) return showToast("Pega al menos una guía.");
 
+        // Parsear: cada linea puede ser "guia<TAB>valor" (valor NC para el calculo)
+        // o una lista plana separada por espacios/comas.
         const vistos = {};
         const pares = [];
         textoGuias.split(String.fromCharCode(10)).forEach(function(linea) {
             const l = linea.trim();
             if (!l) return;
-            const par = parsearLineaGuiaValorCunFront(l);
-            if (par) {
-                if (!vistos[par.guia]) { vistos[par.guia] = true; pares.push(par); }
+            const partes = (l.indexOf(String.fromCharCode(9)) !== -1)
+                ? l.split(String.fromCharCode(9)).map(function(x){ return x.trim(); }).filter(Boolean)
+                : l.split(/[,;]+/).map(function(x){ return x.trim(); }).filter(Boolean);
+            if (partes.length >= 2 && /^[$\s]*\d([\d.,$\s]*\d)?$/.test(partes[1])) {
+                if (!vistos[partes[0]]) { vistos[partes[0]] = true; pares.push({ guia: partes[0], valor: normalizarValorCun(partes[1]) }); }
             } else {
                 l.split(/[\s,;]+/).forEach(function(g) {
-                    if (g && !esValorMonedaCun(g) && !vistos[g]) {
-                        vistos[g] = true;
-                        pares.push({ guia: g, valor: null });
-                    }
+                    if (g && !vistos[g]) { vistos[g] = true; pares.push({ guia: g, valor: null }); }
                 });
             }
         });
@@ -21506,17 +20670,17 @@ function openModalRecarga() {
         const conValor = pares.filter(function(p) { return p.valor !== null; }).length;
 
         if (conValor > 0) {
+            // Validar contra el Valor Recaudo-Seguro de la hoja antes de confirmar
             showLoading(true);
-            // Enviar con TAB para que el backend no confunda la coma de miles
             const textoParaValidar = pares.map(function(p) { return p.valor ? p.guia + String.fromCharCode(9) + p.valor : p.guia; }).join(String.fromCharCode(10));
             google.script.run
                 .withSuccessHandler(function(val) {
                     showLoading(false);
                     if (!val || val.status !== 'success') return showToast('Error validando valores: ' + ((val && val.message) || 'desconocido'));
                     if (!Array.isArray(val.diferentes) || val.diferentes.length === 0) {
-                        confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, (val.verificadas || []).length, fechaNota, extras);
+                        confirmarCunMasivo(pares, tipo, numero, estado, esComprobante, (val.verificadas || []).length);
                     } else {
-                        abrirModalValidacionCun(val, pares, tipo, numero, estado, causal, fechaNota, extras);
+                        abrirModalValidacionCun(val, pares, tipo, numero, estado);
                     }
                 })
                 .withFailureHandler(function(e) {
@@ -21525,76 +20689,30 @@ function openModalRecarga() {
                 })
                 .validarCunMasivo(tipo, textoParaValidar);
         } else {
-            confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, 0, fechaNota, extras);
+            confirmarCunMasivo(pares, tipo, numero, estado, esComprobante, 0);
         }
     }
 
-    // Confirmacion del masivo (despues de pasar la validacion, o si no habia valores)
-    function confirmarCunMasivo(pares, tipo, numero, estado, causal, esComprobante, verificadas, fechaNota, extras) {
-        extras = extras || {};
-        const nombres = { inter: 'Inter Rapidísimo', servi: 'Servientrega', coord: 'Coordinadora', tcc: 'TCC' };
-        const label = esComprobante ? 'Comprobante' : 'CUN';
-        const nombreTipo = nombres[tipo] || tipo.toUpperCase();
-        const conValorPares = pares.filter(function(p){ return p.valor !== null && p.valor !== undefined && p.valor !== ''; });
-        const conValor = conValorPares.length;
-        let sumaValor = 0;
-        conValorPares.forEach(function(p){ sumaValor += Number(p.valor) || 0; });
-        const sumaFmt = sumaValor.toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
-        const fechaMostrar = fechaNota || '(hoy / no cambiar)';
-
-        let html = '<div style="text-align:left;line-height:1.55;">'
-            + '<p style="margin:0 0 12px;color:#94a3b8;">Vas a aplicar el siguiente registro masivo:</p>'
-            + '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:12px 14px;margin-bottom:12px;">'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Tipo</span><strong style="color:#eaf1f8;">' + label + '</strong></div>'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Número</span><strong style="color:#a78bfa;">' + numero + '</strong></div>'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Transportadora</span><strong style="color:#eaf1f8;">' + nombreTipo + '</strong></div>'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Guías</span><strong style="color:#eaf1f8;">' + pares.length + '</strong></div>';
-        if (estado) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Estado</span><strong style="color:#eaf1f8;">' + estado + '</strong></div>';
-        }
-        if (causal) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Causal</span><strong style="color:#eaf1f8;">' + causal + '</strong></div>';
-        }
-        html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Fecha llegada NC</span><strong style="color:#eaf1f8;">' + fechaMostrar + '</strong></div>';
-        if (tipo === 'inter' && extras.ticket) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Ticket</span><strong style="color:#eaf1f8;">' + extras.ticket + '</strong></div>';
-        }
-        if (tipo === 'inter' && extras.numNota) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">N° Nota crédito</span><strong style="color:#eaf1f8;">' + extras.numNota + '</strong></div>';
-        }
-        if (tipo === 'servi' && extras.concepto) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Concepto</span><strong style="color:#eaf1f8;">' + extras.concepto + '</strong></div>';
-        }
-        if (tipo === 'servi' && extras.numCe) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;"><span style="color:#8b98a8;font-size:12px;">Número CE</span><strong style="color:#eaf1f8;">' + extras.numCe + '</strong></div>';
-        }
-        if (conValor > 0) {
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;"><span style="color:#8b98a8;font-size:12px;">Con valor NC/CE</span><strong style="color:#eaf1f8;">' + conValor + ' guía(s)</strong></div>';
-            html += '<div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#8b98a8;font-size:12px;">Total valores</span><strong style="color:#4ade80;">' + sumaFmt + '</strong></div>';
-        }
-        html += '</div>'
-            + '<p style="margin:0;color:#94a3b8;font-size:13.5px;">Las guías existentes se <strong style="color:#eaf1f8;">actualizan</strong> (CUN, valor, estado, causal y fecha NC aunque ya tengan datos — sirve para pago adicional); las que no existan se <strong style="color:#eaf1f8;">crean</strong>.</p>';
-        if (verificadas > 0) {
-            html += '<p style="margin:8px 0 0;color:#60a5fa;font-size:13px;">✓ ' + verificadas + ' guía(s) verificadas contra Valor Recaudo − Seguro.</p>';
-        }
-        html += '</div>';
-
-        mostrarModalConfirmacion(html, function() {
-            procesarCunMasivoBloques(tipo, pares, numero, estado, causal, fechaNota || '', extras);
-        }, {
-            titulo: 'Confirmar ' + label + ' masivo',
-            textoSi: 'Sí, procesar',
-            textoNo: 'Cancelar',
-            html: true,
-            silenciarCancel: true
-        });
+    // Confirmacion clasica del masivo (despues de pasar la validacion, o si no habia valores)
+    function confirmarCunMasivo(pares, tipo, numero, estado, esComprobante, verificadas) {
+        mostrarModalConfirmacion(
+            '\n\n' +
+            '\u00bfAplicar ' + (esComprobante ? 'COMPROBANTE' : 'CUN') + ' ' + numero +
+            ' a ' + pares.length + ' gu\u00eda(s) en ' + tipo.toUpperCase() + '?' +
+            (verificadas > 0 ? '\n' + verificadas + ' gu\u00eda(s) verificadas contra Valor Recaudo-Seguro.' : '') + '\n' +
+            'Las gu\u00edas existentes se actualizan; las que no existan se crean con la fecha de hoy' +
+            (estado ? ' y estado "' + estado + '"' : '') + '.',
+            function() { procesarCunMasivoBloques(tipo, pares, numero, estado); }
+        );
     }
 
-    function procesarCunMasivoBloques(tipo, guias, numero, estado, causal, fechaNota, extras) {
+    function procesarCunMasivoBloques(tipo, guias, numero, estado) {
         const btn = document.getElementById('btn-ejecutar-cunmasivo');
         if (btn) { btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...'; }
         showLoading(true);
 
+        // Bloques de 50: cada llamada lee la hoja y escribe; así ninguna supera
+        // con seguridad el timeout de 45s del shim
         // Con valores pegados el backend consulta la API por guia: bloques mas
         // pequenos para no superar el timeout de 45s. Sin valores, de a 50.
         const TAMANO = guias.some(function(p) { return p.valor !== null; }) ? 10 : 50;
@@ -21609,20 +20727,15 @@ function openModalRecarga() {
         function siguienteBloque() {
             if (bi >= bloques.length) {
                 showLoading(false);
-                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-clipboard-check-fill"></i> Procesar'; }
-
-                const ok = totales.errores.length === 0;
-                let msgToast = 'Proceso completado: ' + totales.actualizadas + ' actualizada(s), ' + totales.creadas + ' creada(s)';
-                if (!ok) {
-                    msgToast += ' · ' + totales.errores.length + ' con error';
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-clipboard-check"></i> Procesar'; }
+                const res = document.getElementById('cunmasivo-resultado');
+                let resumen = '✅ Actualizadas: ' + totales.actualizadas + '  |  Creadas: ' + totales.creadas;
+                if (totales.errores.length > 0) {
+                    resumen += '\n⚠ Errores (' + totales.errores.length + '):\n• ' + totales.errores.join('\n• ');
                 }
-                showToast(msgToast);
-
-                // Cerrar modal y limpiar formulario para la próxima vez
-                limpiarFormularioCunMasivo();
-                const modalCun = document.getElementById('modal-cun-masivo');
-                if (modalCun) modalCun.style.display = 'none';
-
+                if (res) { res.textContent = resumen; res.style.display = 'block'; }
+                showToast('CUN masivo aplicado a ' + guias.length + ' guía(s).');
+                // Recargar la tabla de la transportadora procesada
                 const hojas = { inter: 'INTER RAPIDISIMO', servi: 'SERVIENTREGA', coord: 'COORDINADORA', tcc: 'TCC' };
                 if (hojas[tipo]) cargarIndemnizaciones(tipo, hojas[tipo]);
                 return;
@@ -21645,7 +20758,7 @@ function openModalRecarga() {
                     bi++;
                     siguienteBloque();
                 })
-                .procesarCunMasivo(tipo, bloques[bi].join(String.fromCharCode(10)), numero, estado, causal || "", fechaNota || "", extras || {});
+                .procesarCunMasivo(tipo, bloques[bi].join(String.fromCharCode(10)), numero, estado);
         }
 
         siguienteBloque();
@@ -21739,19 +20852,19 @@ function openModalRecarga() {
                 causal: document.getElementById('indem-causal-edit').value,
                 seller: document.getElementById('indem-seller-edit') ? document.getElementById('indem-seller-edit').value : "", 
                 guia: document.getElementById('indem-guia-edit').value,
-                tiempoEst: "",
+                tiempoEst: document.getElementById('indem-fecha-estimada-edit').value,
                 fechaAprob: document.getElementById('indem-fecha-aprobacion-edit').value,
                 fechaNota: document.getElementById('indem-fecha-nota-edit').value,
                 ticket: document.getElementById('indem-ticket-edit').value,
-                numNota: "",
-                cobroFleteFactura: "", 
+                numNota: document.getElementById('indem-num-nota-edit').value,
+                cobroFleteFactura: document.getElementById('indem-cobro-flete-edit') ? document.getElementById('indem-cobro-flete-edit').value : "", 
                 tipoResp: "", 
                 valNota: parseFloat(document.getElementById('indem-valor-nota-edit').value) || 0,
                 pagoDestino: document.getElementById('indem-pago-destino-edit').value,
                 cobroDevol: document.getElementById('indem-cobro-devol-edit').value,
                 valRecSeg: parseFloat(document.getElementById('indem-val-rec-seg-edit').value) || 0,
-                fleteInter: 0,
-                diffFletes: "",
+                fleteInter: parseFloat(document.getElementById('indem-flete-inter-edit').value) || 0,
+                diffFletes: parseFloat(document.getElementById('indem-diff-fletes-edit').value) || 0,
                 comTransFlete: parseFloat(document.getElementById('indem-com-trans-flete-edit').value) || 0,
                 comHeka: parseFloat(document.getElementById('indem-com-heka-edit').value) || 0,
                 comHekaAdic: parseFloat(document.getElementById('indem-com-heka-adic-edit').value) || 0,
@@ -21760,7 +20873,6 @@ function openModalRecarga() {
                 nuevaPqr: document.getElementById('indem-nueva-pqr-edit').value,
                 pqr2: document.getElementById('indem-pqr2-edit').value,
                 obs: document.getElementById('indem-obs-edit').value,
-                observaciones: document.getElementById('indem-obs-edit').value,
                 obsPqr2: document.getElementById('indem-obs-pqr2-edit').value,
                 estado: document.getElementById('indem-estado-edit').value
             };
@@ -21782,9 +20894,9 @@ function openModalRecarga() {
                 pagoDestino: document.getElementById('servi-pago-dest-edit').value,
                 cobroDevol: document.getElementById('servi-cobro-devol-edit').value,
                 valRecSeg: parseFloat(document.getElementById('servi-val-rec-seg-edit').value) || 0,
-                fleteServi: 0,
+                fleteServi: parseFloat(document.getElementById('servi-flete-servi-edit').value) || 0,
                 comTransFlete: parseFloat(document.getElementById('servi-com-trans-flete-edit').value) || 0,
-                diffFletes: 0,
+                diffFletes: parseFloat(document.getElementById('servi-diff-fletes-edit').value) || 0,
                 comHeka: parseFloat(document.getElementById('servi-com-heka-edit').value) || 0,
                 comHekaAdic: parseFloat(document.getElementById('servi-com-heka-adic-edit').value) || 0,
                 valFinalPagar: parseFloat(document.getElementById('servi-val-final-pagar-edit').value) || 0,
@@ -29410,6 +28522,47 @@ function ejecutarProcesarActivacionInter() {
     .procesarActivacionesInter(actInterFilas);
 }
 
+function buscarActivacionesInterUI() {
+  var q = document.getElementById('act-inter-busqueda').value.trim();
+  var info = document.getElementById('act-inter-busqueda-info');
+  if (!q) { info.style.display = 'none'; cargarPreviewActivacionInter(); return; }
+  info.style.display = 'block';
+  info.innerHTML = '<i class="bi bi-arrow-repeat"></i> Buscando "' + q + '"...';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      var body = document.getElementById('act-inter-tabla-body');
+      if (!body) return;
+      if (!res || res.status !== 'success') {
+        info.innerHTML = '<span style="color:#dc3545">Error: ' + ((res && res.message) || 'desconocido') + '</span>';
+        return;
+      }
+      var data = Array.isArray(res.data) ? res.data : [];
+      info.innerHTML = data.length
+        ? '<i class="bi bi-check-circle-fill" style="color:#198754"></i> ' + res.total + ' resultado(s) para "' + q + '" <a href="#" onclick="document.getElementById(\'act-inter-busqueda\').value=\'\';cargarPreviewActivacionInter();document.getElementById(\'act-inter-busqueda-info\').style.display=\'none\';return false;" style="color:#22d3ee;text-decoration:none;">(ver últimas)</a>'
+        : 'Sin resultados para "' + q + '". <a href="#" onclick="cargarPreviewActivacionInter();document.getElementById(\'act-inter-busqueda-info\').style.display=\'none\';return false;" style="color:#22d3ee;text-decoration:none;">(ver últimas)</a>';
+      body.innerHTML = data.map(function(r) {
+        return '<tr>'
+          + '<td>' + (r[0]||'') + '</td><td>' + (r[1]||'') + '</td><td>' + (r[2]||'') + '</td>'
+          + '<td>' + (r[3]||'') + '</td><td>' + (r[4]||'') + '</td><td>' + (r[6]||'') + '</td>'
+          + '<td>' + (r[7]||'') + '</td><td>' + (r[10]||'') + '</td><td>' + (r[11]||'') + '</td></tr>';
+      }).join('');
+    })
+    .withFailureHandler(function(err) {
+      info.innerHTML = '<span style="color:#dc3545">Error de conexión: ' + ((err && err.message) || '') + '</span>';
+    })
+    .buscarActivacionesInter(q);
+}
+
+// Permiso de carga: solo usuarios con 'activacion_inter_carga' (o admin) ven la
+// tarjeta de carga; el resto solo consulta las activaciones registradas.
+function aplicarPermisoCargaActivaciones() {
+  var card = document.getElementById('act-inter-carga-card');
+  if (!card) return;
+  var puede = currentUser && (currentUser.role === 'Administrador'
+    || String(currentUser.permissions || '').includes('activacion_inter_carga'));
+  card.style.display = puede ? 'block' : 'none';
+}
+
 function cargarPreviewActivacionInter() {
   google.script.run
     .withSuccessHandler(function(res){
@@ -29425,728 +28578,6 @@ function cargarPreviewActivacionInter() {
     })
     .getActivacionesInterPreview();
 }
-
-
-/* ============================================================
-   SOFTWARE — MESA DE AYUDA (colaborador + desarrollador + chat)
-   ============================================================ */
-var swTicketActual = null;
-var swModoVista = 'colaborador';
-var swChatTimer = null;
-var swChatUltimoCount = 0;
-var swNotifTimer = null;
-var swAdjuntoNueva = null; // { base64, mime, name, tipo }
-var swAdjuntoChat = null;
-var swNotifKnown = {}; // id -> last msg fingerprint
-var swEnviando = false;          // hay un envío en curso
-var swColaMensajes = [];         // cola si dan Enter varias veces o en paralelo
-var swChatFingerprint = '';      // para detectar mensajes nuevos sin pisar scroll al azar
-
-function swBadgeEstado(estado) {
-  var e = String(estado || '').toUpperCase();
-  var map = {
-    'ABIERTA': { bg: 'rgba(59,130,246,.18)', color: '#60a5fa', label: 'Abierta' },
-    'EN GESTION': { bg: 'rgba(251,191,36,.18)', color: '#fbbf24', label: 'En gestión' },
-    'SOLUCIONADO': { bg: 'rgba(34,197,94,.18)', color: '#4ade80', label: 'Solucionado' }
-  };
-  var m = map[e] || { bg: 'rgba(255,255,255,.08)', color: '#cbd5e1', label: estado || '-' };
-  return '<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:' + m.bg + ';color:' + m.color + ';">' + m.label + '</span>';
-}
-
-function swBadgePrioridad(p) {
-  var map = { 'Baja': '#94a3b8', 'Media': '#60a5fa', 'Alta': '#fbbf24', 'Crítica': '#f87171' };
-  var c = map[p] || '#94a3b8';
-  return '<span style="color:' + c + ';font-weight:700;">' + (p || '-') + '</span>';
-}
-
-function swFmtFecha(iso) {
-  if (!iso) return '-';
-  try {
-    var d = new Date(iso);
-    if (isNaN(d.getTime())) return String(iso).slice(0, 16);
-    return d.toLocaleString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-  } catch (e) { return String(iso).slice(0, 16); }
-}
-
-function swEsc(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function swMediaHtml(url, tipo) {
-  if (!url) return '';
-  var t = String(tipo || '').toLowerCase();
-  var isVid = t.indexOf('video') >= 0 || /\.(mp4|webm|mov)(\?|$)/i.test(url);
-  if (isVid) {
-    return '<div class="sw-media"><video controls src="' + swEsc(url) + '" style="max-width:100%;max-height:260px;border-radius:10px;"></video></div>';
-  }
-  return '<div class="sw-media"><a href="' + swEsc(url) + '" target="_blank" rel="noopener"><img src="' + swEsc(url) + '" alt="adjunto" style="max-width:100%;max-height:260px;border-radius:10px;"/></a></div>';
-}
-
-function swLeerArchivo(file, cb) {
-  if (!file) return cb(null);
-  if (file.size > 8 * 1024 * 1024) {
-    showToast('El archivo supera 8 MB. Comprime la imagen o usa un video más corto.');
-    return cb(null);
-  }
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    cb({
-      base64: e.target.result,
-      mime: file.type || 'application/octet-stream',
-      name: file.name || 'adjunto',
-      tipo: (file.type || '').indexOf('video') >= 0 ? 'video' : 'image'
-    });
-  };
-  reader.onerror = function() { showToast('No se pudo leer el archivo.'); cb(null); };
-  reader.readAsDataURL(file);
-}
-
-function swPreviewAdjuntoNueva(input) {
-  var file = input.files && input.files[0];
-  if (!file) { swAdjuntoNueva = null; document.getElementById('sw-nueva-file-name').textContent = 'Ninguno'; document.getElementById('sw-nueva-preview').style.display='none'; return; }
-  swLeerArchivo(file, function(data) {
-    swAdjuntoNueva = data;
-    document.getElementById('sw-nueva-file-name').textContent = data ? data.name : 'Ninguno';
-    var prev = document.getElementById('sw-nueva-preview');
-    if (!data) { prev.style.display='none'; return; }
-    prev.style.display = 'block';
-    if (data.tipo === 'video') {
-      prev.innerHTML = '<video controls src="' + data.base64 + '" style="max-width:100%;max-height:180px;border-radius:10px;"></video>';
-    } else {
-      prev.innerHTML = '<img src="' + data.base64 + '" style="max-width:100%;max-height:180px;border-radius:10px;"/>';
-    }
-  });
-}
-
-function swPreviewAdjuntoChat(input) {
-  var file = input.files && input.files[0];
-  var prev = document.getElementById('sw-chat-preview');
-  if (!file) { swAdjuntoChat = null; prev.style.display='none'; prev.innerHTML=''; return; }
-  swLeerArchivo(file, function(data) {
-    swAdjuntoChat = data;
-    if (!data) { prev.style.display='none'; return; }
-    prev.style.display = 'block';
-    var media = data.tipo === 'video'
-      ? '<video controls src="' + data.base64 + '" style="max-height:120px;border-radius:8px;"></video>'
-      : '<img src="' + data.base64 + '" style="max-height:120px;border-radius:8px;"/>';
-    prev.innerHTML = '<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:6px 8px;">'
-      + media
-      + '<button type="button" class="btn btn-sm btn-secondary" onclick="swLimpiarAdjuntoChat()">Quitar</button></div>';
-  });
-}
-
-function swLimpiarAdjuntoChat() {
-  swAdjuntoChat = null;
-  var f = document.getElementById('sw-chat-file');
-  if (f) f.value = '';
-  var prev = document.getElementById('sw-chat-preview');
-  if (prev) { prev.style.display='none'; prev.innerHTML=''; }
-}
-
-function abrirModalNuevaSolicitudSW() {
-  document.getElementById('sw-nueva-titulo').value = '';
-  document.getElementById('sw-nueva-desc').value = '';
-  document.getElementById('sw-nueva-prioridad').value = 'Media';
-  document.getElementById('sw-nueva-tiempo').value = '1 día';
-  swAdjuntoNueva = null;
-  var fi = document.getElementById('sw-nueva-file');
-  if (fi) fi.value = '';
-  document.getElementById('sw-nueva-file-name').textContent = 'Ninguno';
-  document.getElementById('sw-nueva-preview').style.display = 'none';
-  var modal = document.getElementById('modal-sw-nueva');
-  if (modal && modal.parentElement !== document.body) {
-    document.body.appendChild(modal);
-  }
-  modal.style.display = 'flex';
-  modal.style.zIndex = '100000';
-  document.body.style.overflow = 'hidden';
-}
-function cerrarModalNuevaSolicitudSW() {
-  var modal = document.getElementById('modal-sw-nueva');
-  if (modal) modal.style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-function enviarNuevaSolicitudSW() {
-  var titulo = (document.getElementById('sw-nueva-titulo').value || '').trim();
-  var desc = (document.getElementById('sw-nueva-desc').value || '').trim();
-  var prioridad = document.getElementById('sw-nueva-prioridad').value;
-  var tiempo = document.getElementById('sw-nueva-tiempo').value;
-  if (!titulo) return showToast('Escribe un título para la solicitud.');
-  if (!desc) return showToast('Describe el error o la falla.');
-
-  function crearConAdjunto(urlAdj, tipoAdj) {
-    google.script.run
-      .withSuccessHandler(function(res) {
-        showLoading(false);
-        if (!res || res.status !== 'success') {
-          return showToast((res && res.message) || 'No se pudo crear la solicitud.');
-        }
-        showToast('Solicitud creada: ' + res.id);
-        cerrarModalNuevaSolicitudSW();
-        cargarMisSolicitudesSW();
-      })
-      .withFailureHandler(function(e) {
-        showLoading(false);
-        showToast('Error: ' + (e.message || e));
-      })
-      .crearSolicitudSoftware({
-        titulo: titulo,
-        descripcion: desc,
-        prioridad: prioridad,
-        tiempoSolicitado: tiempo,
-        solicitante: currentUser.name || '',
-        cedula: currentUser.cedula || '',
-        adjunto: urlAdj || '',
-        tipoAdjunto: tipoAdj || ''
-      });
-  }
-
-  showLoading(true);
-  if (swAdjuntoNueva) {
-    google.script.run
-      .withSuccessHandler(function(up) {
-        if (!up || up.status !== 'success') {
-          showLoading(false);
-          return showToast((up && up.message) || 'Error subiendo adjunto');
-        }
-        crearConAdjunto(up.url, swAdjuntoNueva.tipo);
-      })
-      .withFailureHandler(function(e) {
-        showLoading(false);
-        showToast('Error subiendo: ' + (e.message || e));
-      })
-      .swSubirAdjuntoSoftware(swAdjuntoNueva.base64, swAdjuntoNueva.mime, swAdjuntoNueva.name);
-  } else {
-    crearConAdjunto('', '');
-  }
-}
-
-function swSetFiltro(tipo, btn) {
-  var wrap = document.getElementById(tipo === 'dev' ? 'sw-filtros-dev' : 'sw-filtros-mis');
-  if (!wrap || !btn) return;
-  wrap.querySelectorAll('.sw-chip').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
-  wrap.dataset.valor = btn.getAttribute('data-f') || 'TODOS';
-  if (tipo === 'dev') cargarSolicitudesDevSW();
-  else cargarMisSolicitudesSW();
-}
-
-function cargarMisSolicitudesSW() {
-  var tbody = document.getElementById('sw-mis-tbody');
-  if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b98a8;">Cargando...</td></tr>';
-  google.script.run
-    .withSuccessHandler(function(res) {
-      if (!res || res.status !== 'success') {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#f87171;">Error al cargar</td></tr>';
-        return;
-      }
-      var filtro = (document.getElementById('sw-filtros-mis') || {}).dataset.valor || 'TODOS';
-      var data = (res.data || []).filter(function(t) {
-        if (!t || !t.id || String(t.id).indexOf('SW-') !== 0) return false;
-        if (!String(t.titulo || '').trim()) return false;
-        if (filtro === 'TODOS') return true;
-        return String(t.estado).toUpperCase() === filtro;
-      });
-      if (!data.length) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b98a8;">No tienes solicitudes aún. Crea la primera con el botón de arriba.</td></tr>';
-        return;
-      }
-      tbody.innerHTML = data.map(function(t) {
-        return '<tr>'
-          + '<td style="font-family:monospace;font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.id) + '</td>'
-          + '<td style="font-size:12px;white-space:nowrap;">' + swFmtFecha(t.fecha) + '</td>'
-          + '<td style="max-width:220px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
-          + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
-          + '<td style="font-size:12px;">' + swEsc(t.tiempoSolicitado || '-') + '</td>'
-          + '<td>' + swBadgeEstado(t.estado) + '</td>'
-          + '<td style="font-size:12px;max-width:100px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.desarrollador || '-') + '</td>'
-          + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + String(t.id).replace(/'/g,"\\'") + '\',\'colaborador\')"><i class="bi bi-chat-dots"></i></button></td>'
-          + '</tr>';
-      }).join('');
-    })
-    .withFailureHandler(function() {
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#f87171;">Error de conexión</td></tr>';
-    })
-    .listarMisSolicitudesSoftware(currentUser.cedula || '');
-}
-
-function cargarSolicitudesDevSW() {
-  var tbody = document.getElementById('sw-dev-tbody');
-  if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#8b98a8;">Cargando...</td></tr>';
-  var filtro = (document.getElementById('sw-filtros-dev') || {}).dataset.valor || 'ACTIVAS';
-  google.script.run
-    .withSuccessHandler(function(res) {
-      if (!res || res.status !== 'success') {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#f87171;">Error al cargar</td></tr>';
-        return;
-      }
-      var data = (res.data || []).filter(function(t) {
-        return t && t.id && String(t.id).indexOf('SW-') === 0 && String(t.titulo || '').trim();
-      });
-      if (!data.length) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#8b98a8;">No hay solicitudes en este filtro.</td></tr>';
-        return;
-      }
-      tbody.innerHTML = data.map(function(t) {
-        return '<tr>'
-          + '<td style="font-family:monospace;font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.id) + '</td>'
-          + '<td style="font-size:12px;white-space:nowrap;">' + swFmtFecha(t.fecha) + '</td>'
-          + '<td style="font-size:12px;max-width:110px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.solicitante) + '</td>'
-          + '<td style="max-width:200px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
-          + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
-          + '<td style="font-size:12px;">' + swEsc(t.tiempoSolicitado || '-') + '</td>'
-          + '<td>' + swBadgeEstado(t.estado) + '</td>'
-          + '<td style="font-size:12px;max-width:100px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.desarrollador || '-') + '</td>'
-          + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + String(t.id).replace(/'/g,"\\'") + '\',\'dev\')"><i class="bi bi-chat-dots"></i></button></td>'
-          + '</tr>';
-      }).join('');
-    })
-    .withFailureHandler(function() {
-      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#f87171;">Error de conexión</td></tr>';
-    })
-    .listarTodasSolicitudesSoftware(filtro);
-}
-
-function swStopChatPolling() {
-  if (swChatTimer) { clearInterval(swChatTimer); swChatTimer = null; }
-}
-
-function abrirChatSW(id, modo) {
-  swTicketActual = id;
-  swModoVista = modo || 'colaborador';
-  swChatUltimoCount = 0;
-  swLimpiarAdjuntoChat();
-  var modal = document.getElementById('modal-sw-chat');
-  // Mover al body para que el sidebar / transform del layout no recorte el chat
-  if (modal && modal.parentElement !== document.body) {
-    document.body.appendChild(modal);
-  }
-  modal.style.display = 'flex';
-  document.getElementById('sw-chat-mensajes').innerHTML = '<div style="text-align:center;color:#8b98a8;padding:20px;">Cargando conversación...</div>';
-  // Bloquear scroll del fondo
-  document.body.style.overflow = 'hidden';
-  swBindChatEnter();
-  var ep = document.getElementById('sw-emoji-panel');
-  if (ep) ep.style.display = 'none';
-  refrescarDetalleYChatSW();
-  swStopChatPolling();
-  swChatTimer = setInterval(function() {
-    if (document.getElementById('modal-sw-chat').style.display === 'flex') {
-      // Solo refresca mensajes; no toca el input que el usuario está escribiendo
-      swSoloRefrescarMensajes();
-    } else {
-      swStopChatPolling();
-    }
-  }, 12000);
-}
-
-function cerrarModalChatSW() {
-  swStopChatPolling();
-  swTicketActual = null;
-  swColaMensajes = [];
-  swEnviando = false;
-  swChatFingerprint = '';
-  swLimpiarAdjuntoChat();
-  var modal = document.getElementById('modal-sw-chat');
-  if (modal) modal.style.display = 'none';
-  document.body.style.overflow = '';
-  if (swModoVista === 'dev') cargarSolicitudesDevSW();
-  else cargarMisSolicitudesSW();
-  swPollNotificaciones(true);
-}
-
-function refrescarDetalleYChatSW(silencioso) {
-  if (!swTicketActual) return;
-  google.script.run
-    .withSuccessHandler(function(det) {
-      if (!det || det.status !== 'success' || !det.data) {
-        if (!silencioso) showToast('No se pudo cargar la solicitud.');
-        return;
-      }
-      var t = det.data;
-      document.getElementById('sw-chat-id').textContent = t.id;
-      document.getElementById('sw-chat-titulo').textContent = t.titulo || '';
-      document.getElementById('sw-chat-meta').textContent =
-        (t.solicitante || '') + ' · Prioridad ' + (t.prioridad || '-') +
-        (t.tiempoSolicitado ? ' · ' + t.tiempoSolicitado : '') +
-        (t.desarrollador ? ' · Dev: ' + t.desarrollador : '');
-      var badgeWrap = document.getElementById('sw-chat-estado-badge');
-      if (badgeWrap) badgeWrap.innerHTML = swBadgeEstado(t.estado);
-
-      var cerrado = String(t.estado).toUpperCase() === 'SOLUCIONADO';
-      document.getElementById('sw-chat-composer').style.display = cerrado ? 'none' : 'flex';
-      document.getElementById('sw-chat-cerrado').style.display = cerrado ? 'block' : 'none';
-
-      var acciones = document.getElementById('sw-chat-acciones-dev');
-      if (swModoVista === 'dev' && !cerrado) {
-        acciones.style.display = 'flex';
-        var btnTomar = document.getElementById('sw-btn-tomar');
-        var btnSol = document.getElementById('sw-btn-solucionar');
-        if (btnTomar) btnTomar.style.display = (String(t.estado).toUpperCase() === 'ABIERTA') ? 'inline-flex' : 'none';
-        if (btnSol) btnSol.style.display = 'inline-flex';
-      } else {
-        acciones.style.display = 'none';
-      }
-
-      google.script.run
-        .withSuccessHandler(function(chat) {
-          renderChatMensajesSW((chat && chat.data) || [], cerrado);
-        })
-        .obtenerChatSoftware(swTicketActual);
-    })
-    .obtenerDetalleSolicitudSoftware(swTicketActual);
-}
-
-function renderChatMensajesSW(msgs, cerrado) {
-  var box = document.getElementById('sw-chat-mensajes');
-  if (!msgs.length) {
-    box.innerHTML = '<div style="text-align:center;color:#8b98a8;padding:20px;">Sin mensajes aún.</div>';
-    return;
-  }
-  var miCedula = String(currentUser.cedula || '');
-  var html = msgs.map(function(m, idx) {
-    var esDev = String(m.rol || '').toUpperCase() === 'DESARROLLADOR';
-    var texto = String(m.mensaje || '');
-    // Mensaje de apertura de solicitud -> centrado estilo sistema
-    var esSistema = idx === 0 && /^Solicitud creada:/i.test(texto.trim());
-
-    if (esSistema) {
-      return '<div style="display:flex;justify-content:center;width:100%;padding:4px 0;">'
-        + '<div class="sw-bubble sw-bubble-sys">'
-        + '<div class="sw-bubble-meta" style="justify-content:center;">'
-        + '<span style="color:#ffc400;font-size:10px;font-weight:800;letter-spacing:.4px;"><i class="bi bi-ticket-detailed-fill"></i> SOLICITUD</span>'
-        + '<span style="color:rgba(255,220,120,.7);font-size:10px;">' + swFmtFecha(m.fecha) + '</span>'
-        + '</div>'
-        + (texto ? '<div class="sw-bubble-text">' + swEsc(texto) + '</div>' : '')
-        + (m.adjunto ? swMediaHtml(m.adjunto, m.tipoAdjunto) : '')
-        + '</div></div>';
-    }
-
-    // WhatsApp por ROL: COLAB siempre izquierda, DEV siempre derecha
-    var lado = esDev ? 'flex-end' : 'flex-start';
-    var bubbleClass = esDev ? 'sw-bubble sw-bubble-dev' : 'sw-bubble sw-bubble-colab';
-    var rolTag = esDev
-      ? '<span style="color:#b8a6ff;font-size:10px;font-weight:700;letter-spacing:.3px;">DEV</span>'
-      : '<span style="color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:.3px;">COLAB</span>';
-    var nameColor = esDev ? 'rgba(255,255,255,.95)' : '#eaf1f8';
-    var timeColor = esDev ? 'rgba(255,255,255,.55)' : '#6b7a8d';
-
-    var row = '<div style="display:flex;justify-content:' + lado + ';width:100%;">'
-      + '<div class="' + bubbleClass + '">'
-      + '<div class="sw-bubble-meta">'
-      + '<strong style="color:' + nameColor + ';font-size:12px;">' + swEsc(m.autor) + '</strong>'
-      + rolTag
-      + '<span style="color:' + timeColor + ';font-size:10px;margin-left:auto;white-space:nowrap;">' + swFmtFecha(m.fecha) + '</span>'
-      + '</div>';
-    if (texto) {
-      row += '<div class="sw-bubble-text">' + swEsc(texto) + '</div>';
-    }
-    if (m.adjunto) {
-      row += swMediaHtml(m.adjunto, m.tipoAdjunto);
-    }
-    row += '</div></div>';
-    return row;
-  }).join('');
-
-  var prevCount = swChatUltimoCount;
-  var nearBottom = true;
-  try {
-    nearBottom = (box.scrollHeight - box.scrollTop - box.clientHeight) < 80;
-  } catch (e) {}
-  var scrollBottom = !prevCount || msgs.length !== prevCount;
-  if (prevCount && msgs.length > prevCount) {
-    var last = msgs[msgs.length - 1];
-    if (String(last.cedula || '') !== miCedula) {
-      swPlayNotifSound();
-    }
-  }
-  swChatUltimoCount = msgs.length;
-  swChatFingerprint = msgs.length + '|' + (msgs.length ? (msgs[msgs.length-1].fecha + msgs[msgs.length-1].mensaje) : '');
-  box.innerHTML = html;
-  // Solo auto-scroll si el usuario ya estaba abajo o es la primera carga
-  if (scrollBottom && nearBottom) box.scrollTop = box.scrollHeight;
-  else if (!prevCount) box.scrollTop = box.scrollHeight;
-}
-
-
-function swToggleEmojiPanel() {
-  var panel = document.getElementById('sw-emoji-panel');
-  if (!panel) return;
-  if (panel.style.display === 'flex') {
-    panel.style.display = 'none';
-    return;
-  }
-  if (!panel.dataset.ready) {
-    var emojis = ['😀','😃','😄','😁','😅','😂','🤣','😊','😇','🙂','😉','😌','😍','🥰','😘','😗','😋','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','😯','😪','😫','🥱','😴','😌','😛','😓','😕','🙃','🫠','😲','😢','😭','😤','😠','😡','🤬','😈','👿','💀','👍','👎','👏','🙌','🤝','🙏','💪','✌️','🤞','👌','🤙','👈','👉','👆','👇','✋','👋','🎉','🎊','🔥','⭐','✨','💯','✅','❌','⚠️','🚀','💡','❤️','🧡','💛','💚','💙','💜','🖤','🤍','💔','💕','💖','💗','💘','💝','😎','🥳','😱','😳','🤭','🫡','👀','💬','📎','📷','🖥️','🐛','🛠️','✔️','⏳','📌'];
-    panel.innerHTML = emojis.map(function(e) {
-      return '<button type="button" onclick="swInsertEmoji(\'' + e + '\')" style="width:34px;height:34px;border:none;background:transparent;font-size:20px;cursor:pointer;border-radius:8px;line-height:1;padding:0;" onmouseover="this.style.background=\'rgba(255,255,255,.08)\'" onmouseout="this.style.background=\'transparent\'">' + e + '</button>';
-    }).join('');
-    panel.dataset.ready = '1';
-  }
-  panel.style.display = 'flex';
-}
-
-function swInsertEmoji(emoji) {
-  var input = document.getElementById('sw-chat-input');
-  if (!input) return;
-  var start = input.selectionStart || input.value.length;
-  var end = input.selectionEnd || input.value.length;
-  var v = input.value;
-  input.value = v.slice(0, start) + emoji + v.slice(end);
-  var pos = start + emoji.length;
-  input.focus();
-  try { input.setSelectionRange(pos, pos); } catch (e) {}
-}
-
-function swBindChatEnter() {
-  var input = document.getElementById('sw-chat-input');
-  if (!input || input.dataset.enterBound) return;
-  input.dataset.enterBound = '1';
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      enviarMensajeChatSW();
-    }
-  });
-}
-
-
-/** Refresco silencioso solo del hilo (no borra lo que el usuario escribe) */
-function swSoloRefrescarMensajes() {
-  if (!swTicketActual) return;
-  if (swEnviando) return; // no interrumpir un envío en curso
-  google.script.run
-    .withSuccessHandler(function(chat) {
-      if (!swTicketActual) return;
-      var msgs = (chat && chat.data) || [];
-      var fp = msgs.length + '|' + (msgs.length ? (msgs[msgs.length-1].fecha + msgs[msgs.length-1].mensaje) : '');
-      if (fp === swChatFingerprint) return; // sin cambios
-      renderChatMensajesSW(msgs, false);
-    })
-    .obtenerChatSoftware(swTicketActual);
-}
-
-function enviarMensajeChatSW() {
-  if (!swTicketActual) return;
-  var input = document.getElementById('sw-chat-input');
-  var msg = (input.value || '').trim();
-  var adj = swAdjuntoChat; // capturar adjunto actual
-  if (!msg && !adj) return showToast('Escribe un mensaje o adjunta un archivo.');
-
-  // Meter en cola para no perder Enter simultáneos
-  swColaMensajes.push({
-    texto: msg,
-    adjunto: adj,
-    rol: (swModoVista === 'dev') ? 'DESARROLLADOR' : 'COLABORADOR'
-  });
-  // Limpiar UI de inmediato (optimistic) pero la cola conserva el contenido
-  input.value = '';
-  swLimpiarAdjuntoChat();
-  var ep = document.getElementById('sw-emoji-panel');
-  if (ep) ep.style.display = 'none';
-
-  swProcesarColaMensajes();
-}
-
-function swProcesarColaMensajes() {
-  if (swEnviando) return;
-  if (!swColaMensajes.length) return;
-  if (!swTicketActual) { swColaMensajes = []; return; }
-
-  swEnviando = true;
-  var item = swColaMensajes.shift();
-
-  function enviarFinal(urlAdj, tipoAdj) {
-    google.script.run
-      .withSuccessHandler(function(res) {
-        swEnviando = false;
-        if (!res || res.status !== 'success') {
-          // Devolver el mensaje al input si falló, sin perder la cola restante
-          var input = document.getElementById('sw-chat-input');
-          if (input && item.texto) {
-            input.value = item.texto + (input.value ? '\n' + input.value : '');
-          }
-          showToast((res && res.message) || 'No se pudo enviar. Reintenta.');
-          // Seguir con el resto de la cola
-          swProcesarColaMensajes();
-          return;
-        }
-        // Usar el chat completo que devolvió el servidor (incluye mensajes del otro)
-        if (res.chat && Array.isArray(res.chat)) {
-          renderChatMensajesSW(res.chat, false);
-        } else {
-          swSoloRefrescarMensajes();
-        }
-        swProcesarColaMensajes();
-      })
-      .withFailureHandler(function(e) {
-        swEnviando = false;
-        var input = document.getElementById('sw-chat-input');
-        if (input && item.texto) {
-          input.value = item.texto + (input.value ? '\n' + input.value : '');
-        }
-        showToast('Error de red: ' + (e.message || e) + '. Se reintentará el resto.');
-        swProcesarColaMensajes();
-      })
-      .enviarMensajeSoftware(
-        swTicketActual,
-        currentUser.name || '',
-        currentUser.cedula || '',
-        item.rol,
-        item.texto || '',
-        urlAdj || '',
-        tipoAdj || ''
-      );
-  }
-
-  if (item.adjunto) {
-    google.script.run
-      .withSuccessHandler(function(up) {
-        if (!up || up.status !== 'success') {
-          swEnviando = false;
-          showToast((up && up.message) || 'Error subiendo adjunto');
-          // reencolar texto sin adjunto para no perder el mensaje
-          if (item.texto) swColaMensajes.unshift({ texto: item.texto, adjunto: null, rol: item.rol });
-          swProcesarColaMensajes();
-          return;
-        }
-        enviarFinal(up.url, item.adjunto.tipo);
-      })
-      .withFailureHandler(function(e) {
-        swEnviando = false;
-        showToast('Error subiendo: ' + (e.message || e));
-        if (item.texto) swColaMensajes.unshift({ texto: item.texto, adjunto: null, rol: item.rol });
-        swProcesarColaMensajes();
-      })
-      .swSubirAdjuntoSoftware(item.adjunto.base64, item.adjunto.mime, item.adjunto.name);
-  } else {
-    enviarFinal('', '');
-  }
-}
-
-function tomarCasoSW() {
-  if (!swTicketActual) return;
-  showLoading(true);
-  google.script.run
-    .withSuccessHandler(function(res) {
-      showLoading(false);
-      showToast((res && res.message) || 'Listo');
-      refrescarDetalleYChatSW();
-      cargarSolicitudesDevSW();
-    })
-    .withFailureHandler(function(e) { showLoading(false); showToast('Error: ' + (e.message || e)); })
-    .tomarSolicitudSoftware(swTicketActual, currentUser.name || '', currentUser.cedula || '');
-}
-
-function marcarSolucionadoSW() {
-  if (!swTicketActual) return;
-  mostrarModalConfirmacion(
-    '¿Marcar esta solicitud como SOLUCIONADO?\n\nEl chat se cerrará y no se podrá reabrir ni responder de nuevo.',
-    function() {
-      showLoading(true);
-      google.script.run
-        .withSuccessHandler(function(res) {
-          showLoading(false);
-          showToast((res && res.message) || 'Solucionado');
-          refrescarDetalleYChatSW();
-          cargarSolicitudesDevSW();
-        })
-        .withFailureHandler(function(e) { showLoading(false); showToast('Error: ' + (e.message || e)); })
-        .marcarSolucionadoSoftware(swTicketActual, currentUser.name || '', currentUser.cedula || '');
-    },
-    { titulo: 'Cerrar caso', textoSi: 'Sí, solucionado', textoNo: 'Cancelar', silenciarCancel: true }
-  );
-}
-
-/* ---- Notificaciones: badge + sonido ---- */
-function swPlayNotifSound() {
-  try {
-    var ctx = new (window.AudioContext || window.webkitAudioContext)();
-    var o = ctx.createOscillator();
-    var g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.frequency.value = 880;
-    g.gain.value = 0.04;
-    o.start();
-    setTimeout(function(){ o.frequency.value = 1175; }, 90);
-    setTimeout(function(){ o.stop(); ctx.close(); }, 220);
-  } catch (e) {}
-}
-
-function swSetBadge(id, count) {
-  var el = document.getElementById(id);
-  if (!el) return;
-  if (count > 0) {
-    el.style.display = 'inline-flex';
-    el.textContent = count > 9 ? '9+' : String(count);
-  } else {
-    el.style.display = 'none';
-    el.textContent = '0';
-  }
-}
-
-function swPollNotificaciones(silencioso) {
-  if (!currentUser || !currentUser.cedula) return;
-  // Colaborador siempre
-  google.script.run
-    .withSuccessHandler(function(res) {
-      if (!res || res.status !== 'success') return;
-      var count = res.count || 0;
-      swSetBadge('sw-badge-colab', count);
-      if (!silencioso && count > 0) {
-        var key = (res.items || []).map(function(i){ return i.id + '|' + i.fecha; }).join(';');
-        var prev = swNotifKnown['colab'] || '';
-        if (key && key !== prev) {
-          swNotifKnown['colab'] = key;
-          if (prev) { // no sonar en la primera carga
-            swPlayNotifSound();
-            showToast('💬 Nueva respuesta en tus solicitudes de Software');
-          } else {
-            swNotifKnown['colab'] = key;
-          }
-        }
-      } else if (count === 0) {
-        swNotifKnown['colab'] = '';
-      }
-    })
-    .obtenerNotificacionesSoftware(currentUser.cedula, false);
-
-  // Dev solo si tiene permiso o es admin
-  var esDev = (currentUser.role === 'Administrador') ||
-    (String(currentUser.permissions || '').indexOf('mesa_ayuda_dev') >= 0);
-  if (esDev) {
-    google.script.run
-      .withSuccessHandler(function(res) {
-        if (!res || res.status !== 'success') return;
-        var count = res.count || 0;
-        swSetBadge('sw-badge-dev', count);
-        if (!silencioso && count > 0) {
-          var key = (res.items || []).map(function(i){ return i.id + '|' + i.fecha; }).join(';');
-          var prev = swNotifKnown['dev'] || '';
-          if (key && key !== prev) {
-            if (prev) {
-              swPlayNotifSound();
-              showToast('💬 Nueva respuesta de colaborador en mesa Software');
-            }
-            swNotifKnown['dev'] = key;
-          }
-        } else if (count === 0) {
-          swNotifKnown['dev'] = '';
-        }
-      })
-      .obtenerNotificacionesSoftware(currentUser.cedula, true);
-  }
-}
-
-function swStartNotifPolling() {
-  if (swNotifTimer) clearInterval(swNotifTimer);
-  swPollNotificaciones(true);
-  swNotifTimer = setInterval(function(){ swPollNotificaciones(false); }, 30000);
-}
-
 </script>
 <!-- ================= FIN LOGICA ACTIVACION INTER ================= -->
 
