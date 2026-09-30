@@ -7157,6 +7157,9 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <a class="nav-item sub-item" data-target="activacion_inter" href="#" onclick="goToPanel('panel-activacion-inter', this)">
 <i class="bi bi-envelope-check-fill"></i><span>Activación Inter</span>
 </a>
+<a class="nav-item sub-item" data-target="actualizacion_datos" href="#" onclick="goToPanel('panel-actualizacion-datos', this)">
+<i class="bi bi-pencil-square"></i><span>Actualización de datos</span>
+</a>
 </div>
 </div>
 
@@ -7890,6 +7893,84 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 .disp-card-links{display:flex;gap:8px;margin-top:10px;}
 .disp-card-links a{flex:1;text-align:center;padding:7px;border-radius:10px;border:1px solid rgba(255,255,255,.12);color:#22d3ee;font-size:12px;font-weight:600;text-decoration:none;transition:all .2s;}
 .disp-card-links a:hover{border-color:#22d3ee;background:rgba(34,211,238,.08);}
+</style>
+
+<!-- ================= PANEL ACTUALIZACION DE DATOS ================= -->
+<div class="panel" id="panel-actualizacion-datos">
+<div class="page-header">
+<h1>Actualización de datos</h1>
+<p>Registra las actualizaciones de sucursales del día; se acumulan y se envían por correo en un solo Excel.</p>
+</div>
+<div class="card">
+<div class="form-section-title">Nueva solicitud</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+<div class="actupd-campo">
+<label>NOMBRE - ID SUCURSAL <span style="color:#ffc400">*</span></label>
+<input id="actupd-sucursal" type="text" placeholder="Ej: Fajas Barasti - 220832">
+</div>
+<div class="actupd-campo">
+<label>DATO A MODIFICAR <span style="color:#ffc400">*</span></label>
+<input id="actupd-dato" type="text" placeholder="Ej: Dirección, teléfono, horario...">
+</div>
+<div class="actupd-campo">
+<label>DATO ANTERIOR</label>
+<input id="actupd-anterior" type="text" placeholder="El valor actual que tiene la sucursal">
+</div>
+<div class="actupd-campo">
+<label>OBSERVACIONES</label>
+<input id="actupd-obs" type="text" placeholder="Detalle adicional (opcional)">
+</div>
+</div>
+<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+<button type="button" class="btn btn-primary" onclick="guardarActupdUI()" style="background:linear-gradient(135deg,#22c55e,#0e9f6e);color:#fff;border:none;border-radius:12px;padding:12px 20px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;">
+<i class="bi bi-plus-circle-fill"></i> Agregar solicitud</button>
+<button type="button" onclick="limpiarFormActupd()" style="padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;cursor:pointer;">Limpiar</button>
+</div>
+<div id="actupd-info" style="display:none;margin-top:12px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--border-color);font-size:13px;"></div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+<div class="form-section-title">Solicitudes del día (pendientes de envío) <span id="actupd-contador" style="float:right;color:#ffc400;font-weight:800;"></span></div>
+<div style="overflow-x:auto;">
+<table class="table" style="width:100%;font-size:13px;">
+<thead><tr><th>Fecha</th><th>Nombre - ID Sucursal</th><th>Dato anterior</th><th>Dato a modificar</th><th>Observaciones</th></tr></thead>
+<tbody id="actupd-tabla-body"><tr><td colspan="5" style="text-align:center;color:#888;">Cargando...</td></tr></tbody>
+</table>
+</div>
+<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+<button type="button" id="btn-actupd-procesar" onclick="procesarActupdUI()" style="background:linear-gradient(135deg,#ffc400,#e6a800);color:#111;border:none;border-radius:12px;padding:13px 26px;font-weight:800;font-size:14.5px;cursor:pointer;box-shadow:0 6px 20px -6px rgba(255,196,0,.7);display:flex;align-items:center;gap:8px;">
+<i class="bi bi-send-fill"></i> Procesar y Enviar Excel</button>
+<button type="button" onclick="abrirModalCorreosActupd()" style="padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;cursor:pointer;display:flex;align-items:center;gap:6px;">
+<i class="bi bi-envelope-gear"></i> Correos destino</button>
+<span id="actupd-correos-actuales" style="color:#8b98a8;font-size:12px;"></span>
+</div>
+</div>
+</div>
+
+<!-- Modal correos destino -->
+<div id="actupd-modal-correos" style="display:none;position:fixed;inset:0;background:rgba(2,6,12,.85);backdrop-filter:blur(8px);z-index:9996;align-items:center;justify-content:center;">
+<div style="max-width:480px;width:92%;background:linear-gradient(160deg,rgba(17,27,38,.97),rgba(8,14,22,.97));border:1px solid rgba(255,196,0,.28);border-radius:22px;padding:24px;box-shadow:0 0 50px rgba(255,196,0,.10),0 30px 80px rgba(0,0,0,.6);">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+<div style="width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#ffc400,#ff9500);display:flex;align-items:center;justify-content:center;"><i class="bi bi-envelope-gear-fill" style="font-size:20px;color:#0b1119;"></i></div>
+<div style="flex:1;color:#eaf1f8;font-weight:800;font-size:16px;">Correos destino</div>
+<button type="button" onclick="document.getElementById('actupd-modal-correos').style.display='none'" style="width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+</div>
+<p style="color:#8b98a8;font-size:12.5px;margin:0 0 12px;">Separados por coma o punto y coma. Quedan predeterminados para todos los envíos y los puedes cambiar cuando quieras.</p>
+<textarea id="actupd-correos" rows="3" placeholder="correo@empresa.com, otro@empresa.com" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eaf1f8;font-size:13.5px;padding:11px 13px;outline:none;"></textarea>
+<div id="actupd-correos-msg" style="color:#8b98a8;font-size:12px;margin-top:8px;min-height:16px;"></div>
+<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px;">
+<button type="button" onclick="document.getElementById('actupd-modal-correos').style.display='none'" style="padding:10px 16px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;font-weight:600;cursor:pointer;">Cerrar</button>
+<button type="button" onclick="guardarCorreosActupdUI()" style="padding:10px 20px;border-radius:11px;border:none;background:linear-gradient(135deg,#ffc400,#e6a800);color:#111;font-weight:800;cursor:pointer;">Guardar</button>
+</div>
+</div>
+</div>
+
+<style>
+.actupd-campo{display:flex;flex-direction:column;gap:7px;}
+.actupd-campo label{font-size:11.5px;font-weight:700;color:#ffc400;letter-spacing:.5px;text-transform:uppercase;}
+.actupd-campo input{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eaf1f8;font-size:13.5px;padding:11px 13px;outline:none;transition:border-color .2s;}
+.actupd-campo input:focus{border-color:#ffc400;}
+@media(max-width:600px){#panel-actualizacion-datos .card > div[style*="grid"]{grid-template-columns:1fr !important;}}
 </style>
 
 <!-- ================= PANEL COMERCIAL: ACTIVACION INTER ================= -->
@@ -10432,6 +10513,13 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <span class="slider round"></span>
 </div>
 <span>Activación Inter (cargar Excel)</span>
+</label>
+<label class="checkbox-item">
+<div class="switch">
+<input class="perm-check" type="checkbox" value="actualizacion_datos"/>
+<span class="slider round"></span>
+</div>
+<span>Actualización de datos</span>
 </label>
 </div>
 </div>
@@ -13916,6 +14004,11 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       if (panelId === 'panel-activacion-inter') {
         aplicarPermisoCargaActivaciones();
         cargarPreviewActivacionInter();
+      }
+
+      if (panelId === 'panel-actualizacion-datos') {
+        cargarActupdPanel();
+        mostrarCorreosActupd();
       }
 
       if (panelId === 'panel-mesa-ayuda') {
@@ -29422,6 +29515,129 @@ function ejecutarProcesarActivacionInter() {
       showToast('Error: ' + (err && err.message ? err.message : JSON.stringify(err)));
     })
     .procesarActivacionesInter(actInterFilas);
+}
+
+// ---------- ACTUALIZACION DE DATOS ----------
+function guardarActupdUI() {
+  var sucursal = document.getElementById('actupd-sucursal').value.trim();
+  var dato = document.getElementById('actupd-dato').value.trim();
+  if (!sucursal || !dato) return actupdInfo('<span style="color:#dc3545">Nombre/ID sucursal y dato a modificar son obligatorios.</span>', true);
+  actupdInfo('<i class="bi bi-arrow-repeat"></i> Guardando...', true);
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.status === 'success') {
+        actupdInfo('<i class="bi bi-check-circle-fill" style="color:#198754"></i> ' + res.message, true);
+        limpiarFormActupd();
+        cargarActupdPanel();
+      } else actupdInfo('<span style="color:#dc3545">' + ((res && res.message) || 'error') + '</span>', true);
+    })
+    .withFailureHandler(function(e) { actupdInfo('<span style="color:#dc3545">Error: ' + (e.message || '') + '</span>', true); })
+    .guardarActualizacionDato({
+      sucursal: sucursal,
+      datoAnterior: document.getElementById('actupd-anterior').value.trim(),
+      datoModificar: dato,
+      observaciones: document.getElementById('actupd-obs').value.trim()
+    });
+}
+
+function limpiarFormActupd() {
+  ['actupd-sucursal','actupd-dato','actupd-anterior','actupd-obs'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+}
+
+function actupdInfo(html, mostrar) {
+  var el = document.getElementById('actupd-info');
+  el.innerHTML = html;
+  el.style.display = mostrar ? 'block' : 'none';
+}
+
+function cargarActupdPanel() {
+  google.script.run
+    .withSuccessHandler(function(res) {
+      var body = document.getElementById('actupd-tabla-body');
+      if (!body) return;
+      if (res && res.status !== 'success') {
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#dc3545">' + ((res && res.message) || 'error') + '</td></tr>';
+        return;
+      }
+      var data = (res && Array.isArray(res.data)) ? res.data : [];
+      document.getElementById('actupd-contador').innerText = data.length ? data.length + ' pendiente(s)' : '';
+      body.innerHTML = data.map(function(r) {
+        return '<tr>'
+          + '<td>' + r.fecha + '</td><td><strong>' + r.sucursal + '</strong></td>'
+          + '<td>' + (r.datoAnterior || '—') + '</td><td style="color:#ffc400;font-weight:600;">' + r.datoModificar + '</td>'
+          + '<td>' + (r.observaciones || '—') + '</td></tr>';
+      }).join('') || '<tr><td colspan="5" style="text-align:center;color:#888;">No hay solicitudes pendientes. Todo enviado.</td></tr>';
+    })
+    .withFailureHandler(function(e) {
+      var body = document.getElementById('actupd-tabla-body');
+      if (body) body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#dc3545">Error: ' + (e.message || '') + '</td></tr>';
+    })
+    .getActualizacionDatosPanel();
+}
+
+function procesarActupdUI() {
+  if (!confirm('Se enviará el Excel con las solicitudes pendientes a los correos configurados. ¿Continuar?')) return;
+  var btn = document.getElementById('btn-actupd-procesar');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-send-fill"></i> Procesar y Enviar Excel';
+      if (res && res.status === 'success') {
+        showToast('\u2705 ' + res.message);
+        cargarActupdPanel();
+      } else showToast('Error: ' + ((res && res.message) || 'desconocido'));
+    })
+    .withFailureHandler(function(e) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-send-fill"></i> Procesar y Enviar Excel';
+      showToast('Error de conexión: ' + (e.message || ''));
+    })
+    .procesarActualizacionDatos({
+      nombre: currentUser ? currentUser.name : '',
+      cedula: currentUser ? currentUser.cedula : '',
+      fotoUrl: currentUser ? (currentUser.image || '') : ''
+    });
+}
+
+function abrirModalCorreosActupd() {
+  google.script.run
+    .withSuccessHandler(function(res) {
+      document.getElementById('actupd-correos').value = (res && res.correos) || '';
+      document.getElementById('actupd-correos-msg').innerText = '';
+      document.getElementById('actupd-modal-correos').style.display = 'flex';
+    })
+    .withFailureHandler(function() {})
+    .getCorreosActualizacion();
+}
+
+function guardarCorreosActupdUI() {
+  var txt = document.getElementById('actupd-correos').value.trim();
+  var msg = document.getElementById('actupd-correos-msg');
+  msg.innerText = 'Guardando...';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.status === 'success') {
+        msg.innerHTML = '<span style="color:#198754">' + res.message + '</span>';
+        mostrarCorreosActupd();
+        setTimeout(function() { document.getElementById('actupd-modal-correos').style.display = 'none'; }, 1200);
+      } else msg.innerHTML = '<span style="color:#dc3545">' + ((res && res.message) || 'error') + '</span>';
+    })
+    .withFailureHandler(function(e) { msg.innerHTML = '<span style="color:#dc3545">' + (e.message || '') + '</span>'; })
+    .guardarCorreosActualizacion(txt);
+}
+
+function mostrarCorreosActupd() {
+  google.script.run
+    .withSuccessHandler(function(res) {
+      var el = document.getElementById('actupd-correos-actuales');
+      if (el && res && res.correos) el.innerText = 'Envía a: ' + res.correos;
+    })
+    .withFailureHandler(function() {})
+    .getCorreosActualizacion();
 }
 
 function buscarActivacionesInterUI() {
