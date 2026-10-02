@@ -13597,11 +13597,77 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     // ============================================================
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbxPArisKgHxujwNnvaK51P-4j-FV9odeLiSTrJNHInK1xuFJPETp8fa24uzYpeYwfI/exec';
 
+    /**
+     * llamarBackendIntranet — Canal único de comunicación vía HTTP POST
+     * @param {string} nombreFuncion  - Nombre de la función en code.gs
+     * @param {Array}  argumentosArray - Array de argumentos
+     * @returns {Promise<object>}     - Respuesta ya parseada del backend
+     */
+    async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
+      if (argumentosArray === undefined) argumentosArray = [];
+
+      // 1. Recuperar token de sesión de forma automática
+      var token = null;
+      try {
+        var savedTok = localStorage.getItem('heka_token');
+        var savedExp = Number(localStorage.getItem('heka_session_expires') || 0);
+        if (savedTok && savedExp && Date.now() < savedExp) {
+          token = savedTok;
+        }
+      } catch (e) {}
+
+      // 2. Payload exacto que espera handleApiCall
+      var body = {
+        fn: nombreFuncion,
+        args: Array.isArray(argumentosArray) ? argumentosArray : [argumentosArray]
+      };
+      if (token) body.token = token;
+
+      // 3. POST limpio
+      var response = await fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(body)
+      });
+
+      // 4. Errores HTTP
+      if (!response.ok) {
+        if (response.status === 405) {
+          throw new Error('El Web App no acepta POST (405). Crea un New deployment en Apps Script con acceso "Anyone".');
+        }
+        throw new Error('Error HTTP ' + response.status + ' al comunicarse con el backend');
+      }
+
+      // 5. Parsear
+      var text = await response.text();
+      var data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error('Respuesta no válida del servidor (posible sesión de Google expirada). Recarga la página.');
+      }
+
+      // 6. Sesión inválida
+      if (data && data.status === 'error' && data.message &&
+          (String(data.message).toLowerCase().indexOf('sesión') >= 0 ||
+           String(data.message).toLowerCase().indexOf('sesion') >= 0)) {
+        try {
+          localStorage.removeItem('heka_token');
+          localStorage.removeItem('heka_session');
+          localStorage.removeItem('heka_session_expires');
+        } catch (ex) {}
+      }
+
+      return data;
+    }
+
     // ============================================================
     // 🔌 SHIM: google.script.run → fetch
     //
-    // Usa GET ?p= (doGet) como vía principal: evita CORS/405 del POST.
-    // Si el payload es muy grande (adjuntos base64), intenta POST.
+    // MIGRADO A HTTP POST (doPost): el JSON viaja en el Body.
+    // Sin límite de URL → soporta Base64 y payloads pesados.
+    // GET (?p=) se mantiene solo como fallback de emergencia.
     // ============================================================
     var google = {
       script: {
@@ -13702,26 +13768,14 @@ input[type="date"]::-webkit-calendar-picker-indicator,
                 var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
                 var timer = ctrl ? setTimeout(function() { ctrl.abort(); }, GAS_TIMEOUT_MS) : null;
 
-                // GET ?p= evita el 405/CORS del POST en deployments que no exponen doPost
-                var encoded = encodeURIComponent(payload);
-                var usarGet = encoded.length < 1800; // margen seguro para límite de URL
-
-                var req;
-                if (usarGet) {
-                  var sep = GAS_URL.indexOf('?') >= 0 ? '&' : '?';
-                  req = fetch(GAS_URL + sep + 'p=' + encoded, {
-                    method: 'GET',
-                    signal: ctrl ? ctrl.signal : undefined
-                  });
-                } else {
-                  // Payloads grandes (ej. base64): intentar POST
-                  req = fetch(GAS_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: payload,
-                    signal: ctrl ? ctrl.signal : undefined
-                  });
-                }
+                // POST principal (doPost): JSON en Body, sin límite de URL
+                var req = fetch(GAS_URL, {
+                  method: 'POST',
+                  mode: 'cors',
+                  headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                  body: payload,
+                  signal: ctrl ? ctrl.signal : undefined
+                });
 
                 req
                 .then(function(r) {
@@ -13763,9 +13817,9 @@ input[type="date"]::-webkit-calendar-picker-indicator,
                   if (err && err.name === 'AbortError') {
                     errMsg = 'El servidor tardó demasiado en responder (más de ' + Math.round(GAS_TIMEOUT_MS/1000) + 's). Verifica si la operación se completó antes de reintentar.';
                   }
-                  // CORS / Failed to fetch suele ser el 405 del POST
-                  if (/Failed to fetch|NetworkError|CORS/i.test(errMsg) && !usarGet) {
-                    errMsg = 'Error de red/CORS al subir archivo. En Apps Script crea New version del deployment (Access: Anyone) para habilitar POST.';
+                  // CORS / Failed to fetch suele ser el 405 del POST (deployment sin doPost)
+                  if (/Failed to fetch|NetworkError|CORS/i.test(errMsg)) {
+                    errMsg = 'Error de red/CORS. En Apps Script: Deploy → New version (Access: Anyone) para habilitar doPost.';
                   }
                   reportarError(errMsg);
                 });
