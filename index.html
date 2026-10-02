@@ -970,11 +970,13 @@
     .recuento-result.not-found { background-color: #f8d7da; color: #842029; display: block; }
 
 
-    /* --- ESTILO MODAL PROGRESO PROFESIONAL --- */
+    /* --- MODAL PROGRESO RECUENTOS (estilo Heka) --- */
     .progress-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.95); /* Fondo blanco casi opaco */
-      z-index: 100000; /* Por encima de todo */
+      background: rgba(5, 7, 11, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100000;
       display: none;
       flex-direction: column;
       align-items: center;
@@ -990,59 +992,63 @@
 
     .progress-content {
       text-align: center;
-      width: 90%;
-      max-width: 400px;
+      width: 92%;
+      max-width: 420px;
+      background: #0d141d;
+      border: 1px solid rgba(253,184,19,0.28);
+      border-radius: 20px;
+      padding: 28px 24px 22px;
+      box-shadow: 0 0 60px rgba(253,184,19,0.08), 0 24px 64px rgba(0,0,0,0.55);
     }
 
-    /* Spinner existente pero más grande */
     .progress-spinner {
       width: 60px; height: 60px;
-      border: 5px solid #eee; 
-      border-top: 5px solid var(--primary-yellow); 
-      border-radius: 50%; 
-      animation: spin 1s linear infinite;
+      border: 5px solid rgba(255,255,255,0.08);
+      border-top: 5px solid #FDB813;
+      border-radius: 50%;
+      animation: hekaLoadSpin 1s linear infinite;
       margin: 0 auto 25px auto;
     }
 
     .progress-title {
-      font-size: 20px;
+      font-size: 14px;
       font-weight: 700;
-      color: var(--primary-dark);
-      margin-bottom: 10px;
+      color: #FDB813;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
     }
 
     .progress-status {
-      font-size: 14px;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-      height: 20px; /* Evita saltos si el texto cambia */
+      font-size: 13.5px;
+      color: #8b98a8;
+      margin-bottom: 18px;
+      min-height: 20px;
     }
 
-    /* Contenedor de la barra */
     .progress-track {
-      background-color: #e9ecef;
+      background-color: rgba(255,255,255,0.06);
       border-radius: 10px;
-      height: 12px;
+      height: 8px;
       width: 100%;
       overflow: hidden;
       position: relative;
     }
 
-    /* La barra que se llena */
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, var(--primary-yellow) 0%, #FFD700 100%);
+      background: linear-gradient(90deg, #FDB813 0%, #ffc400 100%);
       border-radius: 10px;
       transition: width 0.2s linear;
-      box-shadow: 0 2px 5px rgba(253, 184, 19, 0.4);
+      box-shadow: 0 0 12px rgba(253, 184, 19, 0.35);
     }
 
     .progress-percentage {
       margin-top: 10px;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
-      color: var(--primary-dark);
+      color: #eaf1f8;
     }
 
 
@@ -6934,21 +6940,19 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 
 <style>
 /* ============================================================
-   TEMA OSCURO para el modal de progreso de Recuentos
-   (antes era blanco casi opaco: rgba(255,255,255,.95))
+   TEMA OSCURO Heka — modal progreso Recuentos
    ============================================================ */
 .progress-overlay {
-  background: rgba(4, 8, 13, 0.88) !important;
-  backdrop-filter: blur(4px);
+  background: rgba(5, 7, 11, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
 }
-.progress-content .progress-spinner {
-  border: 5px solid rgba(255, 196, 0, .15) !important;
-  border-top: 5px solid #ffc400 !important;
-}
-.progress-content .progress-title { color: #eaf1f8 !important; }
-.progress-content .progress-status { color: #cbd5e1 !important; }
-.progress-content .progress-percentage { color: #ffc400 !important; }
-.progress-content .progress-track { background: rgba(255,255,255,.1) !important; }
+.progress-content .progress-title,
+.progress-content .heka-load-title { color: #FDB813 !important; letter-spacing: 3px !important; font-size: 14px !important; }
+.progress-content .progress-status { color: #8b98a8 !important; }
+.progress-content .progress-percentage { color: #eaf1f8 !important; }
+.progress-content .progress-track { background: rgba(255,255,255,.06) !important; }
+.progress-content .progress-fill { background: linear-gradient(90deg, #FDB813, #ffc400) !important; }
 </style>
 </head>
 <body>
@@ -10895,8 +10899,8 @@ body > .novedad-dropdown-menu .novedad-option:hover {
       <div class="heka-load-ring"></div>
       <img class="heka-load-logo" src="https://i.imgur.com/3bxAAa2.png" alt="Heka"/>
     </div>
-    <p class="heka-load-title" id="hekaLoadTitle">VALIDANDO</p>
-    <p class="heka-load-sub" id="hekaLoadSub">Sesión y dispositivo</p>
+    <p class="heka-load-title" id="hekaLoadTitle">CARGANDO</p>
+    <p class="heka-load-sub" id="hekaLoadSub">Espere un momento</p>
   </div>
 </div>
 <div class="toast" id="toast">
@@ -11042,20 +11046,22 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 </div>
-<!-- MODAL DE PROGRESO -->
+<!-- MODAL DE PROGRESO RECUENTOS (estilo Heka global) -->
 <div class="progress-overlay" id="modal-progress">
-<div class="progress-content">
-<div class="progress-spinner"></div>
-<div class="progress-title">Procesando Recuento</div>
+<div class="progress-content heka-progress-card">
+<div class="heka-load-ring-box" style="margin-bottom:18px;">
+<div class="heka-load-ring" id="recuentoProgressRing"></div>
+<img class="heka-load-logo" src="https://i.imgur.com/3bxAAa2.png" alt="Heka" style="width:48px;height:48px;"/>
+</div>
+<div class="progress-title heka-load-title" id="progressTitle">PROCESANDO RECUENTO</div>
 <div class="progress-status" id="progressStatus">Preparando archivos...</div>
 <div class="progress-track">
 <div class="progress-fill" id="progressBar"></div>
 </div>
 <div class="progress-percentage" id="progressText">0%</div>
-<!-- BOTÓN CANCELAR NUEVO -->
-<button class="btn btn-secondary" onclick="cancelProgress()" style="margin-top: 25px; width: 100%; border: none; background: transparent; color: var(--text-muted);">
-        Cancelar Proceso
-      </button>
+<button class="btn btn-secondary" onclick="cancelProgress()" style="margin-top:22px;width:100%;border:1px solid rgba(255,255,255,.12);background:transparent;color:#8b98a8;border-radius:10px;padding:10px;">
+Cancelar proceso
+</button>
 </div>
 </div>
 <!-- MODAL IFRAME FLOTANTE -->
@@ -13221,8 +13227,8 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       if (show) {
         var t = document.getElementById('hekaLoadTitle');
         var s = document.getElementById('hekaLoadSub');
-        if (t) t.textContent = (titulo && String(titulo).trim()) ? String(titulo).toUpperCase() : 'VALIDANDO';
-        if (s) s.textContent = (subtitulo && String(subtitulo).trim()) ? String(subtitulo) : 'Sesión y dispositivo';
+        if (t) t.textContent = (titulo && String(titulo).trim()) ? String(titulo).toUpperCase() : 'CARGANDO';
+        if (s) s.textContent = (subtitulo && String(subtitulo).trim()) ? String(subtitulo) : 'Espere un momento';
         el.style.display = 'flex';
       } else {
         el.style.display = 'none';
@@ -13345,7 +13351,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       editingCedula = currentUser.cedula; 
 
       if (!currentUser.cedula) return;
-      showLoading(true);
+      showLoading(true, 'CARGANDO', 'Tus datos personales');
       document.getElementById('myDataForm').reset();
       
       google.script.run
@@ -13512,7 +13518,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
         "col_AD": document.getElementById('col_AD').value  // Fecha Terminación (Estado)
       };
 
-      showLoading(true);
+      showLoading(true, 'GUARDANDO', 'Actualizando tus datos');
       google.script.run
         .withSuccessHandler(function(res) {
           showLoading(false);
@@ -13581,7 +13587,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     function generarCertificadoBackend() {
       if (!currentUser.cedula) return showToast("Error de usuario");
       
-      showLoading(true);
+      showLoading(true, 'GENERANDO', 'Certificado laboral');
       google.script.run
         .withSuccessHandler(function(data) {
           showLoading(false);
@@ -13624,7 +13630,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     function enviarCertificadoCorreo() {
       const email = document.getElementById('certEmail').value.trim();
       if (!email) return showToast("Ingresa un correo válido.");
-      showLoading(true);
+      showLoading(true, 'ENVIANDO', 'Certificado por correo');
 
       const finalAction = function(idToSend) {
         google.script.run
@@ -13667,7 +13673,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     function searchUser() {
       const cedula = document.getElementById('searchCedula').value.trim();
       if(!cedula) return showToast("Ingresa una cédula");
-      showLoading(true);
+      showLoading(true, 'BUSCANDO', 'Colaborador');
       google.script.run
         .withSuccessHandler(function(data) {
           showLoading(false);
@@ -13703,7 +13709,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       if (status === 'Activo') fechaTermino = "";
       const selectedPerms = [];
       document.querySelectorAll('.perm-check:checked').forEach(cb => selectedPerms.push(cb.value));
-      showLoading(true);
+      showLoading(true, 'GUARDANDO', 'Configuración de usuario');
       google.script.run
         .withSuccessHandler(function(data) {
           showLoading(false);
@@ -13721,7 +13727,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       if(e) e.preventDefault();
       document.getElementById('userDropdown').classList.remove('show');
       document.getElementById('mobileUserDropdown').classList.remove('show');
-      showLoading(true);
+      showLoading(true, 'CERRANDO SESIÓN', 'Espere un momento');
       setTimeout(() => {
         document.getElementById('loginForm').reset();
         goToStep('step-login');
@@ -13744,7 +13750,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       e.preventDefault();
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
-      showLoading(true);
+      showLoading(true, 'INICIANDO SESIÓN', 'Verificando credenciales');
       google.script.run
         .withSuccessHandler(function(data) {
           showLoading(false);
@@ -14056,7 +14062,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     function handleRequestCode(e) {
       e.preventDefault();
       const user = document.getElementById('recoverUser').value.trim();
-      showLoading(true);
+      showLoading(true, 'ENVIANDO CÓDIGO', 'Revisa tu correo');
       google.script.run
         .withSuccessHandler(function(data) {
           showLoading(false);
@@ -14071,7 +14077,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       const code = document.getElementById('verifyCode').value.trim();
       const newPass = document.getElementById('newPassword').value.trim();
       if(!tempRecoveryUser) return;
-      showLoading(true);
+      showLoading(true, 'ACTUALIZANDO', 'Cambiando contraseña');
       google.script.run
         .withSuccessHandler(function(data) {
           showLoading(false);
@@ -14273,7 +14279,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
           }
 
           // 2. Si el tamaño es válido, procedemos a leer
-          showLoading(true);
+          showLoading(true, 'ENVIANDO', 'Gestión Inter');
           
           var reader = new FileReader();
           reader.fileName = file.name;
@@ -14303,7 +14309,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
         }
       } else {
         // Si no hay archivos, enviamos directamente
-        showLoading(true);
+        showLoading(true, 'ENVIANDO', 'Gestión Inter');
         sendToBackend({
           asesor: currentUser.name,
           guia: guia,
@@ -14422,7 +14428,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       var fileDataArray = [];
 
       if (files.length > 0) {
-        showLoading(true);
+        showLoading(true, 'ENVIANDO', 'Gestión Servientrega');
         var processedCount = 0;
 
         for (var i = 0; i < files.length; i++) {
@@ -14452,7 +14458,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
           reader.readAsDataURL(files[i]);
         }
       } else {
-        showLoading(true);
+        showLoading(true, 'ENVIANDO', 'Gestión Servientrega');
         sendToBackend({
           asesor: currentUser.name,
           guia: guia,
@@ -14492,7 +14498,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
         return;
       }
 
-      showLoading(true);
+      showLoading(true, 'BUSCANDO', 'Guía Inter');
       tbody.innerHTML = '';
       noResults.style.display = 'none';
 
@@ -14599,7 +14605,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       if (files.length === 0) return showToast("Por favor selecciona un archivo.");
 
       var file = files[0];
-      showLoading(true);
+      showLoading(true, 'SUBIENDO', 'Soporte adicional');
 
       var reader = new FileReader();
       reader.fileName = file.name;
@@ -14686,7 +14692,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       return;
     }
   
-    showLoading(true);
+    showLoading(true, 'BUSCANDO', 'Guía Servientrega');
     tbody.innerHTML = '';
     noResults.style.display = 'none';
   
@@ -14796,7 +14802,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
         }
       }
 
-      showLoading(true);
+      showLoading(true, 'REGISTRANDO', 'Anulación de guía');
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -14846,7 +14852,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
         return;
       }
 
-      showLoading(true);
+      showLoading(true, 'BUSCANDO', 'Guía a anular');
       tbody.innerHTML = '';
       noResults.style.display = 'none';
 
@@ -15130,7 +15136,7 @@ function openModalRecarga() {
       var fileDataArray = [];
 
       if (files.length > 0) {
-        showLoading(true); // Mostrar spinner mientras se leen archivos
+        showLoading(true, 'PROCESANDO', 'Recarga'); // Mostrar spinner mientras se leen archivos
         var processedCount = 0;
 
         for (var i = 0; i < files.length; i++) {
@@ -15170,7 +15176,7 @@ function openModalRecarga() {
     function sendRecargaToBackend(data, files) {
       tempRecargaData = data;
       tempRecargaFiles = files;
-      showLoading(true);
+      showLoading(true, 'GUARDANDO', 'Recarga');
       
       google.script.run
         .withSuccessHandler(function(res) {
@@ -15258,7 +15264,7 @@ function openModalRecarga() {
       cerrarModalDuplicado();
       // Activamos el flag force y reintentamos guardar
       tempRecargaData.force = true;
-      showLoading(true);
+      showLoading(true, 'GUARDANDO', 'Recarga forzada');
       
       google.script.run
         .withSuccessHandler(function(res) {
@@ -15291,7 +15297,7 @@ function openModalRecarga() {
         return showToast("Por favor ingresa el ID del Seller.");
       }
 
-      showLoading(true);
+      showLoading(true, 'REGISTRANDO', 'Referido');
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -15465,7 +15471,7 @@ function openModalRecarga() {
       if (!guia) return showToast("Ingresa una guía para buscar.");
       if (!selectedRecuentoType) return showToast("Selecciona una empresa primero.");
 
-      showLoading(true);
+      showLoading(true, 'BUSCANDO', 'Guía en recuento');
       const asesorActual = currentUser.name; // Tomar el nombre del usuario
 
       google.script.run
@@ -15492,68 +15498,60 @@ function openModalRecarga() {
       const bar = document.getElementById('progressBar');
       const text = document.getElementById('progressText');
       const status = document.getElementById('progressStatus');
+      const title = document.getElementById('progressTitle');
+      const ring = document.getElementById('recuentoProgressRing');
 
-      // 1. IMPORTANTE: Resetear la bandera de cancelación
       isCancelled = false;
 
-      // 2. Resetear valores visuales INMEDIATAMENTE
       modal.classList.add('active');
       bar.style.width = '0%';
       text.innerText = '0%';
+      if (title) title.innerText = 'PROCESANDO RECUENTO';
       status.innerText = 'Leyendo archivo maestro...';
-      status.style.color = 'var(--text-muted)';
+      status.style.color = '#8b98a8';
       status.style.fontWeight = 'normal';
+      if (ring) ring.style.animation = 'hekaLoadSpin 1.15s linear infinite';
 
       let width = 0;
-      
-      // Limpiar intervalo anterior si existe
       if (progressInterval) clearInterval(progressInterval);
 
-      // 3. Iniciar la animación del intervalo
       progressInterval = setInterval(() => {
-        
-        // La velocidad disminuye a medida que avanza para parecer más realista
-        let increment = Math.random() * 2; // Sube entre 0 y 2%
-        
+        let increment = Math.random() * 2;
         width += increment;
         
         if (width >= 90) {
-          width = 90; // Nos detenemos en el 90% esperando respuesta del servidor
+          width = 90;
           clearInterval(progressInterval);
           status.innerText = 'Finalizando actualización...';
         } else if (width > 50) {
-          status.innerText = 'Preparando Recuentos...';
+          status.innerText = 'Preparando recuentos...';
         } else if (width > 20) {
           status.innerText = 'Leyendo guías...';
         }
 
         bar.style.width = width + '%';
         text.innerText = Math.floor(width) + '%';
-        
-      }, 200); // Actualiza cada 200ms
+      }, 200);
     }
 
-    // Función cuando el servidor termina
     function finishSuccess(success) {
       clearInterval(progressInterval);
       const bar = document.getElementById('progressBar');
       const text = document.getElementById('progressText');
       const status = document.getElementById('progressStatus');
+      const ring = document.getElementById('recuentoProgressRing');
+      if (ring) ring.style.animation = 'none';
       
       if (success) {
-        // Saltar al 100% rápidamente
         bar.style.width = '100%';
         text.innerText = '100%';
-        status.innerText = '¡Completado con éxito!';
-        status.style.color = 'var(--success-color)';
+        status.innerText = 'Completado con éxito';
+        status.style.color = '#FDB813';
         status.style.fontWeight = '600';
-        
-        // Esperar un momento para que el usuario vea el 100% y luego cerrar
         setTimeout(() => {
           document.getElementById('modal-progress').classList.remove('active');
         }, 800);
       } else {
-        // Si falla, ocultar barra
         document.getElementById('modal-progress').classList.remove('active');
       }
     }
@@ -15644,7 +15642,7 @@ function openModalRecarga() {
         permissions: currentUser.permissions // <--- ESTA LÍNEA ES LA QUE FALTABA
       };
 
-      showLoading(true);
+      showLoading(true, 'REGISTRANDO', 'Movimiento');
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -15772,7 +15770,7 @@ function openModalRecarga() {
        2. CARGA DE DATOS (Desde Servidor)
        ------------------------------------------------------------------------- */
     function cargarDatosSuite() {
-      showLoading(true); 
+      showLoading(true, 'CARGANDO', 'Suite logística');
       document.getElementById('tablaSuiteBody').innerHTML = '';
 
       // --- NUEVO: Limpiar búsqueda de texto al actualizar ---
@@ -16005,7 +16003,7 @@ function openModalRecarga() {
         estado: estado
       };
 
-      showLoading(true);
+      showLoading(true, 'GUARDANDO', 'Fila de suite');
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -16404,7 +16402,7 @@ function openModalRecarga() {
     });
 
     function ejecutarGuardadoBackend(updatesArray) {
-      showLoading(true);
+      showLoading(true, 'GUARDANDO', 'Cambios de recarga');
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -16443,7 +16441,7 @@ function openModalRecarga() {
         return showToast("Por favor selecciona al menos una fecha.");
       }
 
-      showLoading(true);
+      showLoading(true, 'GENERANDO', 'Excel de recargas');
 
       google.script.run
         .withSuccessHandler(function(csvContent) {
@@ -16640,7 +16638,7 @@ function openModalRecarga() {
 
     // Función para ver detalle
     function verDetalleColaborador(cedula) {
-      showLoading(true);
+      showLoading(true, 'CARGANDO', 'Detalle del colaborador');
 
       google.script.run
         .withSuccessHandler(function(data) {
@@ -16914,7 +16912,7 @@ function openModalRecarga() {
       // Cerrar el modal actual si estamos dentro de uno (opcional, para limpieza visual)
       // Pero el usuario pidió que el botón esté adentro, así que solo lanzamos el loading.
       
-      showLoading(true);
+      showLoading(true, 'AUDITANDO', 'Sellers duplicados');
       
       // Limpiamos el modal de resultados previos
       const container = document.getElementById('lista-auditoria');
@@ -17028,7 +17026,7 @@ function openModalRecarga() {
       if (!targetBorrado.fuente) return;
 
       // Mostramos el loading grande
-      showLoading(true);
+      showLoading(true, 'ELIMINANDO', 'Registro');
       
       google.script.run
         .withSuccessHandler(function(res) {
@@ -17162,7 +17160,7 @@ function openModalRecarga() {
         return showToast("La Cédula y el Nombre son obligatorios.");
       }
 
-      showLoading(true);
+      showLoading(true, 'GUARDANDO', 'Colaborador');
 
       var fileInput = document.getElementById('col_photo_file');
       var fileDataToSend = null;
@@ -17282,7 +17280,7 @@ function openModalRecarga() {
     function ejecutarEliminarYAsignar() {
       cerrarModalEliminarYAsignar();
       if (!tempRegistroData) return showToast("Error: No hay datos para procesar.");
-      showLoading(true);
+      showLoading(true, 'PROCESANDO', 'Asignación de seller');
       
       // Lógica CONDICIONAL SEGÚN LA FUENTE
       if (targetMoveSource === "Asignaciones") {
@@ -17370,7 +17368,7 @@ function openModalRecarga() {
     function enviar(data) {
       const resultadoDiv = document.getElementById("resultadoRo");
       resultadoDiv.innerHTML = "⏳ Procesando guías...";
-      showLoading(true); 
+      showLoading(true, 'ENVIANDO', 'Registro');
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -17512,7 +17510,7 @@ function openModalRecarga() {
       const seller = document.getElementById('upd_search_seller').value.trim();
       if (!seller) return showToast("Ingresa un Seller.");
 
-      showLoading(true);
+      showLoading(true, 'BUSCANDO', 'Seller');
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -17582,7 +17580,7 @@ function openModalRecarga() {
       const source = formContainer ? formContainer.getAttribute('data-source') : null;
 
       // 3. Mostrar Loading y llamar al Backend
-      showLoading(true);
+      showLoading(true, 'ACTUALIZANDO', 'Asesor del seller');
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -18443,7 +18441,7 @@ function openModalRecarga() {
       document.getElementById('contenedorP2').innerHTML = '<div class="text-center p-4">Cargando P2...</div>';
       document.getElementById('inputBusquedaBVP').value = '';
       
-      showLoading(true);
+      showLoading(true, 'BUSCANDO', 'Pagos BVP');
 
       google.script.run
         .withSuccessHandler(function(dataP1) {
@@ -18486,7 +18484,7 @@ function openModalRecarga() {
       const fi = document.getElementById('bvp_fecha_inicio').value;
       const ff = document.getElementById('bvp_fecha_fin').value;
       if (!fi || !ff) return showToast("Selecciona fechas para descargar.");
-      showLoading(true);
+      showLoading(true, 'GENERANDO', 'Excel BVP');
       google.script.run
         .withSuccessHandler(function(url) {
           showLoading(false);
@@ -18736,7 +18734,7 @@ function openModalRecarga() {
     function procesarArchivoCSV(input) {
         const file = input.files[0];
         if (!file) return;
-        showLoading(true);
+        showLoading(true, 'PROCESANDO', 'Archivo CSV');
         if (Object.keys(homologacionesCache).length > 0) {
             leerArchivoCSV(file, homologacionesCache);
         } else {
@@ -19045,7 +19043,7 @@ function openModalRecarga() {
             "Sí, Guardar",
             "No, Solo Ver",
             function() {
-                showLoading(true);
+                showLoading(true, 'CARGANDO', 'Tabla CSV');
                 google.script.run
                   .withSuccessHandler(function(res) {
                     showLoading(false);
@@ -19293,7 +19291,7 @@ function openModalRecarga() {
         });
 
         if (datosCombinados.length === 0) return showToast("No hay datos para descargar.");
-        showLoading(true);
+        showLoading(true, 'GENERANDO', 'Archivo Excel');
         
         google.script.run
           .withSuccessHandler(function(response) {
@@ -19746,7 +19744,7 @@ function openModalRecarga() {
     // EJECUTOR INTER (Maneja Duplicados del Backend)
     // ==========================================
     function ejecutarCreacionInter(datos) {
-        showLoading(true);
+        showLoading(true, 'CREANDO', 'Indemnización Inter');
         google.script.run
             .withSuccessHandler(function(res) {
                 showLoading(false);
@@ -19783,7 +19781,7 @@ function openModalRecarga() {
     // EJECUTOR SERVI
     // ==========================================
     function ejecutarCreacionServi(datos) {
-        showLoading(true);
+        showLoading(true, 'CREANDO', 'Indemnización Servientrega');
         google.script.run
             .withSuccessHandler(function(res) {
                 showLoading(false);
@@ -19815,7 +19813,7 @@ function openModalRecarga() {
     // EJECUTOR COORDINADORA
     // ==========================================
     function ejecutarCreacionCoord(datos) {
-        showLoading(true);
+        showLoading(true, 'CREANDO', 'Indemnización Coordinadora');
         google.script.run
             .withSuccessHandler(function(res) {
                 showLoading(false);
@@ -19919,7 +19917,7 @@ function openModalRecarga() {
         };
 
         if (guiaHidden && guiaHidden !== "") {
-            showLoading(true);
+            showLoading(true, 'GUARDANDO', 'Indemnización Inter');
             google.script.run
                 .withSuccessHandler(function(res) {
                     showLoading(false);
@@ -20007,7 +20005,7 @@ function openModalRecarga() {
         };
 
         const existeEnCache = datosIndemnizacionesCache.find(r => r.guia == guia);
-        showLoading(true);
+        showLoading(true, 'GUARDANDO', 'Indemnización Servientrega');
 
         if (existeEnCache) {
             google.script.run
@@ -20090,7 +20088,7 @@ function openModalRecarga() {
         };
 
         if (guiaHidden && guiaHidden !== "") {
-            showLoading(true);
+            showLoading(true, 'GUARDANDO', 'Indemnización Coordinadora');
             google.script.run
                 .withSuccessHandler(function(res) {
                     showLoading(false);
@@ -20978,7 +20976,7 @@ function openModalRecarga() {
         };
 
         if (guiaHidden && guiaHidden !== "") {
-            showLoading(true);
+            showLoading(true, 'GUARDANDO', 'Indemnización TCC');
             google.script.run
                 .withSuccessHandler(function(res) {
                     showLoading(false);
@@ -21006,7 +21004,7 @@ function openModalRecarga() {
     }
 
     function ejecutarCreacionTCC(datos) {
-        showLoading(true);
+        showLoading(true, 'CREANDO', 'Indemnización TCC');
         google.script.run
             .withSuccessHandler(function(res) {
                 showLoading(false);
@@ -21777,7 +21775,7 @@ function openModalRecarga() {
         const conValor = pares.filter(function(p) { return p.valor !== null; }).length;
 
         if (conValor > 0) {
-            showLoading(true);
+            showLoading(true, 'PROCESANDO', 'CUN masivo');
             // Enviar con TAB para que el backend no confunda la coma de miles
             const textoParaValidar = pares.map(function(p) { return p.valor ? p.guia + String.fromCharCode(9) + p.valor : p.guia; }).join(String.fromCharCode(10));
             google.script.run
@@ -21864,7 +21862,7 @@ function openModalRecarga() {
     function procesarCunMasivoBloques(tipo, guias, numero, estado, causal, fechaNota, extras) {
         const btn = document.getElementById('btn-ejecutar-cunmasivo');
         if (btn) { btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...'; }
-        showLoading(true);
+        showLoading(true, 'PROCESANDO', 'Bloques CUN');
 
         // Con valores pegados el backend consulta la API por guia: bloques mas
         // pequenos para no superar el timeout de 45s. Sin valores, de a 50.
@@ -22118,7 +22116,7 @@ function openModalRecarga() {
             if(!datos.guia) return showToast("Error: La Guía es obligatoria.");
         }    
 
-        showLoading(true);
+        showLoading(true, 'GUARDANDO', 'Nuevo registro');
 
         google.script.run
             .withSuccessHandler(function(res) {
@@ -23037,7 +23035,7 @@ function openModalRecarga() {
         return; 
       }
 
-      showLoading(true);
+      showLoading(true, 'GUARDANDO', 'Seguimiento');
       google.script.run
         .withSuccessHandler(function(res) {
            if (res.status === "success") {
@@ -23219,7 +23217,7 @@ function openModalRecarga() {
       }
 
       // C. Enviar al servidor
-      showLoading(true); 
+      showLoading(true, 'PROCESANDO', 'Recogida');
       const datos = {
         guias: guiasProcesadas, 
         mensajero: mensajero
@@ -23274,7 +23272,7 @@ function openModalRecarga() {
 
     // Función auxiliar para cuando el usuario acepta cambiar mensajero
     function actualizarMensajerosConflicto(listaGuias, nuevoMensajero) {
-      showLoading(true);
+      showLoading(true, 'ACTUALIZANDO', 'Mensajeros');
       const datosUpdate = {
         lista_guias: listaGuias,
         nuevo_mensajero: nuevoMensajero
@@ -23348,7 +23346,7 @@ function openModalRecarga() {
     function confirmarMismo() {
       closeModal('modal-confirmacion-mismo');
       
-      showLoading(true);
+      showLoading(true, 'CONFIRMANDO', 'Mismo mensajero');
       
       google.script.run
         .withSuccessHandler(function(res) {
@@ -23946,7 +23944,7 @@ function openModalRecarga() {
         return;
       }
 
-      showLoading(true);
+      showLoading(true, 'REGISTRANDO', 'Devolución');
 
       // Enviar al Backend
       google.script.run
@@ -23999,7 +23997,7 @@ function openModalRecarga() {
         return;
       }
 
-      showLoading(true);
+      showLoading(true, 'CALCULANDO', 'Guías hijas');
 
       // 3. Enviar al Backend
       google.script.run
@@ -24069,7 +24067,7 @@ function openModalRecarga() {
         })
         .filter(g => g);
 
-      showLoading(true);
+      showLoading(true, 'REGISTRANDO', 'Guías madre');
 
       google.script.run
         .withSuccessHandler(res => {
@@ -24278,7 +24276,7 @@ function openModalRecarga() {
         return;
       }
 
-      showLoading(true);
+      showLoading(true, 'BUSCANDO', 'Guías a recibir');
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -24394,7 +24392,7 @@ function openModalRecarga() {
         return;
       }
 
-      showLoading(true);
+      showLoading(true, 'GUARDANDO', 'Recibo de guías');
 
       // ENVIAMOS AMBAS LISTAS: LAS RECIBIDAS Y LAS A DESVINCULAR (ABANDONADAS)
       google.script.run
@@ -24462,7 +24460,7 @@ function openModalRecarga() {
         nuevaMadre = "100000" + nuevaMadre;
       }
 
-      showLoading(true);
+      showLoading(true, 'VINCULANDO', 'Guía pendiente');
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -25854,7 +25852,7 @@ function openModalRecarga() {
       document.getElementById('comisiones_totalComisionHeka').innerText = '$0';
       document.getElementById('comisiones_comisionPablo').innerText = '$0';
 
-      showLoading(true);
+      showLoading(true, 'BUSCANDO', 'Comisiones');
 
       google.script.run
         .withSuccessHandler(function(res) {
@@ -26228,7 +26226,7 @@ function openModalRecarga() {
       }
 
       // ========== VERIFICAR HISTORIAL COMPLETO DE ESTADOS (SERVIDOR) ==========
-      mostrarModalProgreso('Verificando historial de estados...');
+      mostrarModalProgreso('VERIFICANDO', 'Historial de estados');
       appendLogLpropia('Verificando historial de estados en sistema...');
       google.script.run
         .withSuccessHandler(function(res) {
@@ -26312,7 +26310,7 @@ function openModalRecarga() {
       var btn = document.getElementById('btnRecibirLpropia');
       btn.disabled = true;
 
-      mostrarModalProgreso('Ingreso Origen - Procesando...');
+      mostrarModalProgreso('INGRESO ORIGEN', 'Procesando operación');
       appendLogLpropia('========================================');
       appendLogLpropia('INICIANDO PROCESO COMPLETO');
       appendLogLpropia('Gu\u00eda Madre: ' + madre + ' (' + tipoMadreSeleccionado.toUpperCase() + ')');
@@ -26678,7 +26676,7 @@ function openModalRecarga() {
       if (pendientes.length === 0) return;
 
       OFFLINE_SYNCING = true;
-      mostrarModalProgreso('Sincronizando operaciones offline...');
+      mostrarModalProgreso('SINCRONIZANDO', 'Operaciones offline');
       clearLogLmensajero();
       appendLogLmensajero('========================================');
       appendLogLmensajero('SINCRONIZACI\u00d3N OFFLINE - ' + pendientes.length + ' pendiente(s)');
@@ -27195,7 +27193,7 @@ function openModalRecarga() {
 
       var btn = document.getElementById('btnProcesarRecogidaLmensajero');
       btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...'; btn.style.background = '#1e7e34';
-      mostrarModalProgreso('Recogida - Procesando...');
+      mostrarModalProgreso('RECOGIDA', 'Procesando operación');
 
       appendLogLmensajero('========================================');
       appendLogLmensajero('INICIANDO PROCESO RECOGIDA');
@@ -27928,7 +27926,7 @@ function openModalRecarga() {
 
       // Si hay imagen, subirla a GitHub
       if (evidenciaBase64ActualizarEstado) {
-        mostrarModalProgreso('Actualizar Estado - Subiendo imagen a GitHub...');
+        mostrarModalProgreso('ACTUALIZAR ESTADO', 'Subiendo imagen');
         appendLogLmensajero('Subiendo imagen de evidencia a GitHub...');
         subirImagenConChunks(
           evidenciaNombreActualizarEstado,
@@ -27976,7 +27974,7 @@ function openModalRecarga() {
 
     // Ejecutar la actualizacion de estado en Firestore (se llama despues de subir imagen si aplica)
     function ejecutarActualizacionEstado(estadoData, btn) {
-      mostrarModalProgreso('Actualizar Estado - Procesando...');
+      mostrarModalProgreso('ACTUALIZAR ESTADO', 'Procesando cambios');
 
       appendLogLmensajero('========================================');
       appendLogLmensajero('INICIANDO ACTUALIZACI\u00D3N DE ESTADO');
@@ -28348,7 +28346,7 @@ function openModalRecarga() {
       };
     
     
-      showLoading(true);
+      showLoading(true, 'GUARDANDO', 'Función personal');
     
     
       google.script.run
@@ -30131,7 +30129,7 @@ function enviarNuevaSolicitudSW() {
       });
   }
 
-  showLoading(true);
+  showLoading(true, 'CREANDO', 'Solicitud de software');
   if (swAdjuntoNueva) {
     google.script.run
       .withSuccessHandler(function(up) {
@@ -30558,7 +30556,7 @@ function swProcesarColaMensajes() {
 
 function tomarCasoSW() {
   if (!swTicketActual) return;
-  showLoading(true);
+  showLoading(true, 'ASIGNANDO', 'Caso de software');
   google.script.run
     .withSuccessHandler(function(res) {
       showLoading(false);
@@ -30575,7 +30573,7 @@ function marcarSolucionadoSW() {
   mostrarModalConfirmacion(
     '¿Marcar esta solicitud como SOLUCIONADO?\n\nEl chat se cerrará y no se podrá reabrir ni responder de nuevo.',
     function() {
-      showLoading(true);
+      showLoading(true, 'CERRANDO', 'Caso de software');
       google.script.run
         .withSuccessHandler(function(res) {
           showLoading(false);
