@@ -29348,13 +29348,15 @@ var dispTimer = null;
 
 function iniciarRegistroDisponibilidad(evento) {
   dispPendiente = { evento: evento, lat: null, lng: null, precision: null };
-  var info = document.getElementById('disp-status-info');
-  info.style.display = 'block';
-  info.innerHTML = '<i class="bi bi-arrow-repeat"></i> Validando dispositivo...';
+
+  // Pantalla de carga tipo Recuentos: feedback inmediato
+  mostrarModalProgreso('Validando sesión y dispositivo');
+  appendModalProgreso('• Verificando sesión...');
+  setTimeout(function() { appendModalProgreso('• Validando dispositivo...'); }, 350);
 
   if (!navigator.geolocation) {
-    info.innerHTML = '<span style="color:#dc3545"><i class="bi bi-x-circle"></i> Este dispositivo no permite validar el registro. Usa un dispositivo compatible.</span>';
-    showToast('No se puede validar el dispositivo en este equipo.', 'error');
+    errorModalProgreso('❌ Este dispositivo no permite validar el registro.\nUsa un equipo compatible.');
+    mostrarOkModalProgreso();
     return;
   }
 
@@ -29363,21 +29365,26 @@ function iniciarRegistroDisponibilidad(evento) {
       dispPendiente.lat = pos.coords.latitude;
       dispPendiente.lng = pos.coords.longitude;
       dispPendiente.precision = Math.round(pos.coords.accuracy || 0);
-      document.getElementById('disp-modal-evento').innerText = evento;
-      document.getElementById('disp-modal').style.display = 'flex';
-      info.style.display = 'none';
+      appendModalProgreso('• Dispositivo validado correctamente.');
+      completarModalProgreso('✓ Listo para confirmar ' + evento);
+      // Cerrar carga y mostrar confirmación
+      setTimeout(function() {
+        cerrarModalProgreso();
+        document.getElementById('disp-modal-evento').innerText = evento;
+        document.getElementById('disp-modal').style.display = 'flex';
+      }, 600);
     },
     function(err) {
-      var msg = 'Debes permitir el acceso para poder registrar. Sin la validación no es posible continuar.';
+      var msg = 'Debes permitir el acceso para poder registrar.\nSin la validación no es posible continuar.';
       if (err && err.code === 1) {
-        msg = 'Permiso denegado. Debes permitir el acceso para poder registrar el estado.';
+        msg = 'Permiso denegado.\nDebes permitir el acceso para poder registrar el estado.';
       } else if (err && err.code === 2) {
-        msg = 'No se pudo validar el dispositivo. Intenta de nuevo.';
+        msg = 'No se pudo validar el dispositivo.\nIntenta de nuevo.';
       } else if (err && err.code === 3) {
-        msg = 'Tiempo de espera agotado al validar. Intenta de nuevo.';
+        msg = 'Tiempo de espera agotado al validar.\nIntenta de nuevo.';
       }
-      info.innerHTML = '<span style="color:#dc3545"><i class="bi bi-x-circle"></i> ' + msg + '</span>';
-      showToast(msg, 'error');
+      errorModalProgreso('❌ ' + msg);
+      mostrarOkModalProgreso();
     },
     { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
   );
@@ -29401,18 +29408,32 @@ document.getElementById('disp-confirmar').addEventListener('click', function() {
     return;
   }
   document.getElementById('disp-modal').style.display = 'none';
-  var info = document.getElementById('disp-status-info');
-  info.style.display = 'block';
-  info.innerHTML = '<i class="bi bi-arrow-repeat"></i> Registrando ' + dispPendiente.evento + '...';
+
+  // Pantalla de carga mientras se registra en el servidor
+  mostrarModalProgreso('Registrando ' + dispPendiente.evento);
+  appendModalProgreso('• Enviando registro al servidor...');
+  setTimeout(function() { appendModalProgreso('• Guardando estado...'); }, 400);
+
   google.script.run
     .withSuccessHandler(function(res) {
-      info.innerHTML = res && res.status === 'success'
-        ? '<i class="bi bi-check-circle-fill" style="color:#198754"></i> ' + res.message
-        : '<span style="color:#dc3545">Error: ' + ((res && res.message) || 'desconocido') + '</span>';
-      if (res && res.status === 'success') { actualizarMiStatusChip(); setTimeout(function(){ info.style.display = 'none'; }, 4000); }
+      if (res && res.status === 'success') {
+        completarModalProgreso('✓ ' + (res.message || (dispPendiente.evento + ' registrado')));
+        mostrarOkModalProgreso();
+        actualizarMiStatusChip();
+        var info = document.getElementById('disp-status-info');
+        if (info) {
+          info.style.display = 'block';
+          info.innerHTML = '<i class="bi bi-check-circle-fill" style="color:#198754"></i> ' + (res.message || 'Registrado');
+          setTimeout(function(){ info.style.display = 'none'; }, 4000);
+        }
+      } else {
+        errorModalProgreso('❌ ' + ((res && res.message) || 'Error al registrar'));
+        mostrarOkModalProgreso();
+      }
     })
     .withFailureHandler(function(err) {
-      info.innerHTML = '<span style="color:#dc3545">Error de conexión: ' + (err && err.message ? err.message : '') + '</span>';
+      errorModalProgreso('❌ Error de conexión: ' + (err && err.message ? err.message : ''));
+      mostrarOkModalProgreso();
     })
     .registrarDisponibilidad({
       cedula: currentUser.cedula,
