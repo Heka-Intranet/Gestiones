@@ -14513,23 +14513,31 @@ input[type="date"]::-webkit-calendar-picker-indicator,
               isInactive: data.isInactive,
               centroCosto: data.centroCosto || ''
             };
-            // Token + caducidad absoluta 24 h
+            // Token + caducidad absoluta 24 h (usar expires del servidor si viene)
             if (data.token) {
               HEKA_SESSION_TOKEN = data.token;
-              HEKA_SESSION_EXPIRES_AT = Date.now() + HEKA_SESSION_MAX_MS;
+              HEKA_SESSION_EXPIRES_AT = Number(data.expiresAt) || (Date.now() + HEKA_SESSION_MAX_MS);
+              // Nunca acortar por debajo de ahora; tope 24 h desde ahora si el server manda basura
+              if (!HEKA_SESSION_EXPIRES_AT || HEKA_SESSION_EXPIRES_AT < Date.now()) {
+                HEKA_SESSION_EXPIRES_AT = Date.now() + HEKA_SESSION_MAX_MS;
+              }
               try {
                 localStorage.setItem('heka_token', data.token);
                 localStorage.setItem('heka_session_expires', String(HEKA_SESSION_EXPIRES_AT));
+                // Perfil completo para restaurar sin re-login (evita crear tokens nuevos)
+                localStorage.setItem('heka_session', JSON.stringify({
+                  user: user,
+                  name: data.name,
+                  image: data.image,
+                  permissions: data.permissions,
+                  role: data.role,
+                  cedula: data.cedula,
+                  isInactive: data.isInactive,
+                  centroCosto: data.centroCosto || '',
+                  expiresAt: HEKA_SESSION_EXPIRES_AT
+                }));
               } catch(ex) {}
             }
-            // Guardar credenciales solo mientras la sesion de 24 h este vigente
-            try {
-              localStorage.setItem('heka_session', JSON.stringify({
-                user: user,
-                pass: pass,
-                expiresAt: HEKA_SESSION_EXPIRES_AT
-              }));
-            } catch(ex) {}
             loginSuccess();
           } else { showToast(data.message); }
         })
@@ -26574,13 +26582,16 @@ function openModalRecarga() {
       }
     });
 
-    // ========== AUTO-LOGIN (solo si la sesion de 24 h sigue vigente) ==========
+    // ========== AUTO-RESTORE (sin re-login: reutiliza token 24 h) ==========
+    // Antes se llamaba handleLogin/loginBackend en cada recarga → creaba un
+    // token nuevo y marcaba el anterior como ACTIVA=NO (~cierre a los 10 min).
+    // Ahora solo restaura perfil + token desde localStorage si siguen vigentes.
     (function() {
       try {
         var exp = Number(localStorage.getItem('heka_session_expires') || 0);
+        var tok = localStorage.getItem('heka_token');
         var saved = localStorage.getItem('heka_session');
-        if (!saved || !exp || Date.now() >= exp) {
-          // Caduco o no hay sesion: limpiar y mostrar login
+        if (!saved || !tok || !exp || Date.now() >= exp) {
           localStorage.removeItem('heka_session');
           localStorage.removeItem('heka_token');
           localStorage.removeItem('heka_session_expires');
@@ -26588,13 +26599,29 @@ function openModalRecarga() {
           HEKA_SESSION_EXPIRES_AT = 0;
           return;
         }
-        var creds = JSON.parse(saved);
-        if (creds.user && creds.pass) {
-          document.getElementById('loginUser').value = creds.user;
-          document.getElementById('loginPass').value = creds.pass;
-          setTimeout(function() { handleLogin(new Event('submit')); }, 300);
-        }
-      } catch(ex) {}
+        var perfil = JSON.parse(saved);
+        HEKA_SESSION_TOKEN = tok;
+        HEKA_SESSION_EXPIRES_AT = exp;
+        currentUser = {
+          name: perfil.name || '',
+          image: perfil.image || '',
+          permissions: perfil.permissions || '',
+          role: perfil.role || '',
+          cedula: perfil.cedula || '',
+          isInactive: !!perfil.isInactive,
+          centroCosto: perfil.centroCosto || ''
+        };
+        // Entrar a la app sin llamar loginBackend (mismo token, mismas 24 h)
+        setTimeout(function() {
+          try { loginSuccess(); } catch (eLS) {}
+        }, 200);
+      } catch(ex) {
+        try {
+          localStorage.removeItem('heka_session');
+          localStorage.removeItem('heka_token');
+          localStorage.removeItem('heka_session_expires');
+        } catch (e2) {}
+      }
     })();
 
     // Vigilancia: si pasan las 24 h con la pestana abierta, cerrar sesion
