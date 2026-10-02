@@ -8564,7 +8564,7 @@ body { overscroll-behavior-y: contain; }
         <button type="button" class="sw-chip" data-f="SOLUCIONADO" onclick="swSetFiltro('mis', this)">Solucionadas</button>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:200px;">
-        <input type="text" id="sw-search-mis" class="search-input" placeholder="Buscar por ticket o título..." oninput="swFiltrarTabla('mis')" style="flex:1;min-width:160px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#eaf1f8;font-size:13px;">
+        <input type="text" id="sw-search-mis" class="search-input" placeholder="Buscar ticket, título o texto en chats..." oninput="swFiltrarTablaDebounced('mis')" style="flex:1;min-width:160px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#eaf1f8;font-size:13px;">
         <button class="btn btn-secondary btn-sm" onclick="cargarMisSolicitudesSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
       </div>
     </div>
@@ -8613,7 +8613,7 @@ body { overscroll-behavior-y: contain; }
         <button type="button" class="sw-chip" data-f="TODOS" onclick="swSetFiltro('dev', this)">Todas</button>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:200px;">
-        <input type="text" id="sw-search-dev" class="search-input" placeholder="Buscar por ticket o título..." oninput="swFiltrarTabla('dev')" style="flex:1;min-width:160px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#eaf1f8;font-size:13px;">
+        <input type="text" id="sw-search-dev" class="search-input" placeholder="Buscar ticket, título o texto en chats..." oninput="swFiltrarTablaDebounced('dev')" style="flex:1;min-width:160px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#eaf1f8;font-size:13px;">
         <button class="btn btn-secondary btn-sm" onclick="cargarSolicitudesDevSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
       </div>
     </div>
@@ -8660,7 +8660,7 @@ body { overscroll-behavior-y: contain; }
         <button type="button" class="sw-chip" data-f="SOLUCIONADO" onclick="swSetFiltro('hist', this)">Solucionadas</button>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:200px;">
-        <input type="text" id="sw-search-hist" class="search-input" placeholder="Buscar por ticket, título o solicitante..." oninput="swFiltrarTabla('hist')" style="flex:1;min-width:160px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#eaf1f8;font-size:13px;">
+        <input type="text" id="sw-search-hist" class="search-input" placeholder="Buscar ticket, título, solicitante o chats..." oninput="swFiltrarTablaDebounced('hist')" style="flex:1;min-width:160px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#eaf1f8;font-size:13px;">
         <button class="btn btn-secondary btn-sm" onclick="cargarHistorialSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
       </div>
     </div>
@@ -12169,7 +12169,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 .sw-bubble-text{color:#eef2ff;font-size:13.5px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;max-width:100%;}
 .sw-bubble-sys .sw-bubble-text{color:#f5e6a8;}
 .sw-bubble-meta{display:flex;gap:8px;align-items:center;margin-bottom:5px;flex-wrap:wrap;max-width:100%;}
-.sw-bubble-meta strong{overflow:hidden;text-overflow:ellipsis;max-width:160px;white-space:nowrap;}
+.sw-bubble-meta strong{overflow:visible;text-overflow:unset;max-width:100%;white-space:normal;word-break:break-word;line-height:1.3;}
 .sw-media{max-width:100%;overflow:hidden;}
 .sw-media img,.sw-media video{max-width:100%;max-height:260px;border-radius:12px;margin-top:6px;display:block;background:#000;box-shadow:0 4px 16px rgba(0,0,0,.3);}
 .sw-chat-hit{outline:2px solid rgba(167,139,250,.6)!important;outline-offset:3px!important;box-shadow:0 0 20px rgba(167,139,250,.25)!important;}
@@ -31114,56 +31114,124 @@ function swEsTicketValidoFront(id) {
 }
 
 /** Filtra tabla por ticket o título (cliente) */
+var _swSearchTimers = {};
+function swFiltrarTablaDebounced(modo) {
+  clearTimeout(_swSearchTimers[modo]);
+  _swSearchTimers[modo] = setTimeout(function(){ swFiltrarTabla(modo); }, 400);
+}
 function swFiltrarTabla(modo) {
   var inputId = modo === 'mis' ? 'sw-search-mis' : (modo === 'dev' ? 'sw-search-dev' : 'sw-search-hist');
   var tbodyId = modo === 'mis' ? 'sw-mis-tbody' : (modo === 'dev' ? 'sw-dev-tbody' : 'sw-hist-tbody');
   var dataKey = modo === 'mis' ? '_swDataMis' : (modo === 'dev' ? '_swDataDev' : '_swDataHist');
-  var term = (document.getElementById(inputId) || {}).value || '';
-  term = term.trim().toLowerCase();
+  var resultsId = 'sw-chat-hits-' + modo;
+  var term = ((document.getElementById(inputId) || {}).value || '').trim();
+  var termLow = term.toLowerCase();
   var data = window[dataKey] || [];
   var tbody = document.getElementById(tbodyId);
   if (!tbody) return;
 
-  var filtered = !term ? data : data.filter(function(t) {
-    var id = String(t.id || '').toLowerCase();
-    var titulo = String(t.titulo || '').toLowerCase();
-    var sol = String(t.solicitante || '').toLowerCase();
-    return id.indexOf(term) >= 0 || titulo.indexOf(term) >= 0 || sol.indexOf(term) >= 0;
-  });
+  // Limpiar bloque de hallazgos en chat previo
+  var prevHits = document.getElementById(resultsId);
+  if (prevHits) prevHits.remove();
 
-  if (!filtered.length) {
-    var cols = modo === 'mis' ? 8 : 9;
-    tbody.innerHTML = '<tr><td colspan="' + cols + '" style="text-align:center;color:#8b98a8;">No hay resultados para "' + swEsc(term) + '"</td></tr>';
-    return;
-  }
-
-  var esMis = modo === 'mis';
-  tbody.innerHTML = filtered.map(function(t) {
-    if (esMis) {
+  function renderRows(filtered) {
+    var esMis = modo === 'mis';
+    var vista = esMis ? 'colaborador' : 'dev';
+    if (!filtered.length && !termLow) {
+      var cols0 = esMis ? 8 : 9;
+      tbody.innerHTML = '<tr><td colspan="' + cols0 + '" style="text-align:center;color:#8b98a8;">Sin solicitudes</td></tr>';
+      return;
+    }
+    if (!filtered.length) {
+      var cols = esMis ? 8 : 9;
+      tbody.innerHTML = '<tr><td colspan="' + cols + '" style="text-align:center;color:#8b98a8;">No hay coincidencias en la tabla para "' + swEsc(term) + '"</td></tr>';
+      return;
+    }
+    tbody.innerHTML = filtered.map(function(t) {
+      if (esMis) {
+        return '<tr>'
+          + '<td style="font-family:monospace;font-size:12px;font-weight:700;color:#a78bfa;">' + swEsc(t.id) + '</td>'
+          + '<td style="font-size:12px;white-space:nowrap;">' + swFmtFecha(t.fecha) + '</td>'
+          + '<td style="max-width:220px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
+          + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
+          + '<td style="font-size:12px;">' + swEsc(t.tiempoSolicitado || '-') + '</td>'
+          + '<td>' + swBadgeEstado(t.estado) + '</td>'
+          + '<td style="font-size:12px;max-width:100px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.desarrollador || '-') + '</td>'
+          + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + String(t.id).replace(/'/g,"\\'") + '\',\'colaborador\')"><i class="bi bi-chat-dots"></i></button></td>'
+          + '</tr>';
+      }
       return '<tr>'
         + '<td style="font-family:monospace;font-size:12px;font-weight:700;color:#a78bfa;">' + swEsc(t.id) + '</td>'
         + '<td style="font-size:12px;white-space:nowrap;">' + swFmtFecha(t.fecha) + '</td>'
-        + '<td style="max-width:220px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
+        + '<td style="font-size:12px;max-width:110px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.solicitante) + '</td>'
+        + '<td style="max-width:200px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
         + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
         + '<td style="font-size:12px;">' + swEsc(t.tiempoSolicitado || '-') + '</td>'
         + '<td>' + swBadgeEstado(t.estado) + '</td>'
         + '<td style="font-size:12px;max-width:100px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.desarrollador || '-') + '</td>'
-        + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + String(t.id).replace(/'/g,"\\'") + '\',\'colaborador\')"><i class="bi bi-chat-dots"></i></button></td>'
+        + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + String(t.id).replace(/'/g,"\\'") + '\',\'' + vista + '\')"><i class="bi bi-chat-dots"></i></button></td>'
         + '</tr>';
+    }).join('');
+  }
+
+  // Filtro local en tabla (ticket, título, solicitante) — case insensitive
+  var filtered = !termLow ? data : data.filter(function(t) {
+    var id = String(t.id || '').toLowerCase();
+    var titulo = String(t.titulo || '').toLowerCase();
+    var sol = String(t.solicitante || '').toLowerCase();
+    return id.indexOf(termLow) >= 0 || titulo.indexOf(termLow) >= 0 || sol.indexOf(termLow) >= 0;
+  });
+  renderRows(filtered);
+
+  // Si hay término, también buscar en chats (servidor)
+  if (termLow.length >= 2) {
+    var wrap = tbody.closest('.card') || tbody.parentElement;
+    var hitsBox = document.createElement('div');
+    hitsBox.id = resultsId;
+    hitsBox.style.cssText = 'margin:12px 0 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(167,139,250,.25);background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(255,196,0,.04));';
+    hitsBox.innerHTML = '<div style="color:#a78bfa;font-size:12px;font-weight:700;margin-bottom:8px;"><i class="bi bi-chat-quote"></i> Buscando en chats…</div>';
+    // Insertar encima de la tabla
+    var tableWrap = tbody.closest('.sw-table-wrap') || tbody.parentElement;
+    if (tableWrap && tableWrap.parentElement) {
+      tableWrap.parentElement.insertBefore(hitsBox, tableWrap);
     }
-    return '<tr>'
-      + '<td style="font-family:monospace;font-size:12px;font-weight:700;color:#a78bfa;">' + swEsc(t.id) + '</td>'
-      + '<td style="font-size:12px;white-space:nowrap;">' + swFmtFecha(t.fecha) + '</td>'
-      + '<td style="font-size:12px;max-width:110px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.solicitante) + '</td>'
-      + '<td style="max-width:200px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
-      + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
-      + '<td style="font-size:12px;">' + swEsc(t.tiempoSolicitado || '-') + '</td>'
-      + '<td>' + swBadgeEstado(t.estado) + '</td>'
-      + '<td style="font-size:12px;max-width:100px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.desarrollador || '-') + '</td>'
-      + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + String(t.id).replace(/'/g,"\\'") + '\',\'dev\')"><i class="bi bi-chat-dots"></i></button></td>'
-      + '</tr>';
-  }).join('');
+
+    google.script.run
+      .withSuccessHandler(function(res) {
+        var hits = (res && res.data) || [];
+        // Filtrar hits a tickets visibles en este panel (mis solo los míos, etc.)
+        var idsPanel = {};
+        data.forEach(function(t){ idsPanel[String(t.id)] = t; });
+        hits = hits.filter(function(h){ return idsPanel[String(h.id)]; });
+
+        if (!hits.length) {
+          hitsBox.innerHTML = '<div style="color:#8b98a8;font-size:12px;"><i class="bi bi-chat-quote"></i> Sin coincidencias en chats para "<strong style="color:#eaf1f8;">' + swEsc(term) + '</strong>"</div>';
+          return;
+        }
+        var vista = modo === 'mis' ? 'colaborador' : 'dev';
+        var htmlHits = '<div style="color:#c4b5fd;font-size:12px;font-weight:700;margin-bottom:10px;"><i class="bi bi-chat-quote-fill"></i> Encontrado en chats (' + hits.length + ')</div>';
+        htmlHits += hits.map(function(h) {
+          var tit = h.titulo || (idsPanel[h.id] && idsPanel[h.id].titulo) || '';
+          return '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;margin-bottom:8px;border-radius:12px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);cursor:pointer;" onclick="abrirChatSW(\'' + String(h.id).replace(/'/g,"\\'") + '\',\'' + vista + '\')">'
+            + '<div style="flex-shrink:0;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#a78bfa,#6f42c1);display:flex;align-items:center;justify-content:center;"><i class="bi bi-chat-dots-fill" style="color:#0b1119;"></i></div>'
+            + '<div style="flex:1;min-width:0;">'
+            + '<div style="color:#ffc400;font-size:11px;font-weight:800;letter-spacing:.3px;">Ubicado en ticket ' + swEsc(h.id) + '</div>'
+            + (tit ? '<div style="color:#eaf1f8;font-weight:700;font-size:13px;margin-top:2px;">' + swEsc(tit) + '</div>' : '')
+            + '<div style="color:#8b98a8;font-size:12px;margin-top:4px;line-height:1.4;">' + swEsc(h.snippet || '') + '</div>'
+            + '<div style="color:#6b7a8d;font-size:10px;margin-top:4px;">' + swEsc(h.autor || '') + ' · ' + swFmtFecha(h.fecha) + ' · ' + (h.coincidencias || 1) + ' coincidencia(s)</div>'
+            + '</div>'
+            + '<i class="bi bi-chevron-right" style="color:#a78bfa;margin-top:12px;"></i>'
+            + '</div>';
+        }).join('');
+        hitsBox.innerHTML = htmlHits;
+      })
+      .withFailureHandler(function() {
+        hitsBox.innerHTML = '<div style="color:#f87171;font-size:12px;">No se pudo buscar en chats</div>';
+      })
+      .buscarEnChatsSoftware(term);
+  }
 }
+
 
 
 var swModoVista = 'colaborador';
@@ -31828,9 +31896,11 @@ function refrescarDetalleYChatSW(silencioso) {
   if (!swTicketActual) return;
   google.script.run
     .withSuccessHandler(function(det) {
-      if (!silencioso) showLoading(false);
       if (!det || det.status !== 'success' || !det.data) {
-        if (!silencioso) showToast('No se pudo cargar la solicitud.');
+        if (!silencioso) {
+          showLoading(false);
+          showToast('No se pudo cargar la solicitud.');
+        }
         return;
       }
       var t = det.data;
@@ -31861,11 +31931,25 @@ function refrescarDetalleYChatSW(silencioso) {
         acciones.style.display = 'none';
       }
 
+      // Carga se cierra SOLO cuando los mensajes del chat ya están listos
       google.script.run
         .withSuccessHandler(function(chat) {
           renderChatMensajesSW((chat && chat.data) || [], cerrado);
+          if (!silencioso) showLoading(false);
+        })
+        .withFailureHandler(function() {
+          if (!silencioso) {
+            showLoading(false);
+            showToast('Error cargando el chat.');
+          }
         })
         .obtenerChatSoftware(swTicketActual);
+    })
+    .withFailureHandler(function() {
+      if (!silencioso) {
+        showLoading(false);
+        showToast('Error de conexión al abrir el ticket.');
+      }
     })
     .obtenerDetalleSolicitudSoftware(swTicketActual);
 }
@@ -31879,37 +31963,38 @@ function renderChatMensajesSW(msgs, cerrado) {
   var miCedula = String(currentUser.cedula || '');
   var html = msgs.map(function(m, idx) {
     var esDev = String(m.rol || '').toUpperCase() === 'DESARROLLADOR';
+    var esSisRol = String(m.rol || '').toUpperCase() === 'SISTEMA';
     var texto = String(m.mensaje || '');
-    // Mensaje de apertura de solicitud -> centrado estilo sistema
-    var esSistema = idx === 0 && /^Solicitud creada:/i.test(texto.trim());
+    // Mensaje de apertura de solicitud o sistema -> centrado
+    var esSistema = esSisRol || (idx === 0 && /^Solicitud creada:/i.test(texto.trim())) || /^🔗/.test(texto.trim());
 
     if (esSistema) {
       return '<div style="display:flex;justify-content:center;width:100%;padding:4px 0;">'
         + '<div class="sw-bubble sw-bubble-sys">'
-        + '<div class="sw-bubble-meta" style="justify-content:center;">'
-        + '<span style="color:#ffc400;font-size:10px;font-weight:800;letter-spacing:.4px;"><i class="bi bi-ticket-detailed-fill"></i> SOLICITUD</span>'
-        + '<span style="color:rgba(255,220,120,.7);font-size:10px;">' + swFmtFecha(m.fecha) + '</span>'
+        + '<div class="sw-bubble-meta" style="justify-content:center;flex-wrap:wrap;">'
+        + '<span style="color:#ffc400;font-size:10px;font-weight:800;letter-spacing:.4px;"><i class="bi bi-ticket-detailed-fill"></i> SISTEMA</span>'
         + '</div>'
         + (texto ? '<div class="sw-bubble-text">' + swEsc(texto) + '</div>' : '')
         + (m.adjunto ? swMediaHtml(m.adjunto, m.tipoAdjunto) : '')
+        + '<div style="text-align:right;margin-top:6px;"><span style="color:rgba(255,220,120,.55);font-size:10px;">' + swFmtFecha(m.fecha) + '</span></div>'
         + '</div></div>';
     }
 
-    // WhatsApp por ROL: COLAB siempre izquierda, DEV siempre derecha
+    // WhatsApp por ROL: COLAB izquierda, DEV derecha
     var lado = esDev ? 'flex-end' : 'flex-start';
     var bubbleClass = esDev ? 'sw-bubble sw-bubble-dev' : 'sw-bubble sw-bubble-colab';
     var rolTag = esDev
-      ? '<span style="color:#b8a6ff;font-size:10px;font-weight:700;letter-spacing:.3px;">DEV</span>'
-      : '<span style="color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:.3px;">COLAB</span>';
-    var nameColor = esDev ? 'rgba(255,255,255,.95)' : '#eaf1f8';
-    var timeColor = esDev ? 'rgba(255,255,255,.55)' : '#6b7a8d';
+      ? '<span style="color:#c4b5fd;font-size:9px;font-weight:800;letter-spacing:.4px;background:rgba(255,255,255,.12);padding:2px 7px;border-radius:8px;">DEV</span>'
+      : '<span style="color:#94a3b8;font-size:9px;font-weight:800;letter-spacing:.4px;background:rgba(255,255,255,.06);padding:2px 7px;border-radius:8px;">COLAB</span>';
+    var nameColor = esDev ? 'rgba(255,255,255,.98)' : '#eaf1f8';
+    var timeColor = esDev ? 'rgba(255,255,255,.5)' : '#6b7a8d';
 
     var row = '<div style="display:flex;justify-content:' + lado + ';width:100%;">'
       + '<div class="' + bubbleClass + '">'
-      + '<div class="sw-bubble-meta">'
-      + '<strong style="color:' + nameColor + ';font-size:12px;">' + swEsc(m.autor) + '</strong>'
+      // Nombre + rol arriba (sin fecha al lado, sin cortar nombre)
+      + '<div class="sw-bubble-meta" style="flex-wrap:wrap;gap:6px;align-items:center;">'
+      + '<strong style="color:' + nameColor + ';font-size:12.5px;font-weight:700;max-width:100%;overflow:visible;text-overflow:unset;white-space:normal;word-break:break-word;">' + swEsc(m.autor) + '</strong>'
       + rolTag
-      + '<span style="color:' + timeColor + ';font-size:10px;margin-left:auto;white-space:nowrap;">' + swFmtFecha(m.fecha) + '</span>'
       + '</div>';
     if (texto) {
       row += '<div class="sw-bubble-text">' + swEsc(texto) + '</div>';
@@ -31917,6 +32002,10 @@ function renderChatMensajesSW(msgs, cerrado) {
     if (m.adjunto) {
       row += swMediaHtml(m.adjunto, m.tipoAdjunto);
     }
+    // Fecha/hora AL FINAL de la burbuja
+    row += '<div style="display:flex;justify-content:flex-end;margin-top:6px;">'
+      + '<span style="color:' + timeColor + ';font-size:10px;white-space:nowrap;">' + swFmtFecha(m.fecha) + '</span>'
+      + '</div>';
     row += '</div></div>';
     return row;
   }).join('');
