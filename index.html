@@ -13672,6 +13672,11 @@ input[type="date"]::-webkit-calendar-picker-indicator,
                 return createCallableProxy(successCb, fn);
               };
             }
+            if (prop === 'withSuccessHandler') {
+              return function(fn) {
+                return createCallableProxy(fn, failureCb);
+              };
+            }
             // prop = nombre de la función GAS a ejecutar
             return function() {
               var args = Array.prototype.slice.call(arguments);
@@ -13774,6 +13779,10 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 
       google.script.run.withSuccessHandler = function(fn) {
         return createCallableProxy(fn, null);
+      };
+      // También permitir withFailureHandler primero
+      google.script.run.withFailureHandler = function(fn) {
+        return createCallableProxy(null, fn);
       };
     })();
 
@@ -32303,7 +32312,6 @@ function swPollNotificaciones(silencioso) {
   if (!currentUser || !currentUser.cedula) return;
   // Colaborador siempre
   google.script.run
-    .withFailureHandler(function(){ /* silencioso: 404 intermitente de GAS */ })
     .withSuccessHandler(function(res) {
       if (!res || res.status !== 'success') return;
       var count = res.count || 0;
@@ -32324,6 +32332,7 @@ function swPollNotificaciones(silencioso) {
         swNotifKnown['colab'] = '';
       }
     })
+    .withFailureHandler(function(){ /* 404 intermitente GAS: silencioso */ })
     .obtenerNotificacionesSoftware(currentUser.cedula, false);
 
   // Dev solo si tiene permiso o es admin
@@ -32331,7 +32340,6 @@ function swPollNotificaciones(silencioso) {
     (String(currentUser.permissions || '').indexOf('mesa_ayuda_dev') >= 0);
   if (esDev) {
     google.script.run
-      .withFailureHandler(function(){ /* silencioso */ })
       .withSuccessHandler(function(res) {
         if (!res || res.status !== 'success') return;
         var count = res.count || 0;
@@ -32350,6 +32358,7 @@ function swPollNotificaciones(silencioso) {
           swNotifKnown['dev'] = '';
         }
       })
+      .withFailureHandler(function(){ /* silencioso */ })
       .obtenerNotificacionesSoftware(currentUser.cedula, true);
   }
 }
