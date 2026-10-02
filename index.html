@@ -8304,9 +8304,52 @@ body { overscroll-behavior-y: contain; }
 <div class="panel" id="panel-disponibilidad">
 <div class="page-header">
 <h1>Panel de Disponibilidad</h1>
-<p>Estado en tiempo real del equipo. Se actualiza automáticamente cada 30 segundos. <span id="disp-actualizado" style="color:var(--text-muted);font-size:13px;"></span></p>
+<p>Estado en tiempo real del equipo. Auto-actualización cada 5 minutos. <span id="disp-actualizado" style="color:var(--text-muted);font-size:13px;"></span></p>
 </div>
-<div class="card">
+
+<div class="card" style="margin-bottom:16px;">
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+<div style="flex:1;min-width:140px;">
+<label style="display:block;font-size:11px;color:#8b98a8;margin-bottom:4px;font-weight:600;">Desde</label>
+<input type="date" id="disp-fecha-ini" class="form-input" style="width:100%;">
+</div>
+<div style="flex:1;min-width:140px;">
+<label style="display:block;font-size:11px;color:#8b98a8;margin-bottom:4px;font-weight:600;">Hasta</label>
+<input type="date" id="disp-fecha-fin" class="form-input" style="width:100%;">
+</div>
+<button type="button" class="btn btn-primary" onclick="consultarDisponibilidadRango()" style="min-height:42px;">
+<i class="bi bi-search"></i> Consultar rango
+</button>
+<button type="button" class="btn btn-secondary" onclick="volverEstadoActualDisp()" id="disp-btn-volver-actual" style="min-height:42px;display:none;">
+<i class="bi bi-people"></i> Estado actual
+</button>
+<button type="button" class="btn" onclick="refrescarPanelDisponibilidad()" style="min-height:42px;background:rgba(253,184,19,.12);border:1px solid rgba(253,184,19,.35);color:#FDB813;font-weight:700;">
+<i class="bi bi-arrow-clockwise"></i> Actualizar
+</button>
+</div>
+<div id="disp-resumen-box" style="display:none;margin-top:16px;">
+<div id="disp-resumen-totales" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px;"></div>
+<div style="overflow-x:auto;">
+<table style="width:100%;border-collapse:collapse;font-size:13px;">
+<thead>
+<tr style="color:#8b98a8;text-align:left;border-bottom:1px solid rgba(255,255,255,.1);">
+<th style="padding:8px;">Colaborador</th>
+<th style="padding:8px;">Ingresos</th>
+<th style="padding:8px;">Almuerzo ida</th>
+<th style="padding:8px;">Almuerzo vuelta</th>
+<th style="padding:8px;">Break ini</th>
+<th style="padding:8px;">Break fin</th>
+<th style="padding:8px;">Salidas</th>
+<th style="padding:8px;">Impulso</th>
+</tr>
+</thead>
+<tbody id="disp-resumen-tbody"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="card" id="disp-card-tarjetas">
 <div id="disp-tarjetas" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;">
 <div style="grid-column:1/-1;text-align:center;color:#888;padding:20px;"></div>
 </div>
@@ -13391,7 +13434,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     // Debe terminar en /exec
     // Ejemplo: https://script.google.com/macros/s/TU_ID_AQUI/exec
     // ============================================================
-    var GAS_URL = 'https://script.google.com/macros/s/AKfycbxR-Gk0SqU7I_vjaNs1l6wP8mGqfauy_CPsng0x0qEdmLi_Cv_8rVr8itSksW5VsVo/exec';
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbwvDET_inCy_1oLW0euj2FjVs8T2KvIHpxrKo-HjaVanDXssOV02ZHPPW8MTEnFLWE/exec';
 
     // ============================================================
     // 🔌 SHIM: google.script.run → fetch POST
@@ -14664,7 +14707,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       if (panelId === 'panel-disponibilidad') {
         cargarPanelDisponibilidad();
         if (dispTimer) clearInterval(dispTimer);
-        dispTimer = setInterval(cargarPanelDisponibilidad, 30000); // refresco automatico cada 30s
+        dispTimer = setInterval(function(){ cargarPanelDisponibilidad(true); }, 5 * 60 * 1000); // cada 5 min
       } else if (dispTimer) {
         clearInterval(dispTimer); // dejar de refrescar al salir del panel
         dispTimer = null;
@@ -30017,8 +30060,107 @@ var DISP_ESTADOS = {
 };
 
 var _dispPrimeraCarga = true;
-function cargarPanelDisponibilidad() {
-  var silencioso = !_dispPrimeraCarga;
+var _dispModoRango = false;
+
+function refrescarPanelDisponibilidad() {
+  if (_dispModoRango) {
+    consultarDisponibilidadRango();
+    return;
+  }
+  cargarPanelDisponibilidad(false); // forzar overlay
+}
+
+function volverEstadoActualDisp() {
+  _dispModoRango = false;
+  var box = document.getElementById('disp-resumen-box');
+  var btn = document.getElementById('disp-btn-volver-actual');
+  var cards = document.getElementById('disp-card-tarjetas');
+  if (box) box.style.display = 'none';
+  if (btn) btn.style.display = 'none';
+  if (cards) cards.style.display = 'block';
+  cargarPanelDisponibilidad(false);
+}
+
+function consultarDisponibilidadRango() {
+  var ini = (document.getElementById('disp-fecha-ini') || {}).value;
+  var fin = (document.getElementById('disp-fecha-fin') || {}).value;
+  if (!ini || !fin) {
+    showToast('Selecciona fecha desde y hasta', 'error');
+    return;
+  }
+  if (ini > fin) {
+    showToast('La fecha desde no puede ser mayor que hasta', 'error');
+    return;
+  }
+  showLoading(true, 'CONSULTANDO', 'Disponibilidad por fechas');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      showLoading(false);
+      if (!res || res.status !== 'success') {
+        showToast((res && res.message) || 'Error en la consulta', 'error');
+        return;
+      }
+      _dispModoRango = true;
+      var box = document.getElementById('disp-resumen-box');
+      var btn = document.getElementById('disp-btn-volver-actual');
+      var cards = document.getElementById('disp-card-tarjetas');
+      if (box) box.style.display = 'block';
+      if (btn) btn.style.display = 'inline-flex';
+      if (cards) cards.style.display = 'none';
+
+      var t = res.totales || {};
+      var labels = [
+        { k: 'INGRESO', l: 'Ingresos', c: '#22c55e' },
+        { k: 'ALMUERZO IDA', l: 'Almuerzo ida', c: '#ffc400' },
+        { k: 'ALMUERZO VUELTA', l: 'Almuerzo vuelta', c: '#22d3ee' },
+        { k: 'BREAK INICIO', l: 'Break inicio', c: '#a78bfa' },
+        { k: 'BREAK FIN', l: 'Break fin', c: '#60a5fa' },
+        { k: 'SALIDA', l: 'Salidas', c: '#ef4444' },
+        { k: 'IMPULSO VITAL', l: 'Impulso vital', c: '#06b6d4' }
+      ];
+      var totHtml = labels.map(function(x) {
+        return '<div style="background:rgba(255,255,255,.04);border:1px solid ' + x.c + '44;border-radius:14px;padding:12px;text-align:center;">'
+          + '<div style="font-size:11px;color:#8b98a8;font-weight:700;">' + x.l + '</div>'
+          + '<div style="font-size:22px;font-weight:800;color:' + x.c + ';margin-top:4px;">' + (t[x.k] || 0) + '</div>'
+          + '</div>';
+      }).join('');
+      totHtml += '<div style="background:rgba(253,184,19,.08);border:1px solid rgba(253,184,19,.3);border-radius:14px;padding:12px;text-align:center;">'
+        + '<div style="font-size:11px;color:#8b98a8;font-weight:700;">Total eventos</div>'
+        + '<div style="font-size:22px;font-weight:800;color:#FDB813;margin-top:4px;">' + (res.totalEventos || 0) + '</div></div>';
+      var totEl = document.getElementById('disp-resumen-totales');
+      if (totEl) totEl.innerHTML = totHtml;
+
+      var tb = document.getElementById('disp-resumen-tbody');
+      var rows = res.porPersona || [];
+      if (tb) {
+        tb.innerHTML = rows.map(function(p) {
+          var c = p.conteos || {};
+          return '<tr style="border-bottom:1px solid rgba(255,255,255,.06);">'
+            + '<td style="padding:8px;color:#eaf1f8;"><strong>' + (p.nombre || p.cedula) + '</strong><br><span style="font-size:11px;color:#8b98a8;">' + p.cedula + '</span></td>'
+            + '<td style="padding:8px;">' + (c['INGRESO'] || 0) + '</td>'
+            + '<td style="padding:8px;">' + (c['ALMUERZO IDA'] || 0) + '</td>'
+            + '<td style="padding:8px;">' + (c['ALMUERZO VUELTA'] || 0) + '</td>'
+            + '<td style="padding:8px;">' + (c['BREAK INICIO'] || 0) + '</td>'
+            + '<td style="padding:8px;">' + (c['BREAK FIN'] || 0) + '</td>'
+            + '<td style="padding:8px;">' + (c['SALIDA'] || 0) + '</td>'
+            + '<td style="padding:8px;">' + (c['IMPULSO VITAL'] || 0) + '</td>'
+            + '</tr>';
+        }).join('') || '<tr><td colspan="8" style="padding:16px;text-align:center;color:#8b98a8;">Sin eventos en ese rango.</td></tr>';
+      }
+      var act = document.getElementById('disp-actualizado');
+      if (act) act.innerText = '(consulta ' + ini + ' → ' + fin + ')';
+    })
+    .withFailureHandler(function(err) {
+      showLoading(false);
+      showToast('Error: ' + ((err && err.message) || err), 'error');
+    })
+    .getDisponibilidadResumen(ini, fin);
+}
+
+function cargarPanelDisponibilidad(silenciosoForzado) {
+  if (_dispModoRango) return; // no pisar vista de resumen con el auto-refresh
+  var silencioso = (silenciosoForzado === true) ? true : !_dispPrimeraCarga;
+  if (silenciosoForzado === false) silencioso = false;
   if (!silencioso) showLoading(true, 'CARGANDO', 'Panel de disponibilidad');
   google.script.run
     .withSuccessHandler(function(res) {
