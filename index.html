@@ -4707,13 +4707,24 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
   top:calc(100% + 8px) !important;
   right:0 !important;
   left:auto !important;
+  z-index: 10050 !important;
 }
 @media(max-width:768px){
   .mobile-profile-wrapper .dropdown-menu{
     position:absolute !important;
     right:0 !important;
-    width:235px !important;
+    width:260px !important;
     max-width:calc(100vw - 24px) !important;
+    z-index: 10050 !important;
+  }
+  #mobileUserDropdown.show {
+    display: block !important;
+  }
+  #disp-status-menu-item-mobile {
+    gap: 8px;
+  }
+  #disp-status-modal {
+    z-index: 200100 !important;
   }
 }
 /* El click del menú no debe cerrar/rebotar por el contenedor padre. */
@@ -7735,6 +7746,11 @@ body { overscroll-behavior-y: contain; }
 <img alt="Perfil Móvil" class="mobile-user-avatar" id="mobileUserImg" src="https://ui-avatars.com/api/?name=Usuario&amp;background=random"/>
 <!-- Dropdown replicado para móvil para asegurar posicionamiento correcto -->
 <div class="dropdown-menu" id="mobileUserDropdown">
+<a class="dropdown-item" id="disp-status-menu-item-mobile" href="#" onclick="event.preventDefault(); document.getElementById('mobileUserDropdown').classList.remove('show'); abrirModalStatus();" style="display:none;justify-content:space-between;align-items:center;">
+<span><i class="bi bi-person-check-fill" style="margin-right:8px;"></i>Mi Status</span>
+<span id="disp-status-menu-estado-mobile" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid #6b7280;color:#6b7280;">Sin registro</span>
+</a>
+<div class="dropdown-divider" id="disp-status-divider-mobile" style="display:none;"></div>
 <a class="dropdown-item" href="#" onclick="openMyData()">
 <i class="bi bi-person"></i> Mis Datos
               </a>
@@ -8292,7 +8308,7 @@ body { overscroll-behavior-y: contain; }
 </div>
 <div class="card">
 <div id="disp-tarjetas" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;">
-<div style="grid-column:1/-1;text-align:center;color:#888;padding:20px;">Cargando...</div>
+<div style="grid-column:1/-1;text-align:center;color:#888;padding:20px;"></div>
 </div>
 </div>
 </div>
@@ -8344,7 +8360,7 @@ body { overscroll-behavior-y: contain; }
 <div style="overflow-x:auto;">
 <table class="table" style="width:100%;font-size:13px;">
 <thead><tr><th>Fecha</th><th>Nombre - ID Sucursal</th><th>Dato anterior</th><th>Dato a modificar</th><th>Observaciones</th><th>Estado</th></tr></thead>
-<tbody id="actupd-tabla-body"><tr><td colspan="6" style="text-align:center;color:#888;">Cargando...</td></tr></tbody>
+<tbody id="actupd-tabla-body"><tr><td colspan="6" style="text-align:center;color:#888;"></td></tr></tbody>
 </table>
 </div>
 </div>
@@ -8409,7 +8425,7 @@ body { overscroll-behavior-y: contain; }
 <div style="overflow-x:auto;border:1px solid rgba(255,255,255,.09);border-radius:14px;">
 <table class="table" style="width:100%;font-size:12.5px;">
 <thead><tr><th>Fecha</th><th>Nombre - ID Sucursal</th><th>Dato anterior</th><th>Dato a modificar</th><th>Observaciones</th></tr></thead>
-<tbody id="actupd-procesar-tabla"><tr><td colspan="5" style="text-align:center;color:#888;">Cargando...</td></tr></tbody>
+<tbody id="actupd-procesar-tabla"><tr><td colspan="5" style="text-align:center;color:#888;"></td></tr></tbody>
 </table>
 </div>
 <div id="actupd-procesar-correos" style="color:#8b98a8;font-size:12px;margin-top:12px;"></div>
@@ -8518,7 +8534,7 @@ body { overscroll-behavior-y: contain; }
           </tr>
         </thead>
         <tbody id="sw-mis-tbody">
-          <tr><td colspan="8" style="text-align:center;color:#8b98a8;">Cargando...</td></tr>
+          <tr><td colspan="8" style="text-align:center;color:#8b98a8;"></td></tr>
         </tbody>
       </table>
     </div>
@@ -8562,7 +8578,7 @@ body { overscroll-behavior-y: contain; }
           </tr>
         </thead>
         <tbody id="sw-dev-tbody">
-          <tr><td colspan="9" style="text-align:center;color:#8b98a8;">Cargando...</td></tr>
+          <tr><td colspan="9" style="text-align:center;color:#8b98a8;"></td></tr>
         </tbody>
       </table>
     </div>
@@ -8824,7 +8840,7 @@ body { overscroll-behavior-y: contain; }
 <!-- Loading Spinner -->
 <div id="loadingIndemnizaciones" style="text-align:center; padding:40px; display:none;">
 <div class="spinner" style="margin: 0 auto 10px auto;"></div>
-<p style="color: var(--text-muted);">Cargando datos...</p>
+<p style="color: var(--text-muted);"></p>
 </div>
 </div>
 </div>
@@ -9027,7 +9043,7 @@ body { overscroll-behavior-y: contain; }
 </table>
 <div id="loadingGerencial" style="text-align:center; padding:40px; display:none;">
 <div class="spinner" style="margin: 0 auto 10px auto;"></div>
-<p style="color: var(--text-muted);">Cargando datos gerenciales...</p>
+<p style="color: var(--text-muted);"></p>
 </div>
 </div>
 </div>
@@ -9187,7 +9203,7 @@ body { overscroll-behavior-y: contain; }
 </table>
 <div id="loadingRecargas" style="text-align:center; padding:40px; display:none;">
 <div class="spinner" style="margin: 0 auto 10px auto;"></div>
-<p style="color: var(--text-muted);">Cargando recargas...</p>
+<p style="color: var(--text-muted);"></p>
 </div>
 </div>
 </div>
@@ -9233,7 +9249,7 @@ body { overscroll-behavior-y: contain; }
 </table>
 <div id="loadingHistorialRecargas" style="text-align:center; padding:20px; display:none;">
 <div class="spinner" style="margin: 0 auto 10px auto;"></div>
-<p>Cargando historial...</p>
+<p></p>
 </div>
 </div>
 </div>
@@ -9300,7 +9316,7 @@ body { overscroll-behavior-y: contain; }
 </table>
 <div id="loadingColaboradores" style="text-align:center; padding:20px;">
 <div class="spinner" style="margin: 0 auto 10px auto;"></div>
-<p>Cargando colaboradores...</p>
+<p></p>
 </div>
 </div>
 </div>
@@ -9630,7 +9646,7 @@ body { overscroll-behavior-y: contain; }
 </table>
 <div id="loadingGuiasMadres" style="text-align:center; padding:40px; display:none;">
 <div class="spinner"></div>
-<p>Cargando...</p>
+<p></p>
 </div>
 </div>
 </div>
@@ -9846,7 +9862,7 @@ body { overscroll-behavior-y: contain; }
 <div style="flex: 1;">
 <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: #495057;">Estado:</label>
 <select disabled="" id="selectEstadoActualizarEstado" onchange="onEstadoChangeActualizarEstado()" style="width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px; box-sizing: border-box; outline: none; background: #fff;">
-<option value="">Cargando...</option>
+<option value="">Seleccione...</option>
 </select>
 </div>
 <div id="containerDescActualizarEstado" style="flex: 1;">
@@ -9954,7 +9970,7 @@ body { overscroll-behavior-y: contain; }
 </table>
 <div id="loadingSeguimiento" style="text-align:center; padding:40px; display:none;">
 <div class="spinner" style="margin: 0 auto 10px auto;"></div>
-<p style="color: var(--text-muted);">Cargando...</p>
+<p style="color: var(--text-muted);"></p>
 </div>
 </div>
 </div>
@@ -10022,7 +10038,7 @@ body { overscroll-behavior-y: contain; }
 </table>
 <div id="loadingHistorial" style="text-align:center; padding:20px;">
 <div class="spinner" style="margin: 0 auto 10px auto;"></div>
-<p>Cargando historial...</p>
+<p></p>
 </div>
 </div>
 </div>
@@ -10153,7 +10169,7 @@ body { overscroll-behavior-y: contain; }
       class="funciones-loading"
     >
       <div class="spinner"></div>
-      <p>Cargando tus funciones...</p>
+      <p></p>
     </div>
 
 
@@ -11735,7 +11751,7 @@ body { overscroll-behavior-y: contain; }
         </p>
 <div id="lista-auditoria" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
 <!-- Aquí se inyectan los resultados con JS -->
-<div style="text-align: center; padding: 20px;">Cargando auditoría...</div>
+<div style="text-align: center; padding: 20px;"></div>
 </div>
 </div>
 </div>
@@ -12872,7 +12888,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 <div class="form-group">
 <label>Mensajero (A) <span class="edit-badge">✏️</span></label>
 <select class="form-input" disabled="" id="seg_mensajero">
-<option value="">Cargando mensajeros...</option>
+<option value="">Seleccione mensajero...</option>
 </select>
 </div>
 <!-- 2. GUÍA -->
@@ -12979,7 +12995,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 <div class="form-group">
 <label>Seleccionar Mensajero:</label>
 <select class="form-input" id="recogida_mensajero">
-<option disabled="" selected="" value="">Cargando mensajeros...</option>
+<option disabled="" selected="" value="">Seleccione mensajero...</option>
 </select>
 </div>
 <!-- 2. ÁREA DE GUIAS -->
@@ -29757,28 +29773,41 @@ function abrirModalStatus() {
 }
 function cerrarModalStatus() { document.getElementById('disp-status-modal').style.display = 'none'; }
 
-// Colorea el contorno del perfil y el item "Mi Status" del menu segun mi estado
+// Colorea el contorno del perfil y el item "Mi Status" (desktop + móvil)
 function actualizarMiStatusChip() {
   if (!currentUser || !currentUser.cedula) return;
   var permiso = currentUser.role === 'Administrador' || (currentUser.permissions || '').includes('status');
   var item = document.getElementById('disp-status-menu-item');
+  var itemM = document.getElementById('disp-status-menu-item-mobile');
+  var divM = document.getElementById('disp-status-divider-mobile');
   if (item) item.style.display = permiso ? 'flex' : 'none';
+  if (itemM) itemM.style.display = permiso ? 'flex' : 'none';
+  if (divM) divM.style.display = permiso ? 'block' : 'none';
   if (!permiso) return;
   google.script.run
     .withSuccessHandler(function(res) {
       if (!res || res.status !== 'success') return;
       var est = res.evento ? (DISP_ESTADOS_CHIP[res.evento] || { texto: res.evento, color: '#888' }) : { texto: 'Sin registro', color: '#6b7280' };
-      var badge = document.getElementById('disp-status-menu-estado');
-      var cont = document.getElementById('userProfileContainer');
-      if (badge) {
+      function paintBadge(id) {
+        var badge = document.getElementById(id);
+        if (!badge) return;
         badge.innerText = est.texto;
         badge.style.color = est.color;
         badge.style.borderColor = est.color;
       }
+      paintBadge('disp-status-menu-estado');
+      paintBadge('disp-status-menu-estado-mobile');
+      var cont = document.getElementById('userProfileContainer');
       if (cont) {
         cont.style.border = '1.5px solid ' + est.color;
         cont.style.boxShadow = '0 0 14px ' + est.color + '40';
         cont.style.borderRadius = '16px';
+      }
+      var mobileWrap = document.querySelector('.mobile-profile-wrapper');
+      if (mobileWrap) {
+        mobileWrap.style.border = '1.5px solid ' + est.color;
+        mobileWrap.style.boxShadow = '0 0 12px ' + est.color + '40';
+        mobileWrap.style.borderRadius = '50%';
       }
     })
     .withFailureHandler(function() {})
@@ -29886,9 +29915,14 @@ var DISP_ESTADOS = {
   'IMPULSO VITAL':  { texto: 'Impulso Vital',   color: '#06b6d4' }
 };
 
+var _dispPrimeraCarga = true;
 function cargarPanelDisponibilidad() {
+  var silencioso = !_dispPrimeraCarga;
+  if (!silencioso) showLoading(true, 'CARGANDO', 'Panel de disponibilidad');
   google.script.run
     .withSuccessHandler(function(res) {
+      if (!silencioso) showLoading(false);
+      _dispPrimeraCarga = false;
       var cont = document.getElementById('disp-tarjetas');
       if (!cont) return;
       if (res && res.status === 'error') {
@@ -29936,6 +29970,7 @@ function cargarPanelDisponibilidad() {
       }).join('') || '<div style="grid-column:1/-1;text-align:center;color:#888;padding:20px;">Aún no hay registros de disponibilidad.</div>';
     })
     .withFailureHandler(function(err) {
+      if (!silencioso) showLoading(false);
       var cont = document.getElementById('disp-tarjetas');
       if (cont) cont.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#dc3545;padding:20px;">Error cargando disponibilidad: '
         + ((err && err.message) ? err.message : 'sin conexión con el servidor') + '</div>';
@@ -30463,8 +30498,10 @@ function buscarHistorialActupd(sinInfo) {
   var info = document.getElementById('actupd-hist-info');
   if (!sinInfo && q) { info.style.display = 'block'; info.innerHTML = '<i class="bi bi-arrow-repeat"></i> Buscando "' + q + '"...'; }
   else info.style.display = 'none';
+  showLoading(true, 'CARGANDO', 'Actualización de datos');
   google.script.run
     .withSuccessHandler(function(res) {
+      showLoading(false);
       var body = document.getElementById('actupd-tabla-body');
       if (!body) return;
       if (!res || res.status !== 'success') {
@@ -30483,6 +30520,7 @@ function buscarHistorialActupd(sinInfo) {
       }).join('') || '<tr><td colspan="6" style="text-align:center;color:#888;">Sin registros.</td></tr>';
     })
     .withFailureHandler(function(e) {
+      showLoading(false);
       var body = document.getElementById('actupd-tabla-body');
       if (body) body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#dc3545">Error: ' + (e.message || '') + '</td></tr>';
     })
