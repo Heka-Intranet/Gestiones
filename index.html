@@ -13595,7 +13595,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     // Debe terminar en /exec
     // Ejemplo: https://script.google.com/macros/s/TU_ID_AQUI/exec
     // ============================================================
-    var GAS_URL = 'https://script.google.com/macros/s/AKfycbxR-Gk0SqU7I_vjaNs1l6wP8mGqfauy_CPsng0x0qEdmLi_Cv_8rVr8itSksW5VsVo/exec';
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbxPArisKgHxujwNnvaK51P-4j-FV9odeLiSTrJNHInK1xuFJPETp8fa24uzYpeYwfI/exec';
 
     // ============================================================
     // 🔌 SHIM: google.script.run → fetch
@@ -13721,17 +13721,20 @@ input[type="date"]::-webkit-calendar-picker-indicator,
                 req
                 .then(function(r) {
                   if (timer) clearTimeout(timer);
-                  if (r.status === 429 || r.status >= 500) {
+                  // 404/429/5xx: reintentar (404 intermitente es habitual en GAS)
+                  if (r.status === 404 || r.status === 429 || r.status >= 500) {
                     if (intento < GAS_MAX_REINTENTOS) {
                       intento++;
-                      setTimeout(enviar, 1500 * intento);
+                      setTimeout(enviar, 1200 * intento);
                       return null;
+                    }
+                    if (r.status === 404) {
+                      throw new Error('GAS 404: URL de deployment no válida o Google no encontró el Web App. Crea un New deployment y actualiza GAS_URL.');
                     }
                     throw new Error('El servidor está saturado (HTTP ' + r.status + '). Intenta de nuevo en unos segundos.');
                   }
-                  // 405 = deployment sin doPost: mensaje claro
                   if (r.status === 405) {
-                    throw new Error('El Web App no acepta POST (405). En Apps Script: Deploy → Manage deployments → Edit → New version → Deploy (Access: Anyone).');
+                    throw new Error('El Web App no acepta POST (405). En Apps Script: Deploy → New version (Access: Anyone).');
                   }
                   if (!r.ok) throw new Error('HTTP ' + r.status);
                   return r.text();
@@ -32300,6 +32303,7 @@ function swPollNotificaciones(silencioso) {
   if (!currentUser || !currentUser.cedula) return;
   // Colaborador siempre
   google.script.run
+    .withFailureHandler(function(){ /* silencioso: 404 intermitente de GAS */ })
     .withSuccessHandler(function(res) {
       if (!res || res.status !== 'success') return;
       var count = res.count || 0;
@@ -32327,6 +32331,7 @@ function swPollNotificaciones(silencioso) {
     (String(currentUser.permissions || '').indexOf('mesa_ayuda_dev') >= 0);
   if (esDev) {
     google.script.run
+      .withFailureHandler(function(){ /* silencioso */ })
       .withSuccessHandler(function(res) {
         if (!res || res.status !== 'success') return;
         var count = res.count || 0;
@@ -32352,7 +32357,7 @@ function swPollNotificaciones(silencioso) {
 function swStartNotifPolling() {
   if (swNotifTimer) clearInterval(swNotifTimer);
   swPollNotificaciones(true);
-  swNotifTimer = setInterval(function(){ swPollNotificaciones(false); }, 30000);
+  swNotifTimer = setInterval(function(){ swPollNotificaciones(false); }, 60000);
 }
 
 </script>
