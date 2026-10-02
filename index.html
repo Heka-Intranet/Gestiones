@@ -7850,13 +7850,15 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 @media (max-width:460px){.disp-opt strong{font-size:13px}.disp-opt i{width:38px;height:38px;font-size:19px}}
 </style>
 
-<!-- Modal confirmacion disponibilidad -->
+<!-- Modal confirmacion disponibilidad (sin foto; validacion de dispositivo obligatoria) -->
 <div id="disp-modal" style="display:none;position:fixed;inset:0;background:rgba(4,8,13,.75);backdrop-filter:blur(3px);z-index:9999;align-items:center;justify-content:center;">
 <div style="background:linear-gradient(150deg,#111b26,#0b1119);border:1px solid rgba(255,196,0,.25);border-radius:18px;max-width:420px;width:92%;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.5);">
 <h3 style="color:#eaf1f8;margin:0 0 6px;">Confirmar <span id="disp-modal-evento" style="color:#ffc400"></span></h3>
-<p style="color:#cbd5e1;font-size:13.5px;margin:0 0 14px;">Se adjuntará tu foto de evidencia y tu ubicación actual.</p>
-<div style="text-align:center;margin-bottom:14px;"><img id="disp-foto-preview" src="data:," alt="evidencia" style="max-width:100%;max-height:200px;border-radius:12px;border:1px solid rgba(255,255,255,.15);"></div>
-<div id="disp-ubicacion" style="color:#cbd5e1;font-size:13px;margin-bottom:18px;"></div>
+<p style="color:#cbd5e1;font-size:13.5px;margin:0 0 14px;">Se registrará el cambio de estado con validación del dispositivo.</p>
+<div id="disp-validacion-ok" style="color:#cbd5e1;font-size:13px;margin-bottom:18px;display:flex;align-items:center;gap:8px;">
+<i class="bi bi-shield-check" style="color:#22c55e;font-size:18px;"></i>
+<span>Dispositivo validado correctamente.</span>
+</div>
 <div style="display:flex;gap:12px;">
 <button type="button" id="disp-cancelar" style="flex:1;padding:11px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;font-weight:600;cursor:pointer;">Cancelar</button>
 <button type="button" id="disp-confirmar" style="flex:1;padding:11px;border-radius:11px;border:none;background:linear-gradient(135deg,#ffc400,#ffb300);color:#111;font-weight:700;cursor:pointer;">Registrar</button>
@@ -12957,6 +12959,13 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       }
     };
 
+    // Token de sesion (se llena tras loginBackend exitoso)
+    var HEKA_SESSION_TOKEN = null;
+    try {
+      var _savedTok = localStorage.getItem('heka_token');
+      if (_savedTok) HEKA_SESSION_TOKEN = _savedTok;
+    } catch (e) {}
+
     (function() {
       // Reintentos SOLO cuando el servidor respondió 429/5xx (la operación no llegó
       // a ejecutarse). Nunca se reintenta tras timeout o error de red: la petición
@@ -12975,7 +12984,9 @@ input[type="date"]::-webkit-calendar-picker-indicator,
             // prop = nombre de la función GAS a ejecutar
             return function() {
               var args = Array.prototype.slice.call(arguments);
-              var payload = JSON.stringify({ fn: prop, args: args });
+              var body = { fn: prop, args: args };
+              if (HEKA_SESSION_TOKEN) body.token = HEKA_SESSION_TOKEN;
+              var payload = JSON.stringify(body);
               var intento = 0;
 
               function reportarError(mensaje) {
@@ -13011,6 +13022,12 @@ input[type="date"]::-webkit-calendar-picker-indicator,
                   var data;
                   try { data = JSON.parse(text); } catch(e) {
                     throw new Error('Respuesta no válida del servidor (¿sesión de Google expirada?). Recarga la página e intenta de nuevo.');
+                  }
+                  // Si el backend indica sesion invalida/expirada, limpiar token
+                  if (data && data.status === 'error' && data.message &&
+                      (data.message.indexOf('Sesión') >= 0 || data.message.indexOf('sesión') >= 0)) {
+                    HEKA_SESSION_TOKEN = null;
+                    try { localStorage.removeItem('heka_token'); } catch (ex) {}
                   }
                   if (successCb) successCb(data);
                 })
@@ -13643,11 +13660,15 @@ input[type="date"]::-webkit-calendar-picker-indicator,
         document.getElementById('loginOverlay').classList.remove('hidden');
         document.getElementById('appContainer').classList.remove('logged-in');
         currentUser = { name: '', image: '', permissions: '', role: '', cedula: '', centroCosto: '' };
-        // Limpiar sesi\u00f3n persistente
-        try { localStorage.removeItem('heka_session'); } catch(ex) {}
+        // Limpiar sesion persistente y token
+        HEKA_SESSION_TOKEN = null;
+        try {
+          localStorage.removeItem('heka_session');
+          localStorage.removeItem('heka_token');
+        } catch(ex) {}
         updateUserHeader();
         showLoading(false);
-        showToast("Sesi\u00f3n cerrada");
+        showToast("Sesión cerrada");
       }, 800);
     }
 
@@ -13669,7 +13690,12 @@ input[type="date"]::-webkit-calendar-picker-indicator,
               isInactive: data.isInactive,
               centroCosto: data.centroCosto || ''
             };
-            // Guardar sesi\u00f3n en localStorage para no pedir login de nuevo
+            // Token de sesion para el dispatcher protegido
+            if (data.token) {
+              HEKA_SESSION_TOKEN = data.token;
+              try { localStorage.setItem('heka_token', data.token); } catch(ex) {}
+            }
+            // Guardar sesion en localStorage para no pedir login de nuevo
             try { localStorage.setItem('heka_session', JSON.stringify({ user: user, pass: pass })); } catch(ex) {}
             loginSuccess();
           } else { showToast(data.message); }
@@ -29318,49 +29344,44 @@ function actualizarMiStatusChip() {
     .withFailureHandler(function() {})
     .getMiDisponibilidad(String(currentUser.cedula));
 }
-var dispFotoData = null;
 var dispTimer = null;
 
 function iniciarRegistroDisponibilidad(evento) {
   dispPendiente = { evento: evento, lat: null, lng: null, precision: null };
-  dispFotoData = null;
-  // 1. ubicacion en tiempo real
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(pos) {
+  var info = document.getElementById('disp-status-info');
+  info.style.display = 'block';
+  info.innerHTML = '<i class="bi bi-arrow-repeat"></i> Validando dispositivo...';
+
+  if (!navigator.geolocation) {
+    info.innerHTML = '<span style="color:#dc3545"><i class="bi bi-x-circle"></i> Este dispositivo no permite validar el registro. Usa un dispositivo compatible.</span>';
+    showToast('No se puede validar el dispositivo en este equipo.', 'error');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
       dispPendiente.lat = pos.coords.latitude;
       dispPendiente.lng = pos.coords.longitude;
       dispPendiente.precision = Math.round(pos.coords.accuracy || 0);
-    }, function() { /* sin permiso: se registra sin ubicacion */ }, { enableHighAccuracy: true, timeout: 8000 });
-  }
-  // 2. pedir la foto de evidencia
-  var input = document.getElementById('disp-foto-input');
-  input.value = '';
-  input.click();
-}
-
-// Al elegir la foto: preview + modal de confirmacion
-document.addEventListener('change', function(e) {
-  if (e.target && e.target.id === 'disp-foto-input' && e.target.files.length) {
-    var file = e.target.files[0];
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      var dataUrl = ev.target.result; // data:image/jpeg;base64,....
-      dispFotoData = dataUrl.split(',')[1];
-      document.getElementById('disp-foto-preview').src = dataUrl;
-      document.getElementById('disp-modal-evento').innerText = dispPendiente.evento;
-      var ub = document.getElementById('disp-ubicacion');
-      if (dispPendiente.lat !== null) {
-        ub.innerHTML = '<i class="bi bi-geo-alt-fill" style="color:#ffc400;"></i> Ubicación capturada: '
-          + dispPendiente.lat.toFixed(5) + ', ' + dispPendiente.lng.toFixed(5)
-          + ' (±' + dispPendiente.precision + ' m)';
-      } else {
-        ub.innerHTML = '<i class="bi bi-geo-alt" style="color:#dc3545;"></i> Sin ubicación (permiso denegado o no disponible)';
-      }
+      document.getElementById('disp-modal-evento').innerText = evento;
       document.getElementById('disp-modal').style.display = 'flex';
-    };
-    reader.readAsDataURL(file);
-  }
-});
+      info.style.display = 'none';
+    },
+    function(err) {
+      var msg = 'Debes permitir el acceso para poder registrar. Sin la validación no es posible continuar.';
+      if (err && err.code === 1) {
+        msg = 'Permiso denegado. Debes permitir el acceso para poder registrar el estado.';
+      } else if (err && err.code === 2) {
+        msg = 'No se pudo validar el dispositivo. Intenta de nuevo.';
+      } else if (err && err.code === 3) {
+        msg = 'Tiempo de espera agotado al validar. Intenta de nuevo.';
+      }
+      info.innerHTML = '<span style="color:#dc3545"><i class="bi bi-x-circle"></i> ' + msg + '</span>';
+      showToast(msg, 'error');
+    },
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+  );
+}
 
 document.getElementById('disp-historial-modal').addEventListener('click', function(e) {
   if (e.target === this) cerrarHistorialDisp();
@@ -29375,6 +29396,10 @@ document.getElementById('disp-cancelar').addEventListener('click', function() {
   document.getElementById('disp-modal').style.display = 'none';
 });
 document.getElementById('disp-confirmar').addEventListener('click', function() {
+  if (!dispPendiente || dispPendiente.lat === null || dispPendiente.lng === null) {
+    showToast('Validación incompleta. Debes permitir el acceso para continuar.', 'error');
+    return;
+  }
   document.getElementById('disp-modal').style.display = 'none';
   var info = document.getElementById('disp-status-info');
   info.style.display = 'block';
@@ -29395,8 +29420,7 @@ document.getElementById('disp-confirmar').addEventListener('click', function() {
       evento: dispPendiente.evento,
       lat: dispPendiente.lat,
       lng: dispPendiente.lng,
-      precision: dispPendiente.precision,
-      foto: dispFotoData ? { data: dispFotoData, mimeType: 'image/jpeg' } : null
+      precision: dispPendiente.precision
     });
 });
 
