@@ -1,0 +1,29 @@
+name: Desplegar Intranet Heka a GAS por API
+
+on:
+  push:
+    branches:
+      - main  # Si tu rama principal en GitHub se llama 'master', cambia 'main' por 'master'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 1. Descargar el código del repositorio
+      uses: actions/checkout@v4
+
+    - name: 2. Configurar Node.js en el servidor de GitHub
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: 3. Instalar Clasp (API de Google)
+      run: npm install -g @google/clasp
+
+    - name: 4. Inyectar llaves de autenticación de Google Cloud
+      run: |
+        echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
+
+    - name: 5. Empujar código a Google Apps Script por API
+      run: clasp push --force
