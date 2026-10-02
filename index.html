@@ -7579,6 +7579,9 @@ body { overscroll-behavior-y: contain; }
 <i class="bi bi-hdd-stack"></i><span>Mesa de desarrollo</span>
 <span id="sw-badge-dev" class="sw-nav-badge" style="display:none;">0</span>
 </a>
+<a class="nav-item sub-item" data-target="mesa_ayuda_hist" href="#" onclick="goToPanel('panel-mesa-ayuda-hist', this)">
+<i class="bi bi-clock-history"></i><span>Historial general</span>
+</a>
 </div>
 </div>
 
@@ -8553,20 +8556,23 @@ body { overscroll-behavior-y: contain; }
   </div>
 
   <div class="card" style="margin-top:16px;">
-    <div class="sw-toolbar">
+    <div class="sw-toolbar" style="flex-wrap:wrap;gap:10px;">
       <div class="sw-filtros" id="sw-filtros-mis" data-valor="TODOS">
         <button type="button" class="sw-chip active" data-f="TODOS" onclick="swSetFiltro('mis', this)">Todas</button>
         <button type="button" class="sw-chip" data-f="ABIERTA" onclick="swSetFiltro('mis', this)">Abiertas</button>
         <button type="button" class="sw-chip" data-f="EN GESTION" onclick="swSetFiltro('mis', this)">En gestión</button>
         <button type="button" class="sw-chip" data-f="SOLUCIONADO" onclick="swSetFiltro('mis', this)">Solucionadas</button>
       </div>
-      <button class="btn btn-secondary btn-sm" onclick="cargarMisSolicitudesSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
+      <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:200px;">
+        <input type="text" id="sw-search-mis" class="search-input" placeholder="Buscar por ticket o título..." oninput="swFiltrarTabla('mis')" style="flex:1;min-width:160px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#eaf1f8;font-size:13px;">
+        <button class="btn btn-secondary btn-sm" onclick="cargarMisSolicitudesSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
+      </div>
     </div>
     <div class="table-container sw-table-wrap">
       <table class="sw-table">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Ticket</th>
             <th>Fecha</th>
             <th>Título</th>
             <th>Prioridad</th>
@@ -8591,11 +8597,14 @@ body { overscroll-behavior-y: contain; }
       <h1 style="margin:0;"><i class="bi bi-hdd-stack" style="color:var(--primary-yellow);"></i> Mesa de desarrollo</h1>
       <p style="margin:6px 0 0;color:#8b98a8;">Gestiona, responde y cierra solicitudes del equipo</p>
     </div>
-    <button class="btn btn-secondary" onclick="cargarSolicitudesDevSW()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" id="sw-btn-config-devs" onclick="abrirModalConfigDevsSW()" style="display:none;"><i class="bi bi-gear-fill"></i> Desarrolladores</button>
+      <button class="btn btn-secondary" onclick="cargarSolicitudesDevSW()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
+    </div>
   </div>
 
   <div class="card" style="margin-top:16px;">
-    <div class="sw-toolbar">
+    <div class="sw-toolbar" style="flex-wrap:wrap;gap:10px;">
       <div class="sw-filtros" id="sw-filtros-dev" data-valor="ACTIVAS">
         <button type="button" class="sw-chip active" data-f="ACTIVAS" onclick="swSetFiltro('dev', this)">Activas</button>
         <button type="button" class="sw-chip" data-f="ABIERTA" onclick="swSetFiltro('dev', this)">Abiertas</button>
@@ -8603,13 +8612,16 @@ body { overscroll-behavior-y: contain; }
         <button type="button" class="sw-chip" data-f="SOLUCIONADO" onclick="swSetFiltro('dev', this)">Solucionadas</button>
         <button type="button" class="sw-chip" data-f="TODOS" onclick="swSetFiltro('dev', this)">Todas</button>
       </div>
-      <button class="btn btn-secondary btn-sm" onclick="cargarSolicitudesDevSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
+      <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:200px;">
+        <input type="text" id="sw-search-dev" class="search-input" placeholder="Buscar por ticket o título..." oninput="swFiltrarTabla('dev')" style="flex:1;min-width:160px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#eaf1f8;font-size:13px;">
+        <button class="btn btn-secondary btn-sm" onclick="cargarSolicitudesDevSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
+      </div>
     </div>
     <div class="table-container sw-table-wrap">
       <table class="sw-table">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Ticket</th>
             <th>Fecha</th>
             <th>Solicitante</th>
             <th>Título</th>
@@ -8621,6 +8633,53 @@ body { overscroll-behavior-y: contain; }
           </tr>
         </thead>
         <tbody id="sw-dev-tbody">
+          <tr><td colspan="9" style="text-align:center;color:#8b98a8;"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= PANEL SOFTWARE: HISTORIAL GENERAL ================= -->
+<div class="panel" id="panel-mesa-ayuda-hist">
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="margin:0;"><i class="bi bi-clock-history" style="color:var(--primary-yellow);"></i> Historial general</h1>
+      <p style="margin:6px 0 0;color:#8b98a8;">Todas las solicitudes de software en un solo lugar</p>
+    </div>
+    <button class="btn btn-secondary" onclick="cargarHistorialSW()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="sw-toolbar" style="flex-wrap:wrap;gap:10px;">
+      <div class="sw-filtros" id="sw-filtros-hist" data-valor="TODOS">
+        <button type="button" class="sw-chip active" data-f="TODOS" onclick="swSetFiltro('hist', this)">Todas</button>
+        <button type="button" class="sw-chip" data-f="ABIERTA" onclick="swSetFiltro('hist', this)">Abiertas</button>
+        <button type="button" class="sw-chip" data-f="EN GESTION" onclick="swSetFiltro('hist', this)">En gestión</button>
+        <button type="button" class="sw-chip" data-f="SOLUCIONADO" onclick="swSetFiltro('hist', this)">Solucionadas</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:200px;">
+        <input type="text" id="sw-search-hist" class="search-input" placeholder="Buscar por ticket, título o solicitante..." oninput="swFiltrarTabla('hist')" style="flex:1;min-width:160px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#eaf1f8;font-size:13px;">
+        <button class="btn btn-secondary btn-sm" onclick="cargarHistorialSW()" title="Actualizar"><i class="bi bi-arrow-clockwise"></i></button>
+      </div>
+    </div>
+    <div class="table-container sw-table-wrap">
+      <table class="sw-table">
+        <thead>
+          <tr>
+            <th>Ticket</th>
+            <th>Fecha</th>
+            <th>Solicitante</th>
+            <th>Título</th>
+            <th>Prioridad</th>
+            <th>Tiempo</th>
+            <th>Estado</th>
+            <th>Asignado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="sw-hist-tbody">
           <tr><td colspan="9" style="text-align:center;color:#8b98a8;"></td></tr>
         </tbody>
       </table>
@@ -8664,6 +8723,20 @@ body { overscroll-behavior-y: contain; }
           </select>
         </div>
       </div>
+      <!-- Destino: desarrollador / compartida -->
+      <div>
+        <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Asignación</label>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          <button type="button" id="sw-mode-ind" class="sw-mode-pill active-ind" onclick="swSetModoNueva('individual')">
+            <i class="bi bi-person-badge"></i> Un desarrollador
+          </button>
+          <button type="button" id="sw-mode-comp" class="sw-mode-pill" onclick="swSetModoNueva('compartida')">
+            <i class="bi bi-people-fill"></i> Compartida (varios)
+          </button>
+        </div>
+        <div id="sw-nueva-devs-list" style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-height:180px;overflow-y:auto;"></div>
+        <p id="sw-nueva-devs-hint" style="color:#6b7a8d;font-size:11px;margin:6px 0 0;">Cargando desarrolladores...</p>
+      </div>
       <div>
         <label style="color:#a78bfa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Adjunto (imagen o video)</label>
         <div style="margin-top:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -8684,8 +8757,8 @@ body { overscroll-behavior-y: contain; }
 </div>
 
 <!-- MODAL DETALLE + CHAT SOFTWARE -->
-<div id="modal-sw-chat" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(2,6,12,.92);backdrop-filter:blur(10px);z-index:100000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;overflow:hidden;">
-  <div style="max-width:780px;width:100%;height:min(88vh,700px);max-height:calc(100vh - 40px);display:flex;flex-direction:column;background:linear-gradient(165deg,#0f1520 0%,#0a0e16 100%);border:1px solid rgba(167,139,250,.28);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.75);overflow:hidden;position:relative;z-index:1;">
+<div id="modal-sw-chat" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(2,6,12,.94);backdrop-filter:blur(14px);z-index:100000;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;overflow:hidden;">
+  <div class="sw-chat-shell">
     <!-- Header -->
     <div style="padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,.02);flex-shrink:0;">
       <div style="width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#a78bfa,#6f42c1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -8697,9 +8770,20 @@ body { overscroll-behavior-y: contain; }
         <div id="sw-chat-meta" style="color:#8b98a8;font-size:11.5px;margin-top:4px;overflow-wrap:anywhere;word-break:break-word;line-height:1.35;"></div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <button type="button" id="sw-btn-unir" onclick="abrirModalUnirSW()" title="Unir colaborador" style="display:none;height:30px;padding:0 12px;border-radius:10px;border:1px solid rgba(167,139,250,.4);background:rgba(167,139,250,.12);color:#c4b5fd;font-size:11px;font-weight:700;cursor:pointer;align-items:center;gap:5px;">
+          <i class="bi bi-person-plus-fill"></i> Unir
+        </button>
         <span id="sw-chat-estado-badge"></span>
         <button type="button" onclick="cerrarModalChatSW()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
       </div>
+    </div>
+    <!-- Buscar en el chat -->
+    <div style="padding:8px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:center;flex-shrink:0;background:rgba(0,0,0,.15);">
+      <i class="bi bi-search" style="color:#8b98a8;font-size:13px;"></i>
+      <input type="text" id="sw-chat-search" placeholder="Buscar en esta conversación..." oninput="swBuscarEnChat()" style="flex:1;background:transparent;border:none;outline:none;color:#eaf1f8;font-size:13px;padding:4px 0;">
+      <span id="sw-chat-search-count" style="color:#8b98a8;font-size:11px;white-space:nowrap;"></span>
+      <button type="button" id="sw-chat-search-prev" onclick="swChatSearchNav(-1)" title="Anterior" style="display:none;width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#a78bfa;cursor:pointer;"><i class="bi bi-chevron-up"></i></button>
+      <button type="button" id="sw-chat-search-next" onclick="swChatSearchNav(1)" title="Siguiente" style="display:none;width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#a78bfa;cursor:pointer;"><i class="bi bi-chevron-down"></i></button>
     </div>
     <!-- Messages -->
     <div id="sw-chat-mensajes" style="flex:1;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;padding:18px 20px;display:flex;flex-direction:column;gap:12px;background:radial-gradient(ellipse at top,rgba(167,139,250,.04),transparent 55%);box-sizing:border-box;"></div>
@@ -8729,6 +8813,40 @@ body { overscroll-behavior-y: contain; }
     </div>
     <div id="sw-chat-cerrado" style="display:none;padding:14px 20px;text-align:center;color:#8b98a8;font-size:13px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;">
       <i class="bi bi-lock-fill" style="color:#22c55e;"></i> Caso solucionado — el chat está cerrado
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL UNIR COLABORADOR AL CHAT -->
+<div id="modal-sw-unir" style="display:none;position:fixed;inset:0;background:rgba(2,6,12,.9);backdrop-filter:blur(10px);z-index:100050;align-items:center;justify-content:center;padding:20px;">
+  <div style="max-width:420px;width:100%;max-height:80vh;display:flex;flex-direction:column;background:linear-gradient(165deg,#121820,#0a0e16);border:1px solid rgba(167,139,250,.3);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.7);overflow:hidden;">
+    <div style="padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;">
+      <div style="color:#eaf1f8;font-weight:800;font-size:15px;"><i class="bi bi-person-plus-fill" style="color:#a78bfa;"></i> Unir colaborador</div>
+      <button type="button" onclick="cerrarModalUnirSW()" style="width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div style="padding:12px 16px;">
+      <input type="text" id="sw-unir-search" placeholder="Buscar por nombre o cédula..." oninput="swFiltrarUnir()" style="width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#eaf1f8;font-size:13px;outline:none;">
+    </div>
+    <div id="sw-unir-lista" style="flex:1;overflow-y:auto;padding:0 12px 16px;display:flex;flex-direction:column;gap:8px;max-height:50vh;"></div>
+  </div>
+</div>
+
+<!-- MODAL CONFIG DESARROLLADORES (solo admin) -->
+<div id="modal-sw-config-devs" style="display:none;position:fixed;inset:0;background:rgba(2,6,12,.9);backdrop-filter:blur(10px);z-index:100050;align-items:center;justify-content:center;padding:20px;">
+  <div style="max-width:480px;width:100%;max-height:85vh;display:flex;flex-direction:column;background:linear-gradient(165deg,#121820,#0a0e16);border:1px solid rgba(255,196,0,.25);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.7);overflow:hidden;">
+    <div style="padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;">
+      <div style="color:#eaf1f8;font-weight:800;font-size:15px;"><i class="bi bi-code-slash" style="color:#ffc400;"></i> Configurar desarrolladores</div>
+      <button type="button" onclick="cerrarModalConfigDevsSW()" style="width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <p style="padding:10px 18px 0;color:#8b98a8;font-size:12px;margin:0;">Selecciona quiénes serán desarrolladores de Software. Se guardan en la hoja SW_DESARROLLADORES.</p>
+    <div style="padding:12px 16px;">
+      <input type="text" id="sw-cfg-search" placeholder="Buscar colaborador..." oninput="swFiltrarConfigDevs()" style="width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#eaf1f8;font-size:13px;outline:none;">
+    </div>
+    <div id="sw-cfg-lista" style="flex:1;overflow-y:auto;padding:0 12px;display:flex;flex-direction:column;gap:8px;max-height:45vh;"></div>
+    <div style="padding:14px 18px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:flex-end;gap:10px;">
+      <button type="button" class="btn btn-secondary" onclick="cerrarModalConfigDevsSW()">Cancelar</button>
+      <button type="button" class="btn btn-primary" onclick="guardarConfigDevsSW()"><i class="bi bi-check-lg"></i> Guardar</button>
     </div>
   </div>
 </div>
@@ -12026,30 +12144,73 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 .cun-logo-opt.seleccionada span{color:#a78bfa;}
 
 
+
+/* ===== SOFTWARE FUTURISTA ===== */
 .sw-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
-.sw-filtros{display:inline-flex;flex-wrap:wrap;gap:6px;padding:4px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;}
-.sw-chip{border:none;background:transparent;color:#8b98a8;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:10px;cursor:pointer;transition:all .18s ease;letter-spacing:.2px;}
+.sw-filtros{display:inline-flex;flex-wrap:wrap;gap:6px;padding:5px;background:rgba(10,14,22,.6);border:1px solid rgba(167,139,250,.18);border-radius:16px;backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.04);}
+.sw-chip{border:none;background:transparent;color:#8b98a8;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:12px;cursor:pointer;transition:all .2s ease;letter-spacing:.2px;}
 .sw-chip:hover{color:#eaf1f8;background:rgba(255,255,255,.06);}
-.sw-chip.active{background:linear-gradient(135deg,rgba(255,196,0,.2),rgba(255,196,0,.08));color:#ffc400;box-shadow:inset 0 0 0 1px rgba(255,196,0,.35);}
-.sw-table-wrap{overflow-x:auto;}
+.sw-chip.active{background:linear-gradient(135deg,rgba(255,196,0,.22),rgba(255,196,0,.08));color:#ffc400;box-shadow:0 0 16px rgba(255,196,0,.15), inset 0 0 0 1px rgba(255,196,0,.4);}
+.sw-table-wrap{overflow-x:auto;border-radius:14px;}
 .sw-table{width:100%;border-collapse:separate;border-spacing:0;}
-.sw-table th{white-space:nowrap;font-size:12px;letter-spacing:.3px;}
-.sw-table td{vertical-align:middle;font-size:13px;}
-.sw-table td.sw-td-id{font-family:ui-monospace,monospace;font-size:11.5px;white-space:nowrap;color:#a78bfa;}
+.sw-table th{white-space:nowrap;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:#8b98a8;padding:12px 14px;border-bottom:1px solid rgba(167,139,250,.15);}
+.sw-table td{vertical-align:middle;font-size:13px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);}
+.sw-table td.sw-td-id{font-family:ui-monospace,monospace;font-size:12px;white-space:nowrap;color:#c4b5fd;font-weight:700;text-shadow:0 0 12px rgba(167,139,250,.35);}
 .sw-table td.sw-td-title{max-width:220px;overflow-wrap:anywhere;word-break:break-word;font-weight:600;}
 .sw-table td.sw-td-name{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.sw-table tbody tr:hover{background:rgba(255,255,255,.03);}
-.sw-nav-badge{margin-left:auto;background:linear-gradient(135deg,#f87171,#ef4444);color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 0 10px rgba(239,68,68,.45);}
-.sw-bubble{max-width:min(70%,360px);width:fit-content;border-radius:16px;padding:10px 12px;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.18);box-sizing:border-box;overflow:hidden;margin:0 4px;}
-.sw-bubble-colab{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-bottom-left-radius:4px;align-self:flex-start;}
-.sw-bubble-dev{background:linear-gradient(145deg,#7c5cff,#5b3fd4);border:1px solid rgba(255,255,255,.12);border-bottom-right-radius:4px;align-self:flex-end;}
-.sw-bubble-sys{background:rgba(255,196,0,.1);border:1px solid rgba(255,196,0,.28);border-radius:14px;align-self:center;max-width:min(88%,480px);text-align:left;}
-.sw-bubble-text{color:#eef2ff;font-size:13.5px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-all;word-wrap:break-word;max-width:100%;}
+.sw-table tbody tr{transition:background .15s ease;}
+.sw-table tbody tr:hover{background:linear-gradient(90deg,rgba(167,139,250,.06),rgba(255,196,0,.03));}
+.sw-nav-badge{margin-left:auto;background:linear-gradient(135deg,#f87171,#ef4444);color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 0 14px rgba(239,68,68,.55);animation:swBadgePulse 2s ease-in-out infinite;}
+@keyframes swBadgePulse{0%,100%{box-shadow:0 0 10px rgba(239,68,68,.4);}50%{box-shadow:0 0 18px rgba(239,68,68,.7);}}
+.sw-bubble{max-width:min(70%,380px);width:fit-content;border-radius:18px;padding:11px 14px;position:relative;box-shadow:0 6px 20px rgba(0,0,0,.25);box-sizing:border-box;overflow:hidden;margin:0 4px;backdrop-filter:blur(6px);}
+.sw-bubble-colab{background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.14);border-bottom-left-radius:5px;align-self:flex-start;}
+.sw-bubble-dev{background:linear-gradient(145deg,#8b6cff,#5b3fd4);border:1px solid rgba(255,255,255,.15);border-bottom-right-radius:5px;align-self:flex-end;box-shadow:0 6px 24px rgba(111,66,193,.35);}
+.sw-bubble-sys{background:linear-gradient(145deg,rgba(255,196,0,.12),rgba(255,196,0,.05));border:1px solid rgba(255,196,0,.3);border-radius:14px;align-self:center;max-width:min(88%,480px);text-align:left;box-shadow:0 0 20px rgba(255,196,0,.08);}
+.sw-bubble-text{color:#eef2ff;font-size:13.5px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;max-width:100%;}
 .sw-bubble-sys .sw-bubble-text{color:#f5e6a8;}
 .sw-bubble-meta{display:flex;gap:8px;align-items:center;margin-bottom:5px;flex-wrap:wrap;max-width:100%;}
 .sw-bubble-meta strong{overflow:hidden;text-overflow:ellipsis;max-width:160px;white-space:nowrap;}
 .sw-media{max-width:100%;overflow:hidden;}
-.sw-media img,.sw-media video{max-width:100%;max-height:260px;border-radius:10px;margin-top:6px;display:block;background:#000;}
+.sw-media img,.sw-media video{max-width:100%;max-height:260px;border-radius:12px;margin-top:6px;display:block;background:#000;box-shadow:0 4px 16px rgba(0,0,0,.3);}
+.sw-chat-hit{outline:2px solid rgba(167,139,250,.6)!important;outline-offset:3px!important;box-shadow:0 0 20px rgba(167,139,250,.25)!important;}
+
+/* Modal chat futurista */
+#modal-sw-chat .sw-chat-shell{
+  max-width:820px;width:100%;height:min(90vh,740px);max-height:calc(100vh - 32px);
+  display:flex;flex-direction:column;
+  background:linear-gradient(165deg,#0d121c 0%,#080c14 50%,#0a0e18 100%);
+  border:1px solid rgba(167,139,250,.32);
+  border-radius:24px;
+  box-shadow:0 0 0 1px rgba(255,196,0,.06), 0 30px 100px rgba(0,0,0,.8), 0 0 80px rgba(111,66,193,.12);
+  overflow:hidden;position:relative;z-index:1;
+}
+#modal-sw-chat .sw-chat-shell::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(167,139,250,.5),rgba(255,196,0,.4),transparent);
+  pointer-events:none;z-index:2;
+}
+.sw-dev-card{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);
+  cursor:pointer;transition:all .18s ease;text-align:left;width:100%;
+}
+.sw-dev-card:hover,.sw-dev-card.selected{
+  border-color:rgba(167,139,250,.45);background:rgba(167,139,250,.1);
+  box-shadow:0 0 20px rgba(167,139,250,.12);
+}
+.sw-dev-card.selected{box-shadow:0 0 0 1px rgba(255,196,0,.35), 0 0 20px rgba(167,139,250,.15);}
+.sw-dev-avatar{
+  width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;
+  border:2px solid rgba(167,139,250,.4);box-shadow:0 0 12px rgba(111,66,193,.25);
+}
+.sw-mode-pill{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;
+  font-size:11px;font-weight:700;letter-spacing:.3px;cursor:pointer;border:1px solid transparent;
+  transition:all .18s;
+}
+.sw-mode-pill.active-ind{background:rgba(96,165,250,.15);color:#60a5fa;border-color:rgba(96,165,250,.35);}
+.sw-mode-pill.active-comp{background:rgba(167,139,250,.15);color:#c4b5fd;border-color:rgba(167,139,250,.4);}
+
 #sw-chat-mensajes{overflow-x:hidden !important;}
 #sw-chat-titulo,#sw-chat-meta,#sw-chat-id{overflow-wrap:anywhere;word-break:break-word;}
 </style>
@@ -14334,6 +14495,11 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       
       navItems.forEach(item => {
         const target = item.getAttribute('data-target');
+        // Historial general: visible si tiene mesa_ayuda o mesa_ayuda_dev
+        if (target === 'mesa_ayuda_hist') {
+          item.style.display = (perms && (perms.includes('mesa_ayuda') || perms.includes('mesa_ayuda_dev'))) ? 'flex' : 'none';
+          return;
+        }
         // Software (mesa_ayuda / mesa_ayuda_dev) se controla igual que el resto de permisos
         if (!perms || !perms.includes(target)) {
           item.style.display = 'none';
@@ -14695,8 +14861,11 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       if (panelId === 'panel-mesa-ayuda-dev') {
         cargarSolicitudesDevSW();
       }
+      if (panelId === 'panel-mesa-ayuda-hist') {
+        cargarHistorialSW();
+      }
       // Detener polling del chat SW al cambiar de panel
-      if (panelId !== 'panel-mesa-ayuda' && panelId !== 'panel-mesa-ayuda-dev') {
+      if (panelId !== 'panel-mesa-ayuda' && panelId !== 'panel-mesa-ayuda-dev' && panelId !== 'panel-mesa-ayuda-hist') {
         if (typeof swStopChatPolling === 'function') swStopChatPolling();
       }
 
@@ -30934,6 +31103,69 @@ function cargarPreviewActivacionInter() {
    SOFTWARE — MESA DE AYUDA (colaborador + desarrollador + chat)
    ============================================================ */
 var swTicketActual = null;
+
+/** Acepta tickets de 6 dígitos y legados SW-... */
+function swEsTicketValidoFront(id) {
+  var s = String(id || '').trim();
+  if (!s) return false;
+  if (/^\d{6}$/.test(s)) return true;
+  if (s.indexOf('SW-') === 0) return true;
+  return false;
+}
+
+/** Filtra tabla por ticket o título (cliente) */
+function swFiltrarTabla(modo) {
+  var inputId = modo === 'mis' ? 'sw-search-mis' : (modo === 'dev' ? 'sw-search-dev' : 'sw-search-hist');
+  var tbodyId = modo === 'mis' ? 'sw-mis-tbody' : (modo === 'dev' ? 'sw-dev-tbody' : 'sw-hist-tbody');
+  var dataKey = modo === 'mis' ? '_swDataMis' : (modo === 'dev' ? '_swDataDev' : '_swDataHist');
+  var term = (document.getElementById(inputId) || {}).value || '';
+  term = term.trim().toLowerCase();
+  var data = window[dataKey] || [];
+  var tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+
+  var filtered = !term ? data : data.filter(function(t) {
+    var id = String(t.id || '').toLowerCase();
+    var titulo = String(t.titulo || '').toLowerCase();
+    var sol = String(t.solicitante || '').toLowerCase();
+    return id.indexOf(term) >= 0 || titulo.indexOf(term) >= 0 || sol.indexOf(term) >= 0;
+  });
+
+  if (!filtered.length) {
+    var cols = modo === 'mis' ? 8 : 9;
+    tbody.innerHTML = '<tr><td colspan="' + cols + '" style="text-align:center;color:#8b98a8;">No hay resultados para "' + swEsc(term) + '"</td></tr>';
+    return;
+  }
+
+  var esMis = modo === 'mis';
+  tbody.innerHTML = filtered.map(function(t) {
+    if (esMis) {
+      return '<tr>'
+        + '<td style="font-family:monospace;font-size:12px;font-weight:700;color:#a78bfa;">' + swEsc(t.id) + '</td>'
+        + '<td style="font-size:12px;white-space:nowrap;">' + swFmtFecha(t.fecha) + '</td>'
+        + '<td style="max-width:220px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
+        + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
+        + '<td style="font-size:12px;">' + swEsc(t.tiempoSolicitado || '-') + '</td>'
+        + '<td>' + swBadgeEstado(t.estado) + '</td>'
+        + '<td style="font-size:12px;max-width:100px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.desarrollador || '-') + '</td>'
+        + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + String(t.id).replace(/'/g,"\\'") + '\',\'colaborador\')"><i class="bi bi-chat-dots"></i></button></td>'
+        + '</tr>';
+    }
+    return '<tr>'
+      + '<td style="font-family:monospace;font-size:12px;font-weight:700;color:#a78bfa;">' + swEsc(t.id) + '</td>'
+      + '<td style="font-size:12px;white-space:nowrap;">' + swFmtFecha(t.fecha) + '</td>'
+      + '<td style="font-size:12px;max-width:110px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.solicitante) + '</td>'
+      + '<td style="max-width:200px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
+      + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
+      + '<td style="font-size:12px;">' + swEsc(t.tiempoSolicitado || '-') + '</td>'
+      + '<td>' + swBadgeEstado(t.estado) + '</td>'
+      + '<td style="font-size:12px;max-width:100px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.desarrollador || '-') + '</td>'
+      + '<td><button class="btn btn-sm btn-secondary" onclick="abrirChatSW(\'' + String(t.id).replace(/'/g,"\\'") + '\',\'dev\')"><i class="bi bi-chat-dots"></i></button></td>'
+      + '</tr>';
+  }).join('');
+}
+
+
 var swModoVista = 'colaborador';
 var swChatTimer = null;
 var swChatUltimoCount = 0;
@@ -30974,6 +31206,65 @@ function swFmtFecha(iso) {
 function swEsc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
+
+var swChatSearchHits = [];
+var swChatSearchIdx = -1;
+
+function swBuscarEnChat() {
+  var term = ((document.getElementById('sw-chat-search') || {}).value || '').trim().toLowerCase();
+  var box = document.getElementById('sw-chat-mensajes');
+  var countEl = document.getElementById('sw-chat-search-count');
+  var btnPrev = document.getElementById('sw-chat-search-prev');
+  var btnNext = document.getElementById('sw-chat-search-next');
+  if (!box) return;
+
+  // Quitar highlights previos
+  box.querySelectorAll('.sw-chat-hit').forEach(function(el) {
+    el.classList.remove('sw-chat-hit');
+    el.style.outline = '';
+    el.style.outlineOffset = '';
+  });
+  swChatSearchHits = [];
+  swChatSearchIdx = -1;
+
+  if (!term) {
+    if (countEl) countEl.textContent = '';
+    if (btnPrev) btnPrev.style.display = 'none';
+    if (btnNext) btnNext.style.display = 'none';
+    return;
+  }
+
+  var bubbles = box.querySelectorAll('.sw-bubble');
+  bubbles.forEach(function(b) {
+    var text = (b.textContent || '').toLowerCase();
+    if (text.indexOf(term) >= 0) {
+      swChatSearchHits.push(b);
+      b.classList.add('sw-chat-hit');
+      b.style.outline = '2px solid rgba(167,139,250,.55)';
+      b.style.outlineOffset = '2px';
+    }
+  });
+
+  if (countEl) countEl.textContent = swChatSearchHits.length ? (swChatSearchHits.length + ' hallazgo(s)') : 'Sin coincidencias';
+  if (btnPrev) btnPrev.style.display = swChatSearchHits.length ? 'inline-flex' : 'none';
+  if (btnNext) btnNext.style.display = swChatSearchHits.length ? 'inline-flex' : 'none';
+
+  if (swChatSearchHits.length) {
+    swChatSearchIdx = 0;
+    swChatSearchHits[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function swChatSearchNav(dir) {
+  if (!swChatSearchHits.length) return;
+  swChatSearchIdx = (swChatSearchIdx + dir + swChatSearchHits.length) % swChatSearchHits.length;
+  var el = swChatSearchHits[swChatSearchIdx];
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  var countEl = document.getElementById('sw-chat-search-count');
+  if (countEl) countEl.textContent = (swChatSearchIdx + 1) + ' / ' + swChatSearchHits.length;
+}
+
+
 
 function swMediaHtml(url, tipo) {
   if (!url) return '';
@@ -31046,23 +31337,99 @@ function swLimpiarAdjuntoChat() {
   if (prev) { prev.style.display='none'; prev.innerHTML=''; }
 }
 
+
+var swModoNueva = 'individual';
+var swDevsDisponibles = [];
+var swDevsSeleccionados = {}; // cedula -> {cedula,nombre,foto}
+var swColabsCache = [];
+var swCfgDevsSel = {};
+
+function swSetModoNueva(modo) {
+  swModoNueva = modo;
+  var ind = document.getElementById('sw-mode-ind');
+  var comp = document.getElementById('sw-mode-comp');
+  if (ind) { ind.className = 'sw-mode-pill' + (modo === 'individual' ? ' active-ind' : ''); }
+  if (comp) { comp.className = 'sw-mode-pill' + (modo === 'compartida' ? ' active-comp' : ''); }
+  // En individual solo 1; en compartida varios
+  if (modo === 'individual') {
+    var keys = Object.keys(swDevsSeleccionados);
+    if (keys.length > 1) {
+      var keep = keys[0];
+      var only = {}; only[keep] = swDevsSeleccionados[keep];
+      swDevsSeleccionados = only;
+    }
+  }
+  swRenderDevsNueva();
+}
+
+function swRenderDevsNueva() {
+  var box = document.getElementById('sw-nueva-devs-list');
+  var hint = document.getElementById('sw-nueva-devs-hint');
+  if (!box) return;
+  if (!swDevsDisponibles.length) {
+    box.innerHTML = '';
+    if (hint) hint.textContent = 'No hay desarrolladores configurados. Un admin debe definirlos en Mesa de desarrollo.';
+    return;
+  }
+  if (hint) hint.textContent = swModoNueva === 'compartida'
+    ? 'Puedes seleccionar varios desarrolladores para un chat compartido.'
+    : 'Selecciona un desarrollador (opcional).';
+  box.innerHTML = swDevsDisponibles.map(function(d) {
+    var sel = !!swDevsSeleccionados[d.cedula];
+    var foto = d.foto || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(d.nombre) + '&background=6f42c1&color=fff');
+    return '<button type="button" class="sw-dev-card' + (sel ? ' selected' : '') + '" onclick="swToggleDevNueva(\'' + String(d.cedula).replace(/'/g,"\\'") + '\')">'
+      + '<img class="sw-dev-avatar" src="' + swEsc(foto) + '" alt=""/>'
+      + '<div style="flex:1;min-width:0;"><div style="color:#eaf1f8;font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + swEsc(d.nombre) + '</div>'
+      + '<div style="color:#6b7a8d;font-size:11px;">' + swEsc(d.cedula) + '</div></div>'
+      + (sel ? '<i class="bi bi-check-circle-fill" style="color:#ffc400;font-size:18px;"></i>' : '<i class="bi bi-circle" style="color:#4b5563;font-size:18px;"></i>')
+      + '</button>';
+  }).join('');
+}
+
+function swToggleDevNueva(ced) {
+  var d = null;
+  for (var i = 0; i < swDevsDisponibles.length; i++) {
+    if (String(swDevsDisponibles[i].cedula) === String(ced)) { d = swDevsDisponibles[i]; break; }
+  }
+  if (!d) return;
+  if (swDevsSeleccionados[ced]) {
+    delete swDevsSeleccionados[ced];
+  } else {
+    if (swModoNueva === 'individual') swDevsSeleccionados = {};
+    swDevsSeleccionados[ced] = d;
+  }
+  swRenderDevsNueva();
+}
+
 function abrirModalNuevaSolicitudSW() {
   document.getElementById('sw-nueva-titulo').value = '';
   document.getElementById('sw-nueva-desc').value = '';
   document.getElementById('sw-nueva-prioridad').value = 'Media';
   document.getElementById('sw-nueva-tiempo').value = '1 día';
   swAdjuntoNueva = null;
+  swDevsSeleccionados = {};
+  swSetModoNueva('individual');
   var fi = document.getElementById('sw-nueva-file');
   if (fi) fi.value = '';
   document.getElementById('sw-nueva-file-name').textContent = 'Ninguno';
   document.getElementById('sw-nueva-preview').style.display = 'none';
   var modal = document.getElementById('modal-sw-nueva');
-  if (modal && modal.parentElement !== document.body) {
-    document.body.appendChild(modal);
-  }
+  if (modal && modal.parentElement !== document.body) document.body.appendChild(modal);
   modal.style.display = 'flex';
   modal.style.zIndex = '100000';
   document.body.style.overflow = 'hidden';
+  // Cargar desarrolladores
+  var hint = document.getElementById('sw-nueva-devs-hint');
+  if (hint) hint.textContent = 'Cargando desarrolladores...';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      swDevsDisponibles = (res && res.data) || [];
+      swRenderDevsNueva();
+    })
+    .withFailureHandler(function() {
+      if (hint) hint.textContent = 'No se pudieron cargar desarrolladores.';
+    })
+    .listarDesarrolladoresSoftware();
 }
 function cerrarModalNuevaSolicitudSW() {
   var modal = document.getElementById('modal-sw-nueva');
@@ -31078,14 +31445,35 @@ function enviarNuevaSolicitudSW() {
   if (!titulo) return showToast('Escribe un título para la solicitud.');
   if (!desc) return showToast('Describe el error o la falla.');
 
+  var sel = Object.keys(swDevsSeleccionados).map(function(k){ return swDevsSeleccionados[k]; });
+  var payloadBase = {
+    titulo: titulo,
+    descripcion: desc,
+    prioridad: prioridad,
+    tiempoSolicitado: tiempo,
+    solicitante: currentUser.name || '',
+    cedula: currentUser.cedula || '',
+    modo: swModoNueva
+  };
+  if (swModoNueva === 'compartida') {
+    payloadBase.devCedulas = sel.map(function(d){ return d.cedula; });
+    payloadBase.devNombres = sel.map(function(d){ return d.nombre; });
+  } else if (sel.length) {
+    payloadBase.devCedula = sel[0].cedula;
+    payloadBase.devNombre = sel[0].nombre;
+  }
+
   function crearConAdjunto(urlAdj, tipoAdj) {
+    payloadBase.adjunto = urlAdj || '';
+    payloadBase.tipoAdjunto = tipoAdj || '';
     google.script.run
       .withSuccessHandler(function(res) {
         showLoading(false);
         if (!res || res.status !== 'success') {
           return showToast((res && res.message) || 'No se pudo crear la solicitud.');
         }
-        showToast('Solicitud creada: ' + res.id);
+        showToast('Ticket creado: ' + res.id);
+        swPlaySound('create');
         cerrarModalNuevaSolicitudSW();
         cargarMisSolicitudesSW();
       })
@@ -31093,16 +31481,7 @@ function enviarNuevaSolicitudSW() {
         showLoading(false);
         showToast('Error: ' + (e.message || e));
       })
-      .crearSolicitudSoftware({
-        titulo: titulo,
-        descripcion: desc,
-        prioridad: prioridad,
-        tiempoSolicitado: tiempo,
-        solicitante: currentUser.name || '',
-        cedula: currentUser.cedula || '',
-        adjunto: urlAdj || '',
-        tipoAdjunto: tipoAdj || ''
-      });
+      .crearSolicitudSoftware(payloadBase);
   }
 
   showLoading(true, 'CREANDO', 'Solicitud de software');
@@ -31125,14 +31504,187 @@ function enviarNuevaSolicitudSW() {
   }
 }
 
+/* ---- Unir colaborador ---- */
+function abrirModalUnirSW() {
+  var modal = document.getElementById('modal-sw-unir');
+  if (!modal) return;
+  if (modal.parentElement !== document.body) document.body.appendChild(modal);
+  modal.style.display = 'flex';
+  document.getElementById('sw-unir-lista').innerHTML = '<div style="text-align:center;color:#8b98a8;padding:20px;">Cargando...</div>';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      swColabsCache = (res && res.data) || [];
+      swFiltrarUnir();
+    })
+    .withFailureHandler(function() {
+      document.getElementById('sw-unir-lista').innerHTML = '<div style="color:#f87171;text-align:center;padding:16px;">Error al cargar</div>';
+    })
+    .listarColaboradoresActivosSoftware();
+}
+function cerrarModalUnirSW() {
+  var m = document.getElementById('modal-sw-unir');
+  if (m) m.style.display = 'none';
+}
+function swFiltrarUnir() {
+  var term = ((document.getElementById('sw-unir-search') || {}).value || '').trim().toLowerCase();
+  var box = document.getElementById('sw-unir-lista');
+  if (!box) return;
+  var list = swColabsCache.filter(function(c) {
+    if (!term) return true;
+    return String(c.nombre).toLowerCase().indexOf(term) >= 0 || String(c.cedula).indexOf(term) >= 0;
+  });
+  if (!list.length) {
+    box.innerHTML = '<div style="text-align:center;color:#8b98a8;padding:16px;">Sin resultados</div>';
+    return;
+  }
+  box.innerHTML = list.map(function(c) {
+    return '<button type="button" class="sw-dev-card" onclick="swConfirmarUnir(\'' + String(c.cedula).replace(/'/g,"\\'") + '\',\'' + String(c.nombre).replace(/'/g,"\\'") + '\')">'
+      + '<img class="sw-dev-avatar" src="' + swEsc(c.foto) + '" alt=""/>'
+      + '<div style="flex:1;min-width:0;"><div style="color:#eaf1f8;font-weight:700;font-size:13px;">' + swEsc(c.nombre) + '</div>'
+      + '<div style="color:#6b7a8d;font-size:11px;">' + swEsc(c.cedula) + '</div></div>'
+      + '<i class="bi bi-plus-circle" style="color:#a78bfa;font-size:18px;"></i></button>';
+  }).join('');
+}
+function swConfirmarUnir(ced, nombre) {
+  if (!swTicketActual) return;
+  showLoading(true, 'UNIENDO', nombre);
+  google.script.run
+    .withSuccessHandler(function(res) {
+      showLoading(false);
+      if (!res || res.status !== 'success') return showToast((res && res.message) || 'No se pudo unir');
+      showToast(nombre + ' unido al ticket');
+      swPlaySound('join');
+      cerrarModalUnirSW();
+      refrescarDetalleYChatSW(true);
+    })
+    .withFailureHandler(function(e) {
+      showLoading(false);
+      showToast('Error: ' + (e.message || e));
+    })
+    .unirParticipanteSoftware(swTicketActual, ced, nombre);
+}
+
+/* ---- Config desarrolladores (admin) ---- */
+function abrirModalConfigDevsSW() {
+  if (!currentUser || String(currentUser.role || '') !== 'Administrador') {
+    return showToast('Solo un administrador puede configurar desarrolladores.');
+  }
+  var modal = document.getElementById('modal-sw-config-devs');
+  if (!modal) return;
+  if (modal.parentElement !== document.body) document.body.appendChild(modal);
+  modal.style.display = 'flex';
+  swCfgDevsSel = {};
+  document.getElementById('sw-cfg-lista').innerHTML = '<div style="text-align:center;color:#8b98a8;padding:20px;">Cargando...</div>';
+  // Cargar colabs + devs actuales
+  google.script.run
+    .withSuccessHandler(function(res) {
+      swColabsCache = (res && res.data) || [];
+      google.script.run
+        .withSuccessHandler(function(devs) {
+          var lista = (devs && devs.data) || [];
+          lista.forEach(function(d){ swCfgDevsSel[d.cedula] = d; });
+          swFiltrarConfigDevs();
+        })
+        .listarDesarrolladoresSoftware();
+    })
+    .listarColaboradoresActivosSoftware();
+}
+function cerrarModalConfigDevsSW() {
+  var m = document.getElementById('modal-sw-config-devs');
+  if (m) m.style.display = 'none';
+}
+function swFiltrarConfigDevs() {
+  var term = ((document.getElementById('sw-cfg-search') || {}).value || '').trim().toLowerCase();
+  var box = document.getElementById('sw-cfg-lista');
+  if (!box) return;
+  var list = swColabsCache.filter(function(c) {
+    if (!term) return true;
+    return String(c.nombre).toLowerCase().indexOf(term) >= 0 || String(c.cedula).indexOf(term) >= 0;
+  });
+  box.innerHTML = list.map(function(c) {
+    var sel = !!swCfgDevsSel[c.cedula];
+    return '<button type="button" class="sw-dev-card' + (sel ? ' selected' : '') + '" onclick="swToggleCfgDev(\'' + String(c.cedula).replace(/'/g,"\\'") + '\')">'
+      + '<img class="sw-dev-avatar" src="' + swEsc(c.foto) + '" alt=""/>'
+      + '<div style="flex:1;min-width:0;"><div style="color:#eaf1f8;font-weight:700;font-size:13px;">' + swEsc(c.nombre) + '</div>'
+      + '<div style="color:#6b7a8d;font-size:11px;">' + swEsc(c.cedula) + '</div></div>'
+      + (sel ? '<i class="bi bi-check-circle-fill" style="color:#ffc400;"></i>' : '<i class="bi bi-circle" style="color:#4b5563;"></i>')
+      + '</button>';
+  }).join('') || '<div style="text-align:center;color:#8b98a8;padding:16px;">Sin resultados</div>';
+}
+function swToggleCfgDev(ced) {
+  var d = null;
+  for (var i = 0; i < swColabsCache.length; i++) {
+    if (String(swColabsCache[i].cedula) === String(ced)) { d = swColabsCache[i]; break; }
+  }
+  if (!d) return;
+  if (swCfgDevsSel[ced]) delete swCfgDevsSel[ced];
+  else swCfgDevsSel[ced] = d;
+  swFiltrarConfigDevs();
+}
+function guardarConfigDevsSW() {
+  var lista = Object.keys(swCfgDevsSel).map(function(k){ return swCfgDevsSel[k]; });
+  showLoading(true, 'GUARDANDO', 'Desarrolladores');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      showLoading(false);
+      if (!res || res.status !== 'success') return showToast((res && res.message) || 'Error al guardar');
+      showToast(res.message || 'Guardado');
+      swPlaySound('success');
+      cerrarModalConfigDevsSW();
+    })
+    .withFailureHandler(function(e) {
+      showLoading(false);
+      showToast('Error: ' + (e.message || e));
+    })
+    .guardarDesarrolladoresSoftware(lista);
+}
+
+
+
 function swSetFiltro(tipo, btn) {
-  var wrap = document.getElementById(tipo === 'dev' ? 'sw-filtros-dev' : 'sw-filtros-mis');
+  var idMap = { mis: 'sw-filtros-mis', dev: 'sw-filtros-dev', hist: 'sw-filtros-hist' };
+  var wrap = document.getElementById(idMap[tipo] || 'sw-filtros-mis');
   if (!wrap || !btn) return;
   wrap.querySelectorAll('.sw-chip').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
   wrap.dataset.valor = btn.getAttribute('data-f') || 'TODOS';
   if (tipo === 'dev') cargarSolicitudesDevSW();
+  else if (tipo === 'hist') cargarHistorialSW();
   else cargarMisSolicitudesSW();
+}
+
+function cargarHistorialSW() {
+  var tbody = document.getElementById('sw-hist-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  showLoading(true, 'CARGANDO', 'Historial general');
+  var filtro = (document.getElementById('sw-filtros-hist') || {}).dataset.valor || 'TODOS';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      showLoading(false);
+      if (!res || res.status !== 'success') {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#f87171;">Error al cargar</td></tr>';
+        return;
+      }
+      var data = (res.data || []).filter(function(t) {
+        if (!t || !t.id || !swEsTicketValidoFront(t.id)) return false;
+        if (!String(t.titulo || '').trim()) return false;
+        if (filtro === 'TODOS') return true;
+        return String(t.estado).toUpperCase() === filtro;
+      });
+      window._swDataHist = data;
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#8b98a8;">No hay solicitudes en el historial.</td></tr>';
+        return;
+      }
+      // Reutilizar el render de historial vía filtro (modo hist se comporta como dev)
+      swFiltrarTabla('hist');
+    })
+    .withFailureHandler(function() {
+      showLoading(false);
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#f87171;">Error de conexión</td></tr>';
+    })
+    .listarTodasSolicitudesSoftware('TODOS');
 }
 
 function cargarMisSolicitudesSW() {
@@ -31149,18 +31701,19 @@ function cargarMisSolicitudesSW() {
       }
       var filtro = (document.getElementById('sw-filtros-mis') || {}).dataset.valor || 'TODOS';
       var data = (res.data || []).filter(function(t) {
-        if (!t || !t.id || String(t.id).indexOf('SW-') !== 0) return false;
+        if (!t || !t.id || !swEsTicketValidoFront(t.id)) return false;
         if (!String(t.titulo || '').trim()) return false;
         if (filtro === 'TODOS') return true;
         return String(t.estado).toUpperCase() === filtro;
       });
+      window._swDataMis = data;
       if (!data.length) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b98a8;">No tienes solicitudes aún. Crea la primera con el botón de arriba.</td></tr>';
         return;
       }
       tbody.innerHTML = data.map(function(t) {
         return '<tr>'
-          + '<td style="font-family:monospace;font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.id) + '</td>'
+          + '<td style="font-family:monospace;font-size:12px;font-weight:700;color:#a78bfa;">' + swEsc(t.id) + '</td>'
           + '<td style="font-size:12px;white-space:nowrap;">' + swFmtFecha(t.fecha) + '</td>'
           + '<td style="max-width:220px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
           + '<td>' + swBadgePrioridad(t.prioridad) + '</td>'
@@ -31178,6 +31731,10 @@ function cargarMisSolicitudesSW() {
 }
 
 function cargarSolicitudesDevSW() {
+  var btnCfg = document.getElementById('sw-btn-config-devs');
+  if (btnCfg) {
+    btnCfg.style.display = (currentUser && String(currentUser.role || '') === 'Administrador') ? 'inline-flex' : 'none';
+  }
   var tbody = document.getElementById('sw-dev-tbody');
   if (!tbody) return;
   tbody.innerHTML = '';
@@ -31191,15 +31748,16 @@ function cargarSolicitudesDevSW() {
         return;
       }
       var data = (res.data || []).filter(function(t) {
-        return t && t.id && String(t.id).indexOf('SW-') === 0 && String(t.titulo || '').trim();
+        return t && t.id && swEsTicketValidoFront(t.id) && String(t.titulo || '').trim();
       });
+      window._swDataDev = data;
       if (!data.length) {
         tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#8b98a8;">No hay solicitudes en este filtro.</td></tr>';
         return;
       }
       tbody.innerHTML = data.map(function(t) {
         return '<tr>'
-          + '<td style="font-family:monospace;font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.id) + '</td>'
+          + '<td style="font-family:monospace;font-size:12px;font-weight:700;color:#a78bfa;">' + swEsc(t.id) + '</td>'
           + '<td style="font-size:12px;white-space:nowrap;">' + swFmtFecha(t.fecha) + '</td>'
           + '<td style="font-size:12px;max-width:110px;overflow:hidden;text-overflow:ellipsis;">' + swEsc(t.solicitante) + '</td>'
           + '<td style="max-width:200px;overflow-wrap:anywhere;word-break:break-word;"><strong>' + swEsc(t.titulo) + '</strong></td>'
@@ -31276,7 +31834,7 @@ function refrescarDetalleYChatSW(silencioso) {
         return;
       }
       var t = det.data;
-      document.getElementById('sw-chat-id').textContent = t.id;
+      document.getElementById('sw-chat-id').textContent = 'Ticket ' + t.id;
       document.getElementById('sw-chat-titulo').textContent = t.titulo || '';
       document.getElementById('sw-chat-meta').textContent =
         (t.solicitante || '') + ' · Prioridad ' + (t.prioridad || '-') +
@@ -31288,6 +31846,9 @@ function refrescarDetalleYChatSW(silencioso) {
       var cerrado = String(t.estado).toUpperCase() === 'SOLUCIONADO';
       document.getElementById('sw-chat-composer').style.display = cerrado ? 'none' : 'flex';
       document.getElementById('sw-chat-cerrado').style.display = cerrado ? 'block' : 'none';
+
+      var btnUnir = document.getElementById('sw-btn-unir');
+      if (btnUnir) btnUnir.style.display = cerrado ? 'none' : 'inline-flex';
 
       var acciones = document.getElementById('sw-chat-acciones-dev');
       if (swModoVista === 'dev' && !cerrado) {
@@ -31571,17 +32132,45 @@ function marcarSolucionadoSW() {
 }
 
 /* ---- Notificaciones: badge + sonido ---- */
-function swPlayNotifSound() {
+function swPlayNotifSound() { swPlaySound('msg'); }
+
+/** Sonidos diferenciados: msg | create | join | success | alert */
+function swPlaySound(tipo) {
   try {
     var ctx = new (window.AudioContext || window.webkitAudioContext)();
-    var o = ctx.createOscillator();
-    var g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.frequency.value = 880;
-    g.gain.value = 0.04;
-    o.start();
-    setTimeout(function(){ o.frequency.value = 1175; }, 90);
-    setTimeout(function(){ o.stop(); ctx.close(); }, 220);
+    var now = ctx.currentTime;
+    function tone(freq, start, dur, vol, type) {
+      var o = ctx.createOscillator();
+      var g = ctx.createGain();
+      o.type = type || 'sine';
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, now + start);
+      g.gain.exponentialRampToValueAtTime(vol || 0.05, now + start + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(now + start);
+      o.stop(now + start + dur + 0.05);
+    }
+    if (tipo === 'create') {
+      tone(523, 0, 0.12, 0.06, 'triangle');
+      tone(659, 0.12, 0.12, 0.05, 'triangle');
+      tone(784, 0.24, 0.18, 0.05, 'triangle');
+    } else if (tipo === 'join') {
+      tone(440, 0, 0.1, 0.05, 'sine');
+      tone(554, 0.1, 0.1, 0.05, 'sine');
+      tone(659, 0.2, 0.15, 0.045, 'sine');
+    } else if (tipo === 'success') {
+      tone(587, 0, 0.1, 0.05, 'sine');
+      tone(784, 0.12, 0.2, 0.05, 'sine');
+    } else if (tipo === 'alert') {
+      tone(320, 0, 0.15, 0.07, 'square');
+      tone(280, 0.18, 0.2, 0.06, 'square');
+    } else {
+      // msg - notificación de mensaje (dos tonos claros distintos)
+      tone(880, 0, 0.1, 0.045, 'sine');
+      tone(1320, 0.12, 0.14, 0.04, 'sine');
+    }
+    setTimeout(function(){ try { ctx.close(); } catch(e){} }, 800);
   } catch (e) {}
 }
 
