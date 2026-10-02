@@ -8041,6 +8041,33 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 
+<!-- ========== IMPULSO VITAL: aviso 5 min antes ========== -->
+<div id="impulso-aviso-overlay" style="display:none;position:fixed;inset:0;z-index:200050;background:rgba(5,7,11,.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;">
+<div style="width:94%;max-width:420px;background:linear-gradient(165deg,#111b26,#0b1119);border:1px solid rgba(6,182,212,.4);border-radius:22px;padding:28px 24px;text-align:center;box-shadow:0 0 50px rgba(6,182,212,.15),0 24px 60px rgba(0,0,0,.5);">
+<div style="width:64px;height:64px;margin:0 auto 14px;border-radius:18px;background:linear-gradient(135deg,#06b6d4,#0891b2);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(6,182,212,.4);">
+<i class="bi bi-heart-pulse-fill" style="font-size:28px;color:#0b1119;"></i>
+</div>
+<div style="color:#06b6d4;font-size:11px;font-weight:800;letter-spacing:2.5px;margin-bottom:8px;">HEKA // IMPULSO VITAL</div>
+<h3 style="color:#eaf1f8;margin:0 0 8px;font-size:20px;">Pausa activa próxima</h3>
+<p style="color:#9aa8b8;font-size:14px;margin:0 0 6px;line-height:1.45;">En <strong id="impulso-aviso-minutos" style="color:#06b6d4;">5</strong> minutos inicia tu <strong style="color:#eaf1f8;">Impulso Vital</strong> (3 min de pausas activas).</p>
+<p id="impulso-aviso-hora" style="color:#FDB813;font-size:13px;font-weight:700;margin:0 0 18px;"></p>
+<button type="button" id="impulso-aviso-aceptar" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#06b6d4,#0891b2);color:#0b1119;font-weight:800;font-size:15px;cursor:pointer;">Entendido</button>
+</div>
+</div>
+
+<!-- ========== IMPULSO VITAL: bloqueo 3 minutos ========== -->
+<div id="impulso-bloqueo-overlay" style="display:none;position:fixed;inset:0;z-index:200060;background:radial-gradient(ellipse 50% 40% at 50% 40%,rgba(6,182,212,.12),transparent 60%),rgba(5,7,11,.96);backdrop-filter:blur(16px);align-items:center;justify-content:center;flex-direction:column;">
+<div style="text-align:center;padding:24px;max-width:440px;">
+<div style="width:120px;height:120px;margin:0 auto 20px;position:relative;display:flex;align-items:center;justify-content:center;">
+<div style="position:absolute;inset:0;border-radius:50%;border:3px solid rgba(6,182,212,.2);border-top-color:#06b6d4;animation:hekaLoadSpin 1.2s linear infinite;"></div>
+<i class="bi bi-heart-pulse-fill" style="font-size:42px;color:#06b6d4;filter:drop-shadow(0 0 16px rgba(6,182,212,.5));"></i>
+</div>
+<div style="color:#06b6d4;font-size:12px;font-weight:800;letter-spacing:3px;margin-bottom:10px;">IMPULSO VITAL</div>
+<div id="impulso-timer" style="font-size:48px;font-weight:800;color:#eaf1f8;letter-spacing:2px;font-variant-numeric:tabular-nums;margin-bottom:10px;">3:00</div>
+<p style="color:#9aa8b8;font-size:15px;line-height:1.5;margin:0;">Es momento de tus <strong style="color:#eaf1f8;">pausas activas</strong>.<br>La intranet está pausada por 3 minutos.</p>
+</div>
+</div>
+
 <!-- ================= PANEL DE DISPONIBILIDAD (tiempo real) ================= -->
 <div class="panel" id="panel-disponibilidad">
 <div class="page-header">
@@ -29391,7 +29418,8 @@ var DISP_ESTADOS_CHIP = {
   'ALMUERZO VUELTA':{ texto: 'Disponible',   color: '#22c55e' },
   'BREAK INICIO':   { texto: 'En break',     color: '#a78bfa' },
   'BREAK FIN':      { texto: 'Disponible',   color: '#22c55e' },
-  'SALIDA':         { texto: 'Salido',       color: '#ef4444' }
+  'SALIDA':         { texto: 'Salido',       color: '#ef4444' },
+  'IMPULSO VITAL':  { texto: 'Impulso Vital', color: '#06b6d4' }
 };
 
 var DISP_ICONOS = {
@@ -29400,7 +29428,8 @@ var DISP_ICONOS = {
   'ALMUERZO VUELTA':{ icono: 'bi-compass-fill',          color: '#22d3ee' },
   'BREAK INICIO':   { icono: 'bi-lightning-charge-fill', color: '#a78bfa' },
   'BREAK FIN':      { icono: 'bi-broadcast-pin',         color: '#60a5fa' },
-  'SALIDA':         { icono: 'bi-power',                 color: '#f87171' }
+  'SALIDA':         { icono: 'bi-power',                 color: '#f87171' },
+  'IMPULSO VITAL':  { icono: 'bi-heart-pulse-fill',      color: '#06b6d4' }
 };
 
 function abrirHistorialDisp(cedula, nombre) {
@@ -29637,7 +29666,8 @@ var DISP_ESTADOS = {
   'ALMUERZO VUELTA':{ texto: 'Disponible',      color: '#198754' },
   'BREAK INICIO':   { texto: 'En break',        color: '#6f42c1' },
   'BREAK FIN':      { texto: 'Disponible',      color: '#198754' },
-  'SALIDA':         { texto: 'Salido',          color: '#dc3545' }
+  'SALIDA':         { texto: 'Salido',          color: '#dc3545' },
+  'IMPULSO VITAL':  { texto: 'Impulso Vital',   color: '#06b6d4' }
 };
 
 function cargarPanelDisponibilidad() {
@@ -29696,6 +29726,328 @@ function cargarPanelDisponibilidad() {
     })
     .getDisponibilidadPanel();
 }
+
+// ============================================================
+// IMPULSO VITAL
+// - NO aparece en el listado de estados manuales
+// - 3 veces al día (horario laboral Bogotá), 3 minutos cada una
+// - Zona 12:00–14:00 excluida
+// - Aviso 5 min antes + sonido 10 s hasta Aceptar
+// - Al iniciar: registra IMPULSO VITAL y bloquea UI 3 min
+// - Al terminar: registra INGRESO automático
+// ============================================================
+var IMPULSO_DURACION_MS = 3 * 60 * 1000;
+var IMPULSO_AVISO_MS = 5 * 60 * 1000;
+var IMPULSO_HORARIOS = {
+  // day: 1=Lun ... 6=Sáb  | horas en [h, m] inicio del bloque
+  1: [[10, 0], [15, 0], [16, 30]], // Lun 8-17
+  2: [[10, 0], [15, 0], [16, 30]], // Mar 8-17
+  3: [[10, 0], [14, 30], [15, 30]], // Mié 8-16
+  4: [[10, 0], [14, 30], [15, 30]], // Jue 8-16
+  5: [[10, 0], [15, 0], [16, 30]], // Vie 8-17
+  6: [[9, 0], [10, 0], [11, 0]]    // Sáb 8-12
+};
+
+var _impulsoState = {
+  warned: {},
+  started: {},
+  finished: {},
+  activo: false,
+  timerId: null,
+  soundCtx: null,
+  soundStop: null,
+  avisoAceptado: false
+};
+
+function impulsoAhoraBogota() {
+  try {
+    var parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Bogota',
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: false, weekday: 'short'
+    }).formatToParts(new Date());
+    var map = {};
+    parts.forEach(function(p) { map[p.type] = p.value; });
+    var wd = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    return {
+      y: +map.year, m: +map.month, d: +map.day,
+      h: +map.hour % 24, min: +map.minute, s: +map.second,
+      dow: wd[map.weekday] != null ? wd[map.weekday] : new Date().getDay(),
+      key: map.year + '-' + map.month + '-' + map.day
+    };
+  } catch (e) {
+    var n = new Date();
+    return { y: n.getFullYear(), m: n.getMonth()+1, d: n.getDate(),
+      h: n.getHours(), min: n.getMinutes(), s: n.getSeconds(),
+      dow: n.getDay(), key: n.toISOString().slice(0,10) };
+  }
+}
+
+function impulsoSlotKey(fechaKey, h, min) {
+  return fechaKey + '_' + h + ':' + (min < 10 ? '0' : '') + min;
+}
+
+function impulsoCargarEstadoDia(fechaKey) {
+  try {
+    var raw = localStorage.getItem('heka_impulso_' + fechaKey);
+    if (raw) {
+      var o = JSON.parse(raw);
+      _impulsoState.warned = o.warned || {};
+      _impulsoState.started = o.started || {};
+      _impulsoState.finished = o.finished || {};
+    }
+  } catch (e) {}
+}
+
+function impulsoGuardarEstadoDia(fechaKey) {
+  try {
+    localStorage.setItem('heka_impulso_' + fechaKey, JSON.stringify({
+      warned: _impulsoState.warned,
+      started: _impulsoState.started,
+      finished: _impulsoState.finished
+    }));
+  } catch (e) {}
+}
+
+function impulsoMinutosDesdeMedianoche(h, min, s) {
+  return h * 60 + min + (s || 0) / 60;
+}
+
+function impulsoProximosSlots(now) {
+  var slots = IMPULSO_HORARIOS[now.dow] || [];
+  var ahoraMin = impulsoMinutosDesdeMedianoche(now.h, now.min, now.s);
+  return slots.map(function(hm) {
+    var startMin = hm[0] * 60 + hm[1];
+    return {
+      h: hm[0], min: hm[1],
+      startMin: startMin,
+      key: impulsoSlotKey(now.key, hm[0], hm[1]),
+      minsUntil: startMin - ahoraMin
+    };
+  });
+}
+
+// Sonido distintivo ~10 s (Web Audio: arpegio suave + pad)
+function impulsoReproducirSonido() {
+  impulsoDetenerSonido();
+  try {
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    var ctx = new Ctx();
+    _impulsoState.soundCtx = ctx;
+    var master = ctx.createGain();
+    master.gain.value = 0.22;
+    master.connect(ctx.destination);
+
+    var notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 659.25]; // C5 E5 G5 C6
+    var t0 = ctx.currentTime;
+    for (var cycle = 0; cycle < 4; cycle++) {
+      notes.forEach(function(freq, i) {
+        var osc = ctx.createOscillator();
+        var g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        var start = t0 + cycle * 2.4 + i * 0.28;
+        g.gain.setValueAtTime(0, start);
+        g.gain.linearRampToValueAtTime(0.55, start + 0.05);
+        g.gain.exponentialRampToValueAtTime(0.001, start + 0.55);
+        osc.connect(g); g.connect(master);
+        osc.start(start);
+        osc.stop(start + 0.6);
+      });
+    }
+    // pad de fondo
+    var pad = ctx.createOscillator();
+    var pg = ctx.createGain();
+    pad.type = 'triangle';
+    pad.frequency.value = 196;
+    pg.gain.setValueAtTime(0, t0);
+    pg.gain.linearRampToValueAtTime(0.12, t0 + 0.4);
+    pg.gain.linearRampToValueAtTime(0.001, t0 + 10);
+    pad.connect(pg); pg.connect(master);
+    pad.start(t0);
+    pad.stop(t0 + 10.2);
+
+    _impulsoState.soundStop = setTimeout(function() {
+      try { ctx.close(); } catch (e) {}
+      _impulsoState.soundCtx = null;
+    }, 10500);
+  } catch (e) {}
+}
+
+function impulsoDetenerSonido() {
+  if (_impulsoState.soundStop) { clearTimeout(_impulsoState.soundStop); _impulsoState.soundStop = null; }
+  if (_impulsoState.soundCtx) {
+    try { _impulsoState.soundCtx.close(); } catch (e) {}
+    _impulsoState.soundCtx = null;
+  }
+}
+
+function impulsoMostrarAviso(slot) {
+  var ov = document.getElementById('impulso-aviso-overlay');
+  if (!ov) return;
+  var minsLeft = Math.max(1, Math.ceil(slot.minsUntil));
+  var elMin = document.getElementById('impulso-aviso-minutos');
+  var elHora = document.getElementById('impulso-aviso-hora');
+  if (elMin) elMin.textContent = String(minsLeft);
+  if (elHora) {
+    var hh = slot.h < 10 ? '0' + slot.h : '' + slot.h;
+    var mm = slot.min < 10 ? '0' + slot.min : '' + slot.min;
+    elHora.textContent = 'Inicio programado: ' + hh + ':' + mm + ' (hora Bogotá)';
+  }
+  ov.style.display = 'flex';
+  _impulsoState.avisoAceptado = false;
+  impulsoReproducirSonido();
+}
+
+function impulsoCerrarAviso() {
+  var ov = document.getElementById('impulso-aviso-overlay');
+  if (ov) ov.style.display = 'none';
+  impulsoDetenerSonido();
+  _impulsoState.avisoAceptado = true;
+}
+
+function impulsoRegistrarEvento(evento, done) {
+  if (!currentUser || !currentUser.cedula) {
+    if (done) done(false);
+    return;
+  }
+  function enviar(lat, lng, precision) {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (done) done(res && res.status === 'success');
+        try { actualizarMiStatusChip(); } catch (e) {}
+      })
+      .withFailureHandler(function() { if (done) done(false); })
+      .registrarDisponibilidad({
+        cedula: currentUser.cedula,
+        nombre: currentUser.name,
+        evento: evento,
+        lat: lat,
+        lng: lng,
+        precision: precision
+      });
+  }
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        enviar(pos.coords.latitude, pos.coords.longitude, Math.round(pos.coords.accuracy || 0));
+      },
+      function() {
+        // fallback: coords mínimas para no bloquear el registro automático
+        enviar(4.7110, -74.0721, 9999);
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+  } else {
+    enviar(4.7110, -74.0721, 9999);
+  }
+}
+
+function impulsoIniciarBloqueo(slot) {
+  if (_impulsoState.activo) return;
+  _impulsoState.activo = true;
+  impulsoCerrarAviso();
+
+  var ov = document.getElementById('impulso-bloqueo-overlay');
+  var timerEl = document.getElementById('impulso-timer');
+  if (ov) ov.style.display = 'flex';
+
+  impulsoRegistrarEvento('IMPULSO VITAL');
+
+  var endsAt = Date.now() + IMPULSO_DURACION_MS;
+  if (_impulsoState.timerId) clearInterval(_impulsoState.timerId);
+  _impulsoState.timerId = setInterval(function() {
+    var left = Math.max(0, endsAt - Date.now());
+    var totalSec = Math.ceil(left / 1000);
+    var m = Math.floor(totalSec / 60);
+    var s = totalSec % 60;
+    if (timerEl) timerEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    if (left <= 0) {
+      clearInterval(_impulsoState.timerId);
+      _impulsoState.timerId = null;
+      impulsoFinalizar(slot);
+    }
+  }, 250);
+}
+
+function impulsoFinalizar(slot) {
+  _impulsoState.activo = false;
+  var ov = document.getElementById('impulso-bloqueo-overlay');
+  if (ov) ov.style.display = 'none';
+  if (slot) {
+    _impulsoState.finished[slot.key] = true;
+    var now = impulsoAhoraBogota();
+    impulsoGuardarEstadoDia(now.key);
+  }
+  impulsoRegistrarEvento('INGRESO', function() {
+    showToast('Impulso Vital finalizado. Bienvenido de nuevo.', 'success');
+  });
+}
+
+function impulsoTick() {
+  // Solo usuarios logueados con permiso de status o todos los logueados
+  if (!currentUser || !currentUser.cedula) return;
+  if (_impulsoState.activo) return;
+
+  var now = impulsoAhoraBogota();
+  impulsoCargarEstadoDia(now.key);
+
+  var slots = impulsoProximosSlots(now);
+  slots.forEach(function(slot) {
+    // Ya terminó este slot
+    if (_impulsoState.finished[slot.key]) return;
+
+    // Dentro de la ventana de ejecución (0 a 3 min después del inicio)
+    if (slot.minsUntil <= 0 && slot.minsUntil > -3) {
+      if (!_impulsoState.started[slot.key]) {
+        _impulsoState.started[slot.key] = true;
+        impulsoGuardarEstadoDia(now.key);
+        impulsoIniciarBloqueo(slot);
+      }
+      return;
+    }
+
+    // Ventana de aviso: 5 min antes hasta el inicio
+    if (slot.minsUntil > 0 && slot.minsUntil <= 5) {
+      if (!_impulsoState.warned[slot.key]) {
+        _impulsoState.warned[slot.key] = true;
+        impulsoGuardarEstadoDia(now.key);
+        impulsoMostrarAviso(slot);
+      } else {
+        // Actualizar minutos restantes en el modal si sigue abierto
+        var ov = document.getElementById('impulso-aviso-overlay');
+        if (ov && ov.style.display === 'flex') {
+          var elMin = document.getElementById('impulso-aviso-minutos');
+          if (elMin) elMin.textContent = String(Math.max(1, Math.ceil(slot.minsUntil)));
+        }
+      }
+    }
+  });
+}
+
+// Botón aceptar aviso
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.getElementById('impulso-aviso-aceptar');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      impulsoCerrarAviso();
+    });
+  }
+});
+// por si el DOM ya cargó
+(function() {
+  var btn = document.getElementById('impulso-aviso-aceptar');
+  if (btn && !btn._impulsoBound) {
+    btn._impulsoBound = true;
+    btn.addEventListener('click', function() { impulsoCerrarAviso(); });
+  }
+})();
+
+// Arrancar reloj: cada 15 s
+setInterval(impulsoTick, 15000);
+setTimeout(impulsoTick, 2500);
 </script>
 <!-- ================= FIN LOGICA DISPONIBILIDAD ================= -->
 
