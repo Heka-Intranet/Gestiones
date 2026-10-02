@@ -13598,12 +13598,10 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbxR-Gk0SqU7I_vjaNs1l6wP8mGqfauy_CPsng0x0qEdmLi_Cv_8rVr8itSksW5VsVo/exec';
 
     // ============================================================
-    // 🔌 SHIM: google.script.run → fetch POST
+    // 🔌 SHIM: google.script.run → fetch
     //
-    // Usa POST con Content-Type: text/plain.
-    // - Sin límite de tamaño de payload (a diferencia de GET URLs).
-    // - text/plain NO dispara pre-flight CORS (es "simple request").
-    // - GAS doPost con ContentService incluye headers CORS.
+    // Usa GET ?p= (doGet) como vía principal: evita CORS/405 del POST.
+    // Si el payload es muy grande (adjuntos base64), intenta POST.
     // ============================================================
     var google = {
       script: {
@@ -13699,32 +13697,51 @@ input[type="date"]::-webkit-calendar-picker-indicator,
                 var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
                 var timer = ctrl ? setTimeout(function() { ctrl.abort(); }, GAS_TIMEOUT_MS) : null;
 
-                fetch(GAS_URL, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'text/plain' },
-                  body: payload,
-                  signal: ctrl ? ctrl.signal : undefined
-                })
+                // GET ?p= evita el 405/CORS del POST en deployments que no exponen doPost
+                var encoded = encodeURIComponent(payload);
+                var usarGet = encoded.length < 1800; // margen seguro para límite de URL
+
+                var req;
+                if (usarGet) {
+                  var sep = GAS_URL.indexOf('?') >= 0 ? '&' : '?';
+                  req = fetch(GAS_URL + sep + 'p=' + encoded, {
+                    method: 'GET',
+                    signal: ctrl ? ctrl.signal : undefined
+                  });
+                } else {
+                  // Payloads grandes (ej. base64): intentar POST
+                  req = fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: payload,
+                    signal: ctrl ? ctrl.signal : undefined
+                  });
+                }
+
+                req
                 .then(function(r) {
                   if (timer) clearTimeout(timer);
                   if (r.status === 429 || r.status >= 500) {
                     if (intento < GAS_MAX_REINTENTOS) {
                       intento++;
-                      setTimeout(enviar, 1500 * intento); // backoff 1.5s, 3s
+                      setTimeout(enviar, 1500 * intento);
                       return null;
                     }
                     throw new Error('El servidor está saturado (HTTP ' + r.status + '). Intenta de nuevo en unos segundos.');
+                  }
+                  // 405 = deployment sin doPost: mensaje claro
+                  if (r.status === 405) {
+                    throw new Error('El Web App no acepta POST (405). En Apps Script: Deploy → Manage deployments → Edit → New version → Deploy (Access: Anyone).');
                   }
                   if (!r.ok) throw new Error('HTTP ' + r.status);
                   return r.text();
                 })
                 .then(function(text) {
-                  if (text === null) return; // ya se agendó un reintento
+                  if (text === null) return;
                   var data;
                   try { data = JSON.parse(text); } catch(e) {
                     throw new Error('Respuesta no válida del servidor (¿sesión de Google expirada?). Recarga la página e intenta de nuevo.');
                   }
-                  // Sesion invalida/expirada: limpiar y forzar login (sin toasts ruidosos)
                   if (data && data.status === 'error' && data.message &&
                       (data.message.indexOf('Sesión') >= 0 || data.message.indexOf('sesión') >= 0)) {
                     hekaForzarCierreSesion(data.message);
@@ -13737,6 +13754,10 @@ input[type="date"]::-webkit-calendar-picker-indicator,
                   var errMsg = err.message || String(err);
                   if (err && err.name === 'AbortError') {
                     errMsg = 'El servidor tardó demasiado en responder (más de ' + Math.round(GAS_TIMEOUT_MS/1000) + 's). Verifica si la operación se completó antes de reintentar.';
+                  }
+                  // CORS / Failed to fetch suele ser el 405 del POST
+                  if (/Failed to fetch|NetworkError|CORS/i.test(errMsg) && !usarGet) {
+                    errMsg = 'Error de red/CORS al subir archivo. En Apps Script crea New version del deployment (Access: Anyone) para habilitar POST.';
                   }
                   reportarError(errMsg);
                 });
