@@ -511,13 +511,56 @@
     .loading { 
       display: none; 
       position: fixed; inset: 0; 
-      background: rgba(255,255,255,0.8); 
+      background: rgba(5,7,11,0.92); 
       z-index: 100000; 
       justify-content: center; align-items: center; 
+      flex-direction: column;
+      gap: 0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
-    .spinner { width: 50px; height: 50px; border: 4px solid #eee; border-top: 4px solid var(--primary-yellow); border-radius: 50%; animation: spin 1s linear infinite; }
-    .spin { animation: spin 1s linear infinite; display: inline-block; }
+    .heka-load-wrap {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 24px;
+    }
+    .heka-load-ring-box {
+      position: relative; width: 128px; height: 128px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 28px;
+    }
+    .heka-load-ring {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      border: 2.5px solid rgba(253,184,19,0.15);
+      border-top-color: #FDB813;
+      border-right-color: rgba(253,184,19,0.45);
+      animation: hekaLoadSpin 1.15s linear infinite;
+      box-shadow: 0 0 28px rgba(253,184,19,0.12);
+    }
+    .heka-load-logo {
+      width: 64px; height: 64px; object-fit: contain;
+      filter: drop-shadow(0 0 18px rgba(253,184,19,0.45));
+      z-index: 1;
+    }
+    .heka-load-title {
+      color: #FDB813;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin: 0 0 8px;
+    }
+    .heka-load-sub {
+      color: #8b98a8;
+      font-size: 13.5px;
+      font-weight: 400;
+      letter-spacing: 0.2px;
+      margin: 0;
+    }
+    .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.08); border-top: 4px solid #FDB813; border-radius: 50%; animation: hekaLoadSpin 1s linear infinite; }
+    .spin { animation: hekaLoadSpin 1s linear infinite; display: inline-block; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes hekaLoadSpin { 100% { transform: rotate(360deg); } }
 
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); width: 280px !important; }
@@ -4467,14 +4510,14 @@ tbody tr:hover{background:rgba(255,196,0,.035)!important;}
     .toast.info::after { background:linear-gradient(90deg,#62a8ff,#a8d0ff); }
 
     .loading {
-      background:rgba(2,5,9,.82) !important;
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
+      background:rgba(5,7,11,.92) !important;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
     }
     .spinner {
       border-color:rgba(255,255,255,.08) !important;
-      border-top-color:#ffc400 !important;
-      box-shadow:0 0 28px rgba(255,196,0,.16);
+      border-top-color:#FDB813 !important;
+      box-shadow:0 0 28px rgba(253,184,19,.16);
     }
 
     @media (max-width: 640px) {
@@ -10846,7 +10889,16 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 </div>
 </div>
 </div>
-<div class="loading" id="loading"><div class="spinner"></div></div>
+<div class="loading" id="loading">
+  <div class="heka-load-wrap">
+    <div class="heka-load-ring-box">
+      <div class="heka-load-ring"></div>
+      <img class="heka-load-logo" src="https://i.imgur.com/3bxAAa2.png" alt="Heka"/>
+    </div>
+    <p class="heka-load-title" id="hekaLoadTitle">VALIDANDO</p>
+    <p class="heka-load-sub" id="hekaLoadSub">Sesión y dispositivo</p>
+  </div>
+</div>
 <div class="toast" id="toast">
 <i class="bi bi-info-circle-fill" style="color: var(--primary-yellow); font-size: 20px;"></i>
 <span id="toastMessage">Mensaje</span>
@@ -13059,19 +13111,22 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     // ========== KEEP ALIVE - Desactivado para hosting estático ==========
     // La sesión se mantiene via el token del navegador.
 
-    function mostrarModalProgreso(titulo) {
+    function mostrarModalProgreso(titulo, subtitulo) {
       var overlay = document.getElementById('modalProgresoOverlay');
       var barra = document.getElementById('modalProgresoBarra');
       var log = document.getElementById('modalProgresoLog');
       var btnOk = document.getElementById('modalProgresoBtnOk');
       var tituloEl = document.getElementById('modalProgresoTitulo');
-      if (titulo && tituloEl) tituloEl.textContent = titulo;
+      var subEl = document.getElementById('modalProgresoSub');
+      var ring = document.getElementById('modalProgresoRing');
+      if (tituloEl) tituloEl.textContent = (titulo && String(titulo).trim()) ? String(titulo).toUpperCase() : 'PROCESANDO';
+      if (subEl) subEl.textContent = (subtitulo && String(subtitulo).trim()) ? String(subtitulo) : 'Espere un momento';
+      if (ring) ring.style.animation = 'hekaLoadSpin 1.15s linear infinite';
       barra.style.width = '0%';
+      barra.style.background = 'linear-gradient(90deg, #FDB813, #ffc400)';
       log.innerHTML = '';
       btnOk.style.display = 'none';
       overlay.style.display = 'flex';
-      // Animar barra de progreso (limpiando primero cualquier intervalo previo
-      // que hubiera quedado huérfano de una apertura sin cerrar)
       if (_modalProgresoIntervalo) { clearInterval(_modalProgresoIntervalo); _modalProgresoIntervalo = null; }
       var progreso = 0;
       _modalProgresoIntervalo = setInterval(function() {
@@ -13098,10 +13153,11 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     function completarModalProgreso(mensajeFinal) {
       if (_modalProgresoIntervalo) { clearInterval(_modalProgresoIntervalo); _modalProgresoIntervalo = null; }
       var barra = document.getElementById('modalProgresoBarra');
+      var ring = document.getElementById('modalProgresoRing');
+      if (ring) ring.style.animation = 'none';
       barra.style.width = '100%';
-      barra.style.background = 'linear-gradient(90deg, #28a745, #20c997)';
+      barra.style.background = 'linear-gradient(90deg, #FDB813, #ffc400)';
       if (mensajeFinal) appendModalProgreso(mensajeFinal);
-      // NO muestra el OK aqui - se llama mostrarOkModalProgreso() al final de todo
     }
 
     function mostrarOkModalProgreso() {
@@ -13110,8 +13166,10 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 
     function errorModalProgreso(mensajeFinal) {
       if (_modalProgresoIntervalo) { clearInterval(_modalProgresoIntervalo); _modalProgresoIntervalo = null; }
-      _onModalOkCallback = null; // No resetear en error
+      _onModalOkCallback = null;
       var barra = document.getElementById('modalProgresoBarra');
+      var ring = document.getElementById('modalProgresoRing');
+      if (ring) ring.style.animation = 'none';
       barra.style.width = '100%';
       barra.style.background = 'linear-gradient(90deg, #dc3545, #c82333)';
       if (mensajeFinal) appendModalProgreso(mensajeFinal);
@@ -13157,8 +13215,18 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 
 
 
-    function showLoading(show) {
-      document.getElementById('loading').style.display = show ? 'flex' : 'none';
+    function showLoading(show, titulo, subtitulo) {
+      var el = document.getElementById('loading');
+      if (!el) return;
+      if (show) {
+        var t = document.getElementById('hekaLoadTitle');
+        var s = document.getElementById('hekaLoadSub');
+        if (t) t.textContent = (titulo && String(titulo).trim()) ? String(titulo).toUpperCase() : 'VALIDANDO';
+        if (s) s.textContent = (subtitulo && String(subtitulo).trim()) ? String(subtitulo) : 'Sesión y dispositivo';
+        el.style.display = 'flex';
+      } else {
+        el.style.display = 'none';
+      }
     }
 
     function showToast(msg, duration = 4000) {
@@ -28917,26 +28985,30 @@ function openModalRecarga() {
 
   </script>
 <!-- ========== MODAL: PROGRESO COMPARTIDO (Ingreso Origen + Gestión Mensajero) ========== -->
-<div id="modalProgresoOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:99999; justify-content:center; align-items:center;">
-<div style="background:#fff; border-radius:12px; width:95%; max-width:560px; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
-<!-- Header -->
-<div style="background:#212529; color:#FDB813; padding:18px 24px; display:flex; align-items:center; gap:10px;">
-<i class="bi bi-gear-wide-connected" id="modalProgresoIcono" style="font-size:22px;"></i>
-<span id="modalProgresoTitulo" style="font-size:16px; font-weight:700;">Procesando...</span>
+<div id="modalProgresoOverlay" style="display:none; position:fixed; inset:0; background:rgba(5,7,11,0.92); z-index:99999; justify-content:center; align-items:center; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);">
+<div style="background:#0d141d; border:1px solid rgba(253,184,19,0.28); border-radius:20px; width:95%; max-width:480px; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 0 60px rgba(253,184,19,0.08), 0 24px 64px rgba(0,0,0,0.55);">
+<!-- Logo + titulo estilo Heka -->
+<div style="padding:28px 24px 8px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+<div style="position:relative; width:96px; height:96px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+<div id="modalProgresoRing" style="position:absolute; inset:0; border-radius:50%; border:2.5px solid rgba(253,184,19,0.15); border-top-color:#FDB813; border-right-color:rgba(253,184,19,0.45); animation:hekaLoadSpin 1.15s linear infinite; box-shadow:0 0 24px rgba(253,184,19,0.12);"></div>
+<img src="https://i.imgur.com/3bxAAa2.png" alt="Heka" style="width:48px; height:48px; object-fit:contain; filter:drop-shadow(0 0 14px rgba(253,184,19,0.45)); z-index:1;"/>
+</div>
+<div id="modalProgresoTitulo" style="color:#FDB813; font-size:14px; font-weight:700; letter-spacing:3.5px; text-transform:uppercase;">PROCESANDO</div>
+<div id="modalProgresoSub" style="color:#8b98a8; font-size:13px; margin-top:6px;">Espere un momento</div>
 </div>
 <!-- Progress bar -->
-<div style="padding:0 24px; padding-top:18px;">
-<div style="width:100%; height:8px; background:#e9ecef; border-radius:4px; overflow:hidden;">
-<div id="modalProgresoBarra" style="width:0%; height:100%; background:linear-gradient(90deg, #FDB813, #f0a500); border-radius:4px; transition:width 0.4s ease;"></div>
+<div style="padding:14px 24px 0;">
+<div style="width:100%; height:6px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
+<div id="modalProgresoBarra" style="width:0%; height:100%; background:linear-gradient(90deg, #FDB813, #ffc400); border-radius:4px; transition:width 0.4s ease;"></div>
 </div>
 </div>
 <!-- Log area -->
-<div id="modalProgresoLog" style="flex:1; min-height:0; margin:14px 24px; background:#212529; color:#4cff9f; padding:16px; border-radius:8px; font-family:'Courier New',Courier,monospace; font-size:13px; overflow-y:auto; max-height:50vh; white-space:pre-wrap; line-height:1.6;"></div>
+<div id="modalProgresoLog" style="flex:1; min-height:0; margin:14px 24px; background:#080d13; color:#FDB813; padding:14px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06); font-family:'Courier New',Courier,monospace; font-size:12.5px; overflow-y:auto; max-height:36vh; white-space:pre-wrap; line-height:1.65;"></div>
 <!-- Footer -->
-<div style="padding:0 24px 20px; display:flex; justify-content:flex-end;">
-<button id="modalProgresoBtnOk" onclick="cerrarModalProgreso()" onmouseout="this.style.background='#28a745'" onmouseover="this.style.background='#218838'" style="display:none; background:#28a745; color:#fff; border:none; padding:10px 32px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:700; transition:0.2s;">
+<div style="padding:0 24px 22px; display:flex; justify-content:center;">
+<button id="modalProgresoBtnOk" onclick="cerrarModalProgreso()" onmouseout="this.style.background='#FDB813'" onmouseover="this.style.background='#e5a611'" style="display:none; background:#FDB813; color:#111; border:none; padding:11px 36px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:700; transition:0.2s;">
 <i class="bi bi-check-lg"></i> OK
-        </button>
+</button>
 </div>
 </div>
 </div>
@@ -29349,14 +29421,12 @@ var dispTimer = null;
 function iniciarRegistroDisponibilidad(evento) {
   dispPendiente = { evento: evento, lat: null, lng: null, precision: null };
 
-  // Pantalla de carga tipo Recuentos: feedback inmediato
-  mostrarModalProgreso('Validando sesión y dispositivo');
-  appendModalProgreso('• Verificando sesión...');
-  setTimeout(function() { appendModalProgreso('• Validando dispositivo...'); }, 350);
+  // Carga global estilo Heka (H + anillo + VALIDANDO)
+  showLoading(true, 'VALIDANDO', 'Sesión y dispositivo');
 
   if (!navigator.geolocation) {
-    errorModalProgreso('❌ Este dispositivo no permite validar el registro.\nUsa un equipo compatible.');
-    mostrarOkModalProgreso();
+    showLoading(false);
+    showToast('Este dispositivo no permite validar el registro. Usa un equipo compatible.', 'error');
     return;
   }
 
@@ -29365,26 +29435,21 @@ function iniciarRegistroDisponibilidad(evento) {
       dispPendiente.lat = pos.coords.latitude;
       dispPendiente.lng = pos.coords.longitude;
       dispPendiente.precision = Math.round(pos.coords.accuracy || 0);
-      appendModalProgreso('• Dispositivo validado correctamente.');
-      completarModalProgreso('✓ Listo para confirmar ' + evento);
-      // Cerrar carga y mostrar confirmación
-      setTimeout(function() {
-        cerrarModalProgreso();
-        document.getElementById('disp-modal-evento').innerText = evento;
-        document.getElementById('disp-modal').style.display = 'flex';
-      }, 600);
+      showLoading(false);
+      document.getElementById('disp-modal-evento').innerText = evento;
+      document.getElementById('disp-modal').style.display = 'flex';
     },
     function(err) {
-      var msg = 'Debes permitir el acceso para poder registrar.\nSin la validación no es posible continuar.';
+      showLoading(false);
+      var msg = 'Debes permitir el acceso para poder registrar. Sin la validación no es posible continuar.';
       if (err && err.code === 1) {
-        msg = 'Permiso denegado.\nDebes permitir el acceso para poder registrar el estado.';
+        msg = 'Permiso denegado. Debes permitir el acceso para poder registrar el estado.';
       } else if (err && err.code === 2) {
-        msg = 'No se pudo validar el dispositivo.\nIntenta de nuevo.';
+        msg = 'No se pudo validar el dispositivo. Intenta de nuevo.';
       } else if (err && err.code === 3) {
-        msg = 'Tiempo de espera agotado al validar.\nIntenta de nuevo.';
+        msg = 'Tiempo de espera agotado al validar. Intenta de nuevo.';
       }
-      errorModalProgreso('❌ ' + msg);
-      mostrarOkModalProgreso();
+      showToast(msg, 'error');
     },
     { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
   );
@@ -29409,31 +29474,28 @@ document.getElementById('disp-confirmar').addEventListener('click', function() {
   }
   document.getElementById('disp-modal').style.display = 'none';
 
-  // Pantalla de carga mientras se registra en el servidor
-  mostrarModalProgreso('Registrando ' + dispPendiente.evento);
-  appendModalProgreso('• Enviando registro al servidor...');
-  setTimeout(function() { appendModalProgreso('• Guardando estado...'); }, 400);
+  // Carga global Heka mientras se registra
+  showLoading(true, 'REGISTRANDO', dispPendiente.evento);
 
   google.script.run
     .withSuccessHandler(function(res) {
+      showLoading(false);
       if (res && res.status === 'success') {
-        completarModalProgreso('✓ ' + (res.message || (dispPendiente.evento + ' registrado')));
-        mostrarOkModalProgreso();
+        showToast(res.message || (dispPendiente.evento + ' registrado'), 'success');
         actualizarMiStatusChip();
         var info = document.getElementById('disp-status-info');
         if (info) {
           info.style.display = 'block';
-          info.innerHTML = '<i class="bi bi-check-circle-fill" style="color:#198754"></i> ' + (res.message || 'Registrado');
+          info.innerHTML = '<i class="bi bi-check-circle-fill" style="color:#FDB813"></i> ' + (res.message || 'Registrado');
           setTimeout(function(){ info.style.display = 'none'; }, 4000);
         }
       } else {
-        errorModalProgreso('❌ ' + ((res && res.message) || 'Error al registrar'));
-        mostrarOkModalProgreso();
+        showToast((res && res.message) || 'Error al registrar', 'error');
       }
     })
     .withFailureHandler(function(err) {
-      errorModalProgreso('❌ Error de conexión: ' + (err && err.message ? err.message : ''));
-      mostrarOkModalProgreso();
+      showLoading(false);
+      showToast('Error de conexión: ' + (err && err.message ? err.message : ''), 'error');
     })
     .registrarDisponibilidad({
       cedula: currentUser.cedula,
