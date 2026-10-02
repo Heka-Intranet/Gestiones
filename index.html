@@ -13391,7 +13391,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     // Debe terminar en /exec
     // Ejemplo: https://script.google.com/macros/s/TU_ID_AQUI/exec
     // ============================================================
-    var GAS_URL = 'https://script.google.com/macros/s/AKfycbwvDET_inCy_1oLW0euj2FjVs8T2KvIHpxrKo-HjaVanDXssOV02ZHPPW8MTEnFLWE/exec';
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbxR-Gk0SqU7I_vjaNs1l6wP8mGqfauy_CPsng0x0qEdmLi_Cv_8rVr8itSksW5VsVo/exec';
 
     // ============================================================
     // 🔌 SHIM: google.script.run → fetch POST
@@ -13410,11 +13410,50 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     };
 
     // Token de sesion (se llena tras loginBackend exitoso)
+    // Maxima duracion de sesion en el navegador: 24 horas
+    var HEKA_SESSION_MAX_MS = 24 * 60 * 60 * 1000;
     var HEKA_SESSION_TOKEN = null;
+    var HEKA_SESSION_EXPIRES_AT = 0;
     try {
       var _savedTok = localStorage.getItem('heka_token');
-      if (_savedTok) HEKA_SESSION_TOKEN = _savedTok;
+      var _savedExp = Number(localStorage.getItem('heka_session_expires') || 0);
+      if (_savedTok && _savedExp && Date.now() < _savedExp) {
+        HEKA_SESSION_TOKEN = _savedTok;
+        HEKA_SESSION_EXPIRES_AT = _savedExp;
+      } else {
+        localStorage.removeItem('heka_token');
+        localStorage.removeItem('heka_session');
+        localStorage.removeItem('heka_session_expires');
+      }
     } catch (e) {}
+
+    function hekaSesionVigente() {
+      if (!HEKA_SESSION_TOKEN) return false;
+      if (HEKA_SESSION_EXPIRES_AT && Date.now() >= HEKA_SESSION_EXPIRES_AT) return false;
+      return true;
+    }
+
+    function hekaForzarCierreSesion(motivo) {
+      HEKA_SESSION_TOKEN = null;
+      HEKA_SESSION_EXPIRES_AT = 0;
+      try {
+        localStorage.removeItem('heka_token');
+        localStorage.removeItem('heka_session');
+        localStorage.removeItem('heka_session_expires');
+      } catch (ex) {}
+      try {
+        currentUser = { name: '', image: '', permissions: '', role: '', cedula: '', centroCosto: '' };
+        var ov = document.getElementById('loginOverlay');
+        var app = document.getElementById('appContainer');
+        if (ov) ov.classList.remove('hidden');
+        if (app) app.classList.remove('logged-in');
+        if (typeof updateUserHeader === 'function') updateUserHeader();
+        if (typeof showLoading === 'function') showLoading(false);
+      } catch (ex2) {}
+      if (motivo && typeof showToast === 'function') {
+        showToast(motivo);
+      }
+    }
 
     (function() {
       // Reintentos SOLO cuando el servidor respondió 429/5xx (la operación no llegó
@@ -13434,6 +13473,14 @@ input[type="date"]::-webkit-calendar-picker-indicator,
             // prop = nombre de la función GAS a ejecutar
             return function() {
               var args = Array.prototype.slice.call(arguments);
+              var PUBLIC_FNS = { loginBackend: 1, enviarCodigo: 1, cambiarContrasena: 1, cerrarSesionIntranet: 1 };
+              // Sin token y no es publica: no llamar al servidor (evita "Sesión no válida")
+              if (!PUBLIC_FNS[prop] && !hekaSesionVigente()) {
+                var msgSin = 'Sesión no válida. Vuelve a iniciar sesión.';
+                if (successCb) successCb({ status: 'error', message: msgSin, _session: true });
+                else if (failureCb) failureCb({ message: msgSin });
+                return;
+              }
               var body = { fn: prop, args: args };
               if (HEKA_SESSION_TOKEN) body.token = HEKA_SESSION_TOKEN;
               var payload = JSON.stringify(body);
@@ -13473,11 +13520,11 @@ input[type="date"]::-webkit-calendar-picker-indicator,
                   try { data = JSON.parse(text); } catch(e) {
                     throw new Error('Respuesta no válida del servidor (¿sesión de Google expirada?). Recarga la página e intenta de nuevo.');
                   }
-                  // Si el backend indica sesion invalida/expirada, limpiar token
+                  // Sesion invalida/expirada: limpiar y forzar login (sin toasts ruidosos)
                   if (data && data.status === 'error' && data.message &&
                       (data.message.indexOf('Sesión') >= 0 || data.message.indexOf('sesión') >= 0)) {
-                    HEKA_SESSION_TOKEN = null;
-                    try { localStorage.removeItem('heka_token'); } catch (ex) {}
+                    hekaForzarCierreSesion(data.message);
+                    data._session = true;
                   }
                   if (successCb) successCb(data);
                 })
@@ -14120,22 +14167,41 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       document.getElementById('userDropdown').classList.remove('show');
       document.getElementById('mobileUserDropdown').classList.remove('show');
       showLoading(true, 'CERRANDO SESIÓN', 'Espere un momento');
-      setTimeout(() => {
+      var tokCerrar = HEKA_SESSION_TOKEN;
+      var logoutDone = false;
+      function terminarLogout() {
+        if (logoutDone) return;
+        logoutDone = true;
         document.getElementById('loginForm').reset();
         goToStep('step-login');
         document.getElementById('loginOverlay').classList.remove('hidden');
         document.getElementById('appContainer').classList.remove('logged-in');
         currentUser = { name: '', image: '', permissions: '', role: '', cedula: '', centroCosto: '' };
-        // Limpiar sesion persistente y token
         HEKA_SESSION_TOKEN = null;
+        HEKA_SESSION_EXPIRES_AT = 0;
         try {
           localStorage.removeItem('heka_session');
           localStorage.removeItem('heka_token');
+          localStorage.removeItem('heka_session_expires');
         } catch(ex) {}
         updateUserHeader();
         showLoading(false);
         showToast("Sesión cerrada");
-      }, 800);
+      }
+      // Invalidar token en hoja SESIONES (servidor)
+      if (tokCerrar) {
+        try {
+          google.script.run
+            .withSuccessHandler(function() { terminarLogout(); })
+            .withFailureHandler(function() { terminarLogout(); })
+            .cerrarSesionIntranet(tokCerrar);
+          setTimeout(terminarLogout, 2500);
+        } catch (ex) {
+          terminarLogout();
+        }
+      } else {
+        setTimeout(terminarLogout, 400);
+      }
     }
 
     function handleLogin(e) {
@@ -14156,13 +14222,23 @@ input[type="date"]::-webkit-calendar-picker-indicator,
               isInactive: data.isInactive,
               centroCosto: data.centroCosto || ''
             };
-            // Token de sesion para el dispatcher protegido
+            // Token + caducidad absoluta 24 h
             if (data.token) {
               HEKA_SESSION_TOKEN = data.token;
-              try { localStorage.setItem('heka_token', data.token); } catch(ex) {}
+              HEKA_SESSION_EXPIRES_AT = Date.now() + HEKA_SESSION_MAX_MS;
+              try {
+                localStorage.setItem('heka_token', data.token);
+                localStorage.setItem('heka_session_expires', String(HEKA_SESSION_EXPIRES_AT));
+              } catch(ex) {}
             }
-            // Guardar sesion en localStorage para no pedir login de nuevo
-            try { localStorage.setItem('heka_session', JSON.stringify({ user: user, pass: pass })); } catch(ex) {}
+            // Guardar credenciales solo mientras la sesion de 24 h este vigente
+            try {
+              localStorage.setItem('heka_session', JSON.stringify({
+                user: user,
+                pass: pass,
+                expiresAt: HEKA_SESSION_EXPIRES_AT
+              }));
+            } catch(ex) {}
             loginSuccess();
           } else { showToast(data.message); }
         })
@@ -22892,7 +22968,11 @@ function openModalRecarga() {
                     });
 
                 } else {
-                    showToast("Error Resumen: " + (res ? res.message : "Desconocido"));
+                    // No molestar con toast si fue error de sesion (ya se forzo login)
+                    if (res && res._session) return;
+                    var msg = (res && res.message) ? res.message : "Desconocido";
+                    if (msg.indexOf('Sesión') >= 0 || msg.indexOf('sesión') >= 0) return;
+                    showToast("Error Resumen: " + msg);
                 }
             })
             .getLogisticaDashboard(anio);
@@ -26198,22 +26278,38 @@ function openModalRecarga() {
       }
     });
 
-    // ========== AUTO-LOGIN DESDE localStorage ==========
+    // ========== AUTO-LOGIN (solo si la sesion de 24 h sigue vigente) ==========
     (function() {
       try {
+        var exp = Number(localStorage.getItem('heka_session_expires') || 0);
         var saved = localStorage.getItem('heka_session');
-        if (saved) {
-          var creds = JSON.parse(saved);
-          if (creds.user && creds.pass) {
-            // Auto-rellenar y enviar login sin mostrar el formulario
-            document.getElementById('loginUser').value = creds.user;
-            document.getElementById('loginPass').value = creds.pass;
-            // Ejecutar login autom\u00e1ticamente despu\u00e9s de que la p\u00e1gina cargue
-            setTimeout(function() { handleLogin(new Event('submit')); }, 300);
-          }
+        if (!saved || !exp || Date.now() >= exp) {
+          // Caduco o no hay sesion: limpiar y mostrar login
+          localStorage.removeItem('heka_session');
+          localStorage.removeItem('heka_token');
+          localStorage.removeItem('heka_session_expires');
+          HEKA_SESSION_TOKEN = null;
+          HEKA_SESSION_EXPIRES_AT = 0;
+          return;
+        }
+        var creds = JSON.parse(saved);
+        if (creds.user && creds.pass) {
+          document.getElementById('loginUser').value = creds.user;
+          document.getElementById('loginPass').value = creds.pass;
+          setTimeout(function() { handleLogin(new Event('submit')); }, 300);
         }
       } catch(ex) {}
     })();
+
+    // Vigilancia: si pasan las 24 h con la pestana abierta, cerrar sesion
+    setInterval(function() {
+      try {
+        if (!HEKA_SESSION_EXPIRES_AT) return;
+        if (Date.now() >= HEKA_SESSION_EXPIRES_AT) {
+          hekaForzarCierreSesion('Tu sesión de 24 horas finalizó. Vuelve a iniciar sesión.');
+        }
+      } catch (e) {}
+    }, 60000);
 
     function buscarComisionesPablo() {
       const isPablo = document.getElementById('comisiones_checkDataPablo').checked;
