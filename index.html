@@ -14394,16 +14394,6 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       updateUserHeader();
       applyPermissions();
       if (typeof swStartNotifPolling === 'function') swStartNotifPolling();
-      
-       //const adminLink = document.getElementById('adminLink');
-       //const mobileAdminLink = document.getElementById('mobileAdminLink');
-       //if (currentUser.role === "Administrador") {
-         //adminLink.style.display = 'flex';
-         //mobileAdminLink.style.display = 'flex';
-       //} else {
-         //adminLink.style.display = 'none';
-         //mobileAdminLink.style.display = 'none';
-       //} 
 
       document.getElementById('loginOverlay').classList.add('hidden');
       document.getElementById('appContainer').classList.add('logged-in');
@@ -14412,6 +14402,13 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       goToPanel('panel-welcome');
       
       showToast("Sesión iniciada correctamente");
+
+      // Refrescar chip de Status tras login / auto-login (reintento por latencia)
+      if (typeof actualizarMiStatusChip === 'function') {
+        try { actualizarMiStatusChip(); } catch (e1) {}
+        setTimeout(function() { try { actualizarMiStatusChip(); } catch (e2) {} }, 800);
+        setTimeout(function() { try { actualizarMiStatusChip(); } catch (e3) {} }, 2500);
+      }
     }
 
     function updateUserHeader() {
@@ -29872,7 +29869,8 @@ function cerrarModalStatus() { document.getElementById('disp-status-modal').styl
 // Colorea el contorno del perfil y el item "Mi Status" (desktop + móvil)
 function actualizarMiStatusChip() {
   if (!currentUser || !currentUser.cedula) return;
-  var permiso = currentUser.role === 'Administrador' || (currentUser.permissions || '').includes('status');
+  var permsStr = String(currentUser.permissions || '');
+  var permiso = currentUser.role === 'Administrador' || permsStr.indexOf('status') !== -1;
   var item = document.getElementById('disp-status-menu-item');
   var itemM = document.getElementById('disp-status-menu-item-mobile');
   var divM = document.getElementById('disp-status-divider-mobile');
@@ -29880,10 +29878,17 @@ function actualizarMiStatusChip() {
   if (itemM) itemM.style.display = permiso ? 'flex' : 'none';
   if (divM) divM.style.display = permiso ? 'block' : 'none';
   if (!permiso) return;
+
+  var ced = String(currentUser.cedula).trim().replace(/\.0$/, '');
+
   google.script.run
     .withSuccessHandler(function(res) {
+      if (!res || res._session) return;
       if (!res || res.status !== 'success') return;
-      var est = res.evento ? (DISP_ESTADOS_CHIP[res.evento] || { texto: res.evento, color: '#888' }) : { texto: 'Sin registro', color: '#6b7280' };
+      var ev = res.evento ? String(res.evento).trim() : '';
+      var est = ev
+        ? (DISP_ESTADOS_CHIP[ev] || { texto: ev, color: '#888' })
+        : { texto: 'Sin registro', color: '#6b7280' };
       function paintBadge(id) {
         var badge = document.getElementById(id);
         if (!badge) return;
@@ -29907,7 +29912,7 @@ function actualizarMiStatusChip() {
       }
     })
     .withFailureHandler(function() {})
-    .getMiDisponibilidad(String(currentUser.cedula));
+    .getMiDisponibilidad(ced);
 }
 var dispTimer = null;
 
