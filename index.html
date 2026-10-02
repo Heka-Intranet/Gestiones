@@ -7082,6 +7082,222 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 .progress-content .progress-status { color: #9aa8b8 !important; }
 .progress-content .progress-percentage { color: #eaf1f8 !important; }
 </style>
+
+<style id="heka-mobile-global">
+/* ============================================================
+   HEKA — RESPONSIVE GLOBAL (móvil / tablet / desktop)
+   ============================================================ */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { overscroll-behavior-y: contain; }
+
+/* Tablas: scroll horizontal en cualquier contenedor */
+.panel table,
+.modal-content table,
+.modal-overlay table,
+#appContainer table {
+  width: 100%;
+  border-collapse: collapse;
+}
+@media (max-width: 900px) {
+  .panel,
+  .content-area,
+  .modal-body,
+  .modal-content,
+  .table-container,
+  [id*="tabla"],
+  [id*="Tabla"] {
+    max-width: 100%;
+  }
+  /* Contenedor con scroll táctil para tablas anchas */
+  .table-container,
+  .panel .card,
+  .panel > div:has(> table),
+  #tablaIndemnizacionesBody,
+  #tablaSeguimientoBody,
+  #sw-mis-tbody,
+  #sw-dev-tbody {
+    -webkit-overflow-scrolling: touch;
+  }
+  .panel table,
+  .modal-content table,
+  .content-area table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  .panel thead, .panel tbody, .panel tr,
+  .content-area thead, .content-area tbody, .content-area tr {
+    width: 100%;
+  }
+  .panel th, .panel td,
+  .content-area th, .content-area td {
+    white-space: nowrap;
+    font-size: 12.5px;
+    padding: 8px 10px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Área de contenido bajo barra móvil */
+  .content-area {
+    padding-top: max(72px, env(safe-area-inset-top, 0px) + 56px) !important;
+    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .main-content { margin-left: 0 !important; width: 100% !important; max-width: 100vw !important; }
+  .page-header h1 { font-size: 1.35rem !important; }
+  .page-header p { font-size: 13px !important; }
+
+  /* Botones y filtros: apilables y táctiles */
+  .btn, button.btn, .suite-filter-btn, .heka-action-btn {
+    min-height: 42px;
+    touch-action: manipulation;
+  }
+  .search-bar, .heka-date-filter, .heka-top-actions {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+  .search-bar .search-input,
+  .search-bar input,
+  .heka-date-filter input,
+  .form-input, input.form-input, select.form-input, textarea.form-input {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 16px !important; /* evita zoom iOS */
+    box-sizing: border-box;
+  }
+  .search-bar button, .heka-date-filter .btn {
+    width: 100% !important;
+  }
+
+  /* Status modal: 1 columna */
+  #disp-status-modal > div {
+    max-width: 100% !important;
+    width: 96% !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    padding: 20px 14px !important;
+    margin: 8px;
+  }
+  #disp-status-modal .disp-opt,
+  .disp-opt {
+    padding: 14px 12px !important;
+  }
+  /* Botones status en panel */
+  .disp-btn {
+    width: 100% !important;
+    margin-bottom: 8px;
+  }
+  #disp-status-modal [style*="grid"],
+  div:has(> .disp-opt) {
+    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  /* Modales genéricos */
+  .modal-overlay, [id$="-modal"], [id*="modal"] {
+    padding: 8px !important;
+    align-items: flex-end !important; /* bottom sheet feel en móvil */
+  }
+  .modal-content, .modal-overlay > div {
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    border-radius: 16px 16px 12px 12px !important;
+  }
+  /* Login */
+  .login-layout-wrapper, .login-card, .split-right, .split-left {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  .split-left { display: none !important; }
+
+  /* Toast */
+  .toast, #toast {
+    left: 12px !important;
+    right: 12px !important;
+    max-width: none !important;
+    top: max(12px, env(safe-area-inset-top, 0px)) !important;
+  }
+
+  /* Carga global / Impulso / Progreso */
+  .loading, #loading, .progress-overlay, #impulso-aviso-overlay, #impulso-bloqueo-overlay {
+    padding: max(12px, env(safe-area-inset-top, 0px)) 12px max(12px, env(safe-area-inset-bottom, 0px)) !important;
+  }
+  #impulso-timer { font-size: 40px !important; }
+  .progress-content, .heka-progress-card {
+    width: 94% !important;
+    max-width: 400px !important;
+    padding: 22px 16px !important;
+  }
+  .heka-load-ring-box { width: 100px !important; height: 100px !important; }
+
+  /* Cards / grids */
+  .grid-container,
+  .pagos-grid,
+  .recarga-grid,
+  #disp-tarjetas {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Software chat */
+  #modal-sw-chat, #modal-sw-chat .modal-content {
+    width: 100% !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+  }
+
+  /* Sidebar móvil: safe area */
+  .sidebar {
+    padding-top: env(safe-area-inset-top, 0px);
+    max-width: min(300px, 88vw) !important;
+  }
+  .mobile-nav-bar {
+    padding-left: max(8px, env(safe-area-inset-left, 0px));
+    padding-right: max(8px, env(safe-area-inset-right, 0px));
+    height: max(56px, 56px + env(safe-area-inset-top, 0px) * 0.3);
+  }
+
+  /* Inputs date full width */
+  input[type="date"], input[type="time"], input[type="datetime-local"] {
+    min-height: 42px;
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 { font-size: 1.2rem !important; }
+  .heka-load-title, .progress-title { font-size: 12px !important; letter-spacing: 2px !important; }
+  #impulso-timer { font-size: 36px !important; }
+  .btn, button.btn { font-size: 13.5px !important; }
+  .panel th, .panel td { font-size: 11.5px !important; padding: 6px 8px !important; }
+  .disp-status-grid { grid-template-columns: 1fr !important; }
+  #disp-status-modal > div { padding: 18px 12px !important; border-radius: 18px !important; }
+}
+
+/* Tablets */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .grid-container { grid-template-columns: repeat(2, 1fr) !important; }
+  .content-area { padding-left: 18px; padding-right: 18px; }
+}
+
+/* Touch: evita hover sticky raro en móvil */
+@media (hover: none) {
+  .nav-item:hover, .disp-opt:hover, .btn:hover {
+    transform: none !important;
+  }
+}
+</style>
 </head>
 <body>
 <!-- INICIO LOGIN OVERLAY -->
@@ -7929,11 +8145,11 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div class="panel" id="panel-status">
 <div class="page-header">
 <h1>Status</h1>
-<p>Registra tu estado con evidencia fotográfica y ubicación en tiempo real.</p>
+<p>Registra tu estado con validación del dispositivo.</p>
 </div>
 <div class="card">
 <div class="form-section-title">¿Qué quieres registrar?</div>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+<div class="disp-status-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;">
 <button type="button" class="btn disp-btn" onclick="iniciarRegistroDisponibilidad('INGRESO')" style="background:linear-gradient(135deg,#198754,#146c43);color:#fff;border:none;border-radius:14px;padding:22px 12px;font-size:16px;font-weight:700;">
 <i class="bi bi-box-arrow-in-right" style="font-size:26px;display:block;margin-bottom:8px;"></i>Ingreso</button>
 <button type="button" class="btn disp-btn" onclick="iniciarRegistroDisponibilidad('ALMUERZO IDA')" style="background:linear-gradient(135deg,#ffc400,#e6a800);color:#111;border:none;border-radius:14px;padding:22px 12px;font-size:16px;font-weight:700;">
@@ -7988,9 +8204,9 @@ body > .novedad-dropdown-menu .novedad-option:hover {
 <div style="width:54px;height:54px;margin:0 auto 10px;border-radius:16px;background:linear-gradient(135deg,#ffc400,#ff9500);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(255,196,0,.45);">
 <i class="bi bi-activity" style="font-size:26px;color:#0b1119;"></i></div>
 <h3 style="color:#eaf1f8;margin:0;font-size:20px;letter-spacing:.5px;">Estado de Disponibilidad</h3>
-<p style="color:#7f8b9b;font-size:12.5px;margin:6px 0 0;">Selecciona tu estado · se registra con foto y ubicación</p>
+<p style="color:#7f8b9b;font-size:12.5px;margin:6px 0 0;">Selecciona tu estado · se valida el dispositivo</p>
 </div>
-<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+<div class="disp-status-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
 <button type="button" class="disp-opt" onclick="cerrarModalStatus(); iniciarRegistroDisponibilidad('INGRESO');" style="--c1:#22c55e;--c2:#0e9f6e;">
 <i class="bi bi-door-open-fill"></i><div><strong>Ingreso</strong><small>Empezar jornada</small></div></button>
 <button type="button" class="disp-opt" onclick="cerrarModalStatus(); iniciarRegistroDisponibilidad('ALMUERZO IDA');" style="--c1:#ffc400;--c2:#e08e00;">
