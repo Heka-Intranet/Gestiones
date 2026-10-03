@@ -13603,64 +13603,36 @@ input[type="date"]::-webkit-calendar-picker-indicator,
      * @param {Array}  argumentosArray - Array de argumentos
      * @returns {Promise<object>}     - Respuesta ya parseada del backend
      */
-    async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
-      if (argumentosArray === undefined) argumentosArray = [];
+     async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
+       const tokenSesion = localStorage.getItem("heka_token") || ""; 
+     
+       const payload = {
+         token: tokenSesion,
+         fn: nombreFuncion,
+         args: argumentosArray
+       };
+     
+       try {
+         const respuesta = await fetch(GAS_URL, {
+           method: "POST",
+           mode: "cors", // Autoriza la conexión segura GitHub Pages -> Google
+           headers: {
+             // "text/plain" es OBLIGATORIO para evitar la petición OPTIONS preliminar que Google rechaza
+             "Content-Type": "text/plain;charset=utf-8" 
+           },
+           body: JSON.stringify(payload) // Envía el JSON oculto y protegido en el Body
+         });
+     
+         // Procesa la respuesta de texto de forma idéntica a tu lógica actual
+         const textoRespuesta = await respuesta.text();
+         return JSON.parse(textoRespuesta);
+     
+       } catch (error) {
+         console.error("Error crítico de comunicación con la API (POST):", error);
+         throw error;
+       }
+     }
 
-      // 1. Recuperar token de sesión de forma automática
-      var token = null;
-      try {
-        var savedTok = localStorage.getItem('heka_token');
-        var savedExp = Number(localStorage.getItem('heka_session_expires') || 0);
-        if (savedTok && savedExp && Date.now() < savedExp) {
-          token = savedTok;
-        }
-      } catch (e) {}
-
-      // 2. Payload exacto que espera handleApiCall
-      var body = {
-        fn: nombreFuncion,
-        args: Array.isArray(argumentosArray) ? argumentosArray : [argumentosArray]
-      };
-      if (token) body.token = token;
-
-      // 3. POST limpio
-      var response = await fetch(GAS_URL, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(body)
-      });
-
-      // 4. Errores HTTP
-      if (!response.ok) {
-        if (response.status === 405) {
-          throw new Error('El Web App no acepta POST (405). Crea un New deployment en Apps Script con acceso "Anyone".');
-        }
-        throw new Error('Error HTTP ' + response.status + ' al comunicarse con el backend');
-      }
-
-      // 5. Parsear
-      var text = await response.text();
-      var data;
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        throw new Error('Respuesta no válida del servidor (posible sesión de Google expirada). Recarga la página.');
-      }
-
-      // 6. Sesión inválida
-      if (data && data.status === 'error' && data.message &&
-          (String(data.message).toLowerCase().indexOf('sesión') >= 0 ||
-           String(data.message).toLowerCase().indexOf('sesion') >= 0)) {
-        try {
-          localStorage.removeItem('heka_token');
-          localStorage.removeItem('heka_session');
-          localStorage.removeItem('heka_session_expires');
-        } catch (ex) {}
-      }
-
-      return data;
-    }
 
     // ============================================================
     // 🔌 SHIM: google.script.run → fetch
