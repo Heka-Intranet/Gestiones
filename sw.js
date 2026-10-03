@@ -1,4 +1,4 @@
-const CACHE_NAME = 'heka-INTRANET-v5'; // ← CAMBIA esto en cada despliegue
+const CACHE_NAME = 'heka-INTRANET-v6'; // ← CAMBIA esto en cada despliegue
 const ASSETS_TO_CACHE = [
   './',
   './manifest.json'
