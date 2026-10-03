@@ -31963,34 +31963,46 @@ function swStopChatPolling() {
 }
 
 function abrirChatSW(id, modo) {
+  // 1) Loading global (mismo de toda la intranet)
+  // 2) Cargar detalle + mensajes en segundo plano
+  // 3) Solo cuando esté listo se abre el modal del chat
   swTicketActual = id;
   swModoVista = modo || 'colaborador';
   swChatUltimoCount = 0;
+  swChatCerrado = false;
+  swChatFingerprint = '';
   swLimpiarAdjuntoChat();
+  swStopChatPolling();
+
   var modal = document.getElementById('modal-sw-chat');
-  // Mover al body para que el sidebar / transform del layout no recorte el chat
   if (modal && modal.parentElement !== document.body) {
     document.body.appendChild(modal);
   }
-  modal.style.display = 'flex';
-  document.getElementById('sw-chat-mensajes').innerHTML = '';
-  showLoading(true, 'CARGANDO', 'Conversación');
-  // Bloquear scroll del fondo
-  document.body.style.overflow = 'hidden';
-  swBindChatEnter();
+  // Modal oculto hasta tener datos listos
+  if (modal) modal.style.display = 'none';
+  var boxMsg = document.getElementById('sw-chat-mensajes');
+  if (boxMsg) boxMsg.innerHTML = '';
+
   var ep = document.getElementById('sw-emoji-panel');
   if (ep) ep.style.display = 'none';
-  swChatCerrado = false;
-  refrescarDetalleYChatSW();
+  swBindChatEnter();
+
+  showLoading(true, 'CARGANDO', 'Conversación');
+  refrescarDetalleYChatSW(false, true); // silencioso=false, abrirAlListo=true
+}
+
+/** Arranca el poll del chat (60 s) solo si el ticket NO está solucionado y el modal está abierto. */
+function swIniciarPollChatSiCorresponde() {
   swStopChatPolling();
-  // Poll cada 60 s solo si el chat sigue abierto y el ticket NO está solucionado
+  if (swChatCerrado) return;
+  var modal = document.getElementById('modal-sw-chat');
+  if (!modal || modal.style.display !== 'flex') return;
   swChatTimer = setInterval(function() {
     if (swChatCerrado) {
       swStopChatPolling();
       return;
     }
     if (document.getElementById('modal-sw-chat').style.display === 'flex') {
-      // Solo refresca mensajes; no toca el input que el usuario está escribiendo
       swSoloRefrescarMensajes();
     } else {
       swStopChatPolling();
@@ -32014,14 +32026,21 @@ function cerrarModalChatSW() {
   swPollNotificaciones(true);
 }
 
-function refrescarDetalleYChatSW(silencioso) {
+function refrescarDetalleYChatSW(silencioso, abrirAlListo) {
   if (!swTicketActual) return;
+  // abrirAlListo: no mostrar el modal hasta que detalle + chat estén listos
   google.script.run
     .withSuccessHandler(function(det) {
       if (!det || det.status !== 'success' || !det.data) {
         if (!silencioso) {
           showLoading(false);
           showToast('No se pudo cargar la solicitud.');
+        }
+        // Si falló la apertura, no dejar el body bloqueado
+        if (abrirAlListo) {
+          var modalFail = document.getElementById('modal-sw-chat');
+          if (modalFail) modalFail.style.display = 'none';
+          document.body.style.overflow = '';
         }
         return;
       }
@@ -32037,7 +32056,6 @@ function refrescarDetalleYChatSW(silencioso) {
 
       var cerrado = String(t.estado).toUpperCase() === 'SOLUCIONADO';
       swChatCerrado = cerrado;
-      // Ticket solucionado: no tiene sentido seguir haciendo poll del chat
       if (cerrado) swStopChatPolling();
       document.getElementById('sw-chat-composer').style.display = cerrado ? 'none' : 'flex';
       document.getElementById('sw-chat-cerrado').style.display = cerrado ? 'block' : 'none';
@@ -32053,19 +32071,38 @@ function refrescarDetalleYChatSW(silencioso) {
         if (btnTomar) btnTomar.style.display = (String(t.estado).toUpperCase() === 'ABIERTA') ? 'inline-flex' : 'none';
         if (btnSol) btnSol.style.display = 'inline-flex';
       } else {
-        acciones.style.display = 'none';
+        if (acciones) acciones.style.display = 'none';
       }
 
-      // Carga se cierra SOLO cuando los mensajes del chat ya están listos
+      // Mensajes: solo cuando estén listos se cierra el loading y (si aplica) se abre el modal
       google.script.run
         .withSuccessHandler(function(chat) {
           renderChatMensajesSW((chat && chat.data) || [], cerrado);
+
+          if (abrirAlListo) {
+            var modal = document.getElementById('modal-sw-chat');
+            if (modal) {
+              if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+              }
+              modal.style.display = 'flex';
+            }
+            document.body.style.overflow = 'hidden';
+            // Poll solo si el ticket sigue abierto (no solucionado)
+            swIniciarPollChatSiCorresponde();
+          }
+
           if (!silencioso) showLoading(false);
         })
         .withFailureHandler(function() {
           if (!silencioso) {
             showLoading(false);
             showToast('Error cargando el chat.');
+          }
+          if (abrirAlListo) {
+            var modalErr = document.getElementById('modal-sw-chat');
+            if (modalErr) modalErr.style.display = 'none';
+            document.body.style.overflow = '';
           }
         })
         .obtenerChatSoftware(swTicketActual);
@@ -32074,6 +32111,11 @@ function refrescarDetalleYChatSW(silencioso) {
       if (!silencioso) {
         showLoading(false);
         showToast('Error de conexión al abrir el ticket.');
+      }
+      if (abrirAlListo) {
+        var modalNet = document.getElementById('modal-sw-chat');
+        if (modalNet) modalNet.style.display = 'none';
+        document.body.style.overflow = '';
       }
     })
     .obtenerDetalleSolicitudSoftware(swTicketActual);
