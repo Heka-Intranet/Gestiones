@@ -31351,6 +31351,7 @@ function swFiltrarTabla(modo) {
 var swModoVista = 'colaborador';
 var swChatTimer = null;
 var swChatUltimoCount = 0;
+var swChatCerrado = false; // true si el ticket está SOLUCIONADO (no poll)
 var swNotifTimer = null;
 var swAdjuntoNueva = null; // { base64, mime, name, tipo }
 var swAdjuntoChat = null;
@@ -31979,20 +31980,27 @@ function abrirChatSW(id, modo) {
   swBindChatEnter();
   var ep = document.getElementById('sw-emoji-panel');
   if (ep) ep.style.display = 'none';
+  swChatCerrado = false;
   refrescarDetalleYChatSW();
   swStopChatPolling();
+  // Poll cada 60 s solo si el chat sigue abierto y el ticket NO está solucionado
   swChatTimer = setInterval(function() {
+    if (swChatCerrado) {
+      swStopChatPolling();
+      return;
+    }
     if (document.getElementById('modal-sw-chat').style.display === 'flex') {
       // Solo refresca mensajes; no toca el input que el usuario está escribiendo
       swSoloRefrescarMensajes();
     } else {
       swStopChatPolling();
     }
-  }, 12000);
+  }, 60000);
 }
 
 function cerrarModalChatSW() {
   swStopChatPolling();
+  swChatCerrado = false;
   swTicketActual = null;
   swColaMensajes = [];
   swEnviando = false;
@@ -32028,6 +32036,9 @@ function refrescarDetalleYChatSW(silencioso) {
       if (badgeWrap) badgeWrap.innerHTML = swBadgeEstado(t.estado);
 
       var cerrado = String(t.estado).toUpperCase() === 'SOLUCIONADO';
+      swChatCerrado = cerrado;
+      // Ticket solucionado: no tiene sentido seguir haciendo poll del chat
+      if (cerrado) swStopChatPolling();
       document.getElementById('sw-chat-composer').style.display = cerrado ? 'none' : 'flex';
       document.getElementById('sw-chat-cerrado').style.display = cerrado ? 'block' : 'none';
 
@@ -32190,6 +32201,7 @@ function swBindChatEnter() {
 /** Refresco silencioso solo del hilo (no borra lo que el usuario escribe) */
 function swSoloRefrescarMensajes() {
   if (!swTicketActual) return;
+  if (swChatCerrado) { swStopChatPolling(); return; } // solucionado: no ejecutar
   if (swEnviando) return; // no interrumpir un envío en curso
   google.script.run
     .withSuccessHandler(function(chat) {
