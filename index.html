@@ -8415,7 +8415,7 @@ body { overscroll-behavior-y: contain; }
 <style>
 .actupd-btn-main{border:none;border-radius:14px;padding:14px 22px;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .25s ease;box-shadow:0 6px 20px -8px rgba(0,0,0,.6);}
 .actupd-btn-main:hover{transform:translateY(-2px);filter:brightness(1.08);}
-.actupd-modal{display:none;position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,rgba(34,197,94,.07),transparent 45%),rgba(2,6,12,.85);backdrop-filter:blur(8px);z-index:9996;align-items:center;justify-content:center;}
+.actupd-modal{display:none;position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,rgba(34,197,94,.07),transparent 45%),rgba(2,6,12,.85);backdrop-filter:blur(8px);z-index:100050;align-items:center;justify-content:center;}
 .actupd-modal-caja{max-width:640px;width:94%;max-height:88vh;display:flex;flex-direction:column;background:linear-gradient(160deg,rgba(17,27,38,.97),rgba(8,14,22,.97));border:1px solid rgba(255,196,0,.28);border-radius:24px;box-shadow:0 0 50px rgba(255,196,0,.10),0 30px 80px rgba(0,0,0,.6);overflow:hidden;}
 .actupd-modal-head{padding:20px 24px 14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:14px;}
 .actupd-modal-ico{width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -13603,36 +13603,64 @@ input[type="date"]::-webkit-calendar-picker-indicator,
      * @param {Array}  argumentosArray - Array de argumentos
      * @returns {Promise<object>}     - Respuesta ya parseada del backend
      */
-     async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
-       const tokenSesion = localStorage.getItem("heka_token") || ""; 
-     
-       const payload = {
-         token: tokenSesion,
-         fn: nombreFuncion,
-         args: argumentosArray
-       };
-     
-       try {
-         const respuesta = await fetch(GAS_URL, {
-           method: "POST",
-           mode: "cors", // Autoriza la conexión segura GitHub Pages -> Google
-           headers: {
-             // "text/plain" es OBLIGATORIO para evitar la petición OPTIONS preliminar que Google rechaza
-             "Content-Type": "text/plain;charset=utf-8" 
-           },
-           body: JSON.stringify(payload) // Envía el JSON oculto y protegido en el Body
-         });
-     
-         // Procesa la respuesta de texto de forma idéntica a tu lógica actual
-         const textoRespuesta = await respuesta.text();
-         return JSON.parse(textoRespuesta);
-     
-       } catch (error) {
-         console.error("Error crítico de comunicación con la API (POST):", error);
-         throw error;
-       }
-     }
+    async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
+      if (argumentosArray === undefined) argumentosArray = [];
 
+      // 1. Recuperar token de sesión de forma automática
+      var token = null;
+      try {
+        var savedTok = localStorage.getItem('heka_token');
+        var savedExp = Number(localStorage.getItem('heka_session_expires') || 0);
+        if (savedTok && savedExp && Date.now() < savedExp) {
+          token = savedTok;
+        }
+      } catch (e) {}
+
+      // 2. Payload exacto que espera handleApiCall
+      var body = {
+        fn: nombreFuncion,
+        args: Array.isArray(argumentosArray) ? argumentosArray : [argumentosArray]
+      };
+      if (token) body.token = token;
+
+      // 3. POST limpio
+      var response = await fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(body)
+      });
+
+      // 4. Errores HTTP
+      if (!response.ok) {
+        if (response.status === 405) {
+          throw new Error('El Web App no acepta POST (405). Crea un New deployment en Apps Script con acceso "Anyone".');
+        }
+        throw new Error('Error HTTP ' + response.status + ' al comunicarse con el backend');
+      }
+
+      // 5. Parsear
+      var text = await response.text();
+      var data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error('Respuesta no válida del servidor (posible sesión de Google expirada). Recarga la página.');
+      }
+
+      // 6. Sesión inválida
+      if (data && data.status === 'error' && data.message &&
+          (String(data.message).toLowerCase().indexOf('sesión') >= 0 ||
+           String(data.message).toLowerCase().indexOf('sesion') >= 0)) {
+        try {
+          localStorage.removeItem('heka_token');
+          localStorage.removeItem('heka_session');
+          localStorage.removeItem('heka_session_expires');
+        } catch (ex) {}
+      }
+
+      return data;
+    }
 
     // ============================================================
     // 🔌 SHIM: google.script.run → fetch
@@ -30940,7 +30968,7 @@ function abrirModalSolicitudActupd() {
   document.getElementById('actupd-btn-revisar').style.display = 'inline-flex';
   document.getElementById('actupd-btn-confirmar').style.display = 'none';
   document.getElementById('actupd-btn-volver').style.display = 'none';
-  document.getElementById('actupd-modal-solicitud').style.display = 'flex';
+  actupdAsegurarModalEnBody('actupd-modal-solicitud'); document.getElementById('actupd-modal-solicitud').style.display = 'flex';
 }
 function cerrarModalSolicitudActupd() {
   document.getElementById('actupd-modal-solicitud').style.display = 'none';
@@ -31025,10 +31053,21 @@ function buscarHistorialActupd(sinInfo) {
     .getActualizacionDatosHistorial(q);
 }
 
+
+/** Sube el modal de Actualización de datos al <body> para que no quede bajo el sidebar (stacking context). */
+function actupdAsegurarModalEnBody(id) {
+  var m = document.getElementById(id);
+  if (m && m.parentElement !== document.body) {
+    document.body.appendChild(m);
+  }
+  return m;
+}
+
 // ---- Modal procesar solicitudes del dia ----
 var actupdPendientesData = [];
 function abrirModalProcesarActupd() {
-  document.getElementById('actupd-modal-procesar').style.display = 'flex';
+  var modal = actupdAsegurarModalEnBody('actupd-modal-procesar');
+  if (modal) modal.style.display = 'flex';
   document.getElementById('actupd-procesar-tabla').innerHTML = '';
   showLoading(true, 'CARGANDO', 'Actualización de datos');
   document.getElementById('actupd-procesar-correos').innerText = '';
@@ -31095,13 +31134,36 @@ function procesarActupdUI() {
 
 // ---- Correos destino ----
 function abrirModalCorreosActupd() {
+  // Abrir al instante (no esperar al backend) + loading global
+  var modal = actupdAsegurarModalEnBody('actupd-modal-correos');
+  var input = document.getElementById('actupd-correos');
+  var msg = document.getElementById('actupd-correos-msg');
+  if (input) {
+    input.value = '';
+    input.placeholder = 'Cargando correos...';
+    input.disabled = true;
+  }
+  if (msg) msg.innerText = 'Cargando...';
+  if (modal) modal.style.display = 'flex';
+  showLoading(true, 'CARGANDO', 'Correos destino');
   google.script.run
     .withSuccessHandler(function(res) {
-      document.getElementById('actupd-correos').value = (res && res.correos) || '';
-      document.getElementById('actupd-correos-msg').innerText = '';
-      document.getElementById('actupd-modal-correos').style.display = 'flex';
+      showLoading(false);
+      if (input) {
+        input.disabled = false;
+        input.placeholder = 'correo1@empresa.com, correo2@empresa.com';
+        input.value = (res && res.correos) || '';
+      }
+      if (msg) msg.innerText = '';
     })
-    .withFailureHandler(function() {})
+    .withFailureHandler(function(e) {
+      showLoading(false);
+      if (input) {
+        input.disabled = false;
+        input.placeholder = 'correo1@empresa.com, correo2@empresa.com';
+      }
+      if (msg) msg.innerHTML = '<span style="color:#dc3545">No se pudieron cargar. Reintenta.</span>';
+    })
     .getCorreosActualizacion();
 }
 function guardarCorreosActupdUI() {
