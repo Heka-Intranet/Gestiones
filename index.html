@@ -13604,40 +13604,45 @@ input[type="date"]::-webkit-calendar-picker-indicator,
      * @returns {Promise<object>}     - Respuesta ya parseada del backend
      */
      async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
-  // Captura nativa y segura del token de inicio de sesión de la intranet
-  var tokenSesion = "";
-  try {
-    var savedSesion = localStorage.getItem('heka_session');
-    if (savedSesion) {
-      var perfilObj = JSON.parse(savedSesion);
-      tokenSesion = perfilObj.token || localStorage.getItem('heka_token') || "";
-    } else {
-      tokenSesion = localStorage.getItem('heka_token') || "";
-    }
-  } catch(e) {
-    tokenSesion = localStorage.getItem('heka_token') || "";
-  }
-  const payload = {
-    token: tokenSesion, // Token de sesión para handleApiCall
-    fn: nombreFuncion,
-    args: argumentosArray
-  };
-  try {
-    const respuesta = await fetch(GAS_URL, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8" 
-      },
-      body: JSON.stringify(payload)
-    });
-    const textoRespuesta = await respuesta.text();
-    return JSON.parse(textoRespuesta);
-  } catch (error) {
-    console.error("Error crítico de comunicación con la API (POST):", error);
-    throw error;
-  }
-}
+       // Captura nativa y segura del token de inicio de sesión de la intranet
+       var tokenSesion = "";
+       try {
+         var savedSesion = localStorage.getItem('heka_session');
+         if (savedSesion) {
+           var perfilObj = JSON.parse(savedSesion);
+           tokenSesion = perfilObj.token || localStorage.getItem('heka_token') || "";
+         } else {
+           tokenSesion = localStorage.getItem('heka_token') || "";
+         }
+       } catch(e) {
+         tokenSesion = localStorage.getItem('heka_token') || "";
+       }
+       const payload = {
+         token: tokenSesion, // Token de sesión para handleApiCall
+         fn: nombreFuncion,
+         args: argumentosArray
+       };
+       try {
+         // ... código anterior del fetch ...
+         const respuesta = await fetch(GAS_URL, {
+           method: "POST",
+           mode: "cors",
+           headers: { "Content-Type": "text/plain;charset=utf-8" },
+           body: JSON.stringify(payload)
+         });
+     
+         // 🔬 BLOQUE DE DIAGNÓSTICO MAESTRO:
+         const textoRespuesta = await respuesta.text();
+         console.log("▼ RESPUESTA CRUDA DEL SERVIDOR DE GOOGLE:");
+         console.log(textoRespuesta); // <-- ESTO TE MOSTRARÁ EL ERROR REAL EN LA CONSOLA
+         
+         return JSON.parse(textoRespuesta);
+
+       } catch (error) {
+         console.error("Error crítico de comunicación con la API (POST):", error);
+         throw error;
+       }
+     }
 
 
     // ============================================================
