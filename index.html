@@ -13737,15 +13737,29 @@ input[type="date"]::-webkit-calendar-picker-indicator,
           return;
         }
         
-        // Forzar que todo el tráfico del proxy viaje por la carretera segura POST
-        if (typeof showLoading === 'function') showLoading(true, 'PROCESANDO', 'Operación en curso');
+        // Funciones de fondo (polling / chips / chat silencioso):
+        // NO deben mostrar ni ocultar el overlay global.
+        // Si ocultaran, podrían apagar una carga legítima de otra acción en paralelo.
+        var SILENT_FNS = {
+          obtenerNotificacionesSoftware: 1,
+          getDisponibilidadPanel: 1,
+          obtenerChatSoftware: 1,
+          getMiDisponibilidad: 1,
+          keepAlive: 1
+        };
+        var silencioso = !!SILENT_FNS[prop];
+
+        // Solo operaciones de usuario muestran el overlay del shim
+        if (!silencioso && typeof showLoading === 'function') {
+          showLoading(true, 'PROCESANDO', 'Operación en curso');
+        }
         llamarBackendIntranet(prop, args)
           .then(function(data) {
-            if (typeof showLoading === 'function') showLoading(false);
+            if (!silencioso && typeof showLoading === 'function') showLoading(false);
             if (successCb) successCb(data);
           })
           .catch(function(err) {
-            if (typeof showLoading === 'function') showLoading(false);
+            if (!silencioso && typeof showLoading === 'function') showLoading(false);
             if (failureCb) failureCb(err);
             else console.error("Error crítico en la llamada del Proxy Shim:", err);
           });
