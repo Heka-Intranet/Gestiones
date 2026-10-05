@@ -13604,34 +13604,40 @@ input[type="date"]::-webkit-calendar-picker-indicator,
      * @returns {Promise<object>}     - Respuesta ya parseada del backend
      */
      async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
-       const tokenSesion = localStorage.getItem("heka_token") || ""; 
-     
-       const payload = {
-         token: tokenSesion,
-         fn: nombreFuncion,
-         args: argumentosArray
-       };
-     
-       try {
-         const respuesta = await fetch(GAS_URL, {
-           method: "POST",
-           mode: "cors", // Autoriza la conexión segura GitHub Pages -> Google
-           headers: {
-             // "text/plain" es OBLIGATORIO para evitar la petición OPTIONS preliminar que Google rechaza
-             "Content-Type": "text/plain;charset=utf-8" 
-           },
-           body: JSON.stringify(payload) // Envía el JSON oculto y protegido en el Body
-         });
-     
-         // Procesa la respuesta de texto de forma idéntica a tu lógica actual
-         const textoRespuesta = await respuesta.text();
-         return JSON.parse(textoRespuesta);
-     
-       } catch (error) {
-         console.error("Error crítico de comunicación con la API (POST):", error);
-         throw error;
-       }
-     }
+  // Captura nativa y segura del token de inicio de sesión de la intranet
+  var tokenSesion = "";
+  try {
+    var savedSesion = localStorage.getItem('heka_session');
+    if (savedSesion) {
+      var perfilObj = JSON.parse(savedSesion);
+      tokenSesion = perfilObj.token || localStorage.getItem('heka_token') || "";
+    } else {
+      tokenSesion = localStorage.getItem('heka_token') || "";
+    }
+  } catch(e) {
+    tokenSesion = localStorage.getItem('heka_token') || "";
+  }
+  const payload = {
+    token: tokenSesion, // Token de sesión para handleApiCall
+    fn: nombreFuncion,
+    args: argumentosArray
+  };
+  try {
+    const respuesta = await fetch(GAS_URL, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8" 
+      },
+      body: JSON.stringify(payload)
+    });
+    const textoRespuesta = await respuesta.text();
+    return JSON.parse(textoRespuesta);
+  } catch (error) {
+    console.error("Error crítico de comunicación con la API (POST):", error);
+    throw error;
+  }
+}
 
 
     // ============================================================
@@ -13639,7 +13645,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     //
     // MIGRADO A HTTP POST (doPost): el JSON viaja en el Body.
     // Sin límite de URL → soporta Base64 y payloads pesados.
-    // GET (?p=) se mantiene solo como fallback de emergencia.
+    // TODO el tráfico viaja exclusivamente por POST (sin fallback GET).
     // ============================================================
     var google = {
       script: {
@@ -13703,105 +13709,41 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       var GAS_MAX_REINTENTOS = 2;
 
       function createCallableProxy(successCb, failureCb) {
-        return new Proxy({}, {
-          get: function(target, prop) {
-            if (prop === 'withFailureHandler') {
-              return function(fn) {
-                return createCallableProxy(successCb, fn);
-              };
-            }
-            if (prop === 'withSuccessHandler') {
-              return function(fn) {
-                return createCallableProxy(fn, failureCb);
-              };
-            }
-            // prop = nombre de la función GAS a ejecutar
-            return function() {
-              var args = Array.prototype.slice.call(arguments);
-              var PUBLIC_FNS = { loginBackend: 1, enviarCodigo: 1, cambiarContrasena: 1, cerrarSesionIntranet: 1 };
-              // Sin token y no es publica: no llamar al servidor (evita "Sesión no válida")
-              if (!PUBLIC_FNS[prop] && !hekaSesionVigente()) {
-                var msgSin = 'Sesión no válida. Vuelve a iniciar sesión.';
-                if (successCb) successCb({ status: 'error', message: msgSin, _session: true });
-                else if (failureCb) failureCb({ message: msgSin });
-                return;
-              }
-              var body = { fn: prop, args: args };
-              if (HEKA_SESSION_TOKEN) body.token = HEKA_SESSION_TOKEN;
-              var payload = JSON.stringify(body);
-              var intento = 0;
-
-              function reportarError(mensaje) {
-                if (failureCb) failureCb({ message: mensaje });
-                else if (successCb) successCb({ status: 'error', message: mensaje });
-              }
-
-              function enviar() {
-                var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-                var timer = ctrl ? setTimeout(function() { ctrl.abort(); }, GAS_TIMEOUT_MS) : null;
-
-                // POST principal (doPost): JSON en Body, sin límite de URL
-                var req = fetch(GAS_URL, {
-                  method: 'POST',
-                  mode: 'cors',
-                  headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                  body: payload,
-                  signal: ctrl ? ctrl.signal : undefined
-                });
-
-                req
-                .then(function(r) {
-                  if (timer) clearTimeout(timer);
-                  // 404/429/5xx: reintentar (404 intermitente es habitual en GAS)
-                  if (r.status === 404 || r.status === 429 || r.status >= 500) {
-                    if (intento < GAS_MAX_REINTENTOS) {
-                      intento++;
-                      setTimeout(enviar, 1200 * intento);
-                      return null;
-                    }
-                    if (r.status === 404) {
-                      throw new Error('GAS 404: URL de deployment no válida o Google no encontró el Web App. Crea un New deployment y actualiza GAS_URL.');
-                    }
-                    throw new Error('El servidor está saturado (HTTP ' + r.status + '). Intenta de nuevo en unos segundos.');
-                  }
-                  if (r.status === 405) {
-                    throw new Error('El Web App no acepta POST (405). En Apps Script: Deploy → New version (Access: Anyone).');
-                  }
-                  if (!r.ok) throw new Error('HTTP ' + r.status);
-                  return r.text();
-                })
-                .then(function(text) {
-                  if (text === null) return;
-                  var data;
-                  try { data = JSON.parse(text); } catch(e) {
-                    throw new Error('Respuesta no válida del servidor (¿sesión de Google expirada?). Recarga la página e intenta de nuevo.');
-                  }
-                  if (data && data.status === 'error' && data.message &&
-                      (data.message.indexOf('Sesión') >= 0 || data.message.indexOf('sesión') >= 0)) {
-                    hekaForzarCierreSesion(data.message);
-                    data._session = true;
-                  }
-                  if (successCb) successCb(data);
-                })
-                .catch(function(err) {
-                  if (timer) clearTimeout(timer);
-                  var errMsg = err.message || String(err);
-                  if (err && err.name === 'AbortError') {
-                    errMsg = 'El servidor tardó demasiado en responder (más de ' + Math.round(GAS_TIMEOUT_MS/1000) + 's). Verifica si la operación se completó antes de reintentar.';
-                  }
-                  // CORS / Failed to fetch suele ser el 405 del POST (deployment sin doPost)
-                  if (/Failed to fetch|NetworkError|CORS/i.test(errMsg)) {
-                    errMsg = 'Error de red/CORS. En Apps Script: Deploy → New version (Access: Anyone) para habilitar doPost.';
-                  }
-                  reportarError(errMsg);
-                });
-              }
-
-              enviar();
-            };
-          }
-        });
+  return new Proxy({}, {
+    get: function(target, prop) {
+      if (prop === 'withFailureHandler') {
+        return function(fn) { return createCallableProxy(successCb, fn); };
       }
+      if (prop === 'withSuccessHandler') {
+        return function(fn) { return createCallableProxy(fn, failureCb); };
+      }
+      
+      return function() {
+        var args = Array.prototype.slice.call(arguments);
+        var PUBLIC_FNS = { loginBackend: 1, enviarCodigo: 1, cambiarContrasena: 1, cerrarSesionIntranet: 1 };
+        
+        if (!PUBLIC_FNS[prop] && !hekaSesionVigente()) {
+          var msgSin = 'Sesión no válida. Vuelve a iniciar sesión.';
+          if (successCb) successCb({ status: 'error', message: msgSin, _session: true });
+          return;
+        }
+        
+        // Forzar que todo el tráfico del proxy viaje por la carretera segura POST
+        if (typeof showLoading === 'function') showLoading(true, 'PROCESANDO', 'Operación en curso');
+        llamarBackendIntranet(prop, args)
+          .then(function(data) {
+            if (typeof showLoading === 'function') showLoading(false);
+            if (successCb) successCb(data);
+          })
+          .catch(function(err) {
+            if (typeof showLoading === 'function') showLoading(false);
+            if (failureCb) failureCb(err);
+            else console.error("Error crítico en la llamada del Proxy Shim:", err);
+          });
+      };
+    }
+  });
+}
 
       google.script.run.withSuccessHandler = function(fn) {
         return createCallableProxy(fn, null);
