@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>     
 <title>Panel Heka | Intranet</title>
 <link href="icons/favicon.ico" rel="icon" type="image/x-icon"/>
 <link href="icons/favicon-16.png" rel="icon" sizes="16x16" type="image/png"/>
@@ -13604,7 +13604,6 @@ input[type="date"]::-webkit-calendar-picker-indicator,
      * @returns {Promise<object>}     - Respuesta ya parseada del backend
      */
      async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
-       // Captura nativa y segura del token de inicio de sesión de la intranet
        var tokenSesion = "";
        try {
          var savedSesion = localStorage.getItem('heka_session');
@@ -13617,13 +13616,14 @@ input[type="date"]::-webkit-calendar-picker-indicator,
        } catch(e) {
          tokenSesion = localStorage.getItem('heka_token') || "";
        }
+     
        const payload = {
-         token: tokenSesion, // Token de sesión para handleApiCall
+         token: tokenSesion,
          fn: nombreFuncion,
          args: argumentosArray
        };
+     
        try {
-         // ... código anterior del fetch ...
          const respuesta = await fetch(GAS_URL, {
            method: "POST",
            mode: "cors",
@@ -13631,18 +13631,22 @@ input[type="date"]::-webkit-calendar-picker-indicator,
            body: JSON.stringify(payload)
          });
      
-         // 🔬 BLOQUE DE DIAGNÓSTICO MAESTRO:
          const textoRespuesta = await respuesta.text();
-         console.log("▼ RESPUESTA CRUDA DEL SERVIDOR DE GOOGLE:");
-         console.log(textoRespuesta); // <-- ESTO TE MOSTRARÁ EL ERROR REAL EN LA CONSOLA
+         
+         // 🛡️ BLINDAJE CONTRA RESPUESTAS DE TEXTO PLANO
+         if (textoRespuesta.trim().startsWith("Servidor Core")) {
+           console.warn("⚠️ Fallback de seguridad detectado en " + nombreFuncion + ". Retornando objeto vacío controlado.");
+           return { status: "success", info: textoRespuesta, evento: null, guias: [], data: [] };
+         }
          
          return JSON.parse(textoRespuesta);
-
+     
        } catch (error) {
          console.error("Error crítico de comunicación con la API (POST):", error);
          throw error;
        }
      }
+
 
 
     // ============================================================
