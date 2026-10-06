@@ -1,19 +1,19 @@
-name: Desplegar Intranet Heka a GAS por API
+name: Desplegar Solo HTML a GAS por API
 
 on:
   push:
     branches:
-      - main  # Si tu rama principal en GitHub se llama 'master', cambia 'main' por 'master'
+      - main  # Si tu rama se llama 'master', cambia 'main' por 'master'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 1. Descargar el código del repositorio
+    - name: 1. Descargar el código de GitHub
       uses: actions/checkout@v4
 
-    - name: 2. Configurar Node.js en el servidor de GitHub
+    - name: 2. Configurar Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 20
@@ -23,7 +23,12 @@ jobs:
 
     - name: 4. Inyectar llaves de autenticación de Google Cloud
       run: |
-        echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
+        echo '${{ secrets.DECLASPRC_JSON }}' > ~/.clasprc.json
 
-    - name: 5. Empujar código a Google Apps Script por API
-      run: clasp push --force
+    - name: 5. Descargar el código actual de GAS para no borrar nada
+      run: |
+        clasp pull
+
+    - name: 6. Empujar código actualizado respetando el backend
+      run: |
+        clasp push --force
