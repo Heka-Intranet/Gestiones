@@ -31102,7 +31102,11 @@ var HekaSmartPoll = {
         self._hidden = document.hidden;
         if (wasHidden && !self._hidden) {
           // Tab volvió a ser visible → ejecutar todos los handlers registrados
-          console.info("👁️ Tab visible — reanudando polling");
+          if (typeof _POLLING_DESHABILITADO !== 'undefined' && _POLLING_DESHABILITADO) {
+            console.info("👁️ Tab visible — polling DESHABILITADO, no se reanuda");
+          } else {
+            console.info("👁️ Tab visible — reanudando polling");
+          }
           self._visibilityHandlers.forEach(function(fn) {
             try { fn(); } catch(e) { console.warn("Error en visibility handler:", e); }
           });
@@ -31117,7 +31121,11 @@ var HekaSmartPoll = {
     });
     // --- Network status ---
     window.addEventListener('online', function() {
-      console.info("🌐 Conexión restaurada — reanudando polling");
+      if (typeof _POLLING_DESHABILITADO !== 'undefined' && _POLLING_DESHABILITADO) {
+        console.info("🌐 Conexión restaurada — polling DESHABILITADO, no se reanuda");
+      } else {
+        console.info("🌐 Conexión restaurada — reanudando polling");
+      }
       self._visibilityHandlers.forEach(function(fn) {
         try { fn(); } catch(e) {}
       });
