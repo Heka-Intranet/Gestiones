@@ -15324,34 +15324,66 @@ function openModalRecarga() {
       tempRecargaFiles = null;
     }
 
-    function closeModalRecarga(e) {
-      const modal = document.getElementById('modal-recarga');
+        function closeModalRecarga(e) {
+      var modal = document.getElementById('modal-recarga');
+      if (!modal) return;
 
-      if (e && e.target !== e.currentTarget && !e.target.classList.contains('close-modal-btn')) {
-        return;
+      // Solo cerrar si: sin evento (botón Cancelar/X), click en backdrop, o click en .recarga-modal-close
+      if (e) {
+        var t = e.target;
+        var esBackdrop = (t === e.currentTarget);
+        var esCloseBtn = t.classList && (
+          t.classList.contains('recarga-modal-close') ||
+          t.classList.contains('close-modal-btn') ||
+          (t.closest && (t.closest('.recarga-modal-close') || t.closest('.close-modal-btn')))
+        );
+        if (!esBackdrop && !esCloseBtn) return;
       }
 
       modal.classList.remove('active');
-
-      // RESTAURAR MODO NORMAL
       modal.classList.remove('mode-pago-pendiente');
-      modal.querySelector('.modal-title h2').innerText = "Registrar Recarga";
 
-      // --- AGREGAR ESTA LÍNEA (Restaurar botón) ---
-      const btnGuardar = document.getElementById('btn_guardar_recarga');
-      if(btnGuardar) {
-        btnGuardar.innerText = "Guardar Recarga";
-        // Si cambiaste el icono arriba, restaura el icono aquí:
-        // btnGuardar.innerHTML = '<i class="bi bi-save"></i> Guardar Recarga';
+      // Título: clase real del HTML (.recarga-modal-title), con fallback seguro
+      var titleEl = modal.querySelector('.recarga-modal-title') ||
+                    modal.querySelector('.modal-title h2') ||
+                    modal.querySelector('h2');
+      if (titleEl) titleEl.textContent = 'Registrar Recarga';
+
+      var btnGuardar = document.getElementById('btn_guardar_recarga');
+      if (btnGuardar) {
+        btnGuardar.disabled = true;
+        btnGuardar.textContent = 'Guardar recarga';
       }
 
-      // LIMPIEZA DE FORMULARIO
       var form = document.getElementById('formRecarga');
       if (form) form.reset();
 
-      document.getElementById('rec_valor').value = "";
-      document.getElementById('rec_sop_files').value = "";
-      
+      var valInput = document.getElementById('rec_valor');
+      if (valInput) valInput.value = '';
+
+      var filesInput = document.getElementById('rec_sop_files');
+      if (filesInput) filesInput.value = '';
+
+      // Campos extra si existen (evita residuos al reabrir)
+      ['rec_seller', 'rec_fecha', 'rec_asesor', 'rec_observacion', 'rec_metodo'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        else el.value = '';
+      });
+
+      var displaySaldo = document.getElementById('res-saldo-display');
+      if (displaySaldo) {
+        displaySaldo.style.display = 'none';
+        displaySaldo.textContent = '';
+      }
+
+      var infoBox = document.getElementById('recarga-info-box') || document.getElementById('rec_info');
+      if (infoBox) {
+        infoBox.style.display = 'none';
+        infoBox.innerHTML = '';
+      }
+
       tempRecargaData = null;
       tempRecargaFiles = null;
     }
