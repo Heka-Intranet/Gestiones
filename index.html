@@ -13616,34 +13616,91 @@ input[type="date"]::-webkit-calendar-picker-indicator,
        } catch(e) {
          tokenSesion = localStorage.getItem('heka_token') || "";
        }
-     
+
        const payload = {
          token: tokenSesion,
          fn: nombreFuncion,
          args: argumentosArray
        };
-     
-       try {
+
+       // ============================================================
+       // 🔧 CORREGIDO: Ejecución interna con blindaje completo
+       // ============================================================
+       async function ejecutarPostConBlindaje(intento) {
          const respuesta = await fetch(GAS_URL, {
            method: "POST",
            mode: "cors",
            headers: { "Content-Type": "text/plain;charset=utf-8" },
            body: JSON.stringify(payload)
          });
-     
+
+         // 🛡️ PASO 1: Verificar HTTP status code ANTES de leer el body
+         if (!respuesta.ok) {
+           var errorBody = "";
+           try { errorBody = await respuesta.text(); } catch(e) { errorBody = ""; }
+           console.error("🔴 HTTP " + respuesta.status + " en " + nombreFuncion + " (intento " + intento + ")", errorBody.substring(0, 200));
+           if (respuesta.status === 401 || respuesta.status === 403) {
+             throw new Error("Sesión expirada o sin permisos (HTTP " + respuesta.status + "). Vuelve a iniciar sesión.");
+           }
+           throw new Error("HTTP " + respuesta.status + " del API. Detalle: " + errorBody.substring(0, 100));
+         }
+
          const textoRespuesta = await respuesta.text();
-         
-         // 🛡️ BLINDAJE CONTRA RESPUESTAS DE TEXTO PLANO
-         if (textoRespuesta.trim().startsWith("Servidor Core")) {
+         var textoLimpio = textoRespuesta.trim();
+
+         // 🛡️ PASO 2: Detectar respuestas HTML (redirección 302 de GAS)
+         //    <<< ESTE ES EL BLINDAJE QUE FALTABA — CAUSA RAÍZ DEL ERROR >>>
+         if (textoLimpio.startsWith("<!DOCTYPE") || textoLimpio.startsWith("<html") || textoLimpio.startsWith("<HTML") || textoLimpio.startsWith("<head")) {
+           console.error("🔴 API devolvió HTML en vez de JSON en " + nombreFuncion + " (intento " + intento + ")");
+           console.error("   Causa: Google Apps Script redirige (302) a página de login/error.");
+           console.error("   Primeros 200 chars:", textoLimpio.substring(0, 200));
+           // Si es la primera vez, reintentar (puede ser transitorio)
+           if (intento === 1) {
+             console.warn("⚠️ Reintentando " + nombreFuncion + " tras HTML inesperado...");
+             await new Promise(function(r){ setTimeout(r, 1500); });
+             return ejecutarPostConBlindaje(2);
+           }
+           throw new Error("La API devolvió HTML en vez de JSON. Posible redirección 302 de Google Apps Script. Verifica deployment 'Anyone' access y URL actual.");
+         }
+
+         // 🛡️ PASO 3: Blindaje contra respuestas de texto plano (doGet fallback)
+         if (textoLimpio.startsWith("Servidor Core")) {
            console.warn("⚠️ Fallback de seguridad detectado en " + nombreFuncion + ". Retornando objeto vacío controlado.");
            return { status: "success", info: textoRespuesta, evento: null, guias: [], data: [] };
          }
-         
-         return JSON.parse(textoRespuesta);
-     
-       } catch (error) {
-         console.error("Error crítico de comunicación con la API (POST):", error);
-         throw error;
+
+         // 🛡️ PASO 4: Intentar parsear JSON con mensaje claro si falla
+         try {
+           return JSON.parse(textoRespuesta);
+         } catch (parseError) {
+           console.error("🔴 JSON.parse falló en " + nombreFuncion + ". Respuesta no es JSON:", textoLimpio.substring(0, 200));
+           throw new Error("Respuesta del API no es JSON válido: " + parseError.message + ". Inicio: " + textoLimpio.substring(0, 80));
+         }
+       }
+
+       // ============================================================
+       // 🔄 Ejecución con reintento para errores transitorios de red
+       // ============================================================
+       try {
+         return await ejecutarPostConBlindaje(1);
+       } catch (errorPrincipal) {
+         var msgErr = (errorPrincipal && errorPrincipal.message) || "";
+         // Errores de configuración (HTML redirect, sesión) → NO reintentar
+         if (msgErr.indexOf("HTML en vez de JSON") !== -1 ||
+             msgErr.indexOf("Sesión expirada") !== -1 ||
+             msgErr.indexOf("redirección 302") !== -1) {
+           console.error("Error crítico de comunicación con la API (POST):", errorPrincipal);
+           throw errorPrincipal;
+         }
+         // Otros errores de red → 1 reintento
+         console.warn("⚠️ Reintentando " + nombreFuncion + " tras error de red (intento 2)...");
+         try {
+           await new Promise(function(r){ setTimeout(r, 2000); });
+           return await ejecutarPostConBlindaje(2);
+         } catch (error2) {
+           console.error("Error crítico de comunicación con la API (POST):", error2);
+           throw error2;
+         }
        }
      }
 
@@ -13756,12 +13813,46 @@ input[type="date"]::-webkit-calendar-picker-indicator,
         llamarBackendIntranet(prop, args)
           .then(function(data) {
             if (!silencioso && typeof showLoading === 'function') showLoading(false);
+            // 🔧 CORREGIDO: Detectar error de sesión EXPLÍCITO del backend
+            // Solo cerrar sesión si el backend dice claramente que el token no sirve
+            if (data && data.status === 'error' && data.message && (
+                data.message.indexOf('Sesión') !== -1 ||
+                data.message.indexOf('sesión') !== -1 ||
+                data.message.indexOf('expirada') !== -1 ||
+                data.message.indexOf('no válida') !== -1)) {
+              if (failureCb) failureCb(new Error(data.message));
+              else if (typeof hekaForzarCierreSesion === 'function') hekaForzarCierreSesion(data.message);
+              return;
+            }
+            if (data && data._session) {
+              if (failureCb) failureCb(new Error(data.message || 'Sesión expirada'));
+              else if (typeof hekaForzarCierreSesion === 'function') hekaForzarCierreSesion(data.message || 'Sesión expirada');
+              return;
+            }
             if (successCb) successCb(data);
           })
           .catch(function(err) {
             if (!silencioso && typeof showLoading === 'function') showLoading(false);
+            // 🔧 CORREGIDO: HTML redirect es transitorio → NO cerrar sesión
+            // Solo pasar al failure handler para que cada caller decida qué hacer
+            // El polling tiene su propio circuit breaker que pausa, no cierra sesión
+            var errMsg = (err && err.message) || String(err || '');
+            if (errMsg.indexOf("HTML en vez de JSON") !== -1 || errMsg.indexOf("redirección 302") !== -1) {
+              // Error transitorio de infraestructura de Google → NO cerrar sesión
+              // Solo loguear y pasar al failure handler
+              console.warn("⚠️ Error transitorio de API (HTML redirect) en [" + prop + "]. Sesión NO afectada.");
+              if (failureCb) failureCb(err);
+              return;
+            }
+            // Error de sesión EXPLÍCITO (HTTP 401/403 del GAS) → SÍ cerrar sesión
+            if (errMsg.indexOf("Sesión expirada") !== -1 || errMsg.indexOf("HTTP 401") !== -1 || errMsg.indexOf("HTTP 403") !== -1) {
+              if (typeof hekaForzarCierreSesion === 'function') {
+                hekaForzarCierreSesion("Tu sesión ha expirado. Vuelve a iniciar sesión.");
+              }
+              return;
+            }
             if (failureCb) failureCb(err);
-            else console.error("Error crítico en la llamada del Proxy Shim:", err);
+            else console.error("Error en llamada API [" + prop + "]:", err);
           });
       };
     }
@@ -14907,10 +14998,12 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 
       if (panelId === 'panel-disponibilidad') {
         cargarPanelDisponibilidad();
-        if (dispTimer) clearInterval(dispTimer);
-        dispTimer = setInterval(function(){ cargarPanelDisponibilidad(true); }, 5 * 60 * 1000); // cada 5 min
+        if (dispTimer) clearTimeout(dispTimer);
+        _swDispActivo = true;
+        _swAgendarProximoDisp();
       } else if (dispTimer) {
-        clearInterval(dispTimer); // dejar de refrescar al salir del panel
+        _swDispActivo = false;
+        clearTimeout(dispTimer);
         dispTimer = null;
       }
 
@@ -30132,6 +30225,8 @@ function cerrarModalStatus() { document.getElementById('disp-status-modal').styl
 // Colorea el contorno del perfil y el item "Mi Status" (desktop + móvil)
 function actualizarMiStatusChip() {
   if (!currentUser || !currentUser.cedula) return;
+  // 🛡️ Verificar sesión vigente antes de llamar al backend
+  if (typeof hekaSesionVigente === 'function' && !hekaSesionVigente()) return;
   var permsStr = String(currentUser.permissions || '');
   var permiso = currentUser.role === 'Administrador' || permsStr.indexOf('status') !== -1;
   var item = document.getElementById('disp-status-menu-item');
@@ -30149,6 +30244,15 @@ function actualizarMiStatusChip() {
       if (!res || res._session) return;
       if (!res || res.status !== 'success') return;
       var ev = res.evento ? String(res.evento).trim() : '';
+      // 🚀 SMART POLL: Registrar si el usuario tiene status o no
+      // Solo se ejecuta polling recurrente de disponibilidad si tiene status
+      var teniaStatusAntes = _dispTieneStatus;
+      _dispTieneStatus = !!ev; // true si tiene evento, false si null/vacío
+      if (_dispTieneStatus && !teniaStatusAntes && _swDispActivo) {
+        // Acaba de obtener status → activar polling recurrente si estaba en el panel
+        console.info("🟢 Status detectado — activando polling de disponibilidad");
+        _swAgendarProximoDisp();
+      }
       var est = ev
         ? (DISP_ESTADOS_CHIP[ev] || { texto: ev, color: '#888' })
         : { texto: 'Sin registro', color: '#6b7280' };
@@ -30174,10 +30278,42 @@ function actualizarMiStatusChip() {
         mobileWrap.style.borderRadius = '50%';
       }
     })
-    .withFailureHandler(function() {})
+    .withFailureHandler(function(err) {
+      // 🔧 CORREGIDO: Log del error en vez de ignorarlo silenciosamente
+      var msg = (err && err.message) || String(err || '');
+      console.warn("⚠️ Error obteniendo disponibilidad en chip:", msg.substring(0, 100));
+    })
     .getMiDisponibilidad(ced);
 }
 var dispTimer = null;
+
+// 🚀 SMART POLL: Agendar próximo poll de disponibilidad
+// Solo se ejecuta si el usuario tiene al menos un status registrado
+function _swAgendarProximoDisp() {
+  if (!_swDispActivo) return;
+  // 🛡️ Si sabemos que NO tiene status, no agendar polling recurrente
+  if (_dispTieneStatus === false) {
+    console.info("⏸️ Sin status registrado — polling de disponibilidad DESACTIVADO");
+    return;
+  }
+  if (dispTimer) clearTimeout(dispTimer);
+  var intervalo = HekaSmartPoll.intervalo('disp', 300000, 900000); // 5min base, 15min max
+  dispTimer = setTimeout(function() {
+    if (!_swDispActivo) return;
+    // Re-verificar si tiene status antes de ejecutar
+    if (_dispTieneStatus === false) {
+      console.info("⏸️ Sin status — se omite este ciclo de polling de disponibilidad");
+      return;
+    }
+    if (!HekaSmartPoll.esVisible() || !navigator.onLine) { _swAgendarProximoDisp(); return; }
+    if (typeof hekaSesionVigente === 'function' && !hekaSesionVigente()) {
+      _swDispActivo = false; clearTimeout(dispTimer); dispTimer = null; return;
+    }
+    cargarPanelDisponibilidad(true);
+    HekaSmartPoll.ok('disp');
+    _swAgendarProximoDisp();
+  }, intervalo);
+}
 
 function iniciarRegistroDisponibilidad(evento) {
   dispPendiente = { evento: evento, lat: null, lng: null, precision: null };
@@ -30243,6 +30379,8 @@ document.getElementById('disp-confirmar').addEventListener('click', function() {
       showLoading(false);
       if (res && res.status === 'success') {
         showToast(res.message || (dispPendiente.evento + ' registrado'), 'success');
+        // 🚀 SMART POLL: Al registrar status, marcar que tiene status y activar polling
+        _dispTieneStatus = true;
         actualizarMiStatusChip();
         var info = document.getElementById('disp-status-info');
         if (info) {
@@ -31320,6 +31458,111 @@ function swFiltrarTabla(modo) {
 
 
 var swModoVista = 'colaborador';
+// ============================================================
+// 🚀 HEKA SMART POLL ENGINE v2.0
+// Reemplaza setInterval crudo con polling inteligente que:
+// - Pausa cuando la pestaña está oculta (Visibility API)
+// - Backoff exponencial en errores (60s → 120s → 240s → max)
+// - Jitter ±20% para evitar "thundering herd"
+// - Boost de velocidad tras actividad del usuario (15s x 2 min)
+// - Salta requests cuando no hay red (navigator.onLine)
+// - Auto-scheduling: cada poll agenda el siguiente al completar
+// ============================================================
+var HekaSmartPoll = {
+  _errores: {},        // id -> errores consecutivos
+  _hidden: false,      // pestaña oculta
+  _boostHasta: 0,      // deadline del activity boost
+  _BOOST_MS: 120000,   // 2 min de boost
+  _BOOST_INT: 15000,   // 15s durante boost
+  _JITTER: 0.2,        // ±20%
+  _visibilityHandlers: [], // callbacks al volver a ser visible
+
+  init: function() {
+    var self = this;
+    // --- Visibility API ---
+    if (typeof document.hidden !== 'undefined') {
+      document.addEventListener('visibilitychange', function() {
+        var wasHidden = self._hidden;
+        self._hidden = document.hidden;
+        if (wasHidden && !self._hidden) {
+          // Tab volvió a ser visible → ejecutar todos los handlers registrados
+          console.info("👁️ Tab visible — reanudando polling");
+          self._visibilityHandlers.forEach(function(fn) {
+            try { fn(); } catch(e) { console.warn("Error en visibility handler:", e); }
+          });
+        }
+      });
+    }
+    // --- Activity Boost ---
+    ['click','keydown','touchstart'].forEach(function(evt) {
+      document.addEventListener(evt, function() {
+        self._boostHasta = Date.now() + self._BOOST_MS;
+      }, { passive: true });
+    });
+    // --- Network status ---
+    window.addEventListener('online', function() {
+      console.info("🌐 Conexión restaurada — reanudando polling");
+      self._visibilityHandlers.forEach(function(fn) {
+        try { fn(); } catch(e) {}
+      });
+    });
+  },
+
+  // Calcular intervalo inteligente
+  intervalo: function(id, baseMs, maxMs) {
+    var ms;
+    if (Date.now() < this._boostHasta) {
+      ms = this._BOOST_INT;
+    } else {
+      ms = baseMs * Math.pow(2, this._errores[id] || 0);
+      if (ms > (maxMs || baseMs * 5)) ms = maxMs || baseMs * 5;
+    }
+    // Jitter ±20%
+    var delta = ms * this._JITTER;
+    ms = ms + (Math.random() * 2 - 1) * delta;
+    return Math.max(5000, Math.round(ms));
+  },
+
+  // Reset errores (llamar en success handler)
+  ok: function(id) { this._errores[id] = 0; },
+
+  // Incrementar error (llamar en failure handler)
+  fail: function(id) {
+    this._errores[id] = (this._errores[id] || 0) + 1;
+    return this._errores[id];
+  },
+
+  // Boost manual (ej: después de enviar un mensaje)
+  boost: function() { this._boostHasta = Date.now() + this._BOOST_MS; },
+
+  // Tab visible?
+  esVisible: function() { return !this._hidden; },
+
+  // Registrar callback para cuando la pestaña se hace visible
+  onVisible: function(fn) { this._visibilityHandlers.push(fn); },
+
+  // Debug: estado actual
+  debug: function() {
+    var r = { hidden: this._hidden, boostActivo: Date.now() < this._boostHasta, errores: {} };
+    for (var id in this._errores) { if (this._errores[id] > 0) r.errores[id] = this._errores[id]; }
+    return r;
+  }
+};
+HekaSmartPoll.init();
+// Registrar handlers para reanudar polling cuando la pestaña se hace visible
+HekaSmartPoll.onVisible(function() {
+  if (_swNotifActivo) { swPollNotificaciones(false); _swAgendarProximoNotif(); }
+});
+HekaSmartPoll.onVisible(function() {
+  if (_swChatActivo && !swChatCerrado) {
+    var m = document.getElementById('modal-sw-chat');
+    if (m && m.style.display === 'flex') { swSoloRefrescarMensajes(); _swAgendarProximoChat(); }
+  }
+});
+HekaSmartPoll.onVisible(function() {
+  // Solo reanudar polling de disponibilidad si tiene status
+  if (_swDispActivo && _dispTieneStatus !== false) { cargarPanelDisponibilidad(true); _swAgendarProximoDisp(); }
+});
 var swChatTimer = null;
 var swChatUltimoCount = 0;
 var swChatCerrado = false; // true si el ticket está SOLUCIONADO (no poll)
@@ -31330,6 +31573,10 @@ var swNotifKnown = {}; // id -> last msg fingerprint
 var swEnviando = false;          // hay un envío en curso
 var swColaMensajes = [];         // cola si dan Enter varias veces o en paralelo
 var swChatFingerprint = '';      // para detectar mensajes nuevos sin pisar scroll al azar
+var _swNotifActivo = false;  // smart poll: ¿polling de notificaciones activo?
+var _swChatActivo = false;   // smart poll: ¿polling de chat activo?
+var _swDispActivo = false;   // smart poll: ¿polling de disponibilidad activo?
+var _dispTieneStatus = null;  // null=desconocido, true=tiene status, false=no tiene
 
 function swBadgeEstado(estado) {
   var e = String(estado || '').toUpperCase();
@@ -31930,7 +32177,8 @@ function cargarSolicitudesDevSW() {
 }
 
 function swStopChatPolling() {
-  if (swChatTimer) { clearInterval(swChatTimer); swChatTimer = null; }
+  _swChatActivo = false;
+  if (swChatTimer) { clearTimeout(swChatTimer); swChatTimer = null; }
 }
 
 function abrirChatSW(id, modo) {
@@ -31968,17 +32216,28 @@ function swIniciarPollChatSiCorresponde() {
   if (swChatCerrado) return;
   var modal = document.getElementById('modal-sw-chat');
   if (!modal || modal.style.display !== 'flex') return;
-  swChatTimer = setInterval(function() {
-    if (swChatCerrado) {
-      swStopChatPolling();
-      return;
-    }
-    if (document.getElementById('modal-sw-chat').style.display === 'flex') {
+  _swChatActivo = true;
+  swSoloRefrescarMensajes();
+  _swAgendarProximoChat();
+}
+
+// 🚀 SMART POLL: Agendar próximo poll de chat
+function _swAgendarProximoChat() {
+  if (!_swChatActivo) return;
+  if (swChatTimer) clearTimeout(swChatTimer);
+  var intervalo = HekaSmartPoll.intervalo('chat', 45000, 180000); // 45s base, 3min max
+  swChatTimer = setTimeout(function() {
+    if (!_swChatActivo || swChatCerrado) { swStopChatPolling(); return; }
+    if (!HekaSmartPoll.esVisible() || !navigator.onLine) { _swAgendarProximoChat(); return; }
+    if (typeof hekaSesionVigente === 'function' && !hekaSesionVigente()) { swStopChatPolling(); return; }
+    var m = document.getElementById('modal-sw-chat');
+    if (m && m.style.display === 'flex') {
       swSoloRefrescarMensajes();
+      _swAgendarProximoChat();
     } else {
       swStopChatPolling();
     }
-  }, 60000);
+  }, intervalo);
 }
 
 function cerrarModalChatSW() {
@@ -32214,15 +32473,21 @@ function swBindChatEnter() {
 /** Refresco silencioso solo del hilo (no borra lo que el usuario escribe) */
 function swSoloRefrescarMensajes() {
   if (!swTicketActual) return;
-  if (swChatCerrado) { swStopChatPolling(); return; } // solucionado: no ejecutar
-  if (swEnviando) return; // no interrumpir un envío en curso
+  if (swChatCerrado) { swStopChatPolling(); return; }
+  if (swEnviando) return;
   google.script.run
     .withSuccessHandler(function(chat) {
+      HekaSmartPoll.ok('chat');
       if (!swTicketActual) return;
       var msgs = (chat && chat.data) || [];
       var fp = msgs.length + '|' + (msgs.length ? (msgs[msgs.length-1].fecha + msgs[msgs.length-1].mensaje) : '');
-      if (fp === swChatFingerprint) return; // sin cambios
+      if (fp === swChatFingerprint) return;
       renderChatMensajesSW(msgs, false);
+    })
+    .withFailureHandler(function(err) {
+      HekaSmartPoll.fail('chat');
+      var msg = (err && err.message) || String(err || '');
+      console.warn("⚠️ Error en polling chat:", msg.substring(0, 100));
     })
     .obtenerChatSoftware(swTicketActual);
 }
@@ -32247,6 +32512,7 @@ function enviarMensajeChatSW() {
   if (ep) ep.style.display = 'none';
 
   swProcesarColaMensajes();
+  HekaSmartPoll.boost(); // 🚀 Boost polling tras enviar mensaje
 }
 
 function swProcesarColaMensajes() {
@@ -32414,12 +32680,51 @@ function swSetBadge(id, count) {
   }
 }
 
+// 🔧 CORREGIDO: Circuit breaker para polling de notificaciones
+// Evita cascada de errores cuando GAS devuelve HTML (redirección 302)
+var _swNotifErroresConsecutivos = 0;
+var _SW_NOTIF_MAX_ERRORES = 3;
+
+// 🚀 SMART POLL: Re-emplazar notificaciones (self-scheduling con backoff)
 function swPollNotificaciones(silencioso) {
   if (!currentUser || !currentUser.cedula) return;
+  if (!_swNotifActivo) return;
+  // 🛡️ Skip si tab oculta o sin red
+  if (!HekaSmartPoll.esVisible() || !navigator.onLine) {
+    _swAgendarProximoNotif(); return;
+  }
+  // 🛡️ Circuit breaker: si hay demasiados errores, pausar
+  if (_swNotifErroresConsecutivos >= _SW_NOTIF_MAX_ERRORES) {
+    if (_swNotifErroresConsecutivos === _SW_NOTIF_MAX_ERRORES) {
+      console.warn("⚠️ Polling notificaciones PAUSADO por " + _SW_NOTIF_MAX_ERRORES + " errores consecutivos. Backoff activo. Reanudando en ~5 min...");
+      _swNotifErroresConsecutivos++;
+      // Auto-reaudar después de 5 minutos (el backoff ya hace esto naturalmente,
+      // pero forzamos un reset para no esperar demasiado)
+      setTimeout(function() {
+        console.info("🔄 Reanudando polling de notificaciones tras circuit breaker...");
+        _swNotifErroresConsecutivos = 0;
+        HekaSmartPoll.ok('notif');
+        if (_swNotifActivo) { swPollNotificaciones(true); _swAgendarProximoNotif(); }
+      }, 5 * 60 * 1000);
+    }
+    return;
+  }
+  // 🛡️ Verificar sesión vigente
+  if (typeof hekaSesionVigente === 'function' && !hekaSesionVigente()) {
+    swStopNotifPolling(); return;
+  }
+
   // Colaborador siempre
   google.script.run
     .withSuccessHandler(function(res) {
-      if (!res || res.status !== 'success') return;
+      HekaSmartPoll.ok('notif');
+      // 🛡️ Detectar respuesta de error de sesión del backend
+      if (res && res._session) {
+        _swNotifErroresConsecutivos++;
+        _swAgendarProximoNotif(); return;
+      }
+      _swNotifErroresConsecutivos = 0;
+      if (!res || res.status !== 'success') { _swAgendarProximoNotif(); return; }
       var count = res.count || 0;
       swSetBadge('sw-badge-colab', count);
       if (!silencioso && count > 0) {
@@ -32427,7 +32732,7 @@ function swPollNotificaciones(silencioso) {
         var prev = swNotifKnown['colab'] || '';
         if (key && key !== prev) {
           swNotifKnown['colab'] = key;
-          if (prev) { // no sonar en la primera carga
+          if (prev) {
             swPlayNotifSound();
             showToast('💬 Nueva respuesta en tus solicitudes de Software');
           } else {
@@ -32437,8 +32742,21 @@ function swPollNotificaciones(silencioso) {
       } else if (count === 0) {
         swNotifKnown['colab'] = '';
       }
+      // 🚀 Self-schedule: agendar próximo poll desde el success handler
+      _swAgendarProximoNotif();
     })
-    .withFailureHandler(function(){ /* 404 intermitente GAS: silencioso */ })
+    .withFailureHandler(function(err) {
+      var errs = HekaSmartPoll.fail('notif');
+      _swNotifErroresConsecutivos = Math.max(_swNotifErroresConsecutivos, errs);
+      var msg = (err && err.message) || String(err || '');
+      console.warn("⚠️ Error en polling notificaciones (colab) [" + _swNotifErroresConsecutivos + "/" + _SW_NOTIF_MAX_ERRORES + "]:", msg.substring(0, 100));
+      // 🔧 HTML redirect → solo backoff (NO cerrar sesión)
+      if (msg.indexOf("HTML en vez de JSON") !== -1 || msg.indexOf("redirección 302") !== -1) {
+        console.warn("⚠️ Redirección 302 transitoria. Backoff activo (sesión NO afectada).");
+      }
+      // 🚀 Self-schedule con backoff desde el failure handler
+      _swAgendarProximoNotif();
+    })
     .obtenerNotificacionesSoftware(currentUser.cedula, false);
 
   // Dev solo si tiene permiso o es admin
@@ -32447,6 +32765,7 @@ function swPollNotificaciones(silencioso) {
   if (esDev) {
     google.script.run
       .withSuccessHandler(function(res) {
+        if (res && res._session) { return; }
         if (!res || res.status !== 'success') return;
         var count = res.count || 0;
         swSetBadge('sw-badge-dev', count);
@@ -32464,15 +32783,38 @@ function swPollNotificaciones(silencioso) {
           swNotifKnown['dev'] = '';
         }
       })
-      .withFailureHandler(function(){ /* silencioso */ })
+      .withFailureHandler(function(err) {
+        var msg = (err && err.message) || String(err || '');
+        console.warn("⚠️ Error en polling notificaciones (dev):", msg.substring(0, 100));
+      })
       .obtenerNotificacionesSoftware(currentUser.cedula, true);
   }
 }
 
+// 🚀 SMART POLL: Agendar próximo poll de notificaciones
+function _swAgendarProximoNotif() {
+  if (!_swNotifActivo) return;
+  if (swNotifTimer) clearTimeout(swNotifTimer);
+  var intervalo = HekaSmartPoll.intervalo('notif', 60000, 300000);
+  swNotifTimer = setTimeout(function() { swPollNotificaciones(false); }, intervalo);
+}
+
+function swStopNotifPolling() {
+  _swNotifActivo = false;
+  if (swNotifTimer) { clearTimeout(swNotifTimer); swNotifTimer = null; }
+  _swNotifErroresConsecutivos = 0;
+  HekaSmartPoll.ok('notif');
+}
+
 function swStartNotifPolling() {
-  if (swNotifTimer) clearInterval(swNotifTimer);
-  swPollNotificaciones(true);
-  swNotifTimer = setInterval(function(){ swPollNotificaciones(false); }, 60000);
+  swStopNotifPolling();
+  if (typeof hekaSesionVigente === 'function' && !hekaSesionVigente()) {
+    console.warn("⚠️ No se inicia polling de notificaciones: sesión no vigente.");
+    return;
+  }
+  _swNotifActivo = true;
+  swPollNotificaciones(true); // inmediato (silencioso)
+  _swAgendarProximoNotif();   // agendar próximo con smart interval
 }
 
 </script>
