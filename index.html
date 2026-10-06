@@ -7238,11 +7238,10 @@ body { overscroll-behavior-y: contain; }
     top: max(12px, env(safe-area-inset-top, 0px)) !important;
   }
 
-  /* Carga global / Impulso / Progreso */
-  .loading, #loading, .progress-overlay, #impulso-aviso-overlay, #impulso-bloqueo-overlay {
+  /* Carga global / Progreso */
+  .loading, #loading, .progress-overlay {
     padding: max(12px, env(safe-area-inset-top, 0px)) 12px max(12px, env(safe-area-inset-bottom, 0px)) !important;
   }
-  #impulso-timer { font-size: 40px !important; }
   .progress-content, .heka-progress-card {
     width: 94% !important;
     max-width: 400px !important;
@@ -7281,7 +7280,6 @@ body { overscroll-behavior-y: contain; }
 @media (max-width: 480px) {
   .page-header h1 { font-size: 1.2rem !important; }
   .heka-load-title, .progress-title { font-size: 12px !important; letter-spacing: 2px !important; }
-  #impulso-timer { font-size: 36px !important; }
   .btn, button.btn { font-size: 13.5px !important; }
   .panel th, .panel td { font-size: 11.5px !important; padding: 6px 8px !important; }
   .disp-status-grid { grid-template-columns: 1fr !important; }
@@ -8248,38 +8246,11 @@ body { overscroll-behavior-y: contain; }
 </div>
 </div>
 
-<!-- ========== IMPULSO VITAL: aviso 5 min antes ========== -->
-<div id="impulso-aviso-overlay" style="display:none;position:fixed;inset:0;z-index:200050;background:rgba(5,7,11,.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;">
-<div style="width:94%;max-width:420px;background:linear-gradient(165deg,#111b26,#0b1119);border:1px solid rgba(6,182,212,.4);border-radius:22px;padding:28px 24px;text-align:center;box-shadow:0 0 50px rgba(6,182,212,.15),0 24px 60px rgba(0,0,0,.5);">
-<div style="width:64px;height:64px;margin:0 auto 14px;border-radius:18px;background:linear-gradient(135deg,#06b6d4,#0891b2);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(6,182,212,.4);">
-<i class="bi bi-heart-pulse-fill" style="font-size:28px;color:#0b1119;"></i>
-</div>
-<div style="color:#06b6d4;font-size:11px;font-weight:800;letter-spacing:2.5px;margin-bottom:8px;">HEKA // IMPULSO VITAL</div>
-<h3 style="color:#eaf1f8;margin:0 0 8px;font-size:20px;">Pausa activa próxima</h3>
-<p style="color:#9aa8b8;font-size:14px;margin:0 0 6px;line-height:1.45;">En <strong id="impulso-aviso-minutos" style="color:#06b6d4;">5</strong> minutos inicia tu <strong style="color:#eaf1f8;">Impulso Vital</strong> (3 min de pausas activas).</p>
-<p id="impulso-aviso-hora" style="color:#FDB813;font-size:13px;font-weight:700;margin:0 0 18px;"></p>
-<button type="button" id="impulso-aviso-aceptar" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#06b6d4,#0891b2);color:#0b1119;font-weight:800;font-size:15px;cursor:pointer;">Entendido</button>
-</div>
-</div>
-
-<!-- ========== IMPULSO VITAL: bloqueo 3 minutos ========== -->
-<div id="impulso-bloqueo-overlay" style="display:none;position:fixed;inset:0;z-index:200060;background:radial-gradient(ellipse 50% 40% at 50% 40%,rgba(6,182,212,.12),transparent 60%),rgba(5,7,11,.96);backdrop-filter:blur(16px);align-items:center;justify-content:center;flex-direction:column;">
-<div style="text-align:center;padding:24px;max-width:440px;">
-<div style="width:120px;height:120px;margin:0 auto 20px;position:relative;display:flex;align-items:center;justify-content:center;">
-<div style="position:absolute;inset:0;border-radius:50%;border:3px solid rgba(6,182,212,.2);border-top-color:#06b6d4;animation:hekaLoadSpin 1.2s linear infinite;"></div>
-<i class="bi bi-heart-pulse-fill" style="font-size:42px;color:#06b6d4;filter:drop-shadow(0 0 16px rgba(6,182,212,.5));"></i>
-</div>
-<div style="color:#06b6d4;font-size:12px;font-weight:800;letter-spacing:3px;margin-bottom:10px;">IMPULSO VITAL</div>
-<div id="impulso-timer" style="font-size:48px;font-weight:800;color:#eaf1f8;letter-spacing:2px;font-variant-numeric:tabular-nums;margin-bottom:10px;">3:00</div>
-<p style="color:#9aa8b8;font-size:15px;line-height:1.5;margin:0;">Es momento de tus <strong style="color:#eaf1f8;">pausas activas</strong>.<br>La intranet está pausada por 3 minutos.</p>
-</div>
-</div>
-
 <!-- ================= PANEL DE DISPONIBILIDAD (tiempo real) ================= -->
 <div class="panel" id="panel-disponibilidad">
 <div class="page-header">
 <h1>Panel de Disponibilidad</h1>
-<p>Estado en tiempo real del equipo. Auto-actualización cada 5 minutos. <span id="disp-actualizado" style="color:var(--text-muted);font-size:13px;"></span></p>
+<p>Estado del equipo. Actualiza con el botón cuando lo necesites. <span id="disp-actualizado" style="color:var(--text-muted);font-size:13px;"></span></p>
 </div>
 
 <div class="card" style="margin-bottom:16px;">
@@ -8315,7 +8286,6 @@ body { overscroll-behavior-y: contain; }
 <th style="padding:8px;">Break ini</th>
 <th style="padding:8px;">Break fin</th>
 <th style="padding:8px;">Salidas</th>
-<th style="padding:8px;">Impulso</th>
 </tr>
 </thead>
 <tbody id="disp-resumen-tbody"></tbody>
@@ -13170,53 +13140,129 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 
     /**
      * llamarBackendIntranet — Canal único de comunicación vía HTTP POST
-     * @param {string} nombreFuncion  - Nombre de la función en code.gs
-     * @param {Array}  argumentosArray - Array de argumentos
-     * @returns {Promise<object>}     - Respuesta ya parseada del backend
+     * Estabilidad: timeout AbortController, reintento solo 429/502/503/504,
+     * parse seguro, detección de sesión expirada.
+     * @param {string} nombreFuncion
+     * @param {Array}  argumentosArray
+     * @returns {Promise<object>}
      */
-     async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
-       var tokenSesion = "";
-       try {
-         var savedSesion = localStorage.getItem('heka_session');
-         if (savedSesion) {
-           var perfilObj = JSON.parse(savedSesion);
-           tokenSesion = perfilObj.token || localStorage.getItem('heka_token') || "";
-         } else {
-           tokenSesion = localStorage.getItem('heka_token') || "";
-         }
-       } catch(e) {
-         tokenSesion = localStorage.getItem('heka_token') || "";
-       }
-     
-       const payload = {
-         token: tokenSesion,
-         fn: nombreFuncion,
-         args: argumentosArray
-       };
-     
-       try {
-         const respuesta = await fetch(GAS_URL, {
-           method: "POST",
-           mode: "cors",
-           headers: { "Content-Type": "text/plain;charset=utf-8" },
-           body: JSON.stringify(payload)
-         });
-     
-         const textoRespuesta = await respuesta.text();
-         
-         // 🛡️ BLINDAJE CONTRA RESPUESTAS DE TEXTO PLANO
-         if (textoRespuesta.trim().startsWith("Servidor Core")) {
-           console.warn("⚠️ Fallback de seguridad detectado en " + nombreFuncion + ". Retornando objeto vacío controlado.");
-           return { status: "success", info: textoRespuesta, evento: null, guias: [], data: [] };
-         }
-         
-         return JSON.parse(textoRespuesta);
-     
-       } catch (error) {
-         console.error("Error crítico de comunicación con la API (POST):", error);
-         throw error;
-       }
-     }
+    var GAS_TIMEOUT_MS = 45000;
+    var GAS_MAX_REINTENTOS = 2;
+
+    async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
+      // Token en memoria primero (más rápido y evita parse de localStorage en cada call)
+      var tokenSesion = (typeof HEKA_SESSION_TOKEN === "string" && HEKA_SESSION_TOKEN) ? HEKA_SESSION_TOKEN : "";
+      if (!tokenSesion) {
+        try {
+          tokenSesion = localStorage.getItem("heka_token") || "";
+          if (!tokenSesion) {
+            var savedSesion = localStorage.getItem("heka_session");
+            if (savedSesion) {
+              var perfilObj = JSON.parse(savedSesion);
+              tokenSesion = (perfilObj && perfilObj.token) || "";
+            }
+          }
+        } catch (e) {
+          tokenSesion = "";
+        }
+      }
+
+      var payload = {
+        token: tokenSesion,
+        fn: nombreFuncion,
+        args: argumentosArray || []
+      };
+      var bodyStr = JSON.stringify(payload);
+
+      var lastError = null;
+      for (var intento = 0; intento <= GAS_MAX_REINTENTOS; intento++) {
+        var controller = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        var timerId = null;
+        try {
+          if (controller) {
+            timerId = setTimeout(function() {
+              try { controller.abort(); } catch (eA) {}
+            }, GAS_TIMEOUT_MS);
+          }
+
+          var respuesta = await fetch(GAS_URL, {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: bodyStr,
+            signal: controller ? controller.signal : undefined,
+            cache: "no-store",
+            redirect: "follow"
+          });
+
+          var httpStatus = respuesta.status;
+          var textoRespuesta = await respuesta.text();
+
+          // Fallback de seguridad (doGet texto plano)
+          if (textoRespuesta && textoRespuesta.trim().startsWith("Servidor Core")) {
+            console.warn("Fallback de seguridad en " + nombreFuncion);
+            return { status: "success", info: textoRespuesta, evento: null, guias: [], data: [] };
+          }
+
+          // Reintentar solo si el servidor NO ejecutó la operación (cola/sobrecarga)
+          if (httpStatus === 429 || httpStatus === 502 || httpStatus === 503 || httpStatus === 504) {
+            lastError = new Error("HTTP " + httpStatus + " en " + nombreFuncion);
+            if (intento < GAS_MAX_REINTENTOS) {
+              await new Promise(function(r) { setTimeout(r, 400 * (intento + 1)); });
+              continue;
+            }
+            throw lastError;
+          }
+
+          // Otros errores HTTP: no reintentar (podría duplicar escrituras)
+          if (httpStatus < 200 || httpStatus >= 300) {
+            var msgHttp = "Error HTTP " + httpStatus + " del servidor GAS";
+            try {
+              var maybe = JSON.parse(textoRespuesta);
+              if (maybe && maybe.message) msgHttp = maybe.message;
+            } catch (eP) {}
+            throw new Error(msgHttp);
+          }
+
+          var parsed;
+          try {
+            parsed = JSON.parse(textoRespuesta);
+          } catch (eParse) {
+            throw new Error("Respuesta no-JSON del servidor (" + nombreFuncion + ")");
+          }
+
+          // Sesión inválida/expirada → cerrar en el cliente de forma controlada
+          if (parsed && parsed.status === "error" && (parsed._session === true ||
+              /sesi[oó]n (no v[aá]lida|expirada)/i.test(String(parsed.message || "")))) {
+            parsed._session = true;
+            try {
+              if (typeof hekaForzarCierreSesion === "function") {
+                hekaForzarCierreSesion(parsed.message || "Sesión expirada. Vuelve a iniciar sesión.");
+              }
+            } catch (eS) {}
+          }
+
+          return parsed;
+
+        } catch (error) {
+          lastError = error;
+          var esAbort = error && (error.name === "AbortError" || /aborted/i.test(String(error.message || "")));
+          // Timeout o red: NO reintentar (la petición pudo haberse ejecutado en el servidor)
+          if (esAbort) {
+            throw new Error("Tiempo de espera agotado (" + Math.round(GAS_TIMEOUT_MS / 1000) + "s) en " + nombreFuncion);
+          }
+          // Si ya decidimos no reintentar arriba, salimos
+          if (intento >= GAS_MAX_REINTENTOS) break;
+          // Solo reintentamos errores de red "puros" si el fetch ni siquiera obtuvo response
+          // (TypeError Failed to fetch). Aun así es arriesgado en escrituras; limitamos a 1 reintento extra solo en lectura silenciosa no aplica aquí → no reintentar red.
+          break;
+        } finally {
+          if (timerId) clearTimeout(timerId);
+        }
+      }
+      console.error("Error de comunicación API (POST):", lastError);
+      throw lastError || new Error("Error de red con el servidor GAS");
+    }
 
 
 
@@ -13282,11 +13328,8 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     }
 
     (function() {
-      // Reintentos SOLO cuando el servidor respondió 429/5xx (la operación no llegó
-      // a ejecutarse). Nunca se reintenta tras timeout o error de red: la petición
-      // pudo haberse procesado y reenviarla duplicaría escrituras.
-      var GAS_TIMEOUT_MS = 45000;
-      var GAS_MAX_REINTENTOS = 2;
+      // Timeout/reintentos viven en llamarBackendIntranet (arriba).
+      // Aquí solo el proxy google.script.run → fetch.
 
       function createCallableProxy(successCb, failureCb) {
   return new Proxy({}, {
@@ -13325,6 +13368,11 @@ input[type="date"]::-webkit-calendar-picker-indicator,
         llamarBackendIntranet(prop, args)
           .then(function(data) {
             if (!silencioso && typeof showLoading === 'function') showLoading(false);
+            // Si la sesión cayó, no seguir el successHandler de negocio
+            if (data && data._session) {
+              if (successCb) successCb(data);
+              return;
+            }
             if (successCb) successCb(data);
           })
           .catch(function(err) {
@@ -14040,7 +14088,8 @@ input[type="date"]::-webkit-calendar-picker-indicator,
                   cedula: data.cedula,
                   isInactive: data.isInactive,
                   centroCosto: data.centroCosto || '',
-                  expiresAt: HEKA_SESSION_EXPIRES_AT
+                  expiresAt: HEKA_SESSION_EXPIRES_AT,
+                  token: data.token
                 }));
               } catch(ex) {}
             }
@@ -14455,12 +14504,8 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       }
 
       if (panelId === 'panel-disponibilidad') {
-        cargarPanelDisponibilidad();
-        if (dispTimer) clearInterval(dispTimer);
-        dispTimer = setInterval(function(){ cargarPanelDisponibilidad(true); }, 5 * 60 * 1000); // cada 5 min
-      } else if (dispTimer) {
-        clearInterval(dispTimer); // dejar de refrescar al salir del panel
-        dispTimer = null;
+        // Sin polling: solo carga al entrar. Refresco manual con botón Actualizar.
+        cargarPanelDisponibilidad(false);
       }
 
       if (clickedElement) {
@@ -29556,7 +29601,6 @@ var DISP_ESTADOS_CHIP = {
   'BREAK INICIO':   { texto: 'En break',     color: '#a78bfa' },
   'BREAK FIN':      { texto: 'Disponible',   color: '#22c55e' },
   'SALIDA':         { texto: 'Salido',       color: '#ef4444' },
-  'IMPULSO VITAL':  { texto: 'Impulso Vital', color: '#06b6d4' }
 };
 
 var DISP_ICONOS = {
@@ -29566,7 +29610,6 @@ var DISP_ICONOS = {
   'BREAK INICIO':   { icono: 'bi-lightning-charge-fill', color: '#a78bfa' },
   'BREAK FIN':      { icono: 'bi-broadcast-pin',         color: '#60a5fa' },
   'SALIDA':         { icono: 'bi-power',                 color: '#f87171' },
-  'IMPULSO VITAL':  { icono: 'bi-heart-pulse-fill',      color: '#06b6d4' }
 };
 
 function abrirHistorialDisp(cedula, nombre) {
@@ -29726,7 +29769,6 @@ function actualizarMiStatusChip() {
     .withFailureHandler(function() {})
     .getMiDisponibilidad(ced);
 }
-var dispTimer = null;
 
 function iniciarRegistroDisponibilidad(evento) {
   dispPendiente = { evento: evento, lat: null, lng: null, precision: null };
@@ -29825,7 +29867,6 @@ var DISP_ESTADOS = {
   'BREAK INICIO':   { texto: 'En break',        color: '#6f42c1' },
   'BREAK FIN':      { texto: 'Disponible',      color: '#198754' },
   'SALIDA':         { texto: 'Salido',          color: '#dc3545' },
-  'IMPULSO VITAL':  { texto: 'Impulso Vital',   color: '#06b6d4' }
 };
 
 var _dispPrimeraCarga = true;
@@ -29885,7 +29926,6 @@ function consultarDisponibilidadRango() {
         { k: 'BREAK INICIO', l: 'Break inicio', c: '#a78bfa' },
         { k: 'BREAK FIN', l: 'Break fin', c: '#60a5fa' },
         { k: 'SALIDA', l: 'Salidas', c: '#ef4444' },
-        { k: 'IMPULSO VITAL', l: 'Impulso vital', c: '#06b6d4' }
       ];
       var totHtml = labels.map(function(x) {
         return '<div style="background:rgba(255,255,255,.04);border:1px solid ' + x.c + '44;border-radius:14px;padding:12px;text-align:center;">'
@@ -29912,9 +29952,8 @@ function consultarDisponibilidadRango() {
             + '<td style="padding:8px;">' + (c['BREAK INICIO'] || 0) + '</td>'
             + '<td style="padding:8px;">' + (c['BREAK FIN'] || 0) + '</td>'
             + '<td style="padding:8px;">' + (c['SALIDA'] || 0) + '</td>'
-            + '<td style="padding:8px;">' + (c['IMPULSO VITAL'] || 0) + '</td>'
             + '</tr>';
-        }).join('') || '<tr><td colspan="8" style="padding:16px;text-align:center;color:#8b98a8;">Sin eventos en ese rango.</td></tr>';
+        }).join('') || '<tr><td colspan="7" style="padding:16px;text-align:center;color:#8b98a8;">Sin eventos en ese rango.</td></tr>';
       }
       var act = document.getElementById('disp-actualizado');
       if (act) act.innerText = '(consulta ' + ini + ' → ' + fin + ')';
@@ -29990,327 +30029,6 @@ function cargarPanelDisponibilidad(silenciosoForzado) {
     .getDisponibilidadPanel();
 }
 
-// ============================================================
-// IMPULSO VITAL
-// - NO aparece en el listado de estados manuales
-// - 3 veces al día (horario laboral Bogotá), 3 minutos cada una
-// - Zona 12:00–14:00 excluida
-// - Aviso 5 min antes + sonido 10 s hasta Aceptar
-// - Al iniciar: registra IMPULSO VITAL y bloquea UI 3 min
-// - Al terminar: registra INGRESO automático
-// ============================================================
-var IMPULSO_DURACION_MS = 3 * 60 * 1000;
-var IMPULSO_AVISO_MS = 5 * 60 * 1000;
-var IMPULSO_HORARIOS = {
-  // day: 1=Lun ... 6=Sáb  | horas en [h, m] inicio del bloque
-  1: [[10, 0], [15, 0], [16, 30]], // Lun 8-17
-  2: [[10, 0], [15, 0], [16, 30]], // Mar 8-17
-  3: [[10, 0], [14, 30], [15, 30]], // Mié 8-16
-  4: [[10, 0], [14, 30], [15, 30]], // Jue 8-16
-  5: [[10, 0], [15, 0], [16, 30]], // Vie 8-17
-  6: [[9, 0], [10, 0], [11, 0]]    // Sáb 8-12
-};
-
-var _impulsoState = {
-  warned: {},
-  started: {},
-  finished: {},
-  activo: false,
-  timerId: null,
-  soundCtx: null,
-  soundStop: null,
-  avisoAceptado: false
-};
-
-function impulsoAhoraBogota() {
-  try {
-    var parts = new Intl.DateTimeFormat('en-US', {
-      timeZone: 'America/Bogota',
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', second: '2-digit',
-      hour12: false, weekday: 'short'
-    }).formatToParts(new Date());
-    var map = {};
-    parts.forEach(function(p) { map[p.type] = p.value; });
-    var wd = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
-    return {
-      y: +map.year, m: +map.month, d: +map.day,
-      h: +map.hour % 24, min: +map.minute, s: +map.second,
-      dow: wd[map.weekday] != null ? wd[map.weekday] : new Date().getDay(),
-      key: map.year + '-' + map.month + '-' + map.day
-    };
-  } catch (e) {
-    var n = new Date();
-    return { y: n.getFullYear(), m: n.getMonth()+1, d: n.getDate(),
-      h: n.getHours(), min: n.getMinutes(), s: n.getSeconds(),
-      dow: n.getDay(), key: n.toISOString().slice(0,10) };
-  }
-}
-
-function impulsoSlotKey(fechaKey, h, min) {
-  return fechaKey + '_' + h + ':' + (min < 10 ? '0' : '') + min;
-}
-
-function impulsoCargarEstadoDia(fechaKey) {
-  try {
-    var raw = localStorage.getItem('heka_impulso_' + fechaKey);
-    if (raw) {
-      var o = JSON.parse(raw);
-      _impulsoState.warned = o.warned || {};
-      _impulsoState.started = o.started || {};
-      _impulsoState.finished = o.finished || {};
-    }
-  } catch (e) {}
-}
-
-function impulsoGuardarEstadoDia(fechaKey) {
-  try {
-    localStorage.setItem('heka_impulso_' + fechaKey, JSON.stringify({
-      warned: _impulsoState.warned,
-      started: _impulsoState.started,
-      finished: _impulsoState.finished
-    }));
-  } catch (e) {}
-}
-
-function impulsoMinutosDesdeMedianoche(h, min, s) {
-  return h * 60 + min + (s || 0) / 60;
-}
-
-function impulsoProximosSlots(now) {
-  var slots = IMPULSO_HORARIOS[now.dow] || [];
-  var ahoraMin = impulsoMinutosDesdeMedianoche(now.h, now.min, now.s);
-  return slots.map(function(hm) {
-    var startMin = hm[0] * 60 + hm[1];
-    return {
-      h: hm[0], min: hm[1],
-      startMin: startMin,
-      key: impulsoSlotKey(now.key, hm[0], hm[1]),
-      minsUntil: startMin - ahoraMin
-    };
-  });
-}
-
-// Sonido distintivo ~10 s (Web Audio: arpegio suave + pad)
-function impulsoReproducirSonido() {
-  impulsoDetenerSonido();
-  try {
-    var Ctx = window.AudioContext || window.webkitAudioContext;
-    if (!Ctx) return;
-    var ctx = new Ctx();
-    _impulsoState.soundCtx = ctx;
-    var master = ctx.createGain();
-    master.gain.value = 0.22;
-    master.connect(ctx.destination);
-
-    var notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 659.25]; // C5 E5 G5 C6
-    var t0 = ctx.currentTime;
-    for (var cycle = 0; cycle < 4; cycle++) {
-      notes.forEach(function(freq, i) {
-        var osc = ctx.createOscillator();
-        var g = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        var start = t0 + cycle * 2.4 + i * 0.28;
-        g.gain.setValueAtTime(0, start);
-        g.gain.linearRampToValueAtTime(0.55, start + 0.05);
-        g.gain.exponentialRampToValueAtTime(0.001, start + 0.55);
-        osc.connect(g); g.connect(master);
-        osc.start(start);
-        osc.stop(start + 0.6);
-      });
-    }
-    // pad de fondo
-    var pad = ctx.createOscillator();
-    var pg = ctx.createGain();
-    pad.type = 'triangle';
-    pad.frequency.value = 196;
-    pg.gain.setValueAtTime(0, t0);
-    pg.gain.linearRampToValueAtTime(0.12, t0 + 0.4);
-    pg.gain.linearRampToValueAtTime(0.001, t0 + 10);
-    pad.connect(pg); pg.connect(master);
-    pad.start(t0);
-    pad.stop(t0 + 10.2);
-
-    _impulsoState.soundStop = setTimeout(function() {
-      try { ctx.close(); } catch (e) {}
-      _impulsoState.soundCtx = null;
-    }, 10500);
-  } catch (e) {}
-}
-
-function impulsoDetenerSonido() {
-  if (_impulsoState.soundStop) { clearTimeout(_impulsoState.soundStop); _impulsoState.soundStop = null; }
-  if (_impulsoState.soundCtx) {
-    try { _impulsoState.soundCtx.close(); } catch (e) {}
-    _impulsoState.soundCtx = null;
-  }
-}
-
-function impulsoMostrarAviso(slot) {
-  var ov = document.getElementById('impulso-aviso-overlay');
-  if (!ov) return;
-  var minsLeft = Math.max(1, Math.ceil(slot.minsUntil));
-  var elMin = document.getElementById('impulso-aviso-minutos');
-  var elHora = document.getElementById('impulso-aviso-hora');
-  if (elMin) elMin.textContent = String(minsLeft);
-  if (elHora) {
-    var hh = slot.h < 10 ? '0' + slot.h : '' + slot.h;
-    var mm = slot.min < 10 ? '0' + slot.min : '' + slot.min;
-    elHora.textContent = 'Inicio programado: ' + hh + ':' + mm + ' (hora Bogotá)';
-  }
-  ov.style.display = 'flex';
-  _impulsoState.avisoAceptado = false;
-  impulsoReproducirSonido();
-}
-
-function impulsoCerrarAviso() {
-  var ov = document.getElementById('impulso-aviso-overlay');
-  if (ov) ov.style.display = 'none';
-  impulsoDetenerSonido();
-  _impulsoState.avisoAceptado = true;
-}
-
-function impulsoRegistrarEvento(evento, done) {
-  if (!currentUser || !currentUser.cedula) {
-    if (done) done(false);
-    return;
-  }
-  function enviar(lat, lng, precision) {
-    google.script.run
-      .withSuccessHandler(function(res) {
-        if (done) done(res && res.status === 'success');
-        try { actualizarMiStatusChip(); } catch (e) {}
-      })
-      .withFailureHandler(function() { if (done) done(false); })
-      .registrarDisponibilidad({
-        cedula: currentUser.cedula,
-        nombre: currentUser.name,
-        evento: evento,
-        lat: lat,
-        lng: lng,
-        precision: precision
-      });
-  }
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      function(pos) {
-        enviar(pos.coords.latitude, pos.coords.longitude, Math.round(pos.coords.accuracy || 0));
-      },
-      function() {
-        // fallback: coords mínimas para no bloquear el registro automático
-        enviar(4.7110, -74.0721, 9999);
-      },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
-    );
-  } else {
-    enviar(4.7110, -74.0721, 9999);
-  }
-}
-
-function impulsoIniciarBloqueo(slot) {
-  if (_impulsoState.activo) return;
-  _impulsoState.activo = true;
-  impulsoCerrarAviso();
-
-  var ov = document.getElementById('impulso-bloqueo-overlay');
-  var timerEl = document.getElementById('impulso-timer');
-  if (ov) ov.style.display = 'flex';
-
-  impulsoRegistrarEvento('IMPULSO VITAL');
-
-  var endsAt = Date.now() + IMPULSO_DURACION_MS;
-  if (_impulsoState.timerId) clearInterval(_impulsoState.timerId);
-  _impulsoState.timerId = setInterval(function() {
-    var left = Math.max(0, endsAt - Date.now());
-    var totalSec = Math.ceil(left / 1000);
-    var m = Math.floor(totalSec / 60);
-    var s = totalSec % 60;
-    if (timerEl) timerEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
-    if (left <= 0) {
-      clearInterval(_impulsoState.timerId);
-      _impulsoState.timerId = null;
-      impulsoFinalizar(slot);
-    }
-  }, 250);
-}
-
-function impulsoFinalizar(slot) {
-  _impulsoState.activo = false;
-  var ov = document.getElementById('impulso-bloqueo-overlay');
-  if (ov) ov.style.display = 'none';
-  if (slot) {
-    _impulsoState.finished[slot.key] = true;
-    var now = impulsoAhoraBogota();
-    impulsoGuardarEstadoDia(now.key);
-  }
-  impulsoRegistrarEvento('INGRESO', function() {
-    showToast('Impulso Vital finalizado. Bienvenido de nuevo.', 'success');
-  });
-}
-
-function impulsoTick() {
-  // Solo usuarios logueados con permiso de status o todos los logueados
-  if (!currentUser || !currentUser.cedula) return;
-  if (_impulsoState.activo) return;
-
-  var now = impulsoAhoraBogota();
-  impulsoCargarEstadoDia(now.key);
-
-  var slots = impulsoProximosSlots(now);
-  slots.forEach(function(slot) {
-    // Ya terminó este slot
-    if (_impulsoState.finished[slot.key]) return;
-
-    // Dentro de la ventana de ejecución (0 a 3 min después del inicio)
-    if (slot.minsUntil <= 0 && slot.minsUntil > -3) {
-      if (!_impulsoState.started[slot.key]) {
-        _impulsoState.started[slot.key] = true;
-        impulsoGuardarEstadoDia(now.key);
-        impulsoIniciarBloqueo(slot);
-      }
-      return;
-    }
-
-    // Ventana de aviso: 5 min antes hasta el inicio
-    if (slot.minsUntil > 0 && slot.minsUntil <= 5) {
-      if (!_impulsoState.warned[slot.key]) {
-        _impulsoState.warned[slot.key] = true;
-        impulsoGuardarEstadoDia(now.key);
-        impulsoMostrarAviso(slot);
-      } else {
-        // Actualizar minutos restantes en el modal si sigue abierto
-        var ov = document.getElementById('impulso-aviso-overlay');
-        if (ov && ov.style.display === 'flex') {
-          var elMin = document.getElementById('impulso-aviso-minutos');
-          if (elMin) elMin.textContent = String(Math.max(1, Math.ceil(slot.minsUntil)));
-        }
-      }
-    }
-  });
-}
-
-// Botón aceptar aviso
-document.addEventListener('DOMContentLoaded', function() {
-  var btn = document.getElementById('impulso-aviso-aceptar');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      impulsoCerrarAviso();
-    });
-  }
-});
-// por si el DOM ya cargó
-(function() {
-  var btn = document.getElementById('impulso-aviso-aceptar');
-  if (btn && !btn._impulsoBound) {
-    btn._impulsoBound = true;
-    btn.addEventListener('click', function() { impulsoCerrarAviso(); });
-  }
-})();
-
-// Arrancar reloj: cada 15 s
-setInterval(impulsoTick, 15000);
-setTimeout(impulsoTick, 2500);
 </script>
 <!-- ================= FIN LOGICA DISPONIBILIDAD ================= -->
 
