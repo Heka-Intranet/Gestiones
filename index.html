@@ -13140,14 +13140,19 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 
     /**
      * llamarBackendIntranet — Canal único de comunicación vía HTTP POST
-     * Estabilidad: timeout AbortController, reintento solo 429/502/503/504,
-     * parse seguro, detección de sesión expirada.
+     * Estabilidad global (TODAS las funciones):
+     *  - timeout AbortController 60s
+     *  - reintento en 429/502/503/504/404 y en "Servidor Core" (doGet por redirect)
+     *  - fallback GET ?p= si POST falla (doGet ya enruta parameter.p → handleApiCall)
+     *  - parse seguro, detección de sesión expirada
+     * Documentación Google: ContentService siempre 302 a script.googleusercontent.com
+     * Bugs conocidos: 404 intermitentes en ese redirect (Issue Tracker).
      * @param {string} nombreFuncion
      * @param {Array}  argumentosArray
      * @returns {Promise<object>}
      */
-    var GAS_TIMEOUT_MS = 45000;
-    var GAS_MAX_REINTENTOS = 2;
+    var GAS_TIMEOUT_MS = 60000;
+    var GAS_MAX_REINTENTOS = 3;
 
     async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
       // Token en memoria primero (más rápido y evita parse de localStorage en cada call)
@@ -13198,29 +13203,56 @@ input[type="date"]::-webkit-calendar-picker-indicator,
           var httpStatus = respuesta.status;
           var textoRespuesta = await respuesta.text();
 
-          // Fallback de seguridad (doGet texto plano)
+          // Redirect POST→GET / respuesta de doGet ("Servidor Core")
+          // NO devolver éxito vacío: reintentar o usar canal GET ?p=
           if (textoRespuesta && textoRespuesta.trim().startsWith("Servidor Core")) {
-            console.warn("Fallback de seguridad en " + nombreFuncion);
-            return { status: "success", info: textoRespuesta, evento: null, guias: [], data: [] };
+            console.warn("[HEKA API] doGet/fallback detectado en " + nombreFuncion +
+              " (intento " + (intento + 1) + "/" + (GAS_MAX_REINTENTOS + 1) + ")");
+            lastError = new Error("Redirect POST→GET (Servidor Core) en " + nombreFuncion);
+            if (intento >= GAS_MAX_REINTENTOS) {
+              try {
+                var getResult = await llamarBackendIntranetViaGet_(payload);
+                if (getResult) return getResult;
+              } catch (eGet) {
+                console.warn("[HEKA API] Fallback GET también falló:", eGet);
+              }
+              throw lastError;
+            }
+            await new Promise(function(r) { setTimeout(r, 400 * (intento + 1)); });
+            continue;
           }
 
-          // Reintentar solo si el servidor NO ejecutó la operación (cola/sobrecarga)
+          // Cola / sobrecarga Google
           if (httpStatus === 429 || httpStatus === 502 || httpStatus === 503 || httpStatus === 504) {
             lastError = new Error("HTTP " + httpStatus + " en " + nombreFuncion);
             if (intento < GAS_MAX_REINTENTOS) {
-              await new Promise(function(r) { setTimeout(r, 400 * (intento + 1)); });
+              await new Promise(function(r) { setTimeout(r, 500 * (intento + 1)); });
               continue;
             }
             throw lastError;
           }
 
-          // Otros errores HTTP: no reintentar (podría duplicar escrituras)
+          // 404 intermitente del redirect ContentService (bug conocido Google)
+          if (httpStatus === 404) {
+            lastError = new Error("HTTP 404 intermitente (redirect ContentService) en " + nombreFuncion);
+            if (intento < GAS_MAX_REINTENTOS) {
+              await new Promise(function(r) { setTimeout(r, 600 * (intento + 1)); });
+              continue;
+            }
+            try {
+              var getResult404 = await llamarBackendIntranetViaGet_(payload);
+              if (getResult404) return getResult404;
+            } catch (e404) {}
+            throw new Error(
+              "Error HTTP 404: URL GAS o redirect user_content_key intermitente. " +
+              "Revisa Implementar → Administrar implementaciones. fn=" + nombreFuncion
+            );
+          }
+
+          // Otros errores HTTP
           if (httpStatus < 200 || httpStatus >= 300) {
             var msgHttp = "Error HTTP " + httpStatus + " del servidor GAS";
-            if (httpStatus === 404) {
-              msgHttp = "Error HTTP 404: la URL del Apps Script (GAS_URL) no existe o el deployment fue eliminado. " +
-                "En Apps Script: Implementar → Administrar implementaciones → copia la URL /exec y pégala en GAS_URL del index.html.";
-            } else if (httpStatus === 401 || httpStatus === 403) {
+            if (httpStatus === 401 || httpStatus === 403) {
               msgHttp = "Error HTTP " + httpStatus + ": el Web App no permite acceso anónimo. " +
                 "En la implementación debe estar: Ejecutar como YO + Quién tiene acceso: CUALQUIERA.";
             } else {
@@ -13237,10 +13269,18 @@ input[type="date"]::-webkit-calendar-picker-indicator,
           try {
             parsed = JSON.parse(textoRespuesta);
           } catch (eParse) {
-            throw new Error("Respuesta no-JSON del servidor (" + nombreFuncion + ")");
+            if (/<!DOCTYPE|<html/i.test(textoRespuesta || "")) {
+              lastError = new Error("Respuesta HTML inesperada (posible 404 redirect) en " + nombreFuncion);
+              if (intento < GAS_MAX_REINTENTOS) {
+                await new Promise(function(r) { setTimeout(r, 500 * (intento + 1)); });
+                continue;
+              }
+            }
+            throw new Error("Respuesta no-JSON del servidor GAS en " + nombreFuncion +
+              ": " + String(textoRespuesta || "").substring(0, 120));
           }
 
-          // Sesión inválida/expirada → cerrar en el cliente de forma controlada
+          // Sesión expirada
           if (parsed && parsed.status === "error" && (parsed._session === true ||
               /sesi[oó]n (no v[aá]lida|expirada)/i.test(String(parsed.message || "")))) {
             parsed._session = true;
@@ -13256,14 +13296,20 @@ input[type="date"]::-webkit-calendar-picker-indicator,
         } catch (error) {
           lastError = error;
           var esAbort = error && (error.name === "AbortError" || /aborted/i.test(String(error.message || "")));
-          // Timeout o red: NO reintentar (la petición pudo haberse ejecutado en el servidor)
           if (esAbort) {
+            // Reintentar timeouts en lecturas
+            if (intento < GAS_MAX_REINTENTOS) {
+              await new Promise(function(r) { setTimeout(r, 300); });
+              continue;
+            }
             throw new Error("Tiempo de espera agotado (" + Math.round(GAS_TIMEOUT_MS / 1000) + "s) en " + nombreFuncion);
           }
-          // Si ya decidimos no reintentar arriba, salimos
           if (intento >= GAS_MAX_REINTENTOS) break;
-          // Solo reintentamos errores de red "puros" si el fetch ni siquiera obtuvo response
-          // (TypeError Failed to fetch). Aun así es arriesgado en escrituras; limitamos a 1 reintento extra solo en lectura silenciosa no aplica aquí → no reintentar red.
+          // Failed to fetch / red: reintentar
+          if (/failed to fetch|network|load failed/i.test(String(error && error.message || ""))) {
+            await new Promise(function(r) { setTimeout(r, 400 * (intento + 1)); });
+            continue;
+          }
           break;
         } finally {
           if (timerId) clearTimeout(timerId);
@@ -13273,6 +13319,55 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       throw lastError || new Error("Error de red con el servidor GAS");
     }
 
+    /**
+     * Canal de respaldo GET (?p=JSON).
+     * doGet ya enruta e.parameter.p → handleApiCall.
+     * Solo payloads pequeños (~1.5–2 KB query).
+     * Aplica a CUALQUIER función cuando el POST cae en doGet/404.
+     */
+    async function llamarBackendIntranetViaGet_(payload) {
+      var encoded;
+      try {
+        encoded = encodeURIComponent(JSON.stringify(payload));
+      } catch (e) {
+        return null;
+      }
+      if (encoded.length > 1800) {
+        console.warn("[HEKA API] Payload demasiado grande para fallback GET (" + encoded.length + " chars)");
+        return null;
+      }
+      var url = GAS_URL + (GAS_URL.indexOf("?") >= 0 ? "&" : "?") + "p=" + encoded;
+      var controller = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var timerId = null;
+      try {
+        if (controller) {
+          timerId = setTimeout(function() {
+            try { controller.abort(); } catch (eA) {}
+          }, GAS_TIMEOUT_MS);
+        }
+        var respuesta = await fetch(url, {
+          method: "GET",
+          mode: "cors",
+          cache: "no-store",
+          redirect: "follow",
+          signal: controller ? controller.signal : undefined
+        });
+        var texto = await respuesta.text();
+        if (texto && texto.trim().startsWith("Servidor Core")) {
+          throw new Error("GET también devolvió doGet plano");
+        }
+        if (respuesta.status < 200 || respuesta.status >= 300) {
+          throw new Error("GET HTTP " + respuesta.status);
+        }
+        var parsed = JSON.parse(texto);
+        console.info("[HEKA API] Fallback GET OK para", payload.fn);
+        return parsed;
+      } finally {
+        if (timerId) clearTimeout(timerId);
+      }
+    }
+
+
 
 
     // ============================================================
@@ -13280,7 +13375,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     //
     // MIGRADO A HTTP POST (doPost): el JSON viaja en el Body.
     // Sin límite de URL → soporta Base64 y payloads pesados.
-    // TODO el tráfico viaja exclusivamente por POST (sin fallback GET).
+    // Tráfico principal por POST; fallback GET ?p= solo si POST cae en doGet/404.
     // ============================================================
     var google = {
       script: {
@@ -20805,7 +20900,19 @@ function openModalRecarga() {
     // FUNCIONES DE CARGA Y RENDERIZADO
     // ==========================================
 
+    var _cargandoIndem = false;
+
     function cargarIndemnizaciones(tipo, sheetName, element) {
+      if (_cargandoIndem) {
+        if (typeof showToast === "function") {
+          showToast("Espera a que termine la carga de indemnizaciones");
+        } else {
+          console.warn("Carga de indemnizaciones ya en curso");
+        }
+        return;
+      }
+      _cargandoIndem = true;
+
       const panel = document.getElementById('panel-indemnizaciones');
       const tbody = document.getElementById('tablaIndemnizacionesBody');
       const loading = document.getElementById('loadingIndemnizaciones');
@@ -20813,12 +20920,10 @@ function openModalRecarga() {
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
       panel.classList.add('active');
       
-      // --- NUEVO: MANEJO VISUAL DE LOGOS (MARCAR EL ACTIVO) ---
       document.querySelectorAll('.partner-showcase').forEach(el => el.classList.remove('active'));
       if (element) {
         element.classList.add('active');
       }
-      // --------------------------------------------------------------
 
       if(window.innerWidth <= 768) {
         const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -20836,23 +20941,27 @@ function openModalRecarga() {
 
       google.script.run
         .withSuccessHandler(function(res) {
+          _cargandoIndem = false;
           showLoading(false);
           
-          if (res.status === "success") {
-            datosIndemnizacionesCache = res.data;
+          if (res && res.status === "success") {
+            datosIndemnizacionesCache = Array.isArray(res.data) ? res.data : [];
+            if (datosIndemnizacionesCache.length === 0) {
+              console.warn("Indemnizaciones: OK pero data vacía para", sheetName);
+            }
             aplicarFiltrosIndemnizaciones();
           } else {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Error: ${res.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Error: ${(res && res.message) ? res.message : "Error desconocido"}</td></tr>`;
           }
         })
         .withFailureHandler(function(err) {
+          _cargandoIndem = false;
           showLoading(false);
-          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Error de conexión: ${err}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Error de conexión: ${err && err.message ? err.message : err}</td></tr>`;
         })
         .getIndemnizacionesData(sheetName);
     }
 
-    // --- FUNCIÓN MODIFICADA ---
     function renderizarTablaIndemnizaciones(data) {
       const tbody = document.getElementById('tablaIndemnizacionesBody');
 
