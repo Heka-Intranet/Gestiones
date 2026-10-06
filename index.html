@@ -14705,7 +14705,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
     function loginSuccess() {
       updateUserHeader();
       applyPermissions();
-      if (typeof swStartNotifPolling === 'function') swStartNotifPolling();
+      if (typeof swStartNotifPolling === 'function') swStartNotifPolling(); // ⛔ Deshabilitado via _POLLING_DESHABILITADO
 
       document.getElementById('loginOverlay').classList.add('hidden');
       document.getElementById('appContainer').classList.add('logged-in');
@@ -31167,9 +31167,11 @@ var HekaSmartPoll = {
 HekaSmartPoll.init();
 // Registrar handlers para reanudar polling cuando la pestaña se hace visible
 HekaSmartPoll.onVisible(function() {
+  if (_POLLING_DESHABILITADO) return;
   if (_swNotifActivo) { swPollNotificaciones(false); _swAgendarProximoNotif(); }
 });
 HekaSmartPoll.onVisible(function() {
+  if (_POLLING_DESHABILITADO) return;
   if (_swChatActivo && !swChatCerrado) {
     var m = document.getElementById('modal-sw-chat');
     if (m && m.style.display === 'flex') { swSoloRefrescarMensajes(); _swAgendarProximoChat(); }
@@ -31188,6 +31190,9 @@ var swColaMensajes = [];         // cola si dan Enter varias veces o en paralelo
 var swChatFingerprint = '';      // para detectar mensajes nuevos sin pisar scroll al azar
 var _swNotifActivo = false;  // smart poll: ¿polling de notificaciones activo?
 var _swChatActivo = false;   // smart poll: ¿polling de chat activo?
+
+// ⛔ POLLING DESHABILITADO — Cambiar a `false` para reactivar chat y notificaciones
+var _POLLING_DESHABILITADO = true;
 
 function swBadgeEstado(estado) {
   var e = String(estado || '').toUpperCase();
@@ -31823,6 +31828,7 @@ function abrirChatSW(id, modo) {
 
 /** Arranca el poll del chat (60 s) solo si el ticket NO está solucionado y el modal está abierto. */
 function swIniciarPollChatSiCorresponde() {
+  if (_POLLING_DESHABILITADO) { console.info("⛔ Polling de chat deshabilitado (_POLLING_DESHABILITADO=true)"); return; }
   swStopChatPolling();
   if (swChatCerrado) return;
   var modal = document.getElementById('modal-sw-chat');
@@ -31834,7 +31840,7 @@ function swIniciarPollChatSiCorresponde() {
 
 // 🚀 SMART POLL: Agendar próximo poll de chat
 function _swAgendarProximoChat() {
-  if (!_swChatActivo) return;
+  if (!_swChatActivo || _POLLING_DESHABILITADO) return;
   if (swChatTimer) clearTimeout(swChatTimer);
   var intervalo = HekaSmartPoll.intervalo('chat', 45000, 180000); // 45s base, 3min max
   swChatTimer = setTimeout(function() {
@@ -32404,7 +32410,7 @@ function swPollNotificaciones(silencioso) {
 
 // 🚀 SMART POLL: Agendar próximo poll de notificaciones
 function _swAgendarProximoNotif() {
-  if (!_swNotifActivo) return;
+  if (!_swNotifActivo || _POLLING_DESHABILITADO) return;
   if (swNotifTimer) clearTimeout(swNotifTimer);
   var intervalo = HekaSmartPoll.intervalo('notif', 60000, 300000);
   swNotifTimer = setTimeout(function() { swPollNotificaciones(false); }, intervalo);
@@ -32418,6 +32424,7 @@ function swStopNotifPolling() {
 }
 
 function swStartNotifPolling() {
+  if (_POLLING_DESHABILITADO) { console.info("⛔ Polling de notificaciones deshabilitado (_POLLING_DESHABILITADO=true)"); return; }
   swStopNotifPolling();
   if (typeof hekaSesionVigente === 'function' && !hekaSesionVigente()) {
     console.warn("⚠️ No se inicia polling de notificaciones: sesión no vigente.");
