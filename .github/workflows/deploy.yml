@@ -23,7 +23,7 @@ jobs:
 
     - name: 4. Inyectar llaves de autenticación de Google Cloud
       run: |
-        echo "${{ secrets.CLASPRC_JSON }}" | base64 --decode > ~/.clasprc.json
+        echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
 
     - name: 5. Descargar el código actual de GAS para no borrar nada
       run: |
