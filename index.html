@@ -13217,10 +13217,19 @@ input[type="date"]::-webkit-calendar-picker-indicator,
           // Otros errores HTTP: no reintentar (podría duplicar escrituras)
           if (httpStatus < 200 || httpStatus >= 300) {
             var msgHttp = "Error HTTP " + httpStatus + " del servidor GAS";
-            try {
-              var maybe = JSON.parse(textoRespuesta);
-              if (maybe && maybe.message) msgHttp = maybe.message;
-            } catch (eP) {}
+            if (httpStatus === 404) {
+              msgHttp = "Error HTTP 404: la URL del Apps Script (GAS_URL) no existe o el deployment fue eliminado. " +
+                "En Apps Script: Implementar → Administrar implementaciones → copia la URL /exec y pégala en GAS_URL del index.html.";
+            } else if (httpStatus === 401 || httpStatus === 403) {
+              msgHttp = "Error HTTP " + httpStatus + ": el Web App no permite acceso anónimo. " +
+                "En la implementación debe estar: Ejecutar como YO + Quién tiene acceso: CUALQUIERA.";
+            } else {
+              try {
+                var maybe = JSON.parse(textoRespuesta);
+                if (maybe && maybe.message) msgHttp = maybe.message;
+              } catch (eP) {}
+            }
+            console.error("[HEKA API]", msgHttp, "URL:", GAS_URL, "fn:", nombreFuncion);
             throw new Error(msgHttp);
           }
 
