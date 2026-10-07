@@ -8369,6 +8369,23 @@ body { overscroll-behavior-y: contain; }
 .actupd-campo input:focus{border-color:#ffc400;}
 .actupd-revision{border:1px solid rgba(34,197,94,.3);background:rgba(34,197,94,.06);border-radius:14px;padding:14px 16px;font-size:13.5px;color:#e6edf5;line-height:1.8;}
 .actupd-revision b{color:#ffc400;}
+.actupd-tipo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+@media(max-width:560px){.actupd-tipo-grid{grid-template-columns:1fr;}}
+.actupd-tipo-card{cursor:pointer;border-radius:16px;padding:14px 12px;text-align:center;border:1.5px solid rgba(255,255,255,.10);background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));transition:all .22s ease;user-select:none;}
+.actupd-tipo-card:hover{transform:translateY(-2px);border-color:rgba(255,196,0,.45);box-shadow:0 8px 24px -10px rgba(255,196,0,.35);}
+.actupd-tipo-card.activo{border-color:#ffc400;background:linear-gradient(160deg,rgba(255,196,0,.18),rgba(255,196,0,.05));box-shadow:0 0 0 1px rgba(255,196,0,.35),0 10px 28px -12px rgba(255,196,0,.55);}
+.actupd-tipo-card .ico{font-size:22px;display:block;margin-bottom:6px;}
+.actupd-tipo-card .tit{font-size:12.5px;font-weight:800;color:#eaf1f8;letter-spacing:.2px;}
+.actupd-tipo-card .sub{font-size:10.5px;color:#8b98a8;margin-top:3px;}
+.actupd-tipo-card.activo .tit{color:#ffc400;}
+.actupd-campo select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eaf1f8;font-size:13.5px;padding:11px 13px;outline:none;width:100%;cursor:pointer;}
+.actupd-campo select:focus{border-color:#ffc400;}
+.actupd-campo select option{background:#111b26;color:#eaf1f8;}
+.actupd-seller-badge{display:none;margin:0 0 12px;padding:10px 12px;border-radius:12px;border:1px solid rgba(34,197,94,.28);background:rgba(34,197,94,.07);font-size:12.5px;color:#cbd5e1;line-height:1.55;}
+.actupd-seller-badge b{color:#86efac;}
+.actupd-lookup-row{display:flex;gap:8px;align-items:stretch;}
+.actupd-lookup-row input{flex:1;}
+.actupd-lookup-row button{flex-shrink:0;padding:0 14px;border-radius:12px;border:none;background:linear-gradient(135deg,#ffc400,#e6a800);color:#111;font-weight:800;cursor:pointer;font-size:13px;}
 </style>
 
 <!-- MODAL: Solicitud actualizacion (con paso de revision) -->
@@ -8381,10 +8398,52 @@ body { overscroll-behavior-y: contain; }
 <button type="button" onclick="cerrarModalSolicitudActupd()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
 </div>
 <div class="actupd-modal-cuerpo" id="actupd-form-paso">
-<div class="actupd-campo"><label>Nombre - ID Sucursal *</label><input id="actupd-sucursal" type="text" placeholder="Ej: Fajas Barasti - 220832"></div>
-<div class="actupd-campo"><label>Dato a modificar *</label><input id="actupd-dato" type="text" placeholder="Ej: Dirección, teléfono, horario..."></div>
-<div class="actupd-campo"><label>Dato anterior</label><input id="actupd-anterior" type="text" placeholder="El valor actual que tiene la sucursal"></div>
-<div class="actupd-campo"><label>Observaciones</label><input id="actupd-obs" type="text" placeholder="Detalle adicional (opcional)"></div>
+<div style="color:#8b98a8;font-size:11.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;">Tipo de actualización</div>
+<div class="actupd-tipo-grid" id="actupd-tipo-grid">
+  <div class="actupd-tipo-card activo" data-tipo="direccion" onclick="actupdSeleccionarTipo(this)">
+    <span class="ico"><i class="bi bi-geo-alt-fill" style="color:#38bdf8;"></i></span>
+    <div class="tit">Dirección</div>
+    <div class="sub">Bodega / dirección</div>
+  </div>
+  <div class="actupd-tipo-card" data-tipo="telefono" onclick="actupdSeleccionarTipo(this)">
+    <span class="ico"><i class="bi bi-telephone-fill" style="color:#4ade80;"></i></span>
+    <div class="tit">Teléfono</div>
+    <div class="sub">Línea de contacto</div>
+  </div>
+  <div class="actupd-tipo-card" data-tipo="destino" onclick="actupdSeleccionarTipo(this)">
+    <span class="ico"><i class="bi bi-pin-map-fill" style="color:#fbbf24;"></i></span>
+    <div class="tit">Destino</div>
+    <div class="sub">Ciudad / destino</div>
+  </div>
+</div>
+
+<div class="actupd-campo">
+  <label>Centro de costo o cédula *</label>
+  <div class="actupd-lookup-row">
+    <input id="actupd-query" type="text" placeholder="Ej: 220832 o 1098765432" onkeydown="if(event.key==='Enter'){event.preventDefault();actupdBuscarSeller();}">
+    <button type="button" onclick="actupdBuscarSeller()"><i class="bi bi-search"></i> Buscar</button>
+  </div>
+</div>
+<div class="actupd-seller-badge" id="actupd-seller-badge"></div>
+
+<div class="actupd-campo" id="actupd-campo-anterior">
+  <label id="actupd-label-anterior">Dato actual (selecciona)</label>
+  <select id="actupd-anterior-select">
+    <option value="">— Busca un seller primero —</option>
+  </select>
+</div>
+<div class="actupd-campo">
+  <label>Dato a modificar *</label>
+  <input id="actupd-dato" type="text" placeholder="Nuevo valor a aplicar">
+</div>
+<div class="actupd-campo">
+  <label>Observaciones</label>
+  <input id="actupd-obs" type="text" placeholder="Se completa solo según el tipo (puedes ampliar)">
+</div>
+<!-- ocultos: valores que van al Excel -->
+<input type="hidden" id="actupd-sucursal" value="">
+<input type="hidden" id="actupd-tipo" value="direccion">
+<input type="hidden" id="actupd-centro" value="">
 </div>
 <div class="actupd-modal-cuerpo" id="actupd-revision-paso" style="display:none;">
 <div style="color:#8b98a8;font-size:12.5px;margin-bottom:12px;"><i class="bi bi-eye-fill" style="color:#22c55e;"></i> Rectifica que la información sea correcta antes de guardar:</div>
@@ -8470,14 +8529,14 @@ body { overscroll-behavior-y: contain; }
 <div class="card" style="margin-top:16px;">
 <div class="form-section-title">Activaciones registradas</div>
 <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-<input id="act-inter-busqueda" type="text" placeholder="Buscar por cualquier dato: empresa, NIT, contacto, teléfono, ciudad, correo, estado..." onkeydown="if(event.key==='Enter')buscarActivacionesInterUI()" style="flex:1;min-width:220px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eaf1f8;font-size:13px;padding:10px 14px;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='#ffc400'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
+<input id="act-inter-busqueda" type="text" placeholder="Buscar por cualquier dato: fecha, empresa, NIT, contacto, teléfono, ciudad, correo, estado..." onkeydown="if(event.key==='Enter')buscarActivacionesInterUI()" style="flex:1;min-width:220px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eaf1f8;font-size:13px;padding:10px 14px;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='#ffc400'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
 <button type="button" onclick="buscarActivacionesInterUI()" style="padding:10px 18px;border-radius:12px;border:none;background:linear-gradient(135deg,#ffc400,#e6a800);color:#111;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><i class="bi bi-search"></i> Buscar</button>
 <button type="button" onclick="document.getElementById('act-inter-busqueda').value='';cargarPreviewActivacionInter()" style="padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;cursor:pointer;"><i class="bi bi-x-circle"></i></button>
 </div>
 <div id="act-inter-busqueda-info" style="display:none;margin-bottom:10px;font-size:12.5px;color:#cbd5e1;"></div>
 <div style="overflow-x:auto;">
 <table class="table" id="act-inter-tabla" style="width:100%;font-size:13px;">
-<thead><tr><th>Empresa</th><th>Sucursal/CC</th><th>NIT</th><th>Contacto</th><th>Teléfono</th><th>Ciudad</th><th>E-mail</th><th>Correo</th><th>WhatsApp</th></tr></thead>
+<thead><tr><th>Fecha gestión</th><th>Empresa</th><th>Sucursal/CC</th><th>NIT</th><th>Contacto</th><th>Teléfono</th><th>Ciudad</th><th>E-mail</th><th>Correo</th><th>WhatsApp</th></tr></thead>
 <tbody id="act-inter-tabla-body"></tbody>
 </table>
 </div>
@@ -30316,13 +30375,139 @@ function aplicarPermisosActupd() {
 }
 
 // ---- Modal solicitud con paso de revision ----
+
+// ---------- ACTUPD v3: tarjetas de tipo + búsqueda seller ----------
+var actupdSellerCache = null;
+
+function actupdTipoLabel(tipo) {
+  if (tipo === 'telefono') return 'Teléfono';
+  if (tipo === 'destino') return 'Destino';
+  return 'Dirección';
+}
+
+function actupdSeleccionarTipo(el) {
+  document.querySelectorAll('#actupd-tipo-grid .actupd-tipo-card').forEach(function(c) {
+    c.classList.remove('activo');
+  });
+  el.classList.add('activo');
+  var tipo = el.getAttribute('data-tipo') || 'direccion';
+  document.getElementById('actupd-tipo').value = tipo;
+  actupdActualizarObsPorTipo();
+  actupdRellenarSelectAnterior();
+}
+
+function actupdActualizarObsPorTipo() {
+  var tipo = document.getElementById('actupd-tipo').value || 'direccion';
+  var obs = document.getElementById('actupd-obs');
+  // Solo autocompletar si está vacío o era el texto automático anterior
+  var autoPref = 'Actualización de ';
+  if (!obs.value.trim() || obs.value.trim().indexOf(autoPref) === 0) {
+    obs.value = autoPref + actupdTipoLabel(tipo).toLowerCase();
+  }
+  var lab = document.getElementById('actupd-label-anterior');
+  if (tipo === 'telefono') lab.textContent = 'Teléfono actual (selecciona) *';
+  else if (tipo === 'destino') lab.textContent = 'Destino / ciudad actual (selecciona) *';
+  else lab.textContent = 'Dirección actual (selecciona) *';
+}
+
+function actupdRellenarSelectAnterior() {
+  var sel = document.getElementById('actupd-anterior-select');
+  var tipo = document.getElementById('actupd-tipo').value || 'direccion';
+  var opts = [];
+  if (actupdSellerCache && actupdSellerCache.status === 'success') {
+    if (tipo === 'telefono') opts = actupdSellerCache.telefonos || [];
+    else if (tipo === 'destino') opts = actupdSellerCache.destinos || actupdSellerCache.ciudades || [];
+    else opts = actupdSellerCache.direcciones || [];
+  }
+  if (!opts.length) {
+    sel.innerHTML = actupdSellerCache
+      ? '<option value="">— Sin datos de este tipo en la API (puedes escribir el actual abajo si aplica) —</option>'
+      : '<option value="">— Busca un seller primero —</option>';
+    // Permitir valor libre si no hay lista
+    if (actupdSellerCache) {
+      sel.innerHTML += '<option value="__manual__">Escribir manualmente…</option>';
+    }
+    return;
+  }
+  sel.innerHTML = '<option value="">— Selecciona —</option>' +
+    opts.map(function(v) {
+      var s = String(v).replace(/"/g, '&quot;');
+      return '<option value="' + s + '">' + s + '</option>';
+    }).join('') +
+    '<option value="__manual__">Otro (escribir)…</option>';
+}
+
+function actupdBuscarSeller() {
+  var q = document.getElementById('actupd-query').value.trim();
+  if (!q) return showToast('Ingresa centro de costo o cédula.');
+  var badge = document.getElementById('actupd-seller-badge');
+  badge.style.display = 'block';
+  badge.innerHTML = '<i class="bi bi-arrow-repeat"></i> Buscando seller…';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || res.status !== 'success') {
+        actupdSellerCache = null;
+        document.getElementById('actupd-sucursal').value = '';
+        document.getElementById('actupd-centro').value = '';
+        badge.innerHTML = '<span style="color:#f87171;"><i class="bi bi-x-circle"></i> ' +
+          ((res && res.message) || 'No encontrado') + '</span>';
+        actupdRellenarSelectAnterior();
+        return;
+      }
+      actupdSellerCache = res;
+      document.getElementById('actupd-sucursal').value = res.etiquetaSucursal || (res.centroCosto + ' - ' + (res.sucursalInter || res.razonSocial || ''));
+      document.getElementById('actupd-centro').value = res.centroCosto || '';
+      badge.innerHTML = '<i class="bi bi-check-circle-fill" style="color:#4ade80;"></i> ' +
+        '<b>' + (res.centroCosto || '') + '</b> · ' + (res.razonSocial || res.nombre || '') +
+        (res.documento ? ' · Doc: ' + res.documento : '');
+      actupdRellenarSelectAnterior();
+    })
+    .withFailureHandler(function(err) {
+      actupdSellerCache = null;
+      badge.innerHTML = '<span style="color:#f87171;">Error: ' + ((err && err.message) || err) + '</span>';
+    })
+    .buscarDatosSellerActupd(q);
+}
+
+// Si eligen "Otro (escribir)…", pedir el valor con prompt simple
+document.addEventListener('change', function(ev) {
+  if (ev.target && ev.target.id === 'actupd-anterior-select' && ev.target.value === '__manual__') {
+    var v = window.prompt('Escribe el dato actual a modificar:');
+    if (v && v.trim()) {
+      var opt = document.createElement('option');
+      opt.value = v.trim();
+      opt.textContent = v.trim();
+      opt.selected = true;
+      ev.target.appendChild(opt);
+    } else {
+      ev.target.value = '';
+    }
+  }
+});
+
 function abrirModalSolicitudActupd() {
+  // Reset formulario nuevo
   document.getElementById('actupd-form-paso').style.display = 'block';
   document.getElementById('actupd-revision-paso').style.display = 'none';
   document.getElementById('actupd-btn-revisar').style.display = 'inline-flex';
   document.getElementById('actupd-btn-confirmar').style.display = 'none';
   document.getElementById('actupd-btn-volver').style.display = 'none';
-  actupdAsegurarModalEnBody('actupd-modal-solicitud'); document.getElementById('actupd-modal-solicitud').style.display = 'flex';
+  document.getElementById('actupd-query').value = '';
+  document.getElementById('actupd-dato').value = '';
+  document.getElementById('actupd-obs').value = '';
+  document.getElementById('actupd-sucursal').value = '';
+  document.getElementById('actupd-centro').value = '';
+  document.getElementById('actupd-tipo').value = 'direccion';
+  document.getElementById('actupd-seller-badge').style.display = 'none';
+  document.getElementById('actupd-seller-badge').innerHTML = '';
+  document.getElementById('actupd-anterior-select').innerHTML = '<option value="">— Busca un seller primero —</option>';
+  document.querySelectorAll('#actupd-tipo-grid .actupd-tipo-card').forEach(function(c) {
+    c.classList.toggle('activo', c.getAttribute('data-tipo') === 'direccion');
+  });
+  actupdSellerCache = null;
+  actupdActualizarObsPorTipo();
+  actupdAsegurarModalEnBody('actupd-modal-solicitud');
+  document.getElementById('actupd-modal-solicitud').style.display = 'flex';
 }
 function cerrarModalSolicitudActupd() {
   document.getElementById('actupd-modal-solicitud').style.display = 'none';
@@ -30330,12 +30515,18 @@ function cerrarModalSolicitudActupd() {
 function actupdRevisar() {
   var sucursal = document.getElementById('actupd-sucursal').value.trim();
   var dato = document.getElementById('actupd-dato').value.trim();
-  if (!sucursal || !dato) return showToast('Nombre/ID sucursal y dato a modificar son obligatorios.');
+  var anterior = (document.getElementById('actupd-anterior-select').value || '').trim();
+  var tipo = document.getElementById('actupd-tipo').value || 'direccion';
+  if (!sucursal) return showToast('Busca primero el centro de costo o cédula.');
+  if (!dato) return showToast('Indica el dato a modificar (nuevo valor).');
+  if (!anterior) return showToast('Selecciona el dato actual a cambiar.');
+  var tipoLabel = actupdTipoLabel(tipo);
   document.getElementById('actupd-revision-contenido').innerHTML =
-    'Nombre - ID Sucursal: <b>' + sucursal + '</b><br>' +
+    'Tipo: <b>' + tipoLabel + '</b><br>' +
+    'Centro de costo - Sucursal: <b>' + sucursal + '</b><br>' +
+    'Dato anterior: <b>' + anterior + '</b><br>' +
     'Dato a modificar: <b>' + dato + '</b><br>' +
-    'Dato anterior: <b>' + (document.getElementById('actupd-anterior').value.trim() || '—') + '</b><br>' +
-    'Observaciones: <b>' + (document.getElementById('actupd-obs').value.trim() || '—') + '</b>';
+    'Observaciones: <b>' + (document.getElementById('actupd-obs').value.trim() || ('Actualización de ' + tipoLabel.toLowerCase())) + '</b>';
   document.getElementById('actupd-form-paso').style.display = 'none';
   document.getElementById('actupd-revision-paso').style.display = 'block';
   document.getElementById('actupd-btn-revisar').style.display = 'none';
@@ -30352,23 +30543,35 @@ function actupdVolverForm() {
 function guardarActupdUI() {
   var btn = document.getElementById('actupd-btn-confirmar');
   btn.disabled = true;
+  var tipo = document.getElementById('actupd-tipo').value || 'direccion';
+  var tipoLabel = actupdTipoLabel(tipo);
+  var obs = document.getElementById('actupd-obs').value.trim();
+  if (!obs) obs = 'Actualización de ' + tipoLabel.toLowerCase();
+  else if (obs.toLowerCase().indexOf('actualizaci') === -1) {
+    obs = 'Actualización de ' + tipoLabel.toLowerCase() + '. ' + obs;
+  }
+  var payload = {
+    sucursal: document.getElementById('actupd-sucursal').value.trim(),
+    datoModificar: document.getElementById('actupd-dato').value.trim(),
+    datoAnterior: (document.getElementById('actupd-anterior-select').value || '').trim(),
+    observaciones: obs
+  };
   google.script.run
     .withSuccessHandler(function(res) {
       btn.disabled = false;
       if (res && res.status === 'success') {
         cerrarModalSolicitudActupd();
         showToast('\u2705 ' + res.message);
-        ['actupd-sucursal','actupd-dato','actupd-anterior','actupd-obs'].forEach(function(id) { document.getElementById(id).value = ''; });
         cargarHistorialActupd();
-      } else showToast('Error: ' + ((res && res.message) || 'desconocido'));
+      } else {
+        showToast('Error: ' + ((res && res.message) || 'desconocido'));
+      }
     })
-    .withFailureHandler(function(e) { btn.disabled = false; showToast('Error: ' + (e.message || '')); })
-    .guardarActualizacionDato({
-      sucursal: document.getElementById('actupd-sucursal').value.trim(),
-      datoAnterior: document.getElementById('actupd-anterior').value.trim(),
-      datoModificar: document.getElementById('actupd-dato').value.trim(),
-      observaciones: document.getElementById('actupd-obs').value.trim()
-    });
+    .withFailureHandler(function(err) {
+      btn.disabled = false;
+      showToast('Error: ' + (err && err.message ? err.message : err));
+    })
+    .guardarActualizacionDato(payload);
 }
 
 // ---- Historial general con busqueda ----
@@ -30564,7 +30767,20 @@ function buscarActivacionesInterUI() {
         ? '<i class="bi bi-check-circle-fill" style="color:#198754"></i> ' + res.total + ' resultado(s) para "' + q + '" <a href="#" onclick="document.getElementById(\'act-inter-busqueda\').value=\'\';cargarPreviewActivacionInter();document.getElementById(\'act-inter-busqueda-info\').style.display=\'none\';return false;" style="color:#22d3ee;text-decoration:none;">(ver últimas)</a>'
         : 'Sin resultados para "' + q + '". <a href="#" onclick="cargarPreviewActivacionInter();document.getElementById(\'act-inter-busqueda-info\').style.display=\'none\';return false;" style="color:#22d3ee;text-decoration:none;">(ver últimas)</a>';
       body.innerHTML = data.map(function(r) {
+        var fechaG = r[12];
+        if (fechaG && typeof fechaG === 'object' && typeof fechaG.getFullYear === 'function') {
+          try {
+            var dd = ('0' + fechaG.getDate()).slice(-2);
+            var mm = ('0' + (fechaG.getMonth() + 1)).slice(-2);
+            var yyyy = fechaG.getFullYear();
+            var hh = ('0' + fechaG.getHours()).slice(-2);
+            var mi = ('0' + fechaG.getMinutes()).slice(-2);
+            fechaG = dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + mi;
+          } catch (eF) { fechaG = String(r[12]); }
+        }
+        fechaG = (fechaG === undefined || fechaG === null || fechaG === '') ? '—' : String(fechaG);
         return '<tr>'
+          + '<td style="white-space:nowrap;color:#ffc400;font-weight:600;">' + fechaG + '</td>'
           + '<td>' + (r[0]||'') + '</td><td>' + (r[1]||'') + '</td><td>' + (r[2]||'') + '</td>'
           + '<td>' + (r[3]||'') + '</td><td>' + (r[4]||'') + '</td><td>' + (r[6]||'') + '</td>'
           + '<td>' + (r[7]||'') + '</td><td>' + (r[10]||'') + '</td><td>' + (r[11]||'') + '</td></tr>';
@@ -30591,11 +30807,24 @@ function cargarPreviewActivacionInter() {
       if (!body) return;
       var data = (res && Array.isArray(res.data)) ? res.data : [];
       body.innerHTML = data.map(function(r){
+        var fechaG = r[12];
+        if (fechaG && typeof fechaG === 'object' && typeof fechaG.getFullYear === 'function') {
+          try {
+            var dd = ('0' + fechaG.getDate()).slice(-2);
+            var mm = ('0' + (fechaG.getMonth() + 1)).slice(-2);
+            var yyyy = fechaG.getFullYear();
+            var hh = ('0' + fechaG.getHours()).slice(-2);
+            var mi = ('0' + fechaG.getMinutes()).slice(-2);
+            fechaG = dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + mi;
+          } catch (eF) { fechaG = String(r[12]); }
+        }
+        fechaG = (fechaG === undefined || fechaG === null || fechaG === '') ? '—' : String(fechaG);
         return '<tr>'
+          + '<td style="white-space:nowrap;color:#ffc400;font-weight:600;">' + fechaG + '</td>'
           + '<td>' + (r[0]||'') + '</td><td>' + (r[1]||'') + '</td><td>' + (r[2]||'') + '</td>'
           + '<td>' + (r[3]||'') + '</td><td>' + (r[4]||'') + '</td><td>' + (r[6]||'') + '</td>'
           + '<td>' + (r[7]||'') + '</td><td>' + (r[10]||'') + '</td><td>' + (r[11]||'') + '</td></tr>';
-      }).join('') || '<tr><td colspan="9" style="text-align:center;color:#888">Aún no hay activaciones registradas.</td></tr>';
+      }).join('') || '<tr><td colspan="10" style="text-align:center;color:#888">Aún no hay activaciones registradas.</td></tr>';
     })
     .getActivacionesInterPreview();
 }
