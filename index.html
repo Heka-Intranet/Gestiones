@@ -30662,7 +30662,7 @@ function actupdVolverForm() {
 function guardarActupdUI() {
   var btn = document.getElementById('actupd-btn-confirmar');
   if (btn) btn.disabled = true;
-  if (typeof showLoading === 'function') showLoading(true, 'GUARDANDO', 'Registrando solicitud');
+
   var tipo = document.getElementById('actupd-tipo').value || 'direccion';
   var tipoLabel = actupdTipoLabel(tipo);
   var obs = 'Actualización de ' + tipoLabel.toLowerCase();
@@ -30674,12 +30674,18 @@ function guardarActupdUI() {
     datoAnterior: (document.getElementById('actupd-anterior-select').value || '').trim(),
     observaciones: obs
   };
+
+  // 1) Cerrar modal YA (no dejarlo encima mientras arranca la carga)
+  try { cerrarModalSolicitudActupd(); } catch (eC) {}
+  // 2) Carga general de la página
+  if (typeof showLoading === 'function') showLoading(true, 'GUARDANDO', 'Registrando solicitud');
+
+  // 3) POST vía canal único (llamarBackendIntranet)
   google.script.run
     .withSuccessHandler(function(res) {
       if (typeof showLoading === 'function') showLoading(false);
       if (btn) btn.disabled = false;
       if (res && res.status === 'success') {
-        cerrarModalSolicitudActupd();
         showToast('✅ ' + res.message);
         cargarHistorialActupd();
       } else {
@@ -30805,11 +30811,11 @@ function procesarActupdUI() {
   if (!actupdPendientesData.length) return showToast('No hay solicitudes pendientes.');
   var btn = document.getElementById('actupd-btn-ejecutar');
   if (btn) btn.disabled = true;
-  // Carga general de la página (no animación solo en el botón)
-  if (typeof showLoading === 'function') showLoading(true, 'ENVIANDO', 'Procesando y enviando correo');
-  // Cerrar modal mientras procesa para que se vea la carga global
+
+  // Cerrar modal primero; luego carga global (canal POST)
   var modal = document.getElementById('actupd-modal-procesar');
   if (modal) modal.style.display = 'none';
+  if (typeof showLoading === 'function') showLoading(true, 'ENVIANDO', 'Procesando y enviando correo');
 
   google.script.run
     .withSuccessHandler(function(res) {
@@ -30824,7 +30830,6 @@ function procesarActupdUI() {
       } else {
         var m = (res && res.message) || 'desconocido';
         showToast('Error: ' + m);
-        // Reabrir modal con el error visible
         if (modal) modal.style.display = 'flex';
         var infoEl = document.getElementById('actupd-procesar-info');
         if (infoEl) {
@@ -30848,6 +30853,7 @@ function procesarActupdUI() {
       fotoUrl: currentUser ? (currentUser.image || '') : ''
     });
 }
+
 
 
 // ---- Correos destino ----
