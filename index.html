@@ -30516,18 +30516,24 @@ function actupdRenderCodigosInter(res, codigoUnico) {
     box.innerHTML = '';
     return;
   }
-  var code = String(codigoUnico || '').trim();
-  // Si no hay selección aún, mensaje guía (NO listar todos)
-  if (!code) {
+  var raw = String(codigoUnico || '').trim();
+  if (!raw) {
     box.style.display = 'block';
     box.innerHTML = '<div class="actupd-inter-wrap"><div class="actupd-inter-title"><i class="bi bi-truck"></i> Código Inter Rapidísimo</div>'
       + '<div class="actupd-inter-empty">Selecciona la bodega / dato actual para ver su código de sucursal</div></div>';
     return;
   }
+  // Si el mismo teléfono aplica a varias bodegas, llegan varios códigos separados por coma
+  var codes = raw.split(/[,;]+/).map(function(x){ return String(x||'').trim(); }).filter(Boolean);
+  var titulo = codes.length > 1
+    ? 'Sucursales Inter (mismo dato en varias bodegas)'
+    : 'Sucursal Inter de esta bodega';
   box.style.display = 'block';
-  box.innerHTML = '<div class="actupd-inter-wrap"><div class="actupd-inter-title"><i class="bi bi-truck"></i> Sucursal Inter de esta bodega</div>'
+  box.innerHTML = '<div class="actupd-inter-wrap"><div class="actupd-inter-title"><i class="bi bi-truck"></i> ' + titulo + '</div>'
     + '<div class="actupd-inter-chips">'
-    + '<span class="actupd-inter-chip"><span class="tag">Inter</span> ' + code + '</span>'
+    + codes.map(function(c) {
+        return '<span class="actupd-inter-chip"><span class="tag">Inter</span> ' + c + '</span>';
+      }).join('')
     + '</div></div>';
 }
 
@@ -30545,23 +30551,33 @@ function actupdAlSeleccionarDato() {
   var centro = document.getElementById('actupd-centro').value || '';
   if (!centro && actupdSellerCache) centro = actupdSellerCache.centroCosto || '';
   var codigo = actupdCodigoInterDeValor(val);
+  // Si hay varios códigos (teléfono compartido), van todos en B: "CC - 111, 222"
   var etiqueta = codigo ? (centro + ' - ' + codigo) : (centro + ' - ' + val);
   document.getElementById('actupd-sucursal').value = etiqueta;
   actupdRenderCodigosInter(actupdSellerCache, codigo);
 }
 
 function actupdCodigoInterDeValor(valor) {
+  // Devuelve string con 1 o varios códigos (si el mismo teléfono/ciudad está en varias bodegas)
   if (!actupdSellerCache || !Array.isArray(actupdSellerCache.ubicaciones)) return '';
   var v = String(valor || '').trim();
   var ubs = actupdSellerCache.ubicaciones;
+  var codes = [];
+  function add(c) {
+    c = String(c || '').trim();
+    if (c && codes.indexOf(c) === -1) codes.push(c);
+  }
   for (var i = 0; i < ubs.length; i++) {
     var u = ubs[i];
     if (!u) continue;
-    if (String(u.address || '').trim() === v) return String(u.interrapidisimoCode || '').trim();
-    if (String(u.city || '').trim() === v) return String(u.interrapidisimoCode || '').trim();
-    if (String(u.phone || '').trim() === v) return String(u.interrapidisimoCode || '').trim();
+    var match = false;
+    if (String(u.address || '').trim() === v) match = true;
+    if (String(u.city || '').trim() === v) match = true;
+    // Teléfono: puede ser el mismo en varias bodegas → todas las sucursales
+    if (String(u.phone || '').trim() === v) match = true;
+    if (match) add(u.interrapidisimoCode);
   }
-  return '';
+  return codes.join(', ');
 }
 
 // Cambio en dato actual: actualiza columna B (solo esa sucursal) + chip Inter
@@ -30773,7 +30789,12 @@ function procesarActupdUI() {
         document.getElementById('actupd-modal-procesar').style.display = 'none';
         showToast('\u2705 ' + res.message);
         cargarHistorialActupd();
-      } else showToast('Error: ' + ((res && res.message) || 'desconocido'));
+      } else {
+        var m = (res && res.message) || 'desconocido';
+        showToast('Error: ' + m);
+        var infoEl = document.getElementById('actupd-procesar-info');
+        if (infoEl) { infoEl.style.display = 'block'; infoEl.innerHTML = '<span style="color:#f87171">' + m + '</span>'; }
+      }
     })
     .withFailureHandler(function(e) {
       btn.disabled = false;
