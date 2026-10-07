@@ -13219,8 +13219,24 @@ input[type="date"]::-webkit-calendar-picker-indicator,
      */
     var GAS_TIMEOUT_MS = 60000;
     var GAS_MAX_REINTENTOS = 3;
+    // Dedupe: evita tormentas de peticiones idénticas (login dispara getMiDisponibilidad 3 veces)
+    var _hekaInflight = {};
+    var _hekaSoftFns = {
+      getMiDisponibilidad: true,
+      getDisponibilidadHoy: true,
+      getDisponibilidadReporte: true,
+      getCorreosActualizacion: true
+    };
 
     async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
+      var argsKey = "";
+      try { argsKey = JSON.stringify(argumentosArray || []); } catch (eK) { argsKey = ""; }
+      var dedupeKey = String(nombreFuncion) + "|" + argsKey;
+      if (_hekaInflight[dedupeKey]) {
+        return _hekaInflight[dedupeKey];
+      }
+
+      var promesa = (async function() {
       // Token en memoria primero (más rápido y evita parse de localStorage en cada call)
       var tokenSesion = (typeof HEKA_SESSION_TOKEN === "string" && HEKA_SESSION_TOKEN) ? HEKA_SESSION_TOKEN : "";
       if (!tokenSesion) {
@@ -13244,6 +13260,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,
         args: argumentosArray || []
       };
       var bodyStr = JSON.stringify(payload);
+      var soft = !!_hekaSoftFns[nombreFuncion];
 
       var lastError = null;
       for (var intento = 0; intento <= GAS_MAX_REINTENTOS; intento++) {
@@ -13256,6 +13273,8 @@ input[type="date"]::-webkit-calendar-picker-indicator,
             }, GAS_TIMEOUT_MS);
           }
 
+          // Canal principal: POST (body JSON). Google puede 302 a googleusercontent.com;
+          // a veces ese redirect devuelve 404 intermitente (bug conocido).
           var respuesta = await fetch(GAS_URL, {
             method: "POST",
             mode: "cors",
@@ -13270,21 +13289,29 @@ input[type="date"]::-webkit-calendar-picker-indicator,
           var textoRespuesta = await respuesta.text();
 
           // Redirect POST→GET / respuesta de doGet ("Servidor Core")
-          // NO devolver éxito vacío: reintentar o usar canal GET ?p=
           if (textoRespuesta && textoRespuesta.trim().startsWith("Servidor Core")) {
-            console.warn("[HEKA API] doGet/fallback detectado en " + nombreFuncion +
-              " (intento " + (intento + 1) + "/" + (GAS_MAX_REINTENTOS + 1) + ")");
+            if (!soft) {
+              console.warn("[HEKA API] doGet/fallback detectado en " + nombreFuncion +
+                " (intento " + (intento + 1) + "/" + (GAS_MAX_REINTENTOS + 1) + ")");
+            }
             lastError = new Error("Redirect POST→GET (Servidor Core) en " + nombreFuncion);
+            // Tras el 1er fallo, intentar GET de una vez (más rápido que 4 POST)
+            if (intento >= 1) {
+              try {
+                var getEarly = await llamarBackendIntranetViaGet_(payload);
+                if (getEarly) return getEarly;
+              } catch (eGe) {}
+            }
             if (intento >= GAS_MAX_REINTENTOS) {
               try {
                 var getResult = await llamarBackendIntranetViaGet_(payload);
                 if (getResult) return getResult;
               } catch (eGet) {
-                console.warn("[HEKA API] Fallback GET también falló:", eGet);
+                if (!soft) console.warn("[HEKA API] Fallback GET también falló:", eGet);
               }
               throw lastError;
             }
-            await new Promise(function(r) { setTimeout(r, 400 * (intento + 1)); });
+            await new Promise(function(r) { setTimeout(r, 350 * (intento + 1)); });
             continue;
           }
 
@@ -13298,20 +13325,24 @@ input[type="date"]::-webkit-calendar-picker-indicator,
             throw lastError;
           }
 
-          // 404 intermitente del redirect ContentService (bug conocido Google)
+          // 404 intermitente del redirect ContentService → googleusercontent.com
+          // El navegador lo muestra como GET al dominio echo (es el hop del 302, no que hayamos hecho GET).
           if (httpStatus === 404) {
             lastError = new Error("HTTP 404 intermitente (redirect ContentService) en " + nombreFuncion);
+            // Fallback GET temprano (intento 0 o 1) para no spamear 4 POST que también 404
+            if (intento >= 0) {
+              try {
+                var getResult404 = await llamarBackendIntranetViaGet_(payload);
+                if (getResult404) return getResult404;
+              } catch (e404) {}
+            }
             if (intento < GAS_MAX_REINTENTOS) {
-              await new Promise(function(r) { setTimeout(r, 600 * (intento + 1)); });
+              await new Promise(function(r) { setTimeout(r, 450 * (intento + 1)); });
               continue;
             }
-            try {
-              var getResult404 = await llamarBackendIntranetViaGet_(payload);
-              if (getResult404) return getResult404;
-            } catch (e404) {}
             throw new Error(
-              "Error HTTP 404: URL GAS o redirect user_content_key intermitente. " +
-              "Revisa Implementar → Administrar implementaciones. fn=" + nombreFuncion
+              "Error HTTP 404: redirect user_content intermitente. " +
+              "Si persiste: Implementar → Nueva versión. fn=" + nombreFuncion
             );
           }
 
@@ -13320,14 +13351,14 @@ input[type="date"]::-webkit-calendar-picker-indicator,
             var msgHttp = "Error HTTP " + httpStatus + " del servidor GAS";
             if (httpStatus === 401 || httpStatus === 403) {
               msgHttp = "Error HTTP " + httpStatus + ": el Web App no permite acceso anónimo. " +
-                "En la implementación debe estar: Ejecutar como YO + Quién tiene acceso: CUALQUIERA.";
+                "En la implementación: Ejecutar como YO + Acceso: CUALQUIERA.";
             } else {
               try {
                 var maybe = JSON.parse(textoRespuesta);
                 if (maybe && maybe.message) msgHttp = maybe.message;
               } catch (eP) {}
             }
-            console.error("[HEKA API]", msgHttp, "URL:", GAS_URL, "fn:", nombreFuncion);
+            if (!soft) console.error("[HEKA API]", msgHttp, "fn:", nombreFuncion);
             throw new Error(msgHttp);
           }
 
@@ -13337,6 +13368,10 @@ input[type="date"]::-webkit-calendar-picker-indicator,
           } catch (eParse) {
             if (/<!DOCTYPE|<html/i.test(textoRespuesta || "")) {
               lastError = new Error("Respuesta HTML inesperada (posible 404 redirect) en " + nombreFuncion);
+              try {
+                var getHtml = await llamarBackendIntranetViaGet_(payload);
+                if (getHtml) return getHtml;
+              } catch (eH) {}
               if (intento < GAS_MAX_REINTENTOS) {
                 await new Promise(function(r) { setTimeout(r, 500 * (intento + 1)); });
                 continue;
@@ -13363,7 +13398,6 @@ input[type="date"]::-webkit-calendar-picker-indicator,
           lastError = error;
           var esAbort = error && (error.name === "AbortError" || /aborted/i.test(String(error.message || "")));
           if (esAbort) {
-            // Reintentar timeouts en lecturas
             if (intento < GAS_MAX_REINTENTOS) {
               await new Promise(function(r) { setTimeout(r, 300); });
               continue;
@@ -13371,18 +13405,33 @@ input[type="date"]::-webkit-calendar-picker-indicator,
             throw new Error("Tiempo de espera agotado (" + Math.round(GAS_TIMEOUT_MS / 1000) + "s) en " + nombreFuncion);
           }
           if (intento >= GAS_MAX_REINTENTOS) break;
-          // Failed to fetch / red: reintentar
           if (/failed to fetch|network|load failed/i.test(String(error && error.message || ""))) {
             await new Promise(function(r) { setTimeout(r, 400 * (intento + 1)); });
             continue;
+          }
+          // Si el error ya es el definitivo de 404 tras fallback, no reintentar en bucle
+          if (/HTTP 404/i.test(String(error && error.message || ""))) {
+            try {
+              var getLate = await llamarBackendIntranetViaGet_(payload);
+              if (getLate) return getLate;
+            } catch (eL) {}
+            break;
           }
           break;
         } finally {
           if (timerId) clearTimeout(timerId);
         }
       }
-      console.error("Error de comunicación API (POST):", lastError);
+      if (!soft) console.error("Error de comunicación API (POST):", lastError);
       throw lastError || new Error("Error de red con el servidor GAS");
+      })(); // end async IIFE for dedupe
+
+      _hekaInflight[dedupeKey] = promesa;
+      try {
+        return await promesa;
+      } finally {
+        delete _hekaInflight[dedupeKey];
+      }
     }
 
     /**
@@ -13426,7 +13475,9 @@ input[type="date"]::-webkit-calendar-picker-indicator,
           throw new Error("GET HTTP " + respuesta.status);
         }
         var parsed = JSON.parse(texto);
-        console.info("[HEKA API] Fallback GET OK para", payload.fn);
+        if (!_hekaSoftFns[payload.fn]) {
+          console.info("[HEKA API] Fallback GET OK para", payload.fn);
+        }
         return parsed;
       } finally {
         if (timerId) clearTimeout(timerId);
@@ -14425,11 +14476,9 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       
       showToast("Sesión iniciada correctamente");
 
-      // Refrescar chip de Status tras login / auto-login (reintento por latencia)
+      // Chip de status: una sola llamada (dedupe en API evita tormentas de 404)
       if (typeof actualizarMiStatusChip === 'function') {
-        try { actualizarMiStatusChip(); } catch (e1) {}
-        setTimeout(function() { try { actualizarMiStatusChip(); } catch (e2) {} }, 800);
-        setTimeout(function() { try { actualizarMiStatusChip(); } catch (e3) {} }, 2500);
+        setTimeout(function() { try { actualizarMiStatusChip(); } catch (eChip) {} }, 600);
       }
     }
 
