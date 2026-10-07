@@ -30474,9 +30474,11 @@ function actupdBuscarSeller() {
   var badge = document.getElementById('actupd-seller-badge');
   badge.style.display = 'block';
   badge.innerHTML = '<i class="bi bi-arrow-repeat"></i> Buscando seller…';
+  if (typeof showLoading === 'function') showLoading(true, 'BUSCANDO', 'Consultando seller y bodegas');
   google.script.run
     .withSuccessHandler(function(res) {
       if (!res || res.status !== 'success') {
+        if (typeof showLoading === 'function') showLoading(false);
         actupdSellerCache = null;
         document.getElementById('actupd-sucursal').value = '';
         document.getElementById('actupd-centro').value = '';
@@ -30497,10 +30499,12 @@ function actupdBuscarSeller() {
         (res.direcciones ? res.direcciones.length : 0) + ' dir · ' +
         (res.telefonos ? res.telefonos.length : 0) + ' tel · ' +
         (res.ciudades ? res.ciudades.length : 0) + ' ciudades';
-            actupdRellenarSelectAnterior();
+            if (typeof showLoading === 'function') showLoading(false);
+      actupdRellenarSelectAnterior();
       actupdRenderCodigosInter(res, '');
     })
     .withFailureHandler(function(err) {
+      if (typeof showLoading === 'function') showLoading(false);
       actupdSellerCache = null;
       badge.innerHTML = '<span style="color:#f87171;">Error: ' + ((err && err.message) || err) + '</span>';
       actupdRenderCodigosInter(null);
@@ -30657,10 +30661,10 @@ function actupdVolverForm() {
 }
 function guardarActupdUI() {
   var btn = document.getElementById('actupd-btn-confirmar');
-  btn.disabled = true;
+  if (btn) btn.disabled = true;
+  if (typeof showLoading === 'function') showLoading(true, 'GUARDANDO', 'Registrando solicitud');
   var tipo = document.getElementById('actupd-tipo').value || 'direccion';
   var tipoLabel = actupdTipoLabel(tipo);
-  // Observaciones = solo el tipo elegido (lo que se ve en las tarjetas)
   var obs = 'Actualización de ' + tipoLabel.toLowerCase();
   var obsEl = document.getElementById('actupd-obs');
   if (obsEl) obsEl.value = obs;
@@ -30672,17 +30676,19 @@ function guardarActupdUI() {
   };
   google.script.run
     .withSuccessHandler(function(res) {
-      btn.disabled = false;
+      if (typeof showLoading === 'function') showLoading(false);
+      if (btn) btn.disabled = false;
       if (res && res.status === 'success') {
         cerrarModalSolicitudActupd();
-        showToast('\u2705 ' + res.message);
+        showToast('✅ ' + res.message);
         cargarHistorialActupd();
       } else {
         showToast('Error: ' + ((res && res.message) || 'desconocido'));
       }
     })
     .withFailureHandler(function(err) {
-      btn.disabled = false;
+      if (typeof showLoading === 'function') showLoading(false);
+      if (btn) btn.disabled = false;
       showToast('Error: ' + (err && err.message ? err.message : err));
     })
     .guardarActualizacionDato(payload);
@@ -30737,68 +30743,103 @@ function actupdAsegurarModalEnBody(id) {
 // ---- Modal procesar solicitudes del dia ----
 var actupdPendientesData = [];
 function abrirModalProcesarActupd() {
-  var modal = actupdAsegurarModalEnBody('actupd-modal-procesar');
-  if (modal) modal.style.display = 'flex';
-  document.getElementById('actupd-procesar-tabla').innerHTML = '';
-  showLoading(true, 'CARGANDO', 'Actualización de datos');
-  document.getElementById('actupd-procesar-correos').innerText = '';
-  var info = document.getElementById('actupd-procesar-info');
-  info.style.display = 'none';
-  google.script.run
-    .withSuccessHandler(function(res) {
-      showLoading(false);
-      var body = document.getElementById('actupd-procesar-tabla');
-      if (res && res.status !== 'success') {
-        body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#dc3545">' + ((res && res.message) || 'error') + '</td></tr>';
-        return;
+  // Carga general primero; el modal solo se abre cuando ya hay datos/correo listos
+  if (typeof showLoading === 'function') showLoading(true, 'CARGANDO', 'Solicitudes pendientes');
+  var panelDone = false, mailDone = false, panelRes = null, mailRes = null;
+
+  function intentarAbrir() {
+    if (!panelDone || !mailDone) return;
+    if (typeof showLoading === 'function') showLoading(false);
+
+    var body = document.getElementById('actupd-procesar-tabla');
+    var info = document.getElementById('actupd-procesar-info');
+    var elMail = document.getElementById('actupd-procesar-correos');
+    if (info) info.style.display = 'none';
+
+    if (!panelRes || panelRes.status !== 'success') {
+      actupdPendientesData = [];
+      if (body) body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#dc3545">' +
+        ((panelRes && panelRes.message) || 'Error al cargar pendientes') + '</td></tr>';
+    } else {
+      actupdPendientesData = Array.isArray(panelRes.data) ? panelRes.data : [];
+      if (body) {
+        body.innerHTML = actupdPendientesData.map(function(r) {
+          return '<tr>'
+            + '<td>' + r.fecha + '</td><td><strong>' + r.sucursal + '</strong></td>'
+            + '<td>' + (r.datoAnterior || '—') + '</td><td style="color:#ffc400;font-weight:600;">' + r.datoModificar + '</td>'
+            + '<td>' + (r.observaciones || '—') + '</td></tr>';
+        }).join('') || '<tr><td colspan="5" style="text-align:center;color:#888;">No hay solicitudes pendientes. Todo enviado.</td></tr>';
       }
-      actupdPendientesData = Array.isArray(res.data) ? res.data : [];
-      body.innerHTML = actupdPendientesData.map(function(r) {
-        return '<tr>'
-          + '<td>' + r.fecha + '</td><td><strong>' + r.sucursal + '</strong></td>'
-          + '<td>' + (r.datoAnterior || '—') + '</td><td style="color:#ffc400;font-weight:600;">' + r.datoModificar + '</td>'
-          + '<td>' + (r.observaciones || '—') + '</td></tr>';
-      }).join('') || '<tr><td colspan="5" style="text-align:center;color:#888;">No hay solicitudes pendientes. Todo enviado.</td></tr>';
-      if (!actupdPendientesData.length) {
+      if (!actupdPendientesData.length && info) {
         info.style.display = 'block';
         info.innerHTML = '<span style="color:#22c55e"><i class="bi bi-check-circle-fill"></i> No hay pendientes para procesar.</span>';
       }
-    })
+    }
+
+    if (elMail) {
+      elMail.innerText = (mailRes && mailRes.correos)
+        ? ('Se enviará a: ' + mailRes.correos)
+        : 'Sin correos configurados: usa el botón Correos destino.';
+    }
+
+    var modal = actupdAsegurarModalEnBody('actupd-modal-procesar');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  google.script.run
+    .withSuccessHandler(function(res) { panelRes = res; panelDone = true; intentarAbrir(); })
     .withFailureHandler(function(e) {
-      document.getElementById('actupd-procesar-tabla').innerHTML = '<tr><td colspan="5" style="text-align:center;color:#dc3545">Error: ' + (e.message || '') + '</td></tr>';
+      panelRes = { status: 'error', message: (e && e.message) || 'Error de conexión' };
+      panelDone = true;
+      intentarAbrir();
     })
     .getActualizacionDatosPanel();
+
   google.script.run
-    .withSuccessHandler(function(r2) {
-      var el = document.getElementById('actupd-procesar-correos');
-      if (el) el.innerText = (r2 && r2.correos) ? 'Se enviará a: ' + r2.correos : 'Sin correos configurados: usa el botón Correos destino.';
-    })
-    .withFailureHandler(function() {})
+    .withSuccessHandler(function(r2) { mailRes = r2; mailDone = true; intentarAbrir(); })
+    .withFailureHandler(function() { mailRes = null; mailDone = true; intentarAbrir(); })
     .getCorreosActualizacion();
 }
+
 function procesarActupdUI() {
   if (!actupdPendientesData.length) return showToast('No hay solicitudes pendientes.');
   var btn = document.getElementById('actupd-btn-ejecutar');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
+  if (btn) btn.disabled = true;
+  // Carga general de la página (no animación solo en el botón)
+  if (typeof showLoading === 'function') showLoading(true, 'ENVIANDO', 'Procesando y enviando correo');
+  // Cerrar modal mientras procesa para que se vea la carga global
+  var modal = document.getElementById('actupd-modal-procesar');
+  if (modal) modal.style.display = 'none';
+
   google.script.run
     .withSuccessHandler(function(res) {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="bi bi-send-fill"></i> Procesar y enviar';
+      if (typeof showLoading === 'function') showLoading(false);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-send-fill"></i> Procesar y enviar';
+      }
       if (res && res.status === 'success') {
-        document.getElementById('actupd-modal-procesar').style.display = 'none';
-        showToast('\u2705 ' + res.message);
+        showToast('✅ ' + res.message);
         cargarHistorialActupd();
       } else {
         var m = (res && res.message) || 'desconocido';
         showToast('Error: ' + m);
+        // Reabrir modal con el error visible
+        if (modal) modal.style.display = 'flex';
         var infoEl = document.getElementById('actupd-procesar-info');
-        if (infoEl) { infoEl.style.display = 'block'; infoEl.innerHTML = '<span style="color:#f87171">' + m + '</span>'; }
+        if (infoEl) {
+          infoEl.style.display = 'block';
+          infoEl.innerHTML = '<span style="color:#f87171">' + m + '</span>';
+        }
       }
     })
     .withFailureHandler(function(e) {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="bi bi-send-fill"></i> Procesar y enviar';
+      if (typeof showLoading === 'function') showLoading(false);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-send-fill"></i> Procesar y enviar';
+      }
+      if (modal) modal.style.display = 'flex';
       showToast('Error de conexión: ' + (e.message || ''));
     })
     .procesarActualizacionDatos({
@@ -30807,6 +30848,7 @@ function procesarActupdUI() {
       fotoUrl: currentUser ? (currentUser.image || '') : ''
     });
 }
+
 
 // ---- Correos destino ----
 function abrirModalCorreosActupd() {
