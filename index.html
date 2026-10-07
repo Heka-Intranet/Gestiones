@@ -8412,8 +8412,8 @@ body { overscroll-behavior-y: contain; }
   </div>
   <div class="actupd-tipo-card" data-tipo="destino" onclick="actupdSeleccionarTipo(this)">
     <span class="ico"><i class="bi bi-pin-map-fill" style="color:#fbbf24;"></i></span>
-    <div class="tit">Destino</div>
-    <div class="sub">Ciudad / destino</div>
+    <div class="tit">Ciudad origen</div>
+    <div class="sub">Ciudad de la bodega</div>
   </div>
 </div>
 
@@ -30381,7 +30381,7 @@ var actupdSellerCache = null;
 
 function actupdTipoLabel(tipo) {
   if (tipo === 'telefono') return 'Teléfono';
-  if (tipo === 'destino') return 'Destino';
+  if (tipo === 'destino') return 'Ciudad origen';
   return 'Dirección';
 }
 
@@ -30406,7 +30406,7 @@ function actupdActualizarObsPorTipo() {
   }
   var lab = document.getElementById('actupd-label-anterior');
   if (tipo === 'telefono') lab.textContent = 'Teléfono actual (selecciona) *';
-  else if (tipo === 'destino') lab.textContent = 'Destino / ciudad actual (selecciona) *';
+  else if (tipo === 'destino') lab.textContent = 'Ciudad origen actual (selecciona) *';
   else lab.textContent = 'Dirección actual (selecciona) *';
 }
 
@@ -30457,9 +30457,14 @@ function actupdBuscarSeller() {
       actupdSellerCache = res;
       document.getElementById('actupd-sucursal').value = res.etiquetaSucursal || (res.centroCosto + ' - ' + (res.sucursalInter || res.razonSocial || ''));
       document.getElementById('actupd-centro').value = res.centroCosto || '';
+      var nBod = res.totalBodegas || (res.ubicaciones ? res.ubicaciones.length : 0);
       badge.innerHTML = '<i class="bi bi-check-circle-fill" style="color:#4ade80;"></i> ' +
         '<b>' + (res.centroCosto || '') + '</b> · ' + (res.razonSocial || res.nombre || '') +
-        (res.documento ? ' · Doc: ' + res.documento : '');
+        (res.documento ? ' · Doc: ' + res.documento : '') +
+        ' · <b>' + nBod + '</b> bodega(s) · ' +
+        (res.direcciones ? res.direcciones.length : 0) + ' dir · ' +
+        (res.telefonos ? res.telefonos.length : 0) + ' tel · ' +
+        (res.ciudades ? res.ciudades.length : 0) + ' ciudades';
       actupdRellenarSelectAnterior();
     })
     .withFailureHandler(function(err) {
