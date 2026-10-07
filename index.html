@@ -8386,6 +8386,13 @@ body { overscroll-behavior-y: contain; }
 .actupd-lookup-row{display:flex;gap:8px;align-items:stretch;}
 .actupd-lookup-row input{flex:1;}
 .actupd-lookup-row button{flex-shrink:0;padding:0 14px;border-radius:12px;border:none;background:linear-gradient(135deg,#ffc400,#e6a800);color:#111;font-weight:800;cursor:pointer;font-size:13px;}
+.actupd-inter-wrap{border:1px solid rgba(59,130,246,.35);background:linear-gradient(145deg,rgba(37,99,235,.14),rgba(15,23,42,.4));border-radius:16px;padding:12px 14px;}
+.actupd-inter-title{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#93c5fd;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.actupd-inter-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.actupd-inter-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:999px;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;font-weight:800;font-size:13px;box-shadow:0 6px 18px -8px rgba(37,99,235,.8);border:1px solid rgba(147,197,253,.35);}
+.actupd-inter-chip .tag{font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:rgba(255,255,255,.18);padding:2px 6px;border-radius:6px;}
+.actupd-inter-empty{font-size:12px;color:#94a3b8;}
+.actupd-obs-pill{display:inline-flex;align-items:center;gap:6px;margin:0 0 12px;padding:8px 12px;border-radius:999px;background:rgba(255,196,0,.12);border:1px solid rgba(255,196,0,.3);color:#ffc400;font-size:12px;font-weight:700;}
 </style>
 
 <!-- MODAL: Solicitud actualizacion (con paso de revision) -->
@@ -8416,6 +8423,7 @@ body { overscroll-behavior-y: contain; }
     <div class="sub">Ciudad de la bodega</div>
   </div>
 </div>
+<div class="actupd-obs-pill" id="actupd-obs-pill"><i class="bi bi-tag-fill"></i> <span id="actupd-obs-pill-txt">Actualización de dirección</span></div>
 
 <div class="actupd-campo">
   <label>Centro de costo o cédula *</label>
@@ -8436,10 +8444,9 @@ body { overscroll-behavior-y: contain; }
   <label>Dato a modificar *</label>
   <input id="actupd-dato" type="text" placeholder="Nuevo valor a aplicar">
 </div>
-<div class="actupd-campo">
-  <label>Observaciones</label>
-  <input id="actupd-obs" type="text" placeholder="Se completa solo según el tipo (puedes ampliar)">
-</div>
+<!-- Observaciones: automáticas según el tipo elegido (no se editan) -->
+<input type="hidden" id="actupd-obs" value="">
+<div id="actupd-codigos-inter" style="display:none;margin:4px 0 14px;"></div>
 <!-- ocultos: valores que van al Excel -->
 <input type="hidden" id="actupd-sucursal" value="">
 <input type="hidden" id="actupd-tipo" value="direccion">
@@ -30398,12 +30405,11 @@ function actupdSeleccionarTipo(el) {
 
 function actupdActualizarObsPorTipo() {
   var tipo = document.getElementById('actupd-tipo').value || 'direccion';
+  var texto = 'Actualización de ' + actupdTipoLabel(tipo).toLowerCase();
   var obs = document.getElementById('actupd-obs');
-  // Solo autocompletar si está vacío o era el texto automático anterior
-  var autoPref = 'Actualización de ';
-  if (!obs.value.trim() || obs.value.trim().indexOf(autoPref) === 0) {
-    obs.value = autoPref + actupdTipoLabel(tipo).toLowerCase();
-  }
+  if (obs) obs.value = texto;
+  var pill = document.getElementById('actupd-obs-pill-txt');
+  if (pill) pill.textContent = texto;
   var lab = document.getElementById('actupd-label-anterior');
   if (tipo === 'telefono') lab.textContent = 'Teléfono actual (selecciona) *';
   else if (tipo === 'destino') lab.textContent = 'Ciudad origen actual (selecciona) *';
@@ -30414,27 +30420,52 @@ function actupdRellenarSelectAnterior() {
   var sel = document.getElementById('actupd-anterior-select');
   var tipo = document.getElementById('actupd-tipo').value || 'direccion';
   var opts = [];
+  var labels = []; // texto visible (puede incluir código Inter)
   if (actupdSellerCache && actupdSellerCache.status === 'success') {
-    if (tipo === 'telefono') opts = actupdSellerCache.telefonos || [];
-    else if (tipo === 'destino') opts = actupdSellerCache.destinos || actupdSellerCache.ciudades || [];
-    else opts = actupdSellerCache.direcciones || [];
+    if (tipo === 'telefono') {
+      opts = actupdSellerCache.telefonos || [];
+      labels = opts.slice();
+    } else if (tipo === 'destino') {
+      opts = actupdSellerCache.destinos || actupdSellerCache.ciudades || [];
+      labels = opts.slice();
+    } else {
+      // Direcciones: enriquecer con código Inter si existe en ubicaciones
+      var dirs = actupdSellerCache.direcciones || [];
+      var ubs = actupdSellerCache.ubicaciones || [];
+      opts = [];
+      labels = [];
+      dirs.forEach(function(d) {
+        var s = String(d || '').trim();
+        if (!s) return;
+        opts.push(s);
+        var code = '';
+        for (var i = 0; i < ubs.length; i++) {
+          if (ubs[i] && String(ubs[i].address || '').trim() === s && ubs[i].interrapidisimoCode) {
+            code = String(ubs[i].interrapidisimoCode).trim();
+            break;
+          }
+        }
+        labels.push(code ? (s + '  ·  Inter ' + code) : s);
+      });
+    }
   }
   if (!opts.length) {
     sel.innerHTML = actupdSellerCache
-      ? '<option value="">— Sin datos de este tipo en la API (puedes escribir el actual abajo si aplica) —</option>'
+      ? '<option value="">— Sin datos de este tipo en la API —</option>'
       : '<option value="">— Busca un seller primero —</option>';
-    // Permitir valor libre si no hay lista
     if (actupdSellerCache) {
       sel.innerHTML += '<option value="__manual__">Escribir manualmente…</option>';
     }
     return;
   }
-  sel.innerHTML = '<option value="">— Selecciona —</option>' +
-    opts.map(function(v) {
-      var s = String(v).replace(/"/g, '&quot;');
-      return '<option value="' + s + '">' + s + '</option>';
-    }).join('') +
-    '<option value="__manual__">Otro (escribir)…</option>';
+  var html = '<option value="">— Selecciona —</option>';
+  for (var i = 0; i < opts.length; i++) {
+    var val = String(opts[i]).replace(/"/g, '&quot;');
+    var lab = String(labels[i] || opts[i]).replace(/</g, '&lt;');
+    html += '<option value="' + val + '">' + lab + '</option>';
+  }
+  html += '<option value="__manual__">Otro (escribir)…</option>';
+  sel.innerHTML = html;
 }
 
 function actupdBuscarSeller() {
@@ -30465,13 +30496,47 @@ function actupdBuscarSeller() {
         (res.direcciones ? res.direcciones.length : 0) + ' dir · ' +
         (res.telefonos ? res.telefonos.length : 0) + ' tel · ' +
         (res.ciudades ? res.ciudades.length : 0) + ' ciudades';
-      actupdRellenarSelectAnterior();
+            actupdRellenarSelectAnterior();
+      actupdRenderCodigosInter(res);
     })
     .withFailureHandler(function(err) {
       actupdSellerCache = null;
       badge.innerHTML = '<span style="color:#f87171;">Error: ' + ((err && err.message) || err) + '</span>';
+      actupdRenderCodigosInter(null);
     })
     .buscarDatosSellerActupd(q);
+}
+
+function actupdRenderCodigosInter(res) {
+  var box = document.getElementById('actupd-codigos-inter');
+  if (!box) return;
+  var codes = [];
+  if (res && Array.isArray(res.codigosInter)) {
+    res.codigosInter.forEach(function(c) {
+      var s = String(c || '').trim();
+      if (s && codes.indexOf(s) === -1) codes.push(s);
+    });
+  }
+  // También desde ubicaciones
+  if (res && Array.isArray(res.ubicaciones)) {
+    res.ubicaciones.forEach(function(u) {
+      var s = String((u && u.interrapidisimoCode) || '').trim();
+      if (s && codes.indexOf(s) === -1) codes.push(s);
+    });
+  }
+  if (!codes.length) {
+    box.style.display = 'block';
+    box.innerHTML = '<div class="actupd-inter-wrap"><div class="actupd-inter-title"><i class="bi bi-truck"></i> Código Inter Rapidísimo</div>'
+      + '<div class="actupd-inter-empty">Sin código Inter en las bodegas de este seller</div></div>';
+    return;
+  }
+  box.style.display = 'block';
+  box.innerHTML = '<div class="actupd-inter-wrap"><div class="actupd-inter-title"><i class="bi bi-truck"></i> Código Inter Rapidísimo</div>'
+    + '<div class="actupd-inter-chips">'
+    + codes.map(function(c) {
+        return '<span class="actupd-inter-chip"><span class="tag">Inter</span> ' + c + '</span>';
+      }).join('')
+    + '</div></div>';
 }
 
 // Si eligen "Otro (escribir)…", pedir el valor con prompt simple
@@ -30511,6 +30576,8 @@ function abrirModalSolicitudActupd() {
   });
   actupdSellerCache = null;
   actupdActualizarObsPorTipo();
+  if (typeof actupdRenderCodigosInter === 'function') actupdRenderCodigosInter(null);
+  var ci = document.getElementById('actupd-codigos-inter'); if (ci) { ci.style.display = 'none'; ci.innerHTML = ''; }
   actupdAsegurarModalEnBody('actupd-modal-solicitud');
   document.getElementById('actupd-modal-solicitud').style.display = 'flex';
 }
@@ -30531,7 +30598,7 @@ function actupdRevisar() {
     'Centro de costo - Sucursal: <b>' + sucursal + '</b><br>' +
     'Dato anterior: <b>' + anterior + '</b><br>' +
     'Dato a modificar: <b>' + dato + '</b><br>' +
-    'Observaciones: <b>' + (document.getElementById('actupd-obs').value.trim() || ('Actualización de ' + tipoLabel.toLowerCase())) + '</b>';
+    'Observaciones: <b>' + ('Actualización de ' + tipoLabel.toLowerCase()) + '</b>';
   document.getElementById('actupd-form-paso').style.display = 'none';
   document.getElementById('actupd-revision-paso').style.display = 'block';
   document.getElementById('actupd-btn-revisar').style.display = 'none';
@@ -30550,11 +30617,10 @@ function guardarActupdUI() {
   btn.disabled = true;
   var tipo = document.getElementById('actupd-tipo').value || 'direccion';
   var tipoLabel = actupdTipoLabel(tipo);
-  var obs = document.getElementById('actupd-obs').value.trim();
-  if (!obs) obs = 'Actualización de ' + tipoLabel.toLowerCase();
-  else if (obs.toLowerCase().indexOf('actualizaci') === -1) {
-    obs = 'Actualización de ' + tipoLabel.toLowerCase() + '. ' + obs;
-  }
+  // Observaciones = solo el tipo elegido (lo que se ve en las tarjetas)
+  var obs = 'Actualización de ' + tipoLabel.toLowerCase();
+  var obsEl = document.getElementById('actupd-obs');
+  if (obsEl) obsEl.value = obs;
   var payload = {
     sucursal: document.getElementById('actupd-sucursal').value.trim(),
     datoModificar: document.getElementById('actupd-dato').value.trim(),
