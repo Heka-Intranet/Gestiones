@@ -8500,7 +8500,7 @@ body { overscroll-behavior-y: contain; }
 <div class="actupd-modal-head">
 <div class="actupd-modal-ico" style="background:linear-gradient(135deg,#ffc400,#ff9500);"><i class="bi bi-envelope-gear-fill" style="font-size:21px;color:#111;"></i></div>
 <div style="flex:1;color:#eaf1f8;font-weight:800;font-size:16px;">Correos destino</div>
-<button type="button" onclick="document.getElementById('actupd-modal-correos').style.display='none'" style="width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+<button type="button" onclick="actupdHideModal('actupd-modal-correos')" style="width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
 </div>
 <div class="actupd-modal-cuerpo">
 <p style="color:#8b98a8;font-size:12.5px;margin:0 0 12px;">Separados por coma o punto y coma. El cambio afecta a todos los envíos.</p>
@@ -8508,7 +8508,7 @@ body { overscroll-behavior-y: contain; }
 <div id="actupd-correos-msg" style="color:#8b98a8;font-size:12px;margin-top:8px;min-height:16px;"></div>
 </div>
 <div class="actupd-modal-pie">
-<button type="button" onclick="document.getElementById('actupd-modal-correos').style.display='none'" style="padding:10px 16px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;font-weight:600;cursor:pointer;">Cerrar</button>
+<button type="button" onclick="actupdHideModal('actupd-modal-correos')" style="padding:10px 16px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;font-weight:600;cursor:pointer;">Cerrar</button>
 <button type="button" onclick="guardarCorreosActupdUI()" style="padding:10px 20px;border-radius:11px;border:none;background:linear-gradient(135deg,#ffc400,#e6a800);color:#111;font-weight:800;cursor:pointer;">Guardar</button>
 </div>
 </div>
@@ -30687,7 +30687,7 @@ function abrirModalSolicitudActupd() {
   document.getElementById('actupd-modal-solicitud').style.display = 'flex';
 }
 function cerrarModalSolicitudActupd() {
-  document.getElementById('actupd-modal-solicitud').style.display = 'none';
+  actupdHideModal('actupd-modal-solicitud');
 }
 function actupdRevisar() {
   var sucursal = document.getElementById('actupd-sucursal').value.trim();
@@ -30802,6 +30802,25 @@ function actupdCerrarModalProcesar() {
   modal.classList.remove('actupd-modal-visible');
   setTimeout(function() { if (modal) modal.style.display = 'none'; }, 180);
 }
+function actupdShowModal(idOrEl) {
+  var modal = typeof idOrEl === 'string' ? actupdAsegurarModalEnBody(idOrEl) : idOrEl;
+  if (!modal) return null;
+  modal.classList.remove('actupd-modal-visible');
+  modal.style.display = 'flex';
+  void modal.offsetWidth;
+  modal.classList.add('actupd-modal-visible');
+  return modal;
+}
+function actupdHideModal(idOrEl) {
+  var modal = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
+  if (!modal) return;
+  modal.classList.remove('actupd-modal-visible');
+  setTimeout(function() {
+    if (modal && !modal.classList.contains('actupd-modal-visible')) {
+      modal.style.display = 'none';
+    }
+  }, 180);
+}
 function actupdAsegurarModalEnBody(id) {
   var m = document.getElementById(id);
   if (m && m.parentElement !== document.body) {
@@ -30853,13 +30872,7 @@ function abrirModalProcesarActupd() {
     }
 
     // 2) Modal listo → mostrarlo y EN EL MISMO momento quitar la carga
-    var modal = actupdAsegurarModalEnBody('actupd-modal-procesar');
-    if (modal) {
-      modal.classList.remove('actupd-modal-visible');
-      modal.style.display = 'flex';
-      void modal.offsetWidth; // reflow para que el fade funcione
-      modal.classList.add('actupd-modal-visible');
-    }
+    actupdShowModal('actupd-modal-procesar');
     if (typeof showLoading === 'function') showLoading(false);
   }
 
@@ -30885,7 +30898,7 @@ function procesarActupdUI() {
 
   // Cerrar modal primero; luego carga global (canal POST)
   var modal = document.getElementById('actupd-modal-procesar');
-  if (modal) { modal.classList.remove('actupd-modal-visible'); modal.style.display = 'none'; }
+  if (modal) actupdHideModal(modal);
   if (typeof showLoading === 'function') showLoading(true, 'ENVIANDO', 'Procesando y enviando correo');
 
   google.script.run
@@ -30901,7 +30914,7 @@ function procesarActupdUI() {
       } else {
         var m = (res && res.message) || 'desconocido';
         showToast('Error: ' + m);
-        if (modal) modal.style.display = 'flex';
+        actupdShowModal(modal);
         var infoEl = document.getElementById('actupd-procesar-info');
         if (infoEl) {
           infoEl.style.display = 'block';
@@ -30915,7 +30928,7 @@ function procesarActupdUI() {
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-send-fill"></i> Procesar y enviar';
       }
-      if (modal) modal.style.display = 'flex';
+      if (modal) actupdShowModal(modal);
       showToast('Error de conexión: ' + (e.message || ''));
     })
     .procesarActualizacionDatos({
@@ -30939,7 +30952,8 @@ function abrirModalCorreosActupd() {
     input.disabled = true;
   }
   if (msg) msg.innerText = 'Cargando...';
-  if (modal) modal.style.display = 'flex';
+  // Importante: opacity 0 sin .actupd-modal-visible → invisible pero clickeable
+  actupdShowModal(modal || 'actupd-modal-correos');
   showLoading(true, 'CARGANDO', 'Correos destino');
   google.script.run
     .withSuccessHandler(function(res) {
@@ -30970,7 +30984,7 @@ function guardarCorreosActupdUI() {
       if (res && res.status === 'success') {
         msg.innerHTML = '<span style="color:#198754">' + res.message + '</span>';
         mostrarCorreosActupd();
-        setTimeout(function() { document.getElementById('actupd-modal-correos').style.display = 'none'; }, 1200);
+        setTimeout(function() { actupdHideModal('actupd-modal-correos'); }, 1200);
       } else msg.innerHTML = '<span style="color:#dc3545">' + ((res && res.message) || 'error') + '</span>';
     })
     .withFailureHandler(function(e) { msg.innerHTML = '<span style="color:#dc3545">' + (e.message || '') + '</span>'; })
