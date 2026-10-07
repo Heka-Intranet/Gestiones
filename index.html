@@ -8357,7 +8357,10 @@ body { overscroll-behavior-y: contain; }
 <style>
 .actupd-btn-main{border:none;border-radius:14px;padding:14px 22px;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .25s ease;box-shadow:0 6px 20px -8px rgba(0,0,0,.6);}
 .actupd-btn-main:hover{transform:translateY(-2px);filter:brightness(1.08);}
-.actupd-modal{display:none;position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,rgba(34,197,94,.07),transparent 45%),rgba(2,6,12,.85);backdrop-filter:blur(8px);z-index:100050;align-items:center;justify-content:center;}
+.actupd-modal{display:none;position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,rgba(34,197,94,.07),transparent 45%),rgba(2,6,12,.85);backdrop-filter:blur(8px);z-index:100050;align-items:center;justify-content:center;opacity:0;transition:opacity .2s ease;}
+.actupd-modal.actupd-modal-visible{opacity:1;}
+.actupd-modal .actupd-modal-caja{transform:translateY(8px) scale(.985);opacity:.96;transition:transform .22s ease,opacity .22s ease;}
+.actupd-modal.actupd-modal-visible .actupd-modal-caja{transform:translateY(0) scale(1);opacity:1;}
 .actupd-modal-caja{max-width:640px;width:94%;max-height:88vh;display:flex;flex-direction:column;background:linear-gradient(160deg,rgba(17,27,38,.97),rgba(8,14,22,.97));border:1px solid rgba(255,196,0,.28);border-radius:24px;box-shadow:0 0 50px rgba(255,196,0,.10),0 30px 80px rgba(0,0,0,.6);overflow:hidden;}
 .actupd-modal-head{padding:20px 24px 14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:14px;}
 .actupd-modal-ico{width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -8472,7 +8475,7 @@ body { overscroll-behavior-y: contain; }
 <div class="actupd-modal-ico" style="background:linear-gradient(135deg,#ffc400,#e6a800);"><i class="bi bi-send-fill" style="font-size:21px;color:#111;"></i></div>
 <div style="flex:1;"><div style="color:#eaf1f8;font-weight:800;font-size:17px;">Procesar solicitudes del día</div>
 <div style="color:#8b98a8;font-size:12px;">Revisa las solicitudes pendientes antes de enviar</div></div>
-<button type="button" onclick="document.getElementById('actupd-modal-procesar').style.display='none'" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+<button type="button" onclick="actupdCerrarModalProcesar()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:#8b98a8;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
 </div>
 <div class="actupd-modal-cuerpo">
 <div id="actupd-procesar-info" style="display:none;margin-bottom:12px;padding:11px 13px;border-radius:12px;font-size:13px;"></div>
@@ -8485,7 +8488,7 @@ body { overscroll-behavior-y: contain; }
 <div id="actupd-procesar-correos" style="color:#8b98a8;font-size:12px;margin-top:12px;"></div>
 </div>
 <div class="actupd-modal-pie">
-<button type="button" onclick="document.getElementById('actupd-modal-procesar').style.display='none'" style="padding:11px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;font-weight:600;cursor:pointer;">Cancelar (quedan pendientes)</button>
+<button type="button" onclick="actupdCerrarModalProcesar()" style="padding:11px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#cbd5e1;font-weight:600;cursor:pointer;">Cancelar (quedan pendientes)</button>
 <button type="button" id="actupd-btn-ejecutar" onclick="procesarActupdUI()" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(135deg,#ffc400,#e6a800);color:#111;font-weight:800;cursor:pointer;box-shadow:0 6px 20px -6px rgba(255,196,0,.7);"><i class="bi bi-send-fill"></i> Procesar y enviar</button>
 </div>
 </div>
@@ -30787,6 +30790,12 @@ function buscarHistorialActupd(sinInfo) {
 
 
 /** Sube el modal de Actualización de datos al <body> para que no quede bajo el sidebar (stacking context). */
+function actupdCerrarModalProcesar() {
+  var modal = document.getElementById('actupd-modal-procesar');
+  if (!modal) return;
+  modal.classList.remove('actupd-modal-visible');
+  setTimeout(function() { if (modal) modal.style.display = 'none'; }, 180);
+}
 function actupdAsegurarModalEnBody(id) {
   var m = document.getElementById(id);
   if (m && m.parentElement !== document.body) {
@@ -30804,8 +30813,8 @@ function abrirModalProcesarActupd() {
 
   function intentarAbrir() {
     if (!panelDone || !mailDone) return;
-    if (typeof showLoading === 'function') showLoading(false);
 
+    // 1) Pintar contenido MIENTRAS la carga sigue visible (usuario no ve hueco)
     var body = document.getElementById('actupd-procesar-tabla');
     var info = document.getElementById('actupd-procesar-info');
     var elMail = document.getElementById('actupd-procesar-correos');
@@ -30837,8 +30846,15 @@ function abrirModalProcesarActupd() {
         : 'Sin correos configurados: usa el botón Correos destino.';
     }
 
+    // 2) Modal listo → mostrarlo y EN EL MISMO momento quitar la carga
     var modal = actupdAsegurarModalEnBody('actupd-modal-procesar');
-    if (modal) modal.style.display = 'flex';
+    if (modal) {
+      modal.classList.remove('actupd-modal-visible');
+      modal.style.display = 'flex';
+      void modal.offsetWidth; // reflow para que el fade funcione
+      modal.classList.add('actupd-modal-visible');
+    }
+    if (typeof showLoading === 'function') showLoading(false);
   }
 
   google.script.run
@@ -30863,7 +30879,7 @@ function procesarActupdUI() {
 
   // Cerrar modal primero; luego carga global (canal POST)
   var modal = document.getElementById('actupd-modal-procesar');
-  if (modal) modal.style.display = 'none';
+  if (modal) { modal.classList.remove('actupd-modal-visible'); modal.style.display = 'none'; }
   if (typeof showLoading === 'function') showLoading(true, 'ENVIANDO', 'Procesando y enviando correo');
 
   google.script.run
