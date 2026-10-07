@@ -13228,7 +13228,13 @@ input[type="date"]::-webkit-calendar-picker-indicator,
       getMiDisponibilidad: true,
       getDisponibilidadHoy: true,
       getDisponibilidadReporte: true,
-      getCorreosActualizacion: true
+      getCorreosActualizacion: true,
+      getHistorialRecargas: true,
+      getActualizacionDatosPanel: true,
+      getActualizacionDatosHistorial: true,
+      getHistorialActupd: true,
+      buscarActivacionesInter: true,
+      getIndemnizacionesData: true
     };
 
     async function llamarBackendIntranet(nombreFuncion, argumentosArray) {
@@ -13291,30 +13297,30 @@ input[type="date"]::-webkit-calendar-picker-indicator,
           var httpStatus = respuesta.status;
           var textoRespuesta = await respuesta.text();
 
-          // Redirect POST→GET / respuesta de doGet ("Servidor Core")
+          // Redirect POST→GET: Google a veces entrega el body del POST a doGet
+          // (respuesta "Servidor Core"). NO es un bug de tu código: es el 302 de ContentService.
+          // Solución: fallback GET ?p= inmediato (mismo handleApiCall en el servidor).
           if (textoRespuesta && textoRespuesta.trim().startsWith("Servidor Core")) {
-            if (!soft) {
-              console.warn("[HEKA API] doGet/fallback detectado en " + nombreFuncion +
-                " (intento " + (intento + 1) + "/" + (GAS_MAX_REINTENTOS + 1) + ")");
-            }
             lastError = new Error("Redirect POST→GET (Servidor Core) en " + nombreFuncion);
-            // Tras el 1er fallo, intentar GET de una vez (más rápido que 4 POST)
-            if (intento >= 1) {
-              try {
-                var getEarly = await llamarBackendIntranetViaGet_(payload);
-                if (getEarly) return getEarly;
-              } catch (eGe) {}
-            }
-            if (intento >= GAS_MAX_REINTENTOS) {
-              try {
-                var getResult = await llamarBackendIntranetViaGet_(payload);
-                if (getResult) return getResult;
-              } catch (eGet) {
-                if (!soft) console.warn("[HEKA API] Fallback GET también falló:", eGet);
+            try {
+              var getNow = await llamarBackendIntranetViaGet_(payload);
+              if (getNow) {
+                // Éxito silencioso: el usuario no ve error; solo log si no es fn suave
+                if (!soft) {
+                  console.info("[HEKA API] POST→doGet recuperado vía GET en", nombreFuncion);
+                }
+                return getNow;
               }
-              throw lastError;
+            } catch (eGe) {
+              if (!soft) console.warn("[HEKA API] Fallback GET falló en", nombreFuncion, eGe);
             }
-            await new Promise(function(r) { setTimeout(r, 350 * (intento + 1)); });
+            // Si GET no pudo (payload grande u otro 404), reintentar POST
+            if (intento >= GAS_MAX_REINTENTOS) throw lastError;
+            if (!soft) {
+              console.warn("[HEKA API] Reintento POST", nombreFuncion,
+                (intento + 1) + "/" + (GAS_MAX_REINTENTOS + 1));
+            }
+            await new Promise(function(r) { setTimeout(r, 280 * (intento + 1)); });
             continue;
           }
 
