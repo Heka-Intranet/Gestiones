@@ -30486,7 +30486,8 @@ function actupdBuscarSeller() {
         return;
       }
       actupdSellerCache = res;
-      document.getElementById('actupd-sucursal').value = res.etiquetaSucursal || (res.centroCosto + ' - ' + (res.sucursalInter || res.razonSocial || ''));
+      // Solo centro de costo hasta que elijan la bodega (así B no lleva todas las sucursales)
+      document.getElementById('actupd-sucursal').value = res.centroCosto || '';
       document.getElementById('actupd-centro').value = res.centroCosto || '';
       var nBod = res.totalBodegas || (res.ubicaciones ? res.ubicaciones.length : 0);
       badge.innerHTML = '<i class="bi bi-check-circle-fill" style="color:#4ade80;"></i> ' +
@@ -30497,7 +30498,7 @@ function actupdBuscarSeller() {
         (res.telefonos ? res.telefonos.length : 0) + ' tel · ' +
         (res.ciudades ? res.ciudades.length : 0) + ' ciudades';
             actupdRellenarSelectAnterior();
-      actupdRenderCodigosInter(res);
+      actupdRenderCodigosInter(res, '');
     })
     .withFailureHandler(function(err) {
       actupdSellerCache = null;
@@ -30507,41 +30508,66 @@ function actupdBuscarSeller() {
     .buscarDatosSellerActupd(q);
 }
 
-function actupdRenderCodigosInter(res) {
+function actupdRenderCodigosInter(res, codigoUnico) {
   var box = document.getElementById('actupd-codigos-inter');
   if (!box) return;
-  var codes = [];
-  if (res && Array.isArray(res.codigosInter)) {
-    res.codigosInter.forEach(function(c) {
-      var s = String(c || '').trim();
-      if (s && codes.indexOf(s) === -1) codes.push(s);
-    });
+  if (!res) {
+    box.style.display = 'none';
+    box.innerHTML = '';
+    return;
   }
-  // También desde ubicaciones
-  if (res && Array.isArray(res.ubicaciones)) {
-    res.ubicaciones.forEach(function(u) {
-      var s = String((u && u.interrapidisimoCode) || '').trim();
-      if (s && codes.indexOf(s) === -1) codes.push(s);
-    });
-  }
-  if (!codes.length) {
+  var code = String(codigoUnico || '').trim();
+  // Si no hay selección aún, mensaje guía (NO listar todos)
+  if (!code) {
     box.style.display = 'block';
     box.innerHTML = '<div class="actupd-inter-wrap"><div class="actupd-inter-title"><i class="bi bi-truck"></i> Código Inter Rapidísimo</div>'
-      + '<div class="actupd-inter-empty">Sin código Inter en las bodegas de este seller</div></div>';
+      + '<div class="actupd-inter-empty">Selecciona la bodega / dato actual para ver su código de sucursal</div></div>';
     return;
   }
   box.style.display = 'block';
-  box.innerHTML = '<div class="actupd-inter-wrap"><div class="actupd-inter-title"><i class="bi bi-truck"></i> Código Inter Rapidísimo</div>'
+  box.innerHTML = '<div class="actupd-inter-wrap"><div class="actupd-inter-title"><i class="bi bi-truck"></i> Sucursal Inter de esta bodega</div>'
     + '<div class="actupd-inter-chips">'
-    + codes.map(function(c) {
-        return '<span class="actupd-inter-chip"><span class="tag">Inter</span> ' + c + '</span>';
-      }).join('')
+    + '<span class="actupd-inter-chip"><span class="tag">Inter</span> ' + code + '</span>'
     + '</div></div>';
 }
 
-// Si eligen "Otro (escribir)…", pedir el valor con prompt simple
+/** Al elegir dato actual: arma columna B solo con el código Inter de ESA bodega */
+function actupdAlSeleccionarDato() {
+  var sel = document.getElementById('actupd-anterior-select');
+  var val = (sel && sel.value) ? sel.value.trim() : '';
+  if (!val || val === '__manual__') {
+    // Mantener solo centro de costo hasta que haya selección válida
+    var cc = document.getElementById('actupd-centro').value || '';
+    document.getElementById('actupd-sucursal').value = cc ? (cc + ' - (sin sucursal)') : '';
+    actupdRenderCodigosInter(actupdSellerCache, '');
+    return;
+  }
+  var centro = document.getElementById('actupd-centro').value || '';
+  if (!centro && actupdSellerCache) centro = actupdSellerCache.centroCosto || '';
+  var codigo = actupdCodigoInterDeValor(val);
+  var etiqueta = codigo ? (centro + ' - ' + codigo) : (centro + ' - ' + val);
+  document.getElementById('actupd-sucursal').value = etiqueta;
+  actupdRenderCodigosInter(actupdSellerCache, codigo);
+}
+
+function actupdCodigoInterDeValor(valor) {
+  if (!actupdSellerCache || !Array.isArray(actupdSellerCache.ubicaciones)) return '';
+  var v = String(valor || '').trim();
+  var ubs = actupdSellerCache.ubicaciones;
+  for (var i = 0; i < ubs.length; i++) {
+    var u = ubs[i];
+    if (!u) continue;
+    if (String(u.address || '').trim() === v) return String(u.interrapidisimoCode || '').trim();
+    if (String(u.city || '').trim() === v) return String(u.interrapidisimoCode || '').trim();
+    if (String(u.phone || '').trim() === v) return String(u.interrapidisimoCode || '').trim();
+  }
+  return '';
+}
+
+// Cambio en dato actual: actualiza columna B (solo esa sucursal) + chip Inter
 document.addEventListener('change', function(ev) {
-  if (ev.target && ev.target.id === 'actupd-anterior-select' && ev.target.value === '__manual__') {
+  if (!ev.target || ev.target.id !== 'actupd-anterior-select') return;
+  if (ev.target.value === '__manual__') {
     var v = window.prompt('Escribe el dato actual a modificar:');
     if (v && v.trim()) {
       var opt = document.createElement('option');
@@ -30553,6 +30579,7 @@ document.addEventListener('change', function(ev) {
       ev.target.value = '';
     }
   }
+  actupdAlSeleccionarDato();
 });
 
 function abrirModalSolicitudActupd() {
